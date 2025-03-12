@@ -1,0 +1,25 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+COPY ["src/Acme.SimpleTaskApp.Web.Host/Acme.SimpleTaskApp.Web.Host.csproj", "src/Acme.SimpleTaskApp.Web.Host/"]
+COPY ["src/Acme.SimpleTaskApp.Web.Core/Acme.SimpleTaskApp.Web.Core.csproj", "src/Acme.SimpleTaskApp.Web.Core/"]
+COPY ["src/Acme.SimpleTaskApp.Application/Acme.SimpleTaskApp.Application.csproj", "src/Acme.SimpleTaskApp.Application/"]
+COPY ["src/Acme.SimpleTaskApp.Core/Acme.SimpleTaskApp.Core.csproj", "src/Acme.SimpleTaskApp.Core/"]
+COPY ["src/Acme.SimpleTaskApp.EntityFrameworkCore/Acme.SimpleTaskApp.EntityFrameworkCore.csproj", "src/Acme.SimpleTaskApp.EntityFrameworkCore/"]
+WORKDIR "/src/src/Acme.SimpleTaskApp.Web.Host"
+RUN dotnet restore 
+
+WORKDIR /src
+COPY ["src/Acme.SimpleTaskApp.Web.Host", "src/Acme.SimpleTaskApp.Web.Host"]
+COPY ["src/Acme.SimpleTaskApp.Web.Core", "src/Acme.SimpleTaskApp.Web.Core"]
+COPY ["src/Acme.SimpleTaskApp.Application", "src/Acme.SimpleTaskApp.Application"]
+COPY ["src/Acme.SimpleTaskApp.Core", "src/Acme.SimpleTaskApp.Core"]
+COPY ["src/Acme.SimpleTaskApp.EntityFrameworkCore", "src/Acme.SimpleTaskApp.EntityFrameworkCore"]
+WORKDIR "/src/src/Acme.SimpleTaskApp.Web.Host"
+RUN dotnet publish -c Release -o /publish --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+EXPOSE 80
+WORKDIR /app
+COPY --from=build /publish .
+ENTRYPOINT ["dotnet", "Acme.SimpleTaskApp.Web.Host.dll"]
