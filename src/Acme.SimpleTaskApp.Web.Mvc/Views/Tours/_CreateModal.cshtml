@@ -1,0 +1,117 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Tours
+@model CreateTourViewModel
+@{
+	Layout = null;
+}
+
+<div class="modal fade" id="TourCreateModal" tabindex="-1" role="dialog" aria-labelledby="TourCreateModalLabel" data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("CreateNewTour")))
+
+      <form name="tourCreateForm" role="form" class="form-horizontal" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("TourName")</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" name="TourName" required placeholder="Nhập tên tour...">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("MinGroupSize")</label>
+            <div class="col-md-9">
+              <input type="number" class="form-control" name="MinGroupSize" required placeholder="Nhập số lượng nhóm tối thiểu...">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("MaxGroupSize")</label>
+            <div class="col-md-9">
+              <input type="number" class="form-control" name="MaxGroupSize" required placeholder="Nhập số lượng nhóm tối đa...">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("TourType")</label>
+            <div class="col-md-9">
+              <select class="form-control" name="TourTypeCid">
+                <option value="">Chọn loại tour</option>
+                <option value="0">@("Tour du lịch nội tỉnh")</option>
+                <option value="1">@("Tour du lịch liên tỉnh")</option>
+                <option value="2">@("Tour du lịch quốc tế")</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("StartDate")</label>
+            <div class="col-md-9">
+              <input type="date" class="form-control" name="StartDate" required>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("EndDate")</label>
+            <div class="col-md-9">
+              <input type="date" class="form-control" name="EndDate" required>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("Transportation")</label>
+            <div class="col-md-9">
+              <select class="form-control" name="Transportation">
+                <option value="">Chọn loại phương tiện</option>
+                <option value="Ô tô">@("Ô tô")</option>
+                <option value="Xe máy">@("Xe máy")</option>
+                <option value="Máy bay">@("Máy bay")</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("TourPrice")</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" name="TourPrice" required step="0.1" placeholder="Nhập giá tour...">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("PhoneNumber")</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" name="PhoneNumber" required placeholder="Nhập số điện thoại...">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("Description")</label>
+            <div class="col-md-9">
+              <textarea class="form-control" name="Description" required rows="3" placeholder="Nhập mô tả tour..."></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">@L("Attachment")</label>
+            <div class="col-md-9">
+              <input type="file" class="form-control print-image" id="tourImage" name="ImageFile" accept="image/*" required>
+              <div style="margin-top: 10px;">
+                <img id="imagePreview" src="" alt="Ảnh xem trước" style="max-width: 300px; display: none; border: 1px solid #ccc; padding: 5px; border-radius: 8px;" />
+                  <button id="deleteImageBtn" type="button">
+                          
+                    Xóa ảnh
+                  </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+				@await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+			</form>
+
+
+		</div>
+	</div>
+</div>

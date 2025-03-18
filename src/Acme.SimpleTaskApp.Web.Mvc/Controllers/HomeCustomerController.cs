@@ -31,67 +31,56 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
-		public async Task<ActionResult> Index(GetAllProductsInput input, GetAllCategoryDto input1)
+		public async Task<ActionResult> Index(int page = 1, int page_size = 12)
 		{
+			var input = new GetAllProductsInput
+			{
+				MaxResultCount = page_size,
+				SkipCount = (page - 1) * page_size
+			};
+
 			var output = await _productAppService.GetAllProducts(input);
-			var categories = await _categoryAppService.GetAllCategories(input1);
+			var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto { });
+
+			// Tính toán số trang
+			int totalProducts = output.TotalCount;
+			int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
 
 			// Chuyển đổi CategoryListDto sang SelectListItem
 			var categoriesSelectList = categories.Items
-					.Select(c => new SelectListItem
-					{
-						Value = c.Id.ToString(),
-						Text = c.Name
-					})
-					.ToList();
+											.Select(c => new SelectListItem
+											{
+												Value = c.Id.ToString(),
+												Text = c.Name
+											})
+											.ToList();
 
 			var model = new ProductViewModel(output.Items)
 			{
-				Categories = categoriesSelectList // Gán danh sách đã chuyển đổi
+				Categories = categoriesSelectList, // Gán danh sách đã chuyển đổi
+				TotalPages = totalPages
 			};
 
 			return View(model);
 		}
-		//public async Task<ActionResult> DetailProductCusTomer(int productId)
-		//{
-		//	try
-		//	{
-		//		// Lấy thông tin sản phẩm
-		//		var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
 
-		//		// Lấy DANH SÁCH TẤT CẢ CATEGORIES
-		//		var categoriesResult = await _categoryAppService.GetAllCategories(new GetAllCategoryDto { MaxResultCount = 12 });
+		public async Task<IActionResult> DetailProductCusTomer(int productId)
+		{
+			var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
+			var allProducts = await _productAppService.GetAllProducts(new GetAllProductsInput());
+			var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto());
 
-		//		// Tạo ProductListDto và lấy CategoryName từ danh sách categories
-		//		var detailProductDto = new ProductListDto
-		//		{
-		//			Id = product.Id,
-		//			Name = product.Name,
-		//			Description = product.Description,
-		//			Price = product.Price,
-		//			Image = product.Image,
-		//			State = product.State,
-		//			CreationTime = product.CreationTime,
-		//			CategoryId = product.CategoryId,
-		//			// Lấy CategoryName từ danh sách categories dựa trên CategoryId
-		//			CategoryName = categoriesResult.Items.FirstOrDefault(c => c.Id == product.CategoryId)?.Name ?? "Không xác định"
-		//		};
+			var model = new DetailProductModalViewModel(product, allProducts.Items.ToList())
+			{
+				Categories = categories.Items.Select(c => new SelectListItem
+				{
+					Value = c.Id.ToString(),
+					Text = c.Name
+				}).ToList()
+			};
 
-		//		// Truyền cả danh sách categories vào ViewModel
-		//		var viewModel = new DetailProductModalViewModel
-		//		{
-		//			Product = detailProductDto,
-		//			Categories = categoriesResult.Items // Thêm danh sách categories vào ViewModel
-		//		};
-
-		//		return View(viewModel);
-		//	}
-		//	catch (UserFriendlyException ex)
-		//	{
-		//		Logger.Error(ex.Message, ex);
-		//		throw;
-		//	}
-		//}
+			return View(model);
+		}
 
 		// Trong HomeCustomerController.cs
 		public async Task<ActionResult> SearchProductCustomer(GetAllProductsInput input)

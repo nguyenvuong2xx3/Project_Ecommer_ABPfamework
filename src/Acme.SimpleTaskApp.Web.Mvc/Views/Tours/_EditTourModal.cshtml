@@ -1,0 +1,150 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Tours
+@model EditTourViewModel
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("EditTour")))
+
+
+<form name="TourEditForm" role="form" class="form-horizontal">
+  <input type="hidden" name="Id" value="@Model.Tours.Id" />
+  <div class="modal-body">
+    <!-- TourName -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("TourName")</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="TourName" value="@Model.Tours.TourName" required>
+      </div>
+    </div>
+
+    <!-- MinGroupSize -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("MinGroupSize")</label>
+      <div class="col-md-9">
+        <input type="number" class="form-control" name="MinGroupSize" value="@Model.Tours.MinGroupSize" required>
+      </div>
+    </div>
+
+    <!-- MaxGroupSize -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("MaxGroupSize")</label>
+      <div class="col-md-9">
+        <input type="number" class="form-control" name="MaxGroupSize" value="@Model.Tours.MaxGroupSize" required>
+      </div>
+    </div>
+
+<!-- TourTypeCid -->
+<div class="form-group row required">
+    <label class="col-md-3 col-form-label">@L("TourTypeCid")</label>
+    <div class="col-md-9">
+        @{
+            string tourType = "Chưa xác định";
+            if (Model?.Tours?.TourTypeCid == 0)
+            {
+                tourType = "Tour du lịch nội tỉnh";
+            }
+            else if (Model?.Tours?.TourTypeCid == 1)
+            {
+                tourType = "Tour du lịch liên tỉnh";
+            }
+            else if (Model?.Tours?.TourTypeCid == 2)
+            {
+                tourType = "Tour du lịch quốc tế";
+            }
+        }
+
+        <select class="form-control" name="TourTypeCid">
+          <!-- Giá trị hiện tại -->
+          <option value="@Model.Tours.TourTypeCid">@tourType</option>
+
+          <!-- Hiển thị các option khác không trùng với giá trị hiện tại -->
+          @if (Model?.Tours?.TourTypeCid != 0)
+          {
+            <option value="0">Tour du lịch nội tỉnh</option>
+          }
+          @if (Model?.Tours?.TourTypeCid != 1)
+          {
+            <option value="1">Tour du lịch liên tỉnh</option>
+          }
+          @if (Model?.Tours?.TourTypeCid != 2)
+          {
+            <option value="2">Tour du lịch quốc tế</option>
+          }
+        </select>
+
+    </div>
+</div>
+
+    <!-- StartDate -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("StartDate")</label>
+      <div class="col-md-9">
+        <input type="date" class="form-control" name="StartDate" value="@Model.Tours.StartDate?.ToString("yyyy-MM-dd")" required>
+      </div>
+    </div>
+
+    <!-- EndDate -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("EndDate")</label>
+      <div class="col-md-9">
+        <input type="date" class="form-control" name="EndDate" value="@Model.Tours.EndDate?.ToString("yyyy-MM-dd")" required>
+      </div>
+    </div>
+
+    <!-- Transportation -->
+    @{
+      var currentTransportation = Model.Tours.Transportation; // Lấy phương tiện hiện tại
+      }
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("Transportation")</label>
+      <div class="col-md-9">
+        <select class="form-control" name="Transportation">
+          <option value="">@currentTransportation</option>
+          <option value="Ô tô"style=" @(currentTransportation == "Ô tô" ? "display : none" : "")">Ô tô</option>
+          <option value="Xe máy" style=" @(currentTransportation == "Xe máy" ? "display : none" : "")">Xe máy</option>
+          <option value="Máy bay" style=" @(currentTransportation == "Máy bay" ? "display : none" : "")">Máy bay</option>
+        </select>
+      </div>
+    </div>
+
+
+    <!-- TourPrice -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("TourPrice")</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="TourPrice" value="@Model.Tours.TourPrice.ToString()" required>
+      </div>
+    </div>
+
+    <!-- PhoneNumber -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("PhoneNumber")</label>
+      <div class="col-md-9">
+        <input type="tel" class="form-control" name="PhoneNumber" value="@Model.Tours.PhoneNumber" required>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group row required">
+      <label class="col-md-3 col-form-label">@L("Description")</label>
+      <div class="col-md-9">
+        <textarea class="form-control" name="Description" required rows="3">@Model.Tours.Description</textarea>
+      </div>
+    </div>
+
+    <!-- Attachment -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">@L("Attachment")</label>
+      <div class="col-md-9">
+        <img src="@Model.Tours.Attachment" alt="Ảnh sản phẩm" class="img-thumbnail d-block mx-auto" width="400" height="400" style="object-fit: cover;">
+
+        <input type="file" class="form-control print-image" id="tourAttachment" name="ImageFile" accept="image/*,application/pdf" required>
+
+      </div>
+    </div>
+
+
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<script src="~/view-resources/Views/Tours/_EditModal.js" asp-append-version="true"></script>
+

@@ -19,7 +19,6 @@ html {
     position: absolute;
     margin-left: 3px;
 }
-
 .nav-user-menu .user-image {
     width: 20px;
     margin-right: 4px;
@@ -355,6 +354,7 @@ html {
 
     .fruite .fruite-item .fruite-img img {
       transition: 0.5s;
+      border: 1px solid rgba(255, 255, 255, .5);
     }
 
       .fruite .fruite-item .fruite-img img:hover {

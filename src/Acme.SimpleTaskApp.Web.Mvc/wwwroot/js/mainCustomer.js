@@ -12,7 +12,7 @@
       }
     } else {
       if ($(this).scrollTop() > 55) {
-        $('.fixed-top').addClass('shadow').css('top', -55);
+        $('.fixed-top').addClass('shadow').css('top', 0);
       } else {
         $('.fixed-top').removeClass('shadow').css('top', 0);
       }
@@ -97,6 +97,13 @@
       },
       1200: {
         items: 4
+      },
+      1500: {
+        items: 5
+      },2000: {
+        items: 6
+      }, 2500: {
+        items: 7
       }
     }
   });
@@ -190,14 +197,18 @@
     handleSearch()
   });
 
-
+  //tìm kiếm theo danh mục
   $(document).on('click', '.category-click-getid', function () {
     var categoryId = $(this).data('id'); // Sửa "data-id" thành 'id'
     window.location.href = '/HomeCustomer/SearchProductCustomer?category=' + categoryId;
   });
-  
+  // nếu click vào AllCategory( tất cả danh mục)
   $(document).on('click', '.category-click-getall', function () {
     window.location.href = '/HomeCustomer';
+  });
+  // nhận sự kiện nút << firt
+  $(document).on('click', '.firt-button', function () {
+    window.location.href = '/HomeCustomer?page' + 1;
   });
 })(jQuery);
 

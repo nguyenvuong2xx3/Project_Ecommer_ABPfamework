@@ -14,6 +14,7 @@
     <script src="~/js/mainCustomer" asp-append-version="true"></script>
   </environment>
 }
+@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_SliderCustomer.cshtml")
 
 @* bang hang hoa *@
 <div class="container-fluid fruite py-5">
@@ -30,18 +31,18 @@
                 <span class="text-dark" style="width: 130px;">All Products</span>
               </a>
             </li>
-            
-              @foreach (var category in Model.Categories)
-              {
-                <li class="nav-item">
-                  <a class="d-flex py-1 m-1 bg-light rounded-pill category-click-getid"
-                      data-bs-toggle="pill" data-id="@category.Value"
-                     href="#">
-                    <!-- Sử dụng giá trị category làm ID -->
-                    <span class="text-dark" style="width: 130px;">@category.Text</span>
-                  </a>
-                </li>
-              }
+
+            @foreach (var category in Model.Categories)
+            {
+              <li class="nav-item">
+                <a class="d-flex py-1 m-1 bg-light rounded-pill category-click-getid"
+                data-bs-toggle="pill" data-id="@category.Value"
+                href="#">
+                  <!-- Sử dụng giá trị category làm ID -->
+                  <span class="text-dark" style="width: 130px;">@category.Text</span>
+                </a>
+              </li>
+            }
           </ul>
         </div>
       </div>
@@ -72,7 +73,7 @@
                         <h5 class="small-font">@product.Name</h5>
                         <p class="small-font product-description">@product.Description</p>
                         <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-6 fw-bold mb-0">@product.Price</p>
+                          <p class="text-dark fs-6 fw-bold mb-0">@product.Price.ToString("#,##0") VNĐ</p>
                           <a href="#" class="btn border border-secondary rounded-pill px-2 text-primary small-font"><i class="fa fa-shopping-bag me-1 text-primary"></i>Thêm giỏ hàng</a>
                         </div>
                       </div>
@@ -88,14 +89,14 @@
   </div>
   <div class="col-12">
     <div class="pagination d-flex justify-content-center mt-5">
-      <a href="#" class="rounded">&laquo;</a>
-      <a href="#" class="active rounded">1</a>
-      <a href="#" class="rounded">2</a>
-      <a href="#" class="rounded">3</a>
-      <a href="#" class="rounded">4</a>
-      <a href="#" class="rounded">5</a>
-      <a href="#" class="rounded">6</a>
-      <a href="#" class="rounded">&raquo;</a>
+
+
+      <a asp-action="Index" asp-route-page="1">&laquo</a>
+      @for (int i = 1; i <= Model.TotalPages; i++)
+      {
+        <a asp-action="Index" asp-route-page="@i">@i</a>
+      }
+      <a asp-action="Index" asp-route-page="@Model.TotalPages">&raquo;</a>
     </div>
   </div>
 </div>
@@ -106,11 +107,12 @@
   }
 
   .product-description {
-    max-height: 3em; /* Adjust the height as needed */
+    height: 3em; /* Adjust the height as needed */
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 3; /* Number of lines to show */
     -webkit-box-orient: vertical;
   }
+
 </style>

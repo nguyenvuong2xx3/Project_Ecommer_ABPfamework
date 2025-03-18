@@ -17,6 +17,7 @@ using Acme.SimpleTaskApp.Web.Resources;
 using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
+using Acme.SimpleTaskApp.Categories;
 
 namespace Acme.SimpleTaskApp.Web.Startup
 {
@@ -52,7 +53,9 @@ namespace Acme.SimpleTaskApp.Web.Startup
 
             services.AddScoped<IWebResourceManager, WebResourceManager>();
 
-            services.AddSignalR();
+			      services.AddScoped<ICategoryAppService, CategoryAppService>();
+
+			      services.AddSignalR();
 
             // Configure Abp and Dependency Injection
             services.AddAbpWithoutCreatingServiceProvider<SimpleTaskAppWebMvcModule>(

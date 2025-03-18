@@ -112,7 +112,8 @@ namespace Acme.SimpleTaskApp.Products
 					Price = product.Price,
 					State = product.State,
 					CreationTime = product.CreationTime,
-					Image = product.Image
+					Image = product.Image,
+					CategoryId = product.CategoryId
 				};
 			}
 		}
@@ -122,9 +123,10 @@ namespace Acme.SimpleTaskApp.Products
 		{
 			// Lấy sản phẩm hiện có
 			var product = await _productRepository.GetAsync(input.Id);
+			// đang bị lỗi nếu product = null thì sẽ không trả ra exception và dư 1 ít code đoạn đầu ở controller
 			if (product == null)
 			{
-				throw new UserFriendlyException("Sản phẩm không tồn tại!");
+				throw new Exception("Sản phẩm không tồn tại!");
 			}
 
 			// Cập nhật thông tin (trừ Image)

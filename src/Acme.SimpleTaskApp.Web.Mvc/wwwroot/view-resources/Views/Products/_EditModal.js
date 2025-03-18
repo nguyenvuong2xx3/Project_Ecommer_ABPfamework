@@ -17,6 +17,7 @@
         var product = _$form.serializeFormToObject(); // Lấy dữ liệu từ form
         var formData = new FormData(_$form[0]);
         abp.ui.setBusy(_$modal);
+
         $.ajax({
 
             url: abp.appPath + 'Products/Update', // Đường dẫn đến phương thức trong controller
@@ -34,6 +35,7 @@
                 }
                 $("#error-message").html(errorMessage).show();
             }
+
         }).done(function () {
             /*resetDefaultImage();*/
             _$modal.modal('hide');

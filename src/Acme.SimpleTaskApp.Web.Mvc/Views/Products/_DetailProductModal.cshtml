@@ -46,14 +46,15 @@
     <div class="form-group row">
         <label class="col-md-3 col-form-label">@L("Category")</label>
         <div class="col-md-9">
-            @if (Model.Product.CategoryId != null && Model.Category != null)
-            {
-                <p class="form-control-plaintext">@Model.Category.Name</p>
-            }
-            else
-            {
-                <p class="form-control-plaintext">@L("NoCategory")</p>
-            }
+      @if (Model.Product.CategoryId != null || Model.Product.CategoryName != null)
+          {
+            <p class="form-control-plaintext">@Model.Product.CategoryName</p>
+          }
+          else
+          {
+            <p class="form-control-plaintext">@L("NoCategory")</p>
+          }
+
         </div>
     </div>
 </div>

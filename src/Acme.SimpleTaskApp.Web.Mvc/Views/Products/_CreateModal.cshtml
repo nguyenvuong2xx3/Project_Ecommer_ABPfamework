@@ -29,7 +29,7 @@
 					<div class="row mb-3">
 						<label class="col-md-3 col-form-label fw-bold">@L("Price")</label>
 						<div class="col-md-9">
-							<input type="number" class="form-control" name="Price" required step="1" placeholder="Nhập giá sản phẩm...">
+							<input type="text" class="form-control" name="Price" required step="1" placeholder="Nhập giá sản phẩm...">
 						</div>
 					</div>
 
@@ -37,8 +37,17 @@
 						<label class="col-md-3 col-form-label fw-bold">@L("Image")</label>
 						<div class="col-md-9">
 							<label for="productImage" class="form-label">Chọn ảnh sản phẩm</label>
-							<input type="file" class="form-control" id="productImage" name="ImageFile" accept="image/*" required>
+							<input type="file" class="form-control" id="productImage" name="ImageFile" accept="image/*">
+							<div style="margin-top: 10px;">
+								<img id="productImagePreview" src="" alt="Ảnh xem trước"
+										 style="max-width: 300px; display: none; border: 1px solid #ccc; padding: 5px; border-radius: 8px;" />
+								<button id="deleteProductImageBtn" type="button"
+												>
+									Xóa ảnh
+								</button>
+							</div>
 						</div>
+
 					</div>
 						
 
@@ -56,6 +65,7 @@
 						<label class="col-md-3 col-form-label fw-bold">@L("Category")</label>
 							<div class="col-md-9">
 								<select class="form-control" name="CategoryId">
+								<option value="">Select Category</option>
 									@foreach (var category in Model.Categories)
 									{
 										<option value="@category.Value">@category.Text</option>

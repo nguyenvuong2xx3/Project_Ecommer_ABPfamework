@@ -10,7 +10,7 @@ namespace Acme.SimpleTaskApp.Web.Models.Products
 	{
 		public IReadOnlyList<ProductListDto> Products { get; set; }
 		public List<SelectListItem> Categories { get; set; }
-
+		public int TotalPages { get; set; }
 		public ProductViewModel(IReadOnlyList<ProductListDto> products)
 		{
 			Products = products;

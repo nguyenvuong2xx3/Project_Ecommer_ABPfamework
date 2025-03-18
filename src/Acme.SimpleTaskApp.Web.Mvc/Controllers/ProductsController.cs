@@ -14,7 +14,6 @@ using Abp.UI;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Abp.AspNetCore.Mvc.Authorization;
 
 
 namespace Acme.SimpleTaskApp.Web.Controllers
@@ -114,6 +113,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				return Json(new { success = false, message = ex.Message });
 			}
 		}
+
 		[HttpPost]
 		[Route("Products/EditModal")] // Đảm bảo route đúng
 		public async Task<PartialViewResult> EditModal(int productId)
@@ -227,9 +227,16 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			try
 			{
-				// Gọi service để lấy sản phẩm theo Id
 				var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
-				//var category = await _categoryAppService.GetByIdCategory(new EntityDto<int>(product.CategoryId ?? 0));
+				string categoryName = "chưa có danh mục"; // Giá trị mặc định
+
+				// Chỉ lấy category nếu CategoryId != null
+				if (product.CategoryId != null)
+				{
+					var category = await _categoryAppService.GetByIdCategory(new EntityDto<int>(product.CategoryId.Value));
+					categoryName = category?.Name ?? "chưa có danh mục"; // Xử lý cả trường hợp category null
+				}
+
 				var detailProductDto = new ProductListDto
 				{
 					Id = product.Id,
@@ -240,14 +247,16 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					State = product.State,
 					CreationTime = product.CreationTime,
 					CategoryId = product.CategoryId,
-					//CategoryName = category.Name
+					CategoryName = categoryName // Sử dụng giá trị đã xử lý
 				};
-				var viewModel = new DetailProductModalViewModel { Product = detailProductDto };
+
+				var allProducts = (await _productAppService.GetAllProducts(new GetAllProductsInput())).Items.ToList();
+
+				var viewModel = new DetailProductModalViewModel(detailProductDto, allProducts);
 				return PartialView("_DetailProductModal", viewModel);
 			}
 			catch (UserFriendlyException ex)
 			{
-				// Log lỗi và throw exception để client nhận thông báo
 				Logger.Error(ex.Message, ex);
 				throw;
 			}

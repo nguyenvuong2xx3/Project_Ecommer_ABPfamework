@@ -168,6 +168,15 @@ namespace Acme.SimpleTaskApp.Web.Startup
 											//permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
 
 							)
+					).AddItem(
+							new MenuItemDefinition(
+											"Tours",
+											L("Tours"),
+											url: "Tours",
+											icon: "fa fa-globe"
+							//permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
+
+							)
 					);
 		}
 

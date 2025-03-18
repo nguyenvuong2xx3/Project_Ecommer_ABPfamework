@@ -1,0 +1,53 @@
+﻿@model Acme.SimpleTaskApp.Web.Models.Tours.TourViewModel
+
+<div class="abp-advanced-search">
+  <form id="TourSearchForm" class="form-horizontal">
+    <div class="input-group mb-2">
+      <!-- Nút tìm kiếm -->
+      <div class="input-group-prepend">
+        <button type="button" class="btn bg-blue btn-search">
+          <span class="fas fa-search" aria-hidden="true"></span>
+        </button>
+      </div>
+      <input type="text" name="Keyword" class="form-control txt-search" placeholder="Tìm kiếm..." />
+    </div>
+
+    <div class="row">
+      <!-- Ngày bắt đầu -->
+      <div class="col-md-5 mb-2">
+        <input type="date" name="StartDate" class="form-control txt-search" placeholder="Từ ngày" />
+      </div>
+      
+      <!-- Ngày kết thúc -->
+      <div class="col-md-5 mb-2">
+        <input type="date" name="EndDate" class="form-control txt-search" placeholder="Đến ngày" />
+      </div>
+      <div class="col-md-5 mb-2">
+
+				<!-- Loại tour -->
+        <select class="form-control txt-search" name="TourTypeCid">
+          <option value="-1">@("Tất cả Tour")</option>
+        <option value="0">@("Tour du lịch nội tỉnh")</option>
+        <option value="1">@("Tour du lịch liên tỉnh")</option>
+        <option value="2">@("Tour du lịch quốc tế")</option>
+      </select>
+      </div>
+			<div class="col-md-5 mb-2">
+				<!-- Phương tiện -->
+				<select class="form-control txt-search" name="Transportation">
+          <option value="">@("Tất cả phương tiện")</option>
+					<option value="Ô tô">@("Ô tô")</option>
+					<option value="Xe máy">@("Xe máy")</option>
+					<option value="Máy bay">@("Máy bay")</option>
+				</select>
+
+
+      <!-- Nút tìm kiếm -->
+      @* <div class="col-md-2"> *@
+      @*   <button type="submit" class="btn btn-primary w-100"> *@
+      @*     <i class="fas fa-filter"></i> Lọc *@
+      @*   </button> *@
+      @* </div> *@
+    </div>
+  </form>
+</div>

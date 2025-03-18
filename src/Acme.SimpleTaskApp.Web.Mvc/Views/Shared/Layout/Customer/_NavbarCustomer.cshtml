@@ -1,15 +1,15 @@
 ﻿<div class="container-fluid fixed-top shadow bg-white">
   <nav class="navbar navbar-light navbar-expand-xl w-100">
-    <a href="#" class="navbar-brand">
-      <h1 class="text-primary display-6">Shop Ecommer</h1>
+    <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
+      <h1  class="text-primary display-6">Shop Ecommer</h1>
     </a>
     <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
       <span class="fa fa-bars text-primary"></span>
     </button>
     <div class="collapse navbar-collapse w-100" id="navbarCollapse">
       <div class="navbar-nav mx-auto">
-        <a href="index.html" class="nav-item nav-link active">Home</a>
-        <a href="#" class="nav-item nav-link click-shop">Shop</a>
+        <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Home</a>
+        <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Shop</a>
         <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -21,12 +21,35 @@
         </div>
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
-      <div class="d-flex">
-        <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill txt-search" name="Keyword" type="text" placeholder="Search">
-        <button class="btn border border-secondary rounded-circle bg-white me-4" id="searchButton">
-          <i class="fas fa-search text-primary"></i>
-        </button>>
+      <div class="d-flex align-items-center">
+        <input class="form-control border-2 border-warning py-2 px-3 rounded-pill txt-search"
+               name="Keyword" type="text" placeholder="Search" style="width: 250px; height: 40px;">
+        <button class="btn border border-warning rounded-circle bg-white ms-2"
+                id="searchButton" style="width: 40px; height: 40px;">
+          <i class="fas fa-search text-success"></i>
+        </button>
       </div>
     </div>
   </nav>
 </div>
+<style>
+.txt-search {
+    font-size: 14px; /* Cỡ chữ nhỏ hơn */
+    border: 2px solid #f0ad4e; /* Viền màu cam */
+    outline: none; /* Bỏ viền khi focus */
+    transition: border-color 0.3s ease;
+}
+
+.txt-search:focus {
+    border-color: #ffc107; /* Màu viền khi focus */
+}
+
+#searchButton {
+    border: 2px solid #f0ad4e;
+    transition: background-color 0.3s ease;
+}
+
+#searchButton:hover {
+    background-color: #f8f9fa;
+}
+</style>

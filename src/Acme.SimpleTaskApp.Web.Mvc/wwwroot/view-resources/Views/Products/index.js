@@ -103,6 +103,54 @@
     });
 
 
+  // Hiển thị ảnh khi chọn file ảnh
+  document.getElementById('productImage').addEventListener('change', function (event) {
+    previewImage(event);
+  });
+
+  function previewImage(event) {
+    const input = event.target;
+    const preview = document.getElementById('productImagePreview');
+    const deleteBtn = document.getElementById('deleteProductImageBtn');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        deleteBtn.style.display = 'inline-block';
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      // Ẩn ảnh và nút xóa nếu không có file
+      preview.src = '';
+      preview.style.display = 'none';
+      deleteBtn.style.display = 'none';
+    }
+  }
+
+  // Xử lý xóa ảnh khi nhấn nút "Xóa ảnh"
+  document.getElementById('deleteProductImageBtn').addEventListener('click', function () {
+    removeImage();
+  });
+
+  function removeImage() {
+    const input = document.getElementById('productImage');
+    const preview = document.getElementById('productImagePreview');
+    const deleteBtn = document.getElementById('deleteProductImageBtn');
+
+    // Xóa nội dung của input file
+    input.value = '';
+
+    // Ẩn ảnh xem trước và nút xóa
+    preview.src = '';
+    preview.style.display = 'none';
+    deleteBtn.style.display = 'none';
+  }
+
+
     // lưu sản phẩm
     _$form.find('.save-button').on('click', (e) => {
         e.preventDefault();
@@ -260,7 +308,7 @@
           min: 1000
         },
         ImageFile: {
-          required: true,
+          required: false,
           //accept: "jpg|jpeg|png|gif"
         },
         State: {
@@ -286,7 +334,6 @@
           min: "Giá phải lớn hơn 1000",
         },
         ImageFile: {
-          required: "Vui lòng chọn ảnh sản phẩm",
           extension: "Ảnh phải có định dạng .jpg, .jpeg, .png, .gif"
         },
       },
