@@ -11,7 +11,8 @@
 @section scripts
 {
   <environment names="Development">
-    <script src="~/js/mainCustomer" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/HomeCustomer/mainCustomer.js"
+            asp-append-version="true"></script>
   </environment>
 }
 @await Html.PartialAsync("~/Views/Shared/Layout/Customer/_SliderCustomer.cshtml")
@@ -24,27 +25,10 @@
         <div class="col-lg-4 text-start">
           <h4>Tất cả sản phẩm</h4>
         </div>
-        <div class="col-lg-8 text-end">
-          <ul class="nav nav-pills d-inline-flex text-center mb-5 position-relative">
-            <li class="nav-item">
-              <a class="d-flex m-1 py-1 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
-                <span class="text-dark" style="width: 130px;">All Products</span>
-              </a>
-            </li>
 
-            @foreach (var category in Model.Categories)
-            {
-              <li class="nav-item">
-                <a class="d-flex py-1 m-1 bg-light rounded-pill category-click-getid"
-                data-bs-toggle="pill" data-id="@category.Value"
-                href="#">
-                  <!-- Sử dụng giá trị category làm ID -->
-                  <span class="text-dark" style="width: 130px;">@category.Text</span>
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
+            @await Component.InvokeAsync("CategoryList", new { viewName = "CategoryListIndex" })
+
+
       </div>
       <div class="tab-content">
         <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -70,8 +54,7 @@
                         }
                       </div>
                       <div class="p-3 border border-secondary border-top-0 rounded-bottom">
-                        <h5 class="small-font">@product.Name</h5>
-                        <p class="small-font product-description">@product.Description</p>
+                        <h4 class="small-font">@product.Name</h4>
                         <div class="d-flex justify-content-between flex-lg-wrap">
                           <p class="text-dark fs-6 fw-bold mb-0">@product.Price.ToString("#,##0") VNĐ</p>
                           <a href="#" class="btn border border-secondary rounded-pill px-2 text-primary small-font"><i class="fa fa-shopping-bag me-1 text-primary"></i>Thêm giỏ hàng</a>
@@ -100,6 +83,7 @@
     </div>
   </div>
 </div>
+
 
 <style>
   .small-font {

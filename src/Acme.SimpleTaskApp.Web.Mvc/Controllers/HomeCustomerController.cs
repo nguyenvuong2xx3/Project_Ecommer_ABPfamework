@@ -28,7 +28,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 															IWebHostEnvironment webHostEnvironment)
 		{
 			_productAppService = productAppService;
-			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
 		public async Task<ActionResult> Index(int page = 1, int page_size = 12)
@@ -40,24 +39,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 
 			var output = await _productAppService.GetAllProducts(input);
-			var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto { });
 
 			// Tính toán số trang
 			int totalProducts = output.TotalCount;
 			int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
 
-			// Chuyển đổi CategoryListDto sang SelectListItem
-			var categoriesSelectList = categories.Items
-											.Select(c => new SelectListItem
-											{
-												Value = c.Id.ToString(),
-												Text = c.Name
-											})
-											.ToList();
 
 			var model = new ProductViewModel(output.Items)
 			{
-				Categories = categoriesSelectList, // Gán danh sách đã chuyển đổi
 				TotalPages = totalPages
 			};
 
@@ -67,16 +56,9 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		public async Task<IActionResult> DetailProductCusTomer(int productId)
 		{
 			var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
-			var allProducts = await _productAppService.GetAllProducts(new GetAllProductsInput());
-			var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto());
 
-			var model = new DetailProductModalViewModel(product, allProducts.Items.ToList())
+			var model = new DetailProductModalViewModel(product)
 			{
-				Categories = categories.Items.Select(c => new SelectListItem
-				{
-					Value = c.Id.ToString(),
-					Text = c.Name
-				}).ToList()
 			};
 
 			return View(model);
@@ -88,15 +70,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			try
 			{
 				var result = await _productAppService.SearchProducts(input);
-				var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto());
 
 				var model = new ProductViewModel(result.Items)
 				{
-					Categories = categories.Items.Select(c => new SelectListItem
-					{
-						Value = c.Id.ToString(),
-						Text = c.Name
-					}).ToList(),
+				
 				};
 
 				return View(model);
@@ -109,5 +86,9 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// Thêm action cho form search
+		public async Task<ActionResult> LoginMember()
+		{
+			return  View();
+		}
 	}
 }

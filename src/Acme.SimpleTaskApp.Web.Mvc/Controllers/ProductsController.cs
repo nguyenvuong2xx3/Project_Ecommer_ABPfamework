@@ -250,9 +250,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					CategoryName = categoryName // Sử dụng giá trị đã xử lý
 				};
 
-				var allProducts = (await _productAppService.GetAllProducts(new GetAllProductsInput())).Items.ToList();
 
-				var viewModel = new DetailProductModalViewModel(detailProductDto, allProducts);
+				var viewModel = new DetailProductModalViewModel(detailProductDto);
 				return PartialView("_DetailProductModal", viewModel);
 			}
 			catch (UserFriendlyException ex)

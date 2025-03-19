@@ -46,9 +46,9 @@
     <div class="form-group row">
         <label class="col-md-3 col-form-label">@L("Category")</label>
         <div class="col-md-9">
-      @if (Model.Product.CategoryId != null || Model.Product.CategoryName != null)
+      @if (Model.Product.CategoryId != null || Model.Category.Name != null)
           {
-            <p class="form-control-plaintext">@Model.Product.CategoryName</p>
+        <p class="form-control-plaintext">@Model.Category.Name</p>
           }
           else
           {

@@ -1,0 +1,77 @@
+﻿@* bang hang hoa *@
+@* <div class="container-fluid fruite py-5"> *@
+@*   <div class="container py-5"> *@
+@*     <div class="tab-class text-center"> *@
+@*       <div class="row g-4"> *@
+@*         <div class="col-lg-4 text-start"> *@
+@*           <h4>Sản phẩm mới</h4> *@
+@*         </div> *@
+@*       </div> *@
+@*       <div class="tab-content"> *@
+@*         <div id="tab-1" class="tab-pane fade show p-0 active"> *@
+@*           <div class="row g-4"> *@
+@*             <div class="col-lg-12"> *@
+@*               <div class="row g-4"> *@
+@*                 @foreach (var product in Model.Products) *@
+@*                 { *@
+@*                   <div class="col-md-6 col-lg-2 col-xl-2"> *@
+@*                     <div class="rounded position-relative fruite-item product-click-detail" data-id="@product.Id"> *@
+@*                       <div class="fruite-img"> *@
+@*                         <img src="@product.Image" class="img-fluid w-100 rounded-top" alt=""> *@
+@*                       </div> *@
+@*                       <div class="text-white bg-secondary px-2 py-1 rounded position-absolute" style="top: 10px; left: 10px;"> *@
+@*                         @switch (product.State) *@
+@*                         { *@
+@*                           case ProductState.Available: *@
+@*                             <span class="text-success">Còn hàng</span> *@
+@*                             break; *@
+@*                           case ProductState.OutOfStock: *@
+@*                             <span class="text-danger">Hết hàng</span> *@
+@*                             break; *@
+@*                         } *@
+@*                       </div> *@
+@*                       <div class="p-3 border border-secondary border-top-0 rounded-bottom"> *@
+@*                         <h4 class="small-font">@product.Name</h4> *@
+@*                         <div class="d-flex justify-content-between flex-lg-wrap"> *@
+@*                           <p class="text-dark fs-6 fw-bold mb-0">@product.Price.ToString("#,##0") VNĐ</p> *@
+@*                           <a href="#" class="btn border border-secondary rounded-pill px-2 text-primary small-font"><i class="fa fa-shopping-bag me-1 text-primary"></i>Thêm giỏ hàng</a> *@
+@*                         </div> *@
+@*                       </div> *@
+@*                     </div> *@
+@*                   </div> *@
+@*                 } *@
+@*               </div> *@
+@*             </div> *@
+@*           </div> *@
+@*         </div> *@
+@*       </div> *@
+@*     </div> *@
+@*   </div> *@
+@*   <div class="col-12"> *@
+@*     <div class="pagination d-flex justify-content-center mt-5"> *@
+
+
+@*       <a asp-action="Index" asp-route-page="1">&laquo</a> *@
+@*       @for (int i = 1; i <= Model.TotalPages; i++) *@
+@*       { *@
+@*         <a asp-action="Index" asp-route-page="@i">@i</a> *@
+@*       } *@
+@*       <a asp-action="Index" asp-route-page="@Model.TotalPages">&raquo;</a> *@
+@*     </div> *@
+@*   </div> *@
+@* </div> *@
+@* <style> *@
+@*   .small-font { *@
+@*     font-size: 0.875rem; /* Adjust the font size as needed */ *@
+@*   } *@
+
+@*   .product-description { *@
+@*     height: 3em; /* Adjust the height as needed */ *@
+@*     overflow: hidden; *@
+@*     text-overflow: ellipsis; *@
+@*     display: -webkit-box; *@
+@*     -webkit-line-clamp: 3; /* Number of lines to show */ *@
+@*     -webkit-box-orient: vertical; *@
+@*   } *@
+
+@* </style> *@

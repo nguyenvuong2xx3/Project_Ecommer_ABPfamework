@@ -138,12 +138,13 @@
             @await Component.InvokeAsync("CategoryList")
 
 
-
+            0
 
           </div>
       </div>
     </div>
-      @await Html.PartialAsync("~/Views/Shared/Layout/Customer/_RelatedProducts.cshtml")
+      @await Component.InvokeAsync("ProductList")
+
         </div>
       </div>
   </div>

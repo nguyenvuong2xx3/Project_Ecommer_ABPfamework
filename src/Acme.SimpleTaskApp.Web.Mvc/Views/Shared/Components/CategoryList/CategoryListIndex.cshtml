@@ -1,0 +1,24 @@
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList
+@model CategoryListViewModel
+
+<div class="col-lg-8 text-end">
+  <ul class="nav nav-pills d-inline-flex text-center mb-5 position-relative">
+    <li class="nav-item">
+      <a class="d-flex m-1 py-1 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
+        <span class="text-dark" style="width: 130px;">All Products</span>
+      </a>
+    </li>
+
+    @foreach (var category in Model.Categories.Items)
+    {
+      <li class="nav-item">
+        <a class="d-flex py-1 m-1 bg-light rounded-pill category-click-getid"
+           data-bs-toggle="pill" data-id="@category.Name"
+           href="#">
+          <!-- Sử dụng giá trị category làm ID -->
+          <span class="text-dark" style="width: 130px;">@category.Description</span>
+        </a>
+      </li>
+    }
+  </ul>
+</div>
