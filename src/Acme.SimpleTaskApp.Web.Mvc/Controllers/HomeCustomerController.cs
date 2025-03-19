@@ -6,6 +6,7 @@ using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Products.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,8 +29,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 															IWebHostEnvironment webHostEnvironment)
 		{
 			_productAppService = productAppService;
+			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
+
 		public async Task<ActionResult> Index(int page = 1, int page_size = 12)
 		{
 			var input = new GetAllProductsInput
@@ -89,6 +92,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		public async Task<ActionResult> LoginMember()
 		{
 			return  View();
+		}
+		[Authorize]
+		public async Task<ActionResult> Cart()
+		{
+			return View();
 		}
 	}
 }

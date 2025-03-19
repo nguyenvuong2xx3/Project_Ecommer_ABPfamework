@@ -25,4 +25,7 @@
     <PackageReference Include="Microsoft.VisualStudio.LiveShare" Version="1.1.57" />
     <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
 </Project>

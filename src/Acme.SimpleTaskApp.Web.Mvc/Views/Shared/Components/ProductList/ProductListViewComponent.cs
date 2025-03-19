@@ -20,7 +20,7 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 		{
 			var model = new ProductListViewModel
 			{
-				RelatedProducts = await _productFEAppService.GetAllProducts(new GetAllProductsInput{ })
+				RelatedProducts = await _productFEAppService.GetAllProducts(new GetAllProductsInput { })
 			};
 
 			return View(model);

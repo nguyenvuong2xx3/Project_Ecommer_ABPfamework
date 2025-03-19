@@ -7,8 +7,8 @@ using static Acme.SimpleTaskApp.Products.Product;
 
 namespace Acme.SimpleTaskApp.Products.Dtos
 {
-    public class SearchCategoryDto
-    {
+    public class SearchProductDto
+	{
         public string Name { get; set; }
 
         public string Description { get; set; }

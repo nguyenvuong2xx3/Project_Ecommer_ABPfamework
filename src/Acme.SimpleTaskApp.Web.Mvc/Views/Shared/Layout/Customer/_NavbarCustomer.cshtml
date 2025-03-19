@@ -1,23 +1,27 @@
 ﻿<div class="container-fluid fixed-top shadow bg-white">
   <nav class="navbar navbar-light navbar-expand-xl w-100">
+    <!-- Logo -->
     <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
-      <h1  class="text-primary display-6">Shop Ecommer</h1>
+      <h1 class="text-primary display-6">Shop Ecommer</h1>
     </a>
-    <div class="d-flex align-items-center " style="border-right : 50px;">
-      <input class="form-control border-2 border-warning py-2 px-3 rounded-pill txt-search"
-             name="Keyword" type="text" placeholder="Search" style="width: 150px; height: 40px;">
-      <button class="btn border border-warning rounded-circle bg-white ms-2"
-              id="searchButton" style="width: 40px; height: 40px;">
+
+    <!-- Thanh tìm kiếm -->
+    <div class="d-flex align-items-center me-3">
+      <input class="form-control txt-search" name="Keyword" type="text" placeholder="Search">
+      <button class="btn" id="searchButton">
         <i class="fas fa-search text-success"></i>
       </button>
     </div>
+
+    <!-- Nút toggle menu -->
     <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
       <span class="fa fa-bars text-primary"></span>
     </button>
+
+    <!-- Nội dung menu -->
     <div class="collapse navbar-collapse w-100" id="navbarCollapse">
       <div class="navbar-nav mx-auto">
         <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Home</a>
-        <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Shop</a>
         <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -30,73 +34,86 @@
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
 
+      <!-- Giỏ hàng và Đăng nhập -->
+      <div class="d-flex align-items-center">
+        <!-- Giỏ hàng -->
+        <a asp-controller="HomeCustomer" asp-action="Cart" class="nav-link d-flex align-items-center">
+          <div class="position-relative">
+            <i class="fas fa-shopping-bag fs-4"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              0
+            </span>
+          </div>
+          <span class="ms-2">Giỏ hàng</span>
+        </a>
 
-      <a asp-controller="HomeCustomer" asp-action="LoginMember" class="nav-item nav-link active">
-        <div data-v-0688bda8="" class="header-item about-5 about-smember cta-smember button__login">
-          <div data-v-0688bda8="" class="about__box-icon">
-            <svg data-v-0688bda8="" id="icon-smember" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="28">
-              <defs data-v-0688bda8="">
-              </defs>
-              <title data-v-0688bda8="">Smember</title>
-              <g data-v-0688bda8="" id="Layer_2" data-name="Layer 2"><g data-v-0688bda8="" id="Layer_1-2" data-name="Layer 1"><circle data-v-0688bda8="" cx="280" cy="280" r="265" class="cls-1"></circle> <circle data-v-0688bda8="" cx="280" cy="210" r="115" class="cls-1"></circle> <path data-v-0688bda8="" d="M86.82,461.4C124.71,354.71,241.91,298.93,348.6,336.82A205,205,0,0,1,473.18,461.4" class="cls-1"></path></g></g>
-            </svg>
-          </div> <div data-v-0688bda8="" class="about__box-content"><span data-v-0688bda8="" class="title">Đăng nhập</span></div> <!---->
-        </div>
-      </a>
+        <!-- Đăng nhập -->
+        <a asp-controller="Account" asp-action="Login" class="nav-link d-flex align-items-center">
+          <i class="fas fa-user-circle fs-4"></i>
+          <span class="ms-2">Đăng nhập</span>
+        </a>
+      </div>
     </div>
   </nav>
 </div>
+
 <style>
-.txt-search {
-    font-size: 14px; /* Cỡ chữ nhỏ hơn */
-    border: 2px solid #f0ad4e; /* Viền màu cam */
-    outline: none; /* Bỏ viền khi focus */
-    transition: border-color 0.3s ease;
-}
-
-  .navbar {
-    padding: 8px 16px; /* Giảm padding của nav để mỏng hơn */
-  }
-
-  .navbar-brand h1 {
-    font-size: 26px; /* Giảm kích thước chữ của "Shop Ecommer" */
-    margin: 0; /* Loại bỏ margin thừa */
-  }
-  .about__box-content{
-    text-align: center;
+  /* Thanh tìm kiếm */
+  .txt-search {
     font-size: 14px;
-  }
-
-  .header-item {
-    justify-content: center;
-    gap: 8px; /* Khoảng cách giữa icon và chữ */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .about__box-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  #icon-smember .cls-1 {
-    fill: none;
-    stroke: #81c408;
-    stroke-width: 40px;
-  }
-.txt-search:focus {
-    border-color: #ffc107; /* Màu viền khi focus */
-}
-
-#searchButton {
     border: 2px solid #f0ad4e;
-    transition: background-color 0.3s ease;
-}
+    border-radius: 50px;
+    padding: 8px 12px;
+    width: 180px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
 
-#searchButton:hover {
-    background-color: #f8f9fa;
-}
+    .txt-search:focus {
+      border-color: #ffc107;
+    }
+
+  #searchButton {
+    border: 2px solid #f0ad4e;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+
+    #searchButton:hover {
+      background-color: #f8f9fa;
+    }
+
+  /* Navbar */
+  .navbar {
+    padding: 8px 16px;
+  }
+
+  /* Logo */
+  .navbar-brand h1 {
+    font-size: 26px;
+    margin: 0;
+  }
+
+  /* Căn chỉnh giỏ hàng và đăng nhập */
+  .nav-link {
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+  }
+
+    .nav-link i {
+      font-size: 24px;
+    }
+
+  .badge {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
 </style>
