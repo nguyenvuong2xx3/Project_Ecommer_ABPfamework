@@ -1,25 +1,22 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Entities;
-using System;
+using Acme.SimpleTaskApp.Authorization.Users;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
-namespace Acme.SimpleTaskApp.Carts
+[Table("AppCarts")]
+public class Cart : Entity, IHasCreationTime
 {
-	[Table("AppCart")]
-	public class Cart : Entity, IHasCreationTime
+	public long UserId { get; set; }
+
+	public DateTime CreationTime { get; set; }
+
+	public ICollection<CartItem> CartItems { get; set; }
+
+	public Cart()
 	{
-		public int UserId { get; set; }
-		public int Count { get; set; }
-
-		public DateTime CreationTime { get; set; }
-
-		[ForeignKey(nameof(IdCartItem))]
-		public int IdCartItem { get; set; }
+		CreationTime = DateTime.Now;
+		CartItems = new List<CartItem>();
 	}
-
 }

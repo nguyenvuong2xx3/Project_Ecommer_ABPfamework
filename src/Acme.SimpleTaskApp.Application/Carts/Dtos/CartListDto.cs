@@ -1,18 +1,23 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.Domain.Entities.Auditing;
+﻿using Acme.SimpleTaskApp.CartItems.Dtos;
+using Acme.SimpleTaskApp.Products.Dtos;
 using System;
-using static Acme.SimpleTaskApp.Carts.Cart;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Carts.Dtos
 {
-	public class CartListDto : EntityDto, IHasCreationTime
+	public class CartListDto
 	{
+		public int Id { get; set; }
 
-		public int UserId { get; set; }
-		public int Count { get; set; }
+		public long UserId { get; set; }
+
 		public DateTime CreationTime { get; set; }
-		public int IdCartItem { get; set; }
 
+		public List<CartItemListDto> CartItems { get; set; }
 
+		public List<ProductListDto> Products { get; set; }
 	}
 }

@@ -29,7 +29,7 @@ namespace Acme.SimpleTaskApp.Categories
 			_categoryRepository = categoryRepository;
 		}
 
-			
+
 
 		public async Task<PagedResultDto<CategoryListDto>> GetAllCategories(GetAllCategoryDto input)
 		{

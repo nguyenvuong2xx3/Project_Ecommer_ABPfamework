@@ -1,0 +1,37 @@
+﻿@using Acme.SimpleTaskApp.Products;
+@using Acme.SimpleTaskApp.Web.Models.Products
+@using static Acme.SimpleTaskApp.Products.Product
+@model Acme.SimpleTaskApp.Web.Models.Products.DetailProductModalViewModel
+
+<h1 class="fw-bold mb-0">Related products</h1>
+<div class="vesitable">
+    <div class="owl-carousel vegetable-carousel justify-content-center">
+        @foreach(var product in Model.RelatedProducts)
+        {
+            <div class="border border-primary rounded position-relative vesitable-item">
+                <div class="vesitable-img">
+                    <img src="@product.Image" class="img-fluid w-100 rounded-top" alt="@product.Name">
+                </div>
+                <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">@switch (product.State)
+                        {
+                          case ProductState.Available:
+                            <span class="text-success">Còn hàng</span>
+                            break;
+                          case ProductState.OutOfStock:
+                            <span class="text-danger">Hết hàng</span>
+                            break;
+                        }</div>
+                <div class="p-4 pb-0 rounded-bottom">
+                    <h4>@product.Name</h4>
+                    <p>@product.Description</p>
+                    <div class="d-flex justify-content-between flex-lg-wrap">
+                        <p class="text-dark fs-5 fw-bold">@product.Price</p>
+                        <a href="#" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary">
+                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

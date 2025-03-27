@@ -4,16 +4,19 @@
     <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
       <h1 class="text-primary display-6">Shop Ecommer</h1>
     </a>
+<<<<<<< HEAD
 
     <!-- Thanh tìm kiếm -->
     <div class="d-flex align-items-center me-3">
-      <input class="form-control txt-search" name="Keyword" type="text" placeholder="Search">
+      <input class="form-control txt-search" name="Keyword" type="text" placeholder="Bạn tìm gì?">
       <button class="btn" id="searchButton">
         <i class="fas fa-search text-success"></i>
       </button>
     </div>
 
     <!-- Nút toggle menu -->
+=======
+>>>>>>> parent of 001cd99 (19/03)
     <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
       <span class="fa fa-bars text-primary"></span>
     </button>
@@ -33,9 +36,10 @@
         </div>
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
+<<<<<<< HEAD
 
       <!-- Giỏ hàng và Đăng nhập -->
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center cart-login">
         <!-- Giỏ hàng -->
         <a asp-controller="HomeCustomer" asp-action="Cart" class="nav-link d-flex align-items-center">
           <div class="position-relative">
@@ -48,19 +52,43 @@
         </a>
 
         <!-- Đăng nhập -->
-        <a asp-controller="Account" asp-action="Login" class="nav-link d-flex align-items-center">
-          <i class="fas fa-user-circle fs-4"></i>
-          <span class="ms-2">Đăng nhập</span>
-        </a>
+        @await Component.InvokeAsync("User")
+
+=======
+      <div class="d-flex align-items-center">
+        <input class="form-control border-2 border-warning py-2 px-3 rounded-pill txt-search"
+               name="Keyword" type="text" placeholder="Search" style="width: 250px; height: 40px;">
+        <button class="btn border border-warning rounded-circle bg-white ms-2"
+                id="searchButton" style="width: 40px; height: 40px;">
+          <i class="fas fa-search text-success"></i>
+        </button>
+>>>>>>> parent of 001cd99 (19/03)
       </div>
     </div>
   </nav>
+            @await Component.InvokeAsync("CategoryList", new { viewName = "CategoryListIndex" }) 
+
 </div>
 
 <style>
+<<<<<<< HEAD
   /* Thanh tìm kiếm */
   .txt-search {
     font-size: 14px;
+=======
+.txt-search {
+    font-size: 14px; /* Cỡ chữ nhỏ hơn */
+    border: 2px solid #f0ad4e; /* Viền màu cam */
+    outline: none; /* Bỏ viền khi focus */
+    transition: border-color 0.3s ease;
+}
+
+.txt-search:focus {
+    border-color: #ffc107; /* Màu viền khi focus */
+}
+
+#searchButton {
+>>>>>>> parent of 001cd99 (19/03)
     border: 2px solid #f0ad4e;
     border-radius: 50px;
     padding: 8px 12px;
@@ -95,6 +123,7 @@
 
   /* Logo */
   .navbar-brand h1 {
+    padding-left: 192px;
     font-size: 26px;
     margin: 0;
   }
@@ -108,12 +137,17 @@
   }
 
     .nav-link i {
+
       font-size: 24px;
     }
 
   .badge {
     font-size: 12px;
     padding: 3px 6px;
+  }
+
+  .cart-login{
+    padding-right: 180px;
   }
 
 </style>

@@ -48,8 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\img\Tours\" />
-    <Folder Include="wwwroot\img\products\" />
     <Folder Include="wwwroot\libs\" />
+    <Folder Include="wwwroot\view-resources\Views\HomeCustomer\" />
     <Folder Include="wwwroot\view-resources\Views\_Bundles\" />
   </ItemGroup>
 </Project>

@@ -22,14 +22,14 @@ namespace Acme.SimpleTaskApp.Products
 	public class ProductAppService : ApplicationService, IProductAppService
 	{
 		private readonly IRepository<Product> _productRepository;
-		private readonly IRepository<Category> _categoryRepository;
+		//private readonly IRepository<Category> _categoryRepository;
 		private readonly IWebHostEnvironment _env;
 
 		public ProductAppService(IRepository<Product> productRepository,
-															IRepository<Category> categoryRepository, IWebHostEnvironment env)
+															 IWebHostEnvironment env) // IRepository<Category> categoryRepository,
 		{
 			_productRepository = productRepository;
-			_categoryRepository = categoryRepository;
+			//_categoryRepository = categoryRepository;
 			_env = env;
 		}
 
@@ -199,40 +199,5 @@ namespace Acme.SimpleTaskApp.Products
 
 			
 		}
-		//public async Task<List<ProductListDto>> SearchAllProducts(GetAllProductsInput input)
-		//{
-		//	var productQuery = _productRepository.GetAll();
-
-		//	if (!string.IsNullOrWhiteSpace(input.Keyword))
-		//	{
-		//		string keywordLower = input.Keyword.ToLower();
-		//		productQuery = productQuery.Where(p => p.Name.ToLower().Contains(keywordLower));
-		//	}
-
-		//	if (!string.IsNullOrWhiteSpace(input.Category))
-		//	{
-		//		int categoryId = Convert.ToInt32(input.Category);
-		//		productQuery = productQuery.Where(x => x.CategoryId == categoryId);
-		//	}
-
-		//	if (!string.IsNullOrWhiteSpace(input.StateInput) && Enum.TryParse<ProductState>(input.StateInput, out var state))
-		//	{
-		//		productQuery = productQuery.Where(x => x.State == state);
-		//	}
-
-		//	var productDtos = await productQuery.OrderByDescending(p => p.CreationTime)
-		//																			.Select(p => new ProductListDto
-		//																			{
-		//																				Id = p.Id,
-		//																				Name = p.Name,
-		//																				Description = p.Description,
-		//																				Price = p.Price,
-		//																				State = p.State,
-		//																				CreationTime = p.CreationTime,
-		//																				Image = p.Image
-		//																			}).ToListAsync();
-
-		//	return productDtos;
-		//}
 	}
 }

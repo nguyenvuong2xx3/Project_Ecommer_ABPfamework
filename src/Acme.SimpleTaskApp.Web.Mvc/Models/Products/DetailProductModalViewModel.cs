@@ -8,11 +8,14 @@ namespace Acme.SimpleTaskApp.Web.Models.Products
 	public class DetailProductModalViewModel
 	{
 		public ProductListDto Product { get; set; } // Sản phẩm cụ thể
-		public CategoryListDto Category { get; set; }
+		public List<SelectListItem> Categories { get; set; } // Danh mục sản phẩm
+		public List<ProductListDto> RelatedProducts { get; set; } // Tất cả sản phẩm khác
 
-		public DetailProductModalViewModel(ProductListDto product)
+		public DetailProductModalViewModel(ProductListDto product, List<ProductListDto> allProducts)
 		{
 			Product = product;
+			RelatedProducts = allProducts;
+			Categories = new List<SelectListItem>();
 		}
 	}
 }
