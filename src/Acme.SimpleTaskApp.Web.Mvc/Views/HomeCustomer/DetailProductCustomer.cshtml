@@ -2,7 +2,6 @@
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using Acme.SimpleTaskApp.Web.Models.Categories
 @using Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList
-@* @using Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList *@
 @using static Acme.SimpleTaskApp.Products.Product
 @model Acme.SimpleTaskApp.Web.Models.Products.DetailProductModalViewModel
 
@@ -10,8 +9,10 @@
   ViewData["Title"] = "Detail";
   Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
+<link href="~/css/style.css" rel="stylesheet" />
+
 <div class="container-fluid py-5 mt-5">
-  <div class="container py-5">
+  <div class="container py-5" style="padding: 0px 120px 0px 120px;">
     <div class="row g-4 mb-5">
       <div class="col-lg-8 col-xl-9">
         <div class="row g-4">
@@ -35,20 +36,10 @@
             </p>
             <h5 class="fw-bold mb-3">@Model.Product.Price.ToString("#,##0") VNĐ</h5>
             <p class="mb-4">@Model.Product.Description</p>
-            <div class="input-group quantity mb-5" style="width: 100px;">
-              <div class="input-group-btn">
-                <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                  <i class="fa fa-minus"></i>
-                </button>
-              </div>
-              <input type="text" class="form-control form-control-sm text-center border-0" value="1">
-              <div class="input-group-btn">
-                <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                  <i class="fa fa-plus"></i>
-                </button>
-              </div>
-            </div>
-            <a href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i>Thêm giỏ hàng</a>
+            <a href="#" class="btn border border-secondary rounded-pill px-2 py-1 text-primary" style="font-size: 15px; margin-top: 185px;">
+              <i class="fa fa-shopping-bag me-1 text-primary" style="font-size: 15px;"></i>
+              Thêm giỏ hàng
+            </a>
           </div>
           <div class="col-lg-12">
             <nav>
@@ -56,12 +47,12 @@
                 <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
                 id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
                 aria-controls="nav-about" aria-selected="true">
-                  Description
+                  Mô tả sản phẩm
                 </button>
                 <button class="nav-link border-white border-bottom-0" type="button" role="tab"
                 id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
                 aria-controls="nav-mission" aria-selected="false">
-                  Reviews
+                  Đánh giá
                 </button>
               </div>
             </nav>
@@ -71,60 +62,6 @@
                   @Model.Product.Description
                 </p>
               </div>
-              @* review- nhận xét *@
-              <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
-                <div class="d-flex">
-                  <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
-                  <div class="">
-                    <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                    <div class="d-flex justify-content-between">
-                      <h5>Jason Smith</h5>
-                      <div class="d-flex mb-3">
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star"></i>
-                      </div>
-                    </div>
-                    <p>
-                      The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic
-                      words etc. Susp endisse ultricies nisi vel quam suscipit
-                    </p>
-                  </div>
-                </div>
-                <div class="d-flex">
-                  <img src="img/avatar.jpg" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
-                  <div class="">
-                    <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
-                    <div class="d-flex justify-content-between">
-                      <h5>Sam Peters</h5>
-                      <div class="d-flex mb-3">
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star text-secondary"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                      </div>
-                    </div>
-                    <p class="text-dark">
-                      The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic
-                      words etc. Susp endisse ultricies nisi vel quam suscipit
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-pane" id="nav-vision" role="tabpanel">
-                <p class="text-dark">
-                  Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam
-                  amet diam et eos labore. 3
-                </p>
-                <p class="mb-0">
-                  Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos labore.
-                  Clita erat ipsum et lorem et sit
-                </p>
-              </div>
-              @* review- nhận xét *@
             </div>
           </div>
         </div>
@@ -132,19 +69,30 @@
       <div class="col-lg-4 col-xl-3">
         <div class="row g-4 fruite">
           <div class="col-lg-12">
-
-
-
-            @await Component.InvokeAsync("CategoryList")
-
-
-            0
-
+            <div class="p-3 rounded shadow rounded">
+              <h5 class="fw-bold text-danger mb-3 rounded" style="background-color: #FFE5E5; padding: 8px; text-align: center;">
+                <i class="bi bi-gem"></i> ƯU ĐÃI HOÀNG HÀ
+              </h5>
+              <ul class="list-unstyled">
+                <li class="d-flex align-items-start mb-2">
+                  <span class="badge bg-danger rounded-circle me-2">1</span>
+                  Giảm thêm tới 90,000 cho Hoàng Hà Members (Kiểm tra ngay giá cuối của bạn)
+                </li>
+                <li class="d-flex align-items-start mb-2">
+                  <span class="badge bg-danger rounded-circle me-2">2</span>
+                  Trả góp 4 không, duyệt nhanh 10 phút: 0% lãi suất - 0 phí chuyển đổi - 0 phí ẩn - 0 trả trước* (Áp dụng cho công ty tài chính và thẻ tín dụng)
+                </li>
+                <li class="d-flex align-items-start">
+                  <span class="badge bg-danger rounded-circle me-2">3</span>
+                  Lên đời OPPO Reno12 F 5G 8GB/256GB & OPPO Reno12 5G 12GB/256GB trợ giá lên tới 1.000.000đ (Khám phá ngay)
+                </li>
+              </ul>
+            </div>
           </div>
-      </div>
-    </div>
-      @await Component.InvokeAsync("ProductList")
-
         </div>
       </div>
+    </div>
+    @await Component.InvokeAsync("ProductList")
+
   </div>
+</div>

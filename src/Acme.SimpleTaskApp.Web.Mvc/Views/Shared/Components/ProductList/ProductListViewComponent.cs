@@ -16,14 +16,14 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 			_productFEAppService = productFEAppService;
 		}
 
-		public async Task<IViewComponentResult> InvokeAsync()
+		public async Task<IViewComponentResult> InvokeAsync(string viewName = "Default")
 		{
 			var model = new ProductListViewModel
 			{
 				RelatedProducts = await _productFEAppService.GetAllProducts(new GetAllProductsInput { })
 			};
 
-			return View(model);
+			return View(viewName, model);
 		}
 	}
 }

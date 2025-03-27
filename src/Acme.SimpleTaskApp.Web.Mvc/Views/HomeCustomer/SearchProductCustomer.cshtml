@@ -13,105 +13,65 @@
   <environment names="Development">
     <script src="~/view-resources/Views/HomeCustomer/mainCustomer.js"
             asp-append-version="true"></script>
+    <link href="~/css/style.css" rel="stylesheet" />
   </environment>
 }
 
-@* bang hang hoa *@
-<div class="container-fluid fruite py-5">
-  <div class="container py-5">
-    <div class="tab-class text-center">
-      <div class="row g-4">
-        <div class="col-lg-4 text-start">
-          <h1>Tất cả sản phẩm</h1>
-        </div>
-        <div class="col-lg-8 text-end">
-          <ul class="nav nav-pills d-inline-flex text-center mb-5 position-relative">
-            <li class="nav-item">
-              <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
-                <span class="text-dark category-click-getall" style="width: 130px;">All Products</span>
-              </a>
-            </li>
+@*   <div class="col-12"> *@
+@*     <div class="pagination d-flex justify-content-center mt-5"> *@
+@*       <a href="#" class="rounded">&laquo;</a> *@
+@*       <a href="#" class="active rounded">1</a> *@
+@*       <a href="#" class="rounded">2</a> *@
+@*       <a href="#" class="rounded">3</a> *@
+@*       <a href="#" class="rounded">4</a> *@
+@*       <a href="#" class="rounded">5</a> *@
+@*       <a href="#" class="rounded">6</a> *@
+@*       <a href="#" class="rounded">&raquo;</a> *@
+@*     </div> *@
+@*   </div> *@
 
-            @foreach (var category in Model.Categories)
-            {
-              <li class="nav-item">
-                <a class="d-flex py-2 m-2 bg-light rounded-pill category-click-getid"
-                   data-bs-toggle="pill" data-id="@category.Value"
-                   href="#">
-                  <!-- Sử dụng giá trị category làm ID -->
-                  <span class="text-dark" style="width: 130px;">@category.Text</span>
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-      </div>
-      <div class="tab-content">
-        <div id="tab-1" class="tab-pane fade show p-0 active">
-          <div class="row g-4">
-            <div class="col-lg-12">
-              <div class="row g-4">
-                @foreach (var product in Model.Products)
-                {
-                  <div class="col-md-6 col-lg-2 col-xl-2">
-                    <div class="rounded position-relative fruite-item product-click-detail" data-id="@product.Id">
-                      <div class="fruite-img">
-                        <img src="@product.Image" class="img-fluid w-100 rounded-top" alt="">
-                      </div>
-                      <div class="text-white bg-secondary px-2 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
-                        @switch (product.State)
-                        {
-                          case ProductState.Available:
-                            <span class="text-success">Còn hàng</span>
-                            break;
-                          case ProductState.OutOfStock:
-                            <span class="text-danger">Hết hàng</span>
-                            break;
-                        }
-                      </div>
-                      <div class="p-3 border border-secondary border-top-0 rounded-bottom">
-                        <h5 class="small-font">@product.Name</h5>
-                        <p class="small-font product-description">@product.Description</p>
-                        <div class="d-flex justify-content-between flex-lg-wrap">
-                          <p class="text-dark fs-6 fw-bold mb-0">@product.Price</p>
-                          <a href="#" class="btn border border-secondary rounded-pill px-2 text-primary small-font"><i class="fa fa-shopping-bag me-1 text-primary"></i>Thêm giỏ hàng</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                }
+
+@* bang moi *@
+<div class="container mt-4 ml-5 mr-5" style="width: 1106px; padding-top: 100px;">
+  <div class="row row-cols-6 g-3 d-flex flex-wrap">
+    @foreach (var product in Model.Products)
+    {
+      <div class="col" style="width: 183px; margin-top: 0; padding-bottom: 10px;">
+        <div class="card product-click-detail" data-id="@product.Id">
+          @if (@product.Image != "")
+          {
+            <img src="@product.Image" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+          }
+          else
+          {
+            <img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+          }
+          <div class="card-body">
+            <h5 class="card-name">@product.Name</h5>
+            <div class="product-price">
+              <h5 class="current-price">@product.Price.ToString("#,##0")₫</h5>
+              <div class="old-price">
+                <h5 class="strikethrough">2.990.000₫</h5> <!-- Giá giảm fix cứng -->
+                <span class="discount" style="color: #ff0000;">-13%</span>
               </div>
             </div>
+            <div class="stock-status">
+              @if (product.State == ProductState.Available)
+              {
+                <span class="text-success">Còn hàng</span>
+              }
+              else
+              {
+                <span class="text-danger">Hết hàng</span>
+              }
+            </div>
           </div>
+          <button class="detail-btn product-click-detail" data-id="@product.Id">
+            Xem chi tiết
+          </button>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="col-12">
-    <div class="pagination d-flex justify-content-center mt-5">
-      <a href="#" class="rounded">&laquo;</a>
-      <a href="#" class="active rounded">1</a>
-      <a href="#" class="rounded">2</a>
-      <a href="#" class="rounded">3</a>
-      <a href="#" class="rounded">4</a>
-      <a href="#" class="rounded">5</a>
-      <a href="#" class="rounded">6</a>
-      <a href="#" class="rounded">&raquo;</a>
-    </div>
+    }
+
   </div>
 </div>
-
-<style>
-  .small-font {
-    font-size: 0.875rem; /* Adjust the font size as needed */
-  }
-
-  .product-description {
-    max-height: 3em; /* Adjust the height as needed */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Number of lines to show */
-    -webkit-box-orient: vertical;
-  }
-</style>

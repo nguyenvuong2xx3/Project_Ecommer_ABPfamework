@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Acme.SimpleTaskApp.CartItems.Dtos;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using static Acme.SimpleTaskApp.Carts.Cart;
 
 namespace Acme.SimpleTaskApp.Carts.Dtos
 {
-    public class CreateCartInput
-	  {
-			[Required]
-			public int UserId { get; set; }
-			public int Count { get; set; }
-			public DateTime CreationTime { get; set; }
-			public int IdCartItem { get; set; }
+	public class CreateCartInput
+	{
+		[Required]
+		public int UserId { get; set; }
+		public DateTime CreationTime { get; set; }
+
+		public int CartId { get; set; }
+		public int ProductId { get; set; }
+		public int Quantity { get; set; }
+
+		List<CartItemListDto> CartItems { get; set; }
 
 	}
 }

@@ -1,132 +1,83 @@
-﻿@{
+﻿
+
+@model Acme.SimpleTaskApp.Web.Models.Carts.CartViewModel
+
+@{
   ViewData["Title"] = "Cart";
   Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
-<!-- Cart Page Start -->
+
+@section scripts
+{
+  <environment names="Development">
+    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+  </environment>
+}
 <div class="container-fluid py-5">
   <div class="container py-5">
     <div class="table-responsive">
       <table class="table">
         <thead>
           <tr>
-            <th scope="col">Ảnh</th>
-            <th scope="col">Tên Sản phẩm</th>
-            <th scope="col">Giá</th>
-            <th scope="col">Số lượng</th>
+            <th scope="col">Products</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
             <th scope="col">Total</th>
-            <th scope="col">Thao tác</th>
+            <th scope="col">Handle</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">
-              <div class="d-flex align-items-center">
-                <img src="img/vegetable-item-3.png" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
-              </div>
-            </th>
-            <td>
-              <p class="mb-0 mt-4">Big Banana</p>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <div class="input-group quantity mt-4" style="width: 100px;">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                    <i class="fa fa-minus"></i>
-                  </button>
+          @foreach (var product in Model.CartItems)
+          {
+            <tr>
+              <th scope="row">
+                <div class="d-flex align-items-center">
+                  <img src="@product.Image" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
                 </div>
-                <input type="text" class="form-control form-control-sm text-center border-0" value="1">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                    <i class="fa fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <button class="btn btn-md rounded-circle bg-light border mt-4">
-                <i class="fa fa-times text-danger"></i>
-              </button>
-            </td>
+              </th>
+              <td>
+                <p class="mb-0 mt-4">@product.ProductName</p>
+              </td>
+              <td>
+                <p class="mb-0 mt-4" id="product-price-@product.ProductId">@product.Price</p>
+              </td>
+              <td>
+                <div class="input-group quantity mt-4" style="width: 100px;">
+                  <div class="input-group-btn">
+                    <button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
+                            data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+                      <i class="fa fa-minus"></i>
+                    </button>
+                  </div>
 
-          </tr>
-          <tr>
-            <th scope="row">
-              <div class="d-flex align-items-center">
-                <img src="img/vegetable-item-5.jpg" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="" alt="">
-              </div>
-            </th>
-            <td>
-              <p class="mb-0 mt-4">Potatoes</p>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <div class="input-group quantity mt-4" style="width: 100px;">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                    <i class="fa fa-minus"></i>
-                  </button>
+
+                  <input type="text" class="form-control form-control-sm text-center border-0 data-product-id=" @product.ProductId""
+                         value="@product.Quantity" id="quantity-@product.ProductId" >
+
+
+                  <div class="input-group-btn" >
+                    <button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
+                            data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+                      <i class="fa fa-plus"></i>
+                    </button>
+                  </div>
                 </div>
-                <input type="text" class="form-control form-control-sm text-center border-0" value="1">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                    <i class="fa fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <button class="btn btn-md rounded-circle bg-light border mt-4">
-                <i class="fa fa-times text-danger"></i>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">
-              <div class="d-flex align-items-center">
-                <img src="img/vegetable-item-2.jpg" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="" alt="">
-              </div>
-            </th>
-            <td>
-              <p class="mb-0 mt-4">Awesome Brocoli</p>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <div class="input-group quantity mt-4" style="width: 100px;">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                    <i class="fa fa-minus"></i>
-                  </button>
-                </div>
-                <input type="text" class="form-control form-control-sm text-center border-0" value="1">
-                <div class="input-group-btn">
-                  <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                    <i class="fa fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </td>
-            <td>
-              <p class="mb-0 mt-4">2.99 $</p>
-            </td>
-            <td>
-              <button class="btn btn-md rounded-circle bg-light border mt-4">
-                <i class="fa fa-times text-danger"></i>
-              </button>
-            </td>
-          </tr>
+
+
+              </td>
+              <td>
+                <p id="product-total-@product.ProductId" class="mb-0 mt-4">@(product.Price * product.Quantity)</p>
+              </td>
+              <td>
+                <button class="btn btn-md rounded-circle bg-light border mt-4 btl-click-delete"
+                        data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+                  <i class="fa fa-times text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          }
+
         </tbody>
       </table>
     </div>
@@ -162,4 +113,3 @@
     </div>
   </div>
 </div>
-<!-- Cart Page End -->

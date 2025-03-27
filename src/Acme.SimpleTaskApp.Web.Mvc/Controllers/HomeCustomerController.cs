@@ -1,10 +1,16 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.UI;
+using Acme.SimpleTaskApp.Authorization.Users;
+using Acme.SimpleTaskApp.CartItems;
+using Acme.SimpleTaskApp.CartItems.Dtos;
+using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Carts.Dtos;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Products.Dtos;
+using Acme.SimpleTaskApp.Web.Models.Carts;
 using Acme.SimpleTaskApp.Web.Models.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,12 +29,19 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		private readonly IProductAppService _productAppService;
 		private readonly IWebHostEnvironment webHostEnvironment;
 		private readonly ICategoryAppService _categoryAppService;
+		private readonly ICartAppService _cartAppService;
+		//private readonly ICartItemAppService _cartItemAppService;
 
 
 		public HomeCustomerController(IProductAppService productAppService,
 															ICategoryAppService categoryAppService,
-															IWebHostEnvironment webHostEnvironment)
+															IWebHostEnvironment webHostEnvironment,
+															ICartAppService cartAppService
+															//ICartItemAppService cartItemAppService
+															)
 		{
+			//_cartItemAppService = cartItemAppService;
+			_cartAppService = cartAppService;
 			_productAppService = productAppService;
 			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
@@ -94,9 +108,41 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return  View();
 		}
 		[Authorize]
-		public async Task<ActionResult> Cart()
+		public async Task<ActionResult> Cart(GetCartInput input)
 		{
-			return View();
+			try
+			{
+				// Lấy userId từ session
+				var userId = AbpSession.UserId;
+				if (userId == null)
+				{
+					throw new UserFriendlyException("Vui lòng đăng nhập để xem giỏ hàng");
+				}
+				input.UserId = (long)userId;
+				// Gọi service lấy thông tin giỏ hàng
+				var cart = await _cartAppService.GetCart(input);
+				// Ánh xạ sang ViewModel
+				var viewModel = new CartViewModel
+				{
+					UserId = cart.UserId,
+					Id = cart.Id,
+					CreationTime = cart.CreationTime,
+					CartItems = cart.CartItems
+				};
+
+				return View(viewModel);
+			}
+			catch (UserFriendlyException ex)
+			{
+				Logger.Error(ex.Message, ex);
+				return RedirectToAction("LoginMember");
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex.Message, ex);
+				throw new UserFriendlyException("Lỗi khi tải giỏ hàng");
+			}
+
 		}
 	}
 }

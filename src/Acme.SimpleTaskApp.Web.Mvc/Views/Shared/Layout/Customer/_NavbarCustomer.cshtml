@@ -7,7 +7,7 @@
 
     <!-- Thanh tìm kiếm -->
     <div class="d-flex align-items-center me-3">
-      <input class="form-control txt-search" name="Keyword" type="text" placeholder="Search">
+      <input class="form-control txt-search" name="Keyword" type="text" placeholder="Bạn tìm gì?">
       <button class="btn" id="searchButton">
         <i class="fas fa-search text-success"></i>
       </button>
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Giỏ hàng và Đăng nhập -->
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center cart-login">
         <!-- Giỏ hàng -->
         <a asp-controller="HomeCustomer" asp-action="Cart" class="nav-link d-flex align-items-center">
           <div class="position-relative">
@@ -48,13 +48,13 @@
         </a>
 
         <!-- Đăng nhập -->
-        <a asp-controller="Account" asp-action="Login" class="nav-link d-flex align-items-center">
-          <i class="fas fa-user-circle fs-4"></i>
-          <span class="ms-2">Đăng nhập</span>
-        </a>
+        @await Component.InvokeAsync("User")
+
       </div>
     </div>
   </nav>
+            @await Component.InvokeAsync("CategoryList", new { viewName = "CategoryListIndex" }) 
+
 </div>
 
 <style>
@@ -95,6 +95,7 @@
 
   /* Logo */
   .navbar-brand h1 {
+    padding-left: 192px;
     font-size: 26px;
     margin: 0;
   }
@@ -108,12 +109,17 @@
   }
 
     .nav-link i {
+
       font-size: 24px;
     }
 
   .badge {
     font-size: 12px;
     padding: 3px 6px;
+  }
+
+  .cart-login{
+    padding-right: 180px;
   }
 
 </style>

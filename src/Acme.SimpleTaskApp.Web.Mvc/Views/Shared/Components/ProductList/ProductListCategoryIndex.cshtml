@@ -1,0 +1,55 @@
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
+@using static Acme.SimpleTaskApp.Products.Product
+@model ProductListViewModel
+
+<div class="container mt-4 ml-5 mr-5" style="width: 1106px; padding-top: 100px;">
+  <h3 style="padding-bottom: 25px;">Sản phẩm mới</h3>
+  <div class="row row-cols-6 g-3 d-flex flex-wrap">
+
+    @{
+      var recentProducts = Model.RelatedProducts.Items
+      .Where(p => (DateTime.Now - p.CreationTime).Days <= 1)
+      .ToList();
+    }
+
+    @foreach (var product in recentProducts)
+    {
+      <div class="col" style="width: 183px; margin-top: 0; padding-bottom: 10px;">
+        <div class="card product-click-detail" data-id="@product.Id">
+          @if (@product.Image != "")
+          {
+            <img src="@product.Image" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+          }
+          else
+          {
+            <img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+          }
+          <div class="card-body">
+            <h5 class="card-name">@product.Name</h5>
+            <div class="product-price">
+              <h5 class="current-price">@product.Price.ToString("#,##0")₫</h5>
+              <div class="old-price">
+                <h5 class="strikethrough">2.990.000₫</h5>
+                <span class="discount" style="color: #ff0000;">-13%</span>
+              </div>
+            </div>
+            <div class="stock-status">
+              @if (product.State == ProductState.Available)
+              {
+                <span class="text-success">Còn hàng</span>
+              }
+              else
+              {
+                <span class="text-danger">Hết hàng</span>
+              }
+            </div>
+          </div>
+          <button class="detail-btn product-click-detail" data-id="@product.Id">
+            Xem chi tiết
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

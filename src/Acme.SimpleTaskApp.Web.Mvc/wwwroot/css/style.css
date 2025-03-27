@@ -1,4 +1,91 @@
-﻿ prevent the drop down icon going onto a new line for the top bar language link 
+﻿h5 {
+  font-size: 16px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.card {
+  width: auto;
+  height: 376px;
+  transition: transform 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+  .card img {
+    height: 150px;
+    object-fit: cover;
+  }
+
+.card-img-top:hover {
+  transform: translateY(-4px);
+}
+
+.card-body {
+  padding: 5px;
+}
+
+.card-name {
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: 10px;
+  color: #000;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: 10px;
+}
+
+.old-price {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.discount {
+  color: #ff0000;
+  font-size: 14px;
+}
+
+.stock-status {
+  background-color: #f0f0f0;
+  padding: 6px;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.detail-btn {
+  background-color: #f0f8ff;
+  color: #007bff;
+  border: none;
+  padding: 8px;
+  width: 100%;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+  .detail-btn:hover {
+    background-color: #e0f0ff;
+  }
+
+
+
+ /*prevent the drop down icon going onto a new line for the top bar language link 
 .top-bar-language-nav-link {
     min-width: 65px;
 }
@@ -138,10 +225,10 @@ html {
   .navbar .navbar-nav .nav-link:hover,
   .navbar .navbar-nav .nav-link.active {
     color: var(--bs-primary);
-  }
+  }*/
 
 /* Dropdown hover effect */
-.navbar .dropdown-toggle::after {
+/*.navbar .dropdown-toggle::after {
   border: none;
   content: "\f107";
   font-family: "Font Awesome 5 Free";
@@ -160,11 +247,11 @@ html {
     transition: 0.3s;
     opacity: 0;
   }
-}
+}*/
 /* Adjusted CSS for the search bar */
 
 /* Ensure the navbar collapse doesn't affect the search bar */
-@media (max-width: 992px) {
+/*@media (max-width: 992px) {
   .navbar-collapse {
     flex-grow: 1;
     align-items: center;
@@ -182,10 +269,10 @@ html {
   transform: rotateX(0deg);
   visibility: visible;
   opacity: 1;
-}
+}*/
 
 /* Search Modal */
-#searchModal .modal-content {
+/*#searchModal .modal-content {
   background: rgba(255, 255, 255, 0.8);
 }
 
@@ -512,5 +599,5 @@ html {
 .footer .footer-item p.mb-4 {
   line-height: 35px;
 }
-** Footer End **
+** Footer End ***/
 

@@ -1,78 +1,47 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 @using static Acme.SimpleTaskApp.Products.Product
 @model ProductListViewModel
-
-<h3 class="fw-bold mb-0">Related products</h3>
-<div class="vesitable">
-  <div class="owl-carousel vegetable-carousel justify-content-center">
-    @foreach (var product in Model.RelatedProducts.Items )
+<div class="container mt-4 ml-5 mr-5" style="width: 1106px; padding-top: 100px;">
+  <h3 style="padding-bottom: 25px;">Tất cả sản phẩm</h3>
+  <div class="row row-cols-6 g-3 d-flex flex-wrap">
+    @foreach (var product in Model.RelatedProducts.Items)
     {
-      <div class="border border-primary rounded position-relative vesitable-item">
-        <div class="vesitable-img">
-          <img src="@product.Image" class="img-fluid w-100 rounded-top" alt="@product.Name">
-        </div>
-        <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">
-          @switch (product.State)
+      <div class="col" style="width: 183px; margin-top: 0; padding-bottom: 10px;">
+        <div class="card product-click-detail" data-id="@product.Id">
+          @if (@product.Image != "")
           {
-            case ProductState.Available:
-              <span class="text-success">Còn hàng</span>
-              break;
-            case ProductState.OutOfStock:
-              <span class="text-danger">Hết hàng</span>
-              break;
+            <img src="@product.Image" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
           }
-        </div>
-        <div class="p-4 pb-0 rounded-bottom">
-          <h5>@product.Name</h5>
-          <p>@product.Description</p>
-          <div class="d-flex justify-content-between flex-lg-wrap">
-            <p class="text-dark fs-5 fw-bold">@product.Price.ToString("#,##0") VNĐ</p>
-            <a href="#" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary">
-              <i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
-            </a>
+          else
+          {
+            <img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+          }
+          <div class="card-body">
+            <h5 class="card-name">@product.Name</h5>
+            <div class="product-price">
+              <h5 class="current-price">@product.Price.ToString("#,##0")₫</h5>
+              <div class="old-price">
+                <h5 class="strikethrough">2.990.000₫</h5>
+                <span class="discount" style="color: #ff0000;">-13%</span>
+              </div>
+            </div>
+            <div class="stock-status">
+              @if (product.State == ProductState.Available)
+              {
+                <span class="text-success">Còn hàng</span>
+              }
+              else
+              {
+                <span class="text-danger">Hết hàng</span>
+              }
+            </div>
           </div>
+          <button class="detail-btn product-click-detail" data-id="@product.Id">
+            Xem chi tiết
+          </button>
         </div>
       </div>
     }
+
   </div>
 </div>
-<style>
-  /* Thêm vào cuối file hoặc file CSS chung */
-  .vesitable-item {
-    height: 100%; /* Đảm bảo item fill hết chiều cao */
-    display: flex;
-    flex-direction: column;
-  }
-
-  .vesitable-img {
-    height: 200px; /* Cố định chiều cao ảnh */
-    overflow: hidden;
-  }
-
-  .vesitable-img img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-  }
-
-  .rounded-bottom {
-    flex: 1; /* Phần nội dung co giãn đều */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .vesitable-item h5 {
-    font-size: 0.875rem !important; /* Đồng bộ font size */
-    min-height: 40px; /* Fix chiều cao tên sản phẩm */
-  }
-
-  .vesitable-item p {
-    height: 3em; /* Giới hạn mô tả 3 dòng */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-  }
-</style>
