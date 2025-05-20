@@ -90,26 +90,39 @@
 
 
   // add cart
-  $(document).off('click', '.add-to-cart');
+  //$(document).off('click', '.add-to-cart');
   $(document).on('click', '.add-to-cart', function (e) {
     e.preventDefault();
     var productId = $(this).data('product-id');
     var quantity = 1;
+    console.log(productId)
     addCart(productId, quantity);
   });
 
   function addCart(productId, quantity) {
     abp.ui.setBusy();
-    _cartService.createCart(productId, quantity)
-      .done(function () {
-        abp.notify.info('Xóa thành công!');
+
+    $.ajax({
+      url: '/Carts/AddCart',
+      method: 'POST',
+      data: {
+        productId: productId,
+        quantity: quantity,
+        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+      },
+      success: function (result) {
+        abp.notify.info('Thêm vào giỏ hàng thành công!');
         location.reload();
-      }).fail(function (error) {
-        abp.notify.error('Xóa thất bại!');
-        console.error(error);
-      }).always(function () {
+      },
+      error: function (xhr) {
+        abp.notify.error('Thêm vào giỏ hàng thất bại!');
+        console.error(xhr);
+      },
+      complete: function () {
         abp.ui.clearBusy();
-      });
+      }
+    });
   }
+
 
 })(jQuery);

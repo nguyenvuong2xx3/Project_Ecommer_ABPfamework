@@ -1,9 +1,10 @@
 ﻿using Abp.Domain.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Abp.Domain.Entities.Auditing;
 
 [Table("AppCartItem")]
-public class CartItem : Entity
+public class CartItem : FullAuditedEntity
 {
 	[Required]
 	public int ProductId { get; set; }

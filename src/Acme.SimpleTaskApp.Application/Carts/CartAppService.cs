@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Authorization.Users;
+using Microsoft.AspNetCore.Authorization;
 
 public class CartAppService : ApplicationService, ICartAppService
 {
@@ -26,17 +27,16 @@ public class CartAppService : ApplicationService, ICartAppService
 
 	}
 
+
 	public async Task CreateCart(int productId, int quantity)
 	{
-		// Kiểm tra giỏ hàng có tồn tại chưa
 		var userId = AbpSession.UserId;
 		if (userId == null)
 		{
 			throw new Exception("Vui lòng đăng nhập để tiếp tục.");
 		}
-		var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == userId);
-		var checkProduct = await _cartItemRepository.FirstOrDefaultAsync(p => p.ProductId == productId);
 
+		var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == userId);
 		if (cart == null)
 		{
 			cart = new Cart
@@ -45,11 +45,15 @@ public class CartAppService : ApplicationService, ICartAppService
 				CreationTime = DateTime.Now
 			};
 			await _cartRepository.InsertAsync(cart);
-			await CurrentUnitOfWork.SaveChangesAsync();
+			await CurrentUnitOfWork.SaveChangesAsync(); // đảm bảo cart.Id có giá trị
 		}
+
+		// Sửa điều kiện kiểm tra sản phẩm
+		var checkProduct = await _cartItemRepository.FirstOrDefaultAsync(
+			p => p.ProductId == productId && p.CartId == cart.Id);
+
 		if (checkProduct != null)
 		{
-
 			checkProduct.Quantity += quantity;
 			await _cartItemRepository.UpdateAsync(checkProduct);
 		}
@@ -59,12 +63,12 @@ public class CartAppService : ApplicationService, ICartAppService
 			{
 				CartId = cart.Id,
 				ProductId = productId,
-				Quantity = 1
+				Quantity = quantity
 			};
 			await _cartItemRepository.InsertAsync(cartItem);
-			await CurrentUnitOfWork.SaveChangesAsync();
 		}
 	}
+
 
 	public async Task DeleteCart(int userId)
 	{

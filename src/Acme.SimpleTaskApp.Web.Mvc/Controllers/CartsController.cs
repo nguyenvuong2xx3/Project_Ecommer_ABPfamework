@@ -1,17 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	public class CartsController : Controller
+	public class CartsController : SimpleTaskAppControllerBase
 	{
-		public async Task<ActionResult> AddCart(int productId)
+		private readonly ICartAppService _cartAppService;
+		public CartsController(ICartAppService cartAppService)
 		{
+			_cartAppService = cartAppService;
+		}
 
-
-
-			return Ok();
+		[Authorize]
+		public async Task<ActionResult> AddCart(int productId, int quantity)
+		{
+			await _cartAppService.CreateCart(productId, quantity);
+			return Json(new { success = true });
 		}
 	}
 }

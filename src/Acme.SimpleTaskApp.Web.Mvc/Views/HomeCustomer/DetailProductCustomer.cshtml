@@ -10,7 +10,12 @@
   Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 <link href="~/css/style.css" rel="stylesheet" />
-
+@section scripts
+{
+  <environment names="Development">
+    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+  </environment>
+}
 <div class="container-fluid py-5 mt-5">
   <div class="container py-5" style="padding: 0px 120px 0px 120px;">
     <div class="row g-4 mb-5">
@@ -36,7 +41,7 @@
             </p>
             <h5 class="fw-bold mb-3">@Model.Product.Price.ToString("#,##0") VNĐ</h5>
             <p class="mb-4">@Model.Product.Description</p>
-            <a href="#" class="btn border border-secondary rounded-pill px-2 py-1 text-primary" style="font-size: 15px; margin-top: 185px;">
+            <a href="#" class="btn border border-secondary rounded-pill px-2 py-1 text-primary add-to-cart" data-product-id="@Model.Product.Id" style="font-size: 15px; margin-top: 185px;">
               <i class="fa fa-shopping-bag me-1 text-primary" style="font-size: 15px;"></i>
               Thêm giỏ hàng
             </a>
