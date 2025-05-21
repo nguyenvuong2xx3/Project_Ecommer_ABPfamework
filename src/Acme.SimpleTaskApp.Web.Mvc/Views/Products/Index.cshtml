@@ -23,6 +23,15 @@
 				<h1>@L("Products")</h1>
 			</div>
 			<div class="col-sm-6">
+				<div class="btn-group float-sm-right">
+					<button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
+						<i class="fa fa-file-excel"></i> Excel
+					</button>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
+						<a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal">Nhập Excel</a>
+					</div>
+				</div>
 				<a href="javascript:;" data-toggle="modal" data-target="#ProductCreateModal" class="btn bg-blue float-sm-right">
 					<i class="fa fa-plus-square"></i> @L("Create")
 				</a>

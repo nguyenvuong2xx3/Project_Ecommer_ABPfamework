@@ -244,6 +244,52 @@
         });
     });
 
+  $('#ExportExcelBtn').click(function () {
+    // Lấy các tham số filter từ form
+    var input = {
+      filter: $('#ProductsTableFilter').val(),
+      //supplierId: $('#SupplierIdFilter').val(),
+      //categoryId: $('#CategoryIdFilter').val(),
+      // Thêm các tham số khác nếu cần
+    };
+
+    // Hiển thị loading
+    abp.ui.setBusy();
+
+    // Gọi API export
+    $.ajax({
+      url: abp.appPath + 'Products/ExportToExcel',
+      type: 'POST',
+      data: JSON.stringify(input),
+      contentType: 'application/json',
+      headers: {
+        'RequestVerificationToken': abp.security.antiForgery.getToken()
+      },
+      xhrFields: {
+        responseType: 'blob' // QUAN TRỌNG: để nhận dữ liệu kiểu file
+      },
+      success: function (blob) {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'Danh_sach_san_pham.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        abp.notify.success('Xuất Excel thành công');
+      },
+      error: function (xhr) {
+        abp.notify.error('Xuất Excel thất bại: ' + xhr.statusText);
+      },
+      complete: function () {
+        abp.ui.clearBusy();
+      }
+    });
+
+  });
+
     // xem chi tiết sản phẩm
     $(document).on('click', '.detail-product', function () {
         var productId = $(this).data("product-id");

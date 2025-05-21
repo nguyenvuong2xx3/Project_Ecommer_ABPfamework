@@ -55,7 +55,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 			return View(model);
 		}
-
+		public async Task<FileResult> ExportToExcel([FromBody] GetAllProductsInput input)
+		{
+			var excelBytes = await _productAppService.ExportProductsToExcel(input);
+			return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Danh_sach_san_pham.xlsx");
+		}
 		private string UploadImage(IFormFile ImageFile)
 		{
 			if (ImageFile != null && ImageFile.Length > 0)
