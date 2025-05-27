@@ -296,5 +296,21 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			}
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> ImportFromExcel(IFormFile file)
+		{
+			if (file == null || file.Length == 0)
+			{
+				return Json(new { success = false, message = "Vui lòng chọn file Excel để import" });
+			}
+
+			var results = await _productAppService.ImportProductsFromExcel(file);
+			return Json(new
+			{
+				success = results.All(r => r.IsSuccess),
+				message = "Import hoàn tất",
+				results
+			});
+		}
 	}
 }

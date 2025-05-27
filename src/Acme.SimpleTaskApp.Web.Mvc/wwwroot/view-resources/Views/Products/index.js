@@ -245,12 +245,8 @@
     });
 
   $('#ExportExcelBtn').click(function () {
-    // Lấy các tham số filter từ form
     var input = {
       filter: $('#ProductsTableFilter').val(),
-      //supplierId: $('#SupplierIdFilter').val(),
-      //categoryId: $('#CategoryIdFilter').val(),
-      // Thêm các tham số khác nếu cần
     };
 
     // Hiển thị loading
@@ -334,6 +330,55 @@
        }  
    });
 
+  // ===== Xử lý Import Excel =====
+  $(document).ready(function () {
+    // Hiển thị tên file khi chọn
+    $('#excelFile').on('change', function () {
+      var fileName = $(this).val().split('\\').pop();
+      $(this).next('.custom-file-label').html(fileName || 'Chưa chọn file');
+      $('#importError').hide();
+    });
+
+    // Gửi file Excel lên server
+    $('#btnImportExcel').click(function () {
+      var fileInput = $('#excelFile')[0];
+      if (!fileInput.files || fileInput.files.length === 0) {
+        $('#importError').text('Vui lòng chọn file Excel').show();
+        return;
+      }
+
+      var formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      abp.ui.setBusy($('#ImportExcelModal'));
+      $.ajax({
+        url: abp.appPath + 'Products/ImportFromExcel',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          abp.notify.success('Nhập dữ liệu thành công!');
+          $('#ImportExcelModal').modal('hide');
+          _$productsTable.ajax.reload(); // Reload bảng sản phẩm
+        },
+        error: function (xhr) {
+          var errorMessage = xhr.responseJSON?.message || 'Lỗi khi nhập dữ liệu';
+          $('#importError').html(errorMessage).show();
+        },
+        complete: function () {
+          abp.ui.clearBusy($('#ImportExcelModal'));
+        }
+      });
+    });
+
+    // Reset form khi đóng modal
+    $('#ImportExcelModal').on('hidden.bs.modal', function () {
+      $('#ImportExcelForm')[0].reset();
+      $('.custom-file-label').html('Chưa chọn file');
+      $('#importError').hide();
+    });
+  });
    //validate
   $(document).ready(function () {
     $("form[name='productCreateForm']").validate({

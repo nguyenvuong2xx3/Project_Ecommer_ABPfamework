@@ -25,6 +25,8 @@ namespace Acme.SimpleTaskApp.Products
 
 		Task<byte[]> ExportProductsToExcel(GetAllProductsInput input);
 
+		Task<List<ImportProductResultDto>> ImportProductsFromExcel(IFormFile file);
+
 
 	}
 }

@@ -1,0 +1,31 @@
+﻿<div class="modal fade" id="ImportExcelModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nhập sản phẩm từ Excel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="ImportExcelForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="excelFile">Chọn file Excel (.xlsx)</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="excelFile" name="excelFile" accept=".xlsx">
+              <label class="custom-file-label" for="excelFile">Chưa chọn file</label>
+            </div>
+            <small class="form-text text-muted">
+              Tải file mẫu <a href="/templates/ProductImportTemplate.xlsx" download>Tại đây</a>
+            </small>
+          </div>
+          <div class="alert alert-danger" id="importError" style="display: none;"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary" id="btnImportExcel">Nhập dữ liệu</button>
+      </div>
+    </div>
+  </div>
+</div>

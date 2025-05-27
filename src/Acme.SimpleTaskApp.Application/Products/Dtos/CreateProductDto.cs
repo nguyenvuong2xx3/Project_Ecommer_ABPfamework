@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Abp.Application.Services.Dto;
+using Microsoft.AspNetCore.Http;
 using System;
 using static Acme.SimpleTaskApp.Products.Product;
 
 namespace Acme.SimpleTaskApp.Products.Dtos
 {
-    public class CreateProductDto
+    public class CreateProductDto : EntityDto<int>
 	{
         public string Name { get; set; }
         

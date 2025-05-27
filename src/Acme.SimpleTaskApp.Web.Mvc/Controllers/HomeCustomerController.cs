@@ -57,14 +57,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 			var output = await _productAppService.GetAllProducts(input);
 
-			// Tính toán số trang
+			// Tính toán số trang  
 			int totalProducts = output.TotalCount;
 			int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
 
-
 			var model = new ProductViewModel(output.Items)
 			{
-				TotalPages = totalPages
+				TotalPages = totalPages,
+				PageNumber = page
 			};
 
 			return View(model);

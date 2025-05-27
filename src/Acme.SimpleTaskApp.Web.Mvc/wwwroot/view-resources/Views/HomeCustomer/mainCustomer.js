@@ -19,7 +19,25 @@
     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Đảm bảo giá trị không bị âm
   });
 
+  document.addEventListener("DOMContentLoaded", function () {
+    var myCarouselEl = document.querySelector('#carouselId');
 
+    // Khởi tạo Carousel tự động chạy
+    var carousel = new bootstrap.Carousel(myCarouselEl, {
+      interval: 1000,  // 2.5 giây
+      pause: false     // Không dừng khi hover
+    });
+
+    // Nút Prev
+    document.querySelector('.carousel-control-prev').addEventListener('click', function () {
+      carousel.prev();
+    });
+
+    // Nút Next
+    document.querySelector('.carousel-control-next').addEventListener('click', function () {
+      carousel.next();
+    });
+  });
 
   // Back to top button
   $(window).scroll(function () {

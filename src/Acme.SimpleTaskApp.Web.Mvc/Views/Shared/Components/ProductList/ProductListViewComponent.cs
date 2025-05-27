@@ -18,6 +18,7 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 
 		public async Task<IViewComponentResult> InvokeAsync(string viewName = "Default")
 		{
+
 			var model = new ProductListViewModel
 			{
 				RelatedProducts = await _productFEAppService.GetAllProducts(new GetAllProductsInput { })

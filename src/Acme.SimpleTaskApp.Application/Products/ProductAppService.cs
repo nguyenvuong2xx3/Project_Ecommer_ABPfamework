@@ -29,14 +29,14 @@ namespace Acme.SimpleTaskApp.Products
 	public class ProductAppService : ApplicationService, IProductAppService
 	{
 		private readonly IRepository<Product> _productRepository;
-		//private readonly IRepository<Category> _categoryRepository;
+		private readonly IRepository<Category> _categoryRepository;
 		private readonly IWebHostEnvironment _env;
 
-		public ProductAppService(IRepository<Product> productRepository,
-															 IWebHostEnvironment env) // IRepository<Category> categoryRepository,
+		public ProductAppService(IRepository<Product> productRepository, IRepository<Category> categoryRepository,
+															 IWebHostEnvironment env) // 
 		{
 			_productRepository = productRepository;
-			//_categoryRepository = categoryRepository;
+			_categoryRepository = categoryRepository;
 			_env = env;
 		}
 
@@ -204,7 +204,7 @@ namespace Acme.SimpleTaskApp.Products
 
 			return new PagedResultDto<ProductListDto>(count, productDtos);
 
-			
+
 		}
 
 		public async Task<byte[]> ExportProductsToExcel(GetAllProductsInput input)
@@ -247,14 +247,23 @@ namespace Acme.SimpleTaskApp.Products
 				int row = 2; // bắt đầu từ dòng 2
 				int i = 1;   // chỉ số ảnh
 										 // Đổ dữ liệu
-				foreach (var item in products) {
+				foreach (var item in products)
+				{
 
-					
+
 
 					worksheet.Cells[row, 1].Value = item.Name;
 					worksheet.Cells[row, 2].Value = item.Description;
 					worksheet.Cells[row, 3].Value = item.CreationTime.ToString("yyyy-MM-dd HH:mm:ss");
-					worksheet.Cells[row, 4].Value = item.State.ToString();
+					if (item.State == ProductState.Available)
+					{
+						worksheet.Cells[row, 4].Value = "Còn hàng";
+					}
+					else if (item.State == ProductState.OutOfStock)
+					{
+						worksheet.Cells[row, 4].Value = "Hết hàng";
+					}
+
 					worksheet.Cells[row, 5].Value = item.Price; // nếu có
 					worksheet.Cells[row, 6].Value = item.Categories.Name;
 
@@ -264,7 +273,9 @@ namespace Acme.SimpleTaskApp.Products
 					{
 						try
 						{
-							var imagePath = Path.Combine(@"/img/products/", Path.GetFileName(item.Image));
+							//var imagePath = Path.Combine(@"/img/products/", Path.GetFileName(item.Image));
+							var imagePath = Path.Combine(_env.WebRootPath, "img", "products", Path.GetFileName(item.Image));
+
 							if (File.Exists(imagePath))
 							{
 								using var image = System.Drawing.Image.FromFile(imagePath);
@@ -273,8 +284,15 @@ namespace Acme.SimpleTaskApp.Products
 								imageStream.Position = 0;
 
 								var picture = worksheet.Drawings.AddPicture($"img_{i}", imageStream);
-								picture.SetPosition(row - 1, 0, 10, 0);
-								picture.SetSize(100, 100);
+
+								// Đặt ảnh tại dòng tương ứng (row - 1), cột 10 (cột K)
+								picture.SetPosition(row - 1, 0, 6, 0); // rowIndex, offsetY, colIndex, offsetX
+
+								// Đặt kích thước ảnh
+								picture.SetSize(80, 80); // width x height (tùy chọn)
+
+								// Cố định chiều cao hàng hiện tại để vừa ảnh
+								worksheet.Row(row).Height = 60; // hoặc giá trị khác tùy ảnh
 							}
 						}
 						catch
@@ -292,132 +310,179 @@ namespace Acme.SimpleTaskApp.Products
 				return package.GetAsByteArray();
 			}
 		}
-		//public async Task<List<ImportProductResultDto>> ImportProductsFromExcel(IFormFile file)
-		//{
-		//	ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+		public async Task<List<ImportProductResultDto>> ImportProductsFromExcel(IFormFile file)
+		{
+			var getAllCategories = await _categoryRepository.GetAllListAsync();
 
-		//	var results = new List<ImportProductResultDto>();
-		//	var uploadsFolder = @"E:\UploadImgKho\";
+			ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-		//	// Kiểm tra và tạo thư mục
-		//	Directory.CreateDirectory(uploadsFolder);
+			var results = new List<ImportProductResultDto>();
+			var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "products");
 
-		//	// Validate file
-		//	if (file == null || file.Length == 0)
-		//		throw new Exception("File không tồn tại");
+			// Kiểm tra và tạo thư mục
+			Directory.CreateDirectory(uploadsFolder);
 
-		//	if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-		//		throw new Exception("Chỉ hỗ trợ file Excel (.xlsx)");
+			// Validate file
+			if (file == null || file.Length == 0)
+				throw new Exception("File không tồn tại");
 
-		//	using (var stream = new MemoryStream())
-		//	{
-		//		await file.CopyToAsync(stream);
+			if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+				throw new Exception("Chỉ hỗ trợ file Excel (.xlsx)");
 
-		//		using (var package = new ExcelPackage(stream))
-		//		{
-		//			if (package.Workbook.Worksheets.Count == 0)
-		//				throw new Exception("File Excel không có sheet nào");
+			using (var stream = new MemoryStream())
+			{
+				await file.CopyToAsync(stream);
 
-		//			var worksheet = package.Workbook.Worksheets[0];
-		//			int rowCount = worksheet.Dimension?.Rows ?? 0;
+				using (var package = new ExcelPackage(stream))
+				{
+					if (package.Workbook.Worksheets.Count == 0)
+						throw new Exception("File Excel không có sheet nào");
 
-		//			for (int row = 2; row <= rowCount; row++)
-		//			{
-		//				var result = new ImportProductResultDto
-		//				{
-		//					RowNumber = row,
-		//					Code = worksheet.Cells[row, 1]?.Text?.Trim(),
-		//					Name = worksheet.Cells[row, 2]?.Text?.Trim()
-		//				};
+					var worksheet = package.Workbook.Worksheets[0];
+					int rowCount = worksheet.Dimension?.Rows ?? 0;
 
-		//				try
-		//				{
-		//					var existingProduct = await _productRepository.FirstOrDefaultAsync(p => p.Code == result.Code);
-		//					if (existingProduct != null)
-		//					{
-		//						// Cập nhật thông tin sản phẩm
-		//						existingProduct.Name = worksheet.Cells[row, 2]?.Text?.Trim();
-		//						// ... các thông tin khác
+					for (int row = 2; row <= rowCount; row++)
+					{
+						var result = new ImportProductResultDto
+						{
+							RowNumber = row,
+							Id = int.Parse(worksheet.Cells[row, 1]?.Text?.Trim()),
+							Name = worksheet.Cells[row, 2]?.Text?.Trim()
+						};
 
-		//						await _productRepository.UpdateAsync(existingProduct);
-		//						result.IsSuccess = true;
-		//						result.Message = "Cập nhật sản phẩm thành công";
-		//						results.Add(result);
-		//						continue;
-		//					}
-		//					string categoryName = worksheet.Cells[row, 4]?.Text?.Trim();
-		//					string supplierName = worksheet.Cells[row, 9]?.Text?.Trim();
-		//					var category = getAllCategories
-		//									.FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
+						try
+						{
+							var existingProduct = await _productRepository.FirstOrDefaultAsync(p => p.Id == result.Id);
+							// Kiểm tra xem sản phẩm đã tồn tại hay chưa
+							if (existingProduct != null)
+							{
+								// Cập nhật thông tin sản phẩm
+								existingProduct.Name = worksheet.Cells[row, 2]?.Text?.Trim();
+								existingProduct.Description = worksheet.Cells[row, 3]?.Text?.Trim();
+								existingProduct.State = worksheet.Cells[row, 4]?.Text?.Trim() switch
+								{
+									"Còn hàng" => ProductState.Available,
+									"Hết hàng" => ProductState.OutOfStock,
+									_ => throw new Exception($"Trạng thái không hợp lệ: {worksheet.Cells[row, 4]?.Text?.Trim()}")
+								};
+								existingProduct.Price = decimal.TryParse(worksheet.Cells[row, 5]?.Text, out var parsedPrice) ? parsedPrice : 0;
 
-		//					if (category == null)
-		//						throw new Exception($"Không tìm thấy danh mục: {categoryName}");
+								var categoryId = getAllCategories.Where(c => c.Name.Equals(worksheet.Cells[row, 6]?.Text?.Trim(), StringComparison.OrdinalIgnoreCase))
+									.FirstOrDefault(c => c.Name.Equals(worksheet.Cells[row, 6]?.Text?.Trim(), StringComparison.OrdinalIgnoreCase));
+								try
+								{
+									if (categoryId != null)
+										existingProduct.CategoryId = categoryId.Id;
+								}
+								catch (Exception ex)
+								{
+									throw new Exception($"Lỗi khi tìm danh mục: {ex.Message}");
+								}
+								foreach (var drawing in worksheet.Drawings)
+								{
+									if (drawing is ExcelPicture picture && picture.From.Row + 1 == row)
+									{
+										// Xóa ảnh cũ (nếu có)
+										if (!string.IsNullOrEmpty(existingProduct.Image))
+										{
+											var oldImagePath = Path.Combine(uploadsFolder, Path.GetFileName(existingProduct.Image));
+											if (File.Exists(oldImagePath)) File.Delete(oldImagePath);
+										}
 
-		//					var supplier = getAllSuppliers
-		//							.FirstOrDefault(s => s.Name.Equals(supplierName, StringComparison.OrdinalIgnoreCase));
+										// Lưu ảnh mới
+										var imageName = $"{Guid.NewGuid()}.jpg";
+										var imagePath = Path.Combine(uploadsFolder, imageName);
+										File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
+										existingProduct.Image = $"/products/{imageName}"; // Cập nhật đường dẫn ảnh
+									}
+								}
 
-		//					if (supplier == null)
-		//						throw new Exception($"Không tìm thấy nhà cung cấp: {supplierName}");
-		//					var productDto = new CreateProductDto
-		//					{
-		//						Code = result.Code,
-		//						Name = result.Name,
-		//						CategoryId = category.Id,
-		//						SupplierId = supplier.Id,
-		//						Description = worksheet.Cells[row, 3]?.Text?.Trim(),
-		//						Barcode = worksheet.Cells[row, 5]?.Text?.Trim(),
-		//						Unit = worksheet.Cells[row, 6]?.Text?.Trim(),
-		//						Weight = decimal.TryParse(worksheet.Cells[row, 7]?.Text, out var weight) ? weight : 0,
-		//						Volume = decimal.TryParse(worksheet.Cells[row, 8]?.Text, out var volume) ? volume : 0,
-		//						//IsActive = worksheet.Cells[row, 10]?.Text?.Trim().Equals("Có", StringComparison.OrdinalIgnoreCase) ?? false
-		//						IsActive = bool.TryParse(worksheet.Cells[row, 10]?.Text, out var isActive) && isActive
-		//					};
+								await _productRepository.UpdateAsync(existingProduct);
+								result.IsSuccess = true;
+								result.Message = "Cập nhật sản phẩm thành công";
+								results.Add(result);
+								continue;
+							}
+							string categoryName = worksheet.Cells[row, 6]?.Text?.Trim();
 
-		//					// Xử lý ảnh
-		//					//foreach (var drawing in worksheet.Drawings)
-		//					//{
-		//					//	if (drawing is ExcelPicture picture)
-		//					//	{
-		//					//		var imageName = $"{Guid.NewGuid()}.jpg"; // Mặc định là jpg
-		//					//		var imagePath = Path.Combine(uploadsFolder, imageName);
+							var category = getAllCategories
+											.FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
 
-		//					//		// Lưu trực tiếp bytes ra file
-		//					//		File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
+							if (category == null)
+								throw new Exception($"Không tìm thấy danh mục: {categoryName}");
+							var productDto = new CreateProductDto
+							{
+								Id = result.Id,
+								Name = result.Name,
+								CategoryId = category.Id,
+								Description = worksheet.Cells[row, 3]?.Text?.Trim(),
+								State = worksheet.Cells[row, 4]?.Text?.Trim() switch
+								{
+									"Còn hàng" => ProductState.Available,
+									"Hết hàng" => ProductState.OutOfStock,
+									_ => throw new Exception($"Trạng thái không hợp lệ: {worksheet.Cells[row, 4]?.Text?.Trim()}")
+								},
+								Price = decimal.TryParse(worksheet.Cells[row, 5]?.Text, out var price) ? price : 0,
 
-		//					//		productDto.Image = $"/products/{imageName}";
-		//					//	}
-		//					//}
-		//					foreach (var drawing in worksheet.Drawings)
-		//					{
-		//						if (drawing is ExcelPicture picture)
-		//						{
-		//							// Ánh xạ hình vào đúng dòng
-		//							if (picture.From.Row + 1 == row)
-		//							{
-		//								var imageName = $"{Guid.NewGuid()}.jpg";
-		//								var imagePath = Path.Combine(uploadsFolder, imageName);
+							};
 
-		//								File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
-		//								productDto.Image = $"/products/{imageName}";
-		//							}
-		//						}
-		//					}
-		//					await Create(productDto);
-		//					result.IsSuccess = true;
-		//					result.Message = "Thành công";
-		//				}
-		//				catch (Exception ex)
-		//				{
-		//					result.IsSuccess = false;
-		//					result.Message = $"Dòng {row}: {ex.Message}";
-		//				}
+							foreach (var drawing in worksheet.Drawings)
+							{
+								if (drawing is ExcelPicture picture)
+								{
+									// Ánh xạ hình vào đúng dòng
+									if (picture.From.Row + 1 == row)
+									{
+										var imageName = $"{Guid.NewGuid()}.jpg";
+										var imagePath = Path.Combine(uploadsFolder, imageName);
 
-		//				results.Add(result);
-		//			}
-		//		}
-		//	}
+										File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
+										productDto.Image = $"/products/{imageName}";
+									}
+								}
+							}
+							await Create(productDto);
+							result.IsSuccess = true;
+							result.Message = "Thành công";
+						}
+						catch (Exception ex)
+						{
+							result.IsSuccess = false;
+							result.Message = $"Dòng {row}: {ex.Message}";
+						}
 
-		//	return results;
-		//}
+						results.Add(result);
+					}
+				}
+			}
+
+			return results;
+		}
+		public async Task<ProductListDto> Create(CreateProductDto input)
+		{
+			var product = new Product
+			{
+				Name = input.Name,
+				Description = input.Description,
+				Price = input.Price,
+				State = input.State,
+				CategoryId = input.CategoryId,
+				Image = input.Image // Save image path  
+			};
+
+			await _productRepository.InsertAsync(product);
+			await CurrentUnitOfWork.SaveChangesAsync();
+
+			return new ProductListDto
+			{
+				Id = product.Id,
+				Name = product.Name,
+				Description = product.Description,
+				Price = product.Price,
+				State = product.State,
+				CreationTime = product.CreationTime,
+				Image = product.Image
+			};
+		}
 	}
 }
