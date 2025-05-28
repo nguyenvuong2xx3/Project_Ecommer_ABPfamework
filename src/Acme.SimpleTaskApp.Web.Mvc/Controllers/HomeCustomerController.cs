@@ -82,15 +82,22 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// Trong HomeCustomerController.cs
-		public async Task<ActionResult> SearchProductCustomer(GetAllProductsInput input)
+		public async Task<ActionResult> SearchProductCustomer(GetAllProductsInput input, int page = 1, int page_size = 12)
 		{
 			try
 			{
+				input.MaxResultCount = page_size;
+				input.SkipCount = (page - 1) * page_size;
+
 				var result = await _productAppService.SearchProducts(input);
+
+				int totalProducts = result.TotalCount;
+				int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
 
 				var model = new ProductViewModel(result.Items)
 				{
-				
+					TotalPages = totalPages,
+					PageNumber = page
 				};
 
 				return View(model);
@@ -101,6 +108,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				throw new UserFriendlyException("Có lỗi xảy ra khi tìm kiếm sản phẩm");
 			}
 		}
+
 
 		// Thêm action cho form search
 		public async Task<ActionResult> LoginMember()

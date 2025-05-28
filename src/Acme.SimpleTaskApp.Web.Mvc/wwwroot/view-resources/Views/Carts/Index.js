@@ -69,23 +69,30 @@
   });
 
   function deleteCartItem(productId, cartId) {
-    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-      abp.ui.setBusy();
-      _cartItemService.deleteItem(productId, cartId)
-        .done(function () {
-          abp.notify.info('Xóa thành công!');
-          location.reload();
-        })
-        .fail(function (error) {
-          abp.notify.error('Xóa thất bại!');
-          console.error(error);
-        })
-        .always(function () {
-          abp.ui.clearBusy();
-        });
-    } else {
-      document.getElementById(`quantity-${productId}`).value = 1;
-    }
+    abp.message.confirm(
+      'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+      'Xác nhận xóa',
+      function (isConfirmed) {
+        if (isConfirmed) {
+          abp.ui.setBusy();
+          _cartItemService.deleteItem(productId, cartId)
+            .done(function () {
+              abp.notify.info('Xóa thành công!');
+              location.reload();
+            })
+            .fail(function (error) {
+              abp.notify.error('Xóa thất bại!');
+              console.error(error);
+            })
+            .always(function () {
+              abp.ui.clearBusy();
+            });
+        } else {
+          document.getElementById(`quantity-${productId}`).value = 1;
+        }
+      }
+    );
+
   }
 
 
@@ -95,34 +102,20 @@
     e.preventDefault();
     var productId = $(this).data('product-id');
     var quantity = 1;
-    console.log(productId)
-    addCart(productId, quantity);
+    addToCart(productId, quantity);
   });
 
-  function addCart(productId, quantity) {
+  function addToCart(productId, quantity) {
     abp.ui.setBusy();
-
-    $.ajax({
-      url: '/Carts/AddCart',
-      method: 'POST',
-      data: {
-        productId: productId,
-        quantity: quantity,
-        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-      },
-      success: function (result) {
-        abp.notify.info('Thêm vào giỏ hàng thành công!');
-        location.reload();
-      },
-      error: function (xhr) {
-        abp.notify.error('Thêm vào giỏ hàng thất bại!');
-        console.error(xhr);
-      },
-      complete: function () {
+    _cartService.createCart(productId, quantity)
+      .done(function () {
+        abp.notify.success('Thêm vào giỏ hàng thành công!');
+      })
+      .fail(function (error) {
+        abp.notify.error('Thêm vào giỏ hàng thất bại: ' + error.message);
+      })
+      .always(function () {
         abp.ui.clearBusy();
-      }
-    });
+      });
   }
-
-
 })(jQuery);
