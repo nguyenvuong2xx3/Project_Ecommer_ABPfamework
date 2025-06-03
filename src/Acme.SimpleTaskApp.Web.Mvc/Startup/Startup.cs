@@ -96,7 +96,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
-                endpoints.MapControllerRoute("default", "{controller=HomeCustomer}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=HomeCustomer}/{action=Index}/{id?}");
             });
         }

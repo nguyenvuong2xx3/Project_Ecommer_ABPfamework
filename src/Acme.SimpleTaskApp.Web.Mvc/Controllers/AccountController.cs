@@ -103,7 +103,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 			var loginResult = await GetLoginResultAsync(loginModel.UsernameOrEmailAddress, loginModel.Password, GetTenancyNameOrNull());
 			// Kiểm tra vai trò người dùng và chuyển hướng đến view tương ứng
-			if (loginResult.User.Id == 2)
+			returnUrl = "/HomeCustomer";
+			if (loginResult.User.Id == 2 || loginResult.User.Id == 1)
 			{
 				returnUrl = "/Users";
 			}
@@ -397,7 +398,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 		public string GetAppHomeUrl()
 		{
-			return Url.Action("Index", "About");
+			return Url.Action("Index, about");
 		}
 
 		#endregion

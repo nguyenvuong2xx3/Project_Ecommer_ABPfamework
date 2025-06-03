@@ -27,7 +27,6 @@ public class CartAppService : ApplicationService, ICartAppService
 
 	}
 
-
 	public async Task CreateCart(int productId, int quantity)
 	{
 		var userId = AbpSession.UserId;
@@ -69,11 +68,15 @@ public class CartAppService : ApplicationService, ICartAppService
 		}
 	}
 
-
-	public async Task DeleteCart(int userId)
+	public async Task DeleteCart(long userId)
 	{
-		await _cartRepository.DeleteAsync(userId);
-
+		var getCart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == userId);
+		await _cartRepository.DeleteAsync(getCart.Id);
+		var getAllCartItems = await _cartItemRepository.GetAllListAsync(c => c.CartId == getCart.Id);
+		foreach (var item in getAllCartItems)
+		{
+			await _cartItemRepository.DeleteAsync(item.Id);
+		}
 	}
 
 	public async Task<CartListDto> GetCart(GetCartInput input)

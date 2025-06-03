@@ -1,0 +1,61 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Products
+@model EditProductModalViewModel
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("EditProduct")))
+<form name="ProductEditForm" role="form" class="form-horizontal">
+	<input type="hidden" name="Id" value="@Model.Product.Id" />
+	<div class="modal-body">
+		<!-- Các trường dữ liệu sản phẩm -->
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label">@L("Name")</label>
+			<div class="col-md-9">
+				<input type="text" class="form-control" name="Name" value="@Model.Product.Name" required>
+			</div>
+		</div>
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label">@L("Description")</label>
+			<div class="col-md-9">
+				<input type="text" class="form-control" name="Description" value="@Model.Product.Description" required rows="3">
+			</div>
+		</div>
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label">@L("Price")</label>
+			<div class="col-md-9">
+				<input type="text" class="form-control" name="Price" value="@Model.Product.Price.ToString("0")" required>
+			</div>
+		</div>
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label">@L("Image")</label>
+			<div class="col-md-9">
+				<label for="productImage" class="form-label">Ảnh sản phẩm ban đầu</label>
+				<img src="@Model.Product.Image" alt="Ảnh sản phẩm" class="img-thumbnail d-block mx-auto" width="400" height="400" style="object-fit: cover;">
+				<input type="file" class="form-control" id="productImage" name="ImageFile" accept="image/*">
+			</div>
+		</div>
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label fw-bold">@L("State")</label>
+			<div class="col-md-9">
+				<select class="form-control" name="State">
+					<option value="0">@("Còn hàng")</option>
+					<option value="1">@("Hết hàng")</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row required">
+			<label class="col-md-3 col-form-label">@L("Category")</label>
+			<div class="col-md-9">
+				<select class="form-control" name="CategoryId">
+					@foreach (var category in Model.Categories)
+					{
+						<option value="@category.Value" selected="@(category.Value == Model.Product.CategoryId?.ToString())">
+							@category.Text
+						</option>
+					}
+				</select>
+			</div>
+	</div>
+	@await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<script src="~/view-resources/Views/Products/_EditModal.js" asp-append-version="true"></script>

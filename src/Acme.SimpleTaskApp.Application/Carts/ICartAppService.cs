@@ -10,6 +10,6 @@ namespace Acme.SimpleTaskApp.Carts
 	{
 		Task<CartListDto> GetCart(GetCartInput input);
 		Task CreateCart(int productId, int quantity);
-		Task DeleteCart(int userId);
+		Task DeleteCart(long userId);
 	}
 }

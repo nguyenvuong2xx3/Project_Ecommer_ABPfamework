@@ -7,6 +7,8 @@ using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Acme.SimpleTaskApp.AppTours;
+using Acme.SimpleTaskApp.Orders;
+using Acme.SimpleTaskApp.OrderItems;
 
 namespace Acme.SimpleTaskApp.EntityFrameworkCore
 {
@@ -19,11 +21,13 @@ namespace Acme.SimpleTaskApp.EntityFrameworkCore
         public DbSet<Tour> AppTours { get; set; }
 		    public DbSet<Cart> Carts  { get; set; }
         public DbSet<CartItem> CartItems  { get; set; }
+		    public DbSet<Order> Orders { get; set; }
+		    public DbSet<OrderDetails> OrderDetails { get; set; }
 
 
 
 
-    public SimpleTaskAppDbContext(DbContextOptions<SimpleTaskAppDbContext> options)
+		public SimpleTaskAppDbContext(DbContextOptions<SimpleTaskAppDbContext> options)
             : base(options)
         {
 

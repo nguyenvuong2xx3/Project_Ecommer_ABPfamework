@@ -393,7 +393,7 @@ namespace Acme.SimpleTaskApp.Products
 										var imageName = $"{Guid.NewGuid()}.jpg";
 										var imagePath = Path.Combine(uploadsFolder, imageName);
 										File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
-										existingProduct.Image = $"/products/{imageName}"; // Cập nhật đường dẫn ảnh
+										existingProduct.Image = $"/img/products/{imageName}"; // Cập nhật đường dẫn ảnh
 									}
 								}
 
@@ -437,7 +437,7 @@ namespace Acme.SimpleTaskApp.Products
 										var imagePath = Path.Combine(uploadsFolder, imageName);
 
 										File.WriteAllBytes(imagePath, picture.Image.ImageBytes);
-										productDto.Image = $"/products/{imageName}";
+										productDto.Image = $"/img/products/{imageName}";
 									}
 								}
 							}
