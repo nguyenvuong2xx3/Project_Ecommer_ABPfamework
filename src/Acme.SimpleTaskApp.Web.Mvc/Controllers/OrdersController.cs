@@ -1,13 +1,6 @@
-﻿using Abp.Runtime.Session;
-using Abp.UI;
-using Acme.SimpleTaskApp.Carts;
-using Acme.SimpleTaskApp.Carts.Dtos;
-using Acme.SimpleTaskApp.Controllers;
-using Acme.SimpleTaskApp.Orders;
-using Acme.SimpleTaskApp.Orders.Dtos;
-using Acme.SimpleTaskApp.Web.Models.Orders;
-using Acme.SimpleTaskApp.Web.Models.Products;
+﻿using Acme.SimpleTaskApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using MyProject.Orders;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,47 +8,47 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 {
 	public class OrdersController : SimpleTaskAppControllerBase
 	{
-		private readonly ICartAppService _cartAppService;
-		private readonly IOrdersAppService _ordersAppService;
-		public OrdersController(ICartAppService cartAppService, IOrdersAppService ordersAppService)
+		private readonly IOrderDetailAppService _orderDetailAppService;
+		private readonly IOrderAppService _orderAppService;
+		private readonly IProductAppService _productAppService;
+
+
+		public OrdersController(IOrderDetailAppService orderDetailAppService, IProductAppService productAppService, IOrderAppService orderAppService)
 		{
-			_cartAppService = cartAppService;
-			_ordersAppService = ordersAppService;
+			_orderDetailAppService = orderDetailAppService;
+			_productAppService = productAppService;
+			_orderAppService = orderAppService;
 		}
-		public IActionResult Index()
+		public ActionResult Index()
 		{
 			return View();
 		}
-		public async Task<IActionResult> CreateOrder()
+
+		public async Task<IActionResult> DetailOrder(int orderId)
 		{
-			var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
-			var getCart = await _cartAppService.GetCart(new GetCartInput { UserId = currentUserId });
-			if (getCart.CartItems.Count > 0)
+			var orderDetail = await _orderDetailAppService.GetAllOrder(orderId);
+
+			var productIds = orderDetail.Select(x => x.ProductId).Distinct().ToList();
+			var products = await _productAppService.GetProductByIds(productIds);
+
+			var model = new DetailOrderViewModel
 			{
-				var orderDetails = getCart.CartItems.Select(cartItem => new OrderDetailDto
-				{
-					ProductId = cartItem.ProductId,
-					Quantity = cartItem.Quantity
-				}).ToList();
-
-				await _ordersAppService.CreateOrder(new CreateOrderInput
-				{
-					UserId = currentUserId,
-					OrderDetails = orderDetails
-				});
-				await _cartAppService.DeleteCart(currentUserId);
-			}
-			return PartialView("_OrderSuccess");
+				OrderList = orderDetail,
+				ProductList = products
+			};
+			return View("DetailOrder", model);
 		}
-		//public async Task<IActionResult> DetailOrder()
-		//{
-		//	var viewmodel = await _ordersAppService.GetUserOrders(new GetAllOrderInput { });
 
-		//	var model = new OrdersViewModel()
-		//	{
-		//		Status = viewmodel.Orders.Select(o => o.Status).ToList(),
-		//	};
-		//	return View();
-		//}
+		public async Task<IActionResult> EditOrderModal(int orderId)
+		{
+			var order = await _orderAppService.GetOrderById(orderId);
+
+			var model = new OrderViewModel
+			{
+				Order = order,
+			};
+
+			return PartialView("EditOrderModal", model);
+		}
 	}
 }
