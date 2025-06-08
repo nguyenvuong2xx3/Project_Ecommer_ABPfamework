@@ -106,5 +106,12 @@
 		<text name="OrderStatus" value="Trạng thái đơn hàng" />
 		<text name="TotalAmount" value="Tổng giá trị đơn hàng" />
 		<text name="Status" value="Trạng thái đơn hàng" />
+		<text name="CreateNewProduct" value="Tạo mới sản phẩm" />
+		<text name="Category" value="Danh mục" />
+		<text name="CreateNewCategory" value="Tạo mới danh mục" />
+		<text name="CategoryName" value="Tên danh mục" />
+		<text name="Orders" value="Đơn đặt hàng" />
+		<text name="HomeCustomer" value="Trang người dùng" />
+		<text name="EditProduct" value="Chỉnh sửa sản phẩm" />
 	</texts>
 </localizationDictionary>

@@ -42,7 +42,11 @@
             {
                 targets: 2,
                 data: 'price',
-                sortable: false
+                sortable: false,
+                render: function (data, type, row) {
+                  // Định dạng số với dấu phân cách hàng nghìn + thêm "đ"
+                  return data.toLocaleString('vi-VN') + ' đ';
+              }
             },
             {
                 targets: 3,

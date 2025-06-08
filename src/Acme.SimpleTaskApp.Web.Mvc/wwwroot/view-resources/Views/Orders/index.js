@@ -100,17 +100,17 @@
 
           if (row.status === 0) { // Chờ duyệt
             buttons.push(
-              `<button type="button" class="btn btn-sm bg-primary approve-order" data-order-id="${row.id}">`,
+              `<button type="button" class="btn btn-sm bg-primary approve-order mr-3" data-order-id="${row.id}">`,
               `<i class="fas fa-check"></i> ${l('Duyệt đơn')}`,
               '</button>',
-              `<button type="button" class="btn btn-sm bg-danger reject-order" data-order-id="${row.id}">`,
+              `<button type="button" class="btn btn-sm bg-danger reject-order mr-3" data-order-id="${row.id}">`,
               `<i class="fas fa-times"></i> ${l('Từ chối')}`,
               '</button>'
             );
           }
           if (row.status === 1) { // Đã duyệt
             buttons.push(
-              `<button type="button" class="btn btn-sm bg-success complete-order" data-order-id="${row.id}">`,
+              `<button type="button" class="btn btn-sm bg-success complete-order mr-3" data-order-id="${row.id}">`,
               `<i class="fas fa-flag-checkered"></i> ${l('Hoàn thành')}`,
               '</button>'
             );
@@ -118,7 +118,7 @@
 
           // Nút chi tiết luôn hiển thị
           buttons.push(
-            `<button type="button" class="btn btn-sm bg-info detail-order" data-order-id="${row.id}">`,
+            `<button type="button" class="btn btn-sm bg-info detail-order mt-2" data-order-id="${row.id}">`,
             `<i class="fas fa-eye"></i> ${l('Detail')}`,
             '</button>'
           );

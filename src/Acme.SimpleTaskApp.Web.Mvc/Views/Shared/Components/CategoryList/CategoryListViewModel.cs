@@ -7,7 +7,7 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList
 {
 	public class CategoryListViewModel
 	{
-		public ListResultDto<CategoryListDto> Categories { get; set; }
+		public List<CategoryListDto> Categories { get; set; }
 
 		public class CategoryDto
 		{

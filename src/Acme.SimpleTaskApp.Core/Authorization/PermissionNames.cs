@@ -21,6 +21,7 @@
 		public const string Pages_category_create = "Pages.category.create";
 
 		public const string Pages_homeCustomer = "Pages.homeCustomer";
+		public const string Pages_orders = "Pages.orders";
 
 
 

@@ -11,6 +11,7 @@ namespace Acme.SimpleTaskApp.Products
 		public int RowNumber { get; set; }
 		public int Id { get; set; }
 		public string Name { get; set; }
+		public string Category { get; set; }
 		public bool IsSuccess { get; set; }
 		public string Message { get; set; }
 	}

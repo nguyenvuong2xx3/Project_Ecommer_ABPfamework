@@ -14,7 +14,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_cartAppService = cartAppService;
 		}
 
-		[Authorize]
+		//[Authorize]
 		public async Task<ActionResult> AddCart(int productId, int quantity)
 		{
 			await _cartAppService.CreateCart(productId, quantity);

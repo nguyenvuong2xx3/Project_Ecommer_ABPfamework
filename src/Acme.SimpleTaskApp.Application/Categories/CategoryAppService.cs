@@ -12,6 +12,7 @@ using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Products.Dtos;
 using Acme.SimpleTaskApp.Products;
+using System.Collections.Generic;
 
 namespace Acme.SimpleTaskApp.Categories
 {
@@ -29,6 +30,13 @@ namespace Acme.SimpleTaskApp.Categories
 
 		public async Task<CategoryListDto> CreateCategory(CreateCategoryDto input)
 		{
+
+			var checkcategory = _categoryRepository.GetAll();
+			checkcategory = checkcategory.Where(p => p.Name == input.Name);
+			if (await checkcategory.AnyAsync())
+			{
+				throw new UserFriendlyException("Danh mục đã tồn tại");
+			}
 			var category = new Category
 			{
 				Name = input.Name,
@@ -47,8 +55,6 @@ namespace Acme.SimpleTaskApp.Categories
 
 		public async Task DeleteCategory(EntityDto<int> input)
 		{
-			try
-			{
 				// Lấy danh mục cần xóa
 				var category = await _categoryRepository.GetAsync(input.Id);
 				if (category == null)
@@ -56,28 +62,18 @@ namespace Acme.SimpleTaskApp.Categories
 					throw new UserFriendlyException("Không tìm thấy danh mục!");
 				}
 
-				// Lấy tất cả sản phẩm thuộc danh mục này
 				var productsInCategory = await _productRepository.GetAll()
 				.Where(p => p.CategoryId == input.Id)
 				.ToListAsync();
-
-				// Cập nhật CategoryId của sản phẩm thành null
-				foreach (var product in productsInCategory)
+				if (productsInCategory.Count >= 0)
 				{
-					product.CategoryId = null; // Đặt CategoryId thành null
-					await _productRepository.UpdateAsync(product); // Cập nhật
+					throw new UserFriendlyException($"Danh mục {category.Name} đang có sản phẩm không được xóa");
 				}
-
 				// Xóa danh mục
 				await _categoryRepository.DeleteAsync(category);
 
 				// Lưu thay đổi
 				await CurrentUnitOfWork.SaveChangesAsync();
-			}
-			catch (Exception ex)
-			{
-				throw new UserFriendlyException("Xóa danh mục thất bại: " + ex.Message);
-			}
 		}
 
 		public async Task<PagedResultDto<CategoryListDto>> GetAllCategories(GetAllCategoryDto input)
@@ -97,6 +93,24 @@ namespace Acme.SimpleTaskApp.Categories
 
 			return new PagedResultDto<CategoryListDto>(count, categoryDtos);
 		}
+
+		public async Task<List<CategoryListDto>> GetAllCategoriesProduct(GetAllCategoryDto input)
+		{
+			var category = _categoryRepository.GetAll();
+			var count = await category.CountAsync();
+
+			var categoryDtos = await category.OrderByDescending(x => x.CreationTime)
+																			.Select(p => new CategoryListDto
+																			{
+																				Id = p.Id,
+																				Name = p.Name,
+																				Description = p.Description,
+																				CreationTime = p.CreationTime,
+																			}).ToListAsync();
+
+			return new List<CategoryListDto>(categoryDtos);
+		}
+
 
 		public async Task<CategoryListDto> GetByIdCategory(EntityDto<int> input)
 		{
@@ -125,11 +139,17 @@ namespace Acme.SimpleTaskApp.Categories
 
 		public async Task<CategoryListDto> UpdateCategory(UpdateCategoryDto input)
 		{
+			var checkcategory = _categoryRepository.GetAll();
+			checkcategory = checkcategory.Where(p => p.Name == input.Name);
+			if (await checkcategory.AnyAsync())
+			{
+				throw new UserFriendlyException("Danh mục đã tồn tại");
+			}
 			// Lấy sản phẩm hiện có
 			var category = await _categoryRepository.GetAsync(input.Id);
 			if (category == null)
 			{
-				throw new UserFriendlyException("Category not found!");
+				throw new UserFriendlyException("Không tìm thấy danh mục");
 			}
 			// Cập nhật thông tin
 			category.Name = input.Name;

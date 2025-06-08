@@ -6,7 +6,7 @@
     <li class="nav-item">
     </li>
 
-    @foreach (var category in Model.Categories.Items)
+    @foreach (var category in Model.Categories)
     {
       <li class="nav-item category-click-getid" data-id="@category.Id">
         <a href="#" style="padding-right: 24px;"><i class=""></i>@category.Name</a>

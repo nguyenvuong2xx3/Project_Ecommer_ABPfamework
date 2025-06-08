@@ -27,6 +27,7 @@ namespace Acme.SimpleTaskApp.Authorization
 
 			var homeCustomer = context.CreatePermission(PermissionNames.Pages_homeCustomer, L("HomeCustomer"));
 
+			var orders = context.CreatePermission(PermissionNames.Pages_orders, L("Orders"));
 		}
 
 		private static ILocalizableString L(string name)

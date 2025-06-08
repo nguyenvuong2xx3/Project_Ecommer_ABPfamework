@@ -9,6 +9,7 @@ using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Categories.Dto;
 using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Controllers;
+using Acme.SimpleTaskApp.Identity;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Products.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Carts;
@@ -31,11 +32,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		private readonly IWebHostEnvironment webHostEnvironment;
 		private readonly ICategoryAppService _categoryAppService;
 		private readonly ICartAppService _cartAppService;
+		private readonly SignInManager _signInManager;
+
 
 		//private readonly ICartItemAppService _cartItemAppService;
 
 
 		public HomeCustomerController(IProductAppService productAppService,
+															SignInManager signInManager,
 															ICategoryAppService categoryAppService,
 															IWebHostEnvironment webHostEnvironment,
 															ICartAppService cartAppService
@@ -44,14 +48,19 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			//_cartItemAppService = cartItemAppService;
 			_cartAppService = cartAppService;
+			_signInManager = signInManager;
 			_productAppService = productAppService;
 			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
-
+		public async Task<ActionResult> SignOut()
+		{
+				await _signInManager.SignOutAsync();
+				return RedirectToAction("Index");
+		}
 		public async Task<ActionResult> Index(int page = 1, int page_size = 12)
 		{
-			var input = new GetAllProductsInput
+		var input = new GetAllProductsInput
 			{
 				MaxResultCount = page_size,
 				SkipCount = (page - 1) * page_size
@@ -125,42 +134,34 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			return  View();
 		}
-		[Authorize]
+		//[Authorize]
 		public async Task<ActionResult> Cart(GetCartInput input)
 		{
-			try
+			// Kiểm tra user đã đăng nhập chưa
+			if (!AbpSession.UserId.HasValue)
 			{
-				// Lấy userId từ session
-				var userId = AbpSession.UserId;
-				if (userId == null)
-				{
-					throw new UserFriendlyException("Vui lòng đăng nhập để xem giỏ hàng");
-				}
-				input.UserId = (long)userId;
-				// Gọi service lấy thông tin giỏ hàng
-				var cart = await _cartAppService.GetCart(input);
-				// Ánh xạ sang ViewModel
-				var viewModel = new CartViewModel
-				{
-					UserId = cart.UserId,
-					Id = cart.Id,
-					CreationTime = cart.CreationTime,
-					CartItems = cart.CartItems
-				};
-
-				return View(viewModel);
-			}
-			catch (UserFriendlyException ex)
-			{
-				Logger.Error(ex.Message, ex);
-				return RedirectToAction("LoginMember");
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex.Message, ex);
-				throw new UserFriendlyException("Lỗi khi tải giỏ hàng");
+				// Nếu chưa đăng nhập → trả về view có message
+				ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
+				return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
 			}
 
+			// Có userId
+			input.UserId = AbpSession.UserId.Value;
+
+			// Gọi service lấy thông tin giỏ hàng
+			var cart = await _cartAppService.GetCart(input);
+
+			// Ánh xạ sang ViewModel
+			var viewModel = new CartViewModel
+			{
+				UserId = cart.UserId,
+				Id = cart.Id,
+				CreationTime = cart.CreationTime,
+				CartItems = cart.CartItems
+			};
+
+			return View(viewModel);
 		}
+
 	}
 }

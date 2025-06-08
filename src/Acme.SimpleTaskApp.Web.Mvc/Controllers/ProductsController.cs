@@ -37,10 +37,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		public async Task<ActionResult> Index(GetAllProductsInput input, GetAllCategoryDto input1)
 		{
 			var output = await _productAppService.GetAllProducts(input);
-			var categories = await _categoryAppService.GetAllCategories(input1);
+			var categories = await _categoryAppService.GetAllCategoriesProduct(input1);
 
 			// Chuyển đổi CategoryListDto sang SelectListItem
-			var categoriesSelectList = categories.Items
+			var categoriesSelectList = categories
 					.Select(c => new SelectListItem
 					{
 						Value = c.Id.ToString(),
@@ -129,7 +129,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 				// Gọi service để lấy sản phẩm theo Id
 				var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
-				var categories = await _categoryAppService.GetAllCategories(new GetAllCategoryDto());
+				var categories = await _categoryAppService.GetAllCategoriesProduct(new GetAllCategoryDto());
 				var editProductDto = new UpdateProductDto
 				{
 					Id = product.Id,
@@ -143,7 +143,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 				};
 				// Chuyển đổi CategoryListDto sang SelectListItem   
-				var categoriesSelectList = categories.Items
+				var categoriesSelectList = categories
 					.Select(c => new SelectListItem
 					{
 						Value = c.Id.ToString(),
