@@ -12,14 +12,17 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 
 		public class GetAllOrderInput : PagedAndSortedResultRequestDto, IShouldNormalize
 		{
-			public string Search { get; set; }
+			public string UserName { get; set; }
+
+			public int? Status { get; set; } // Order status filter
+			public int? PaymentMethod { get; set; } 
 
 			public void Normalize()
-			{
-				if (Sorting.IsNullOrWhiteSpace())
 				{
-					Sorting = "CreationTime DESC";
+					if (Sorting.IsNullOrWhiteSpace())
+					{
+						Sorting = "CreationTime DESC";
+					}
 				}
-			}
 	}
 }

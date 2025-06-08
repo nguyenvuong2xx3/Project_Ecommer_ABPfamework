@@ -6,6 +6,7 @@ using Acme.SimpleTaskApp.CartItems.Dtos;
 using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Carts.Dtos;
 using Acme.SimpleTaskApp.Categories;
+using Acme.SimpleTaskApp.Categories.Dto;
 using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.Products;
@@ -30,6 +31,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		private readonly IWebHostEnvironment webHostEnvironment;
 		private readonly ICategoryAppService _categoryAppService;
 		private readonly ICartAppService _cartAppService;
+
 		//private readonly ICartItemAppService _cartItemAppService;
 
 
@@ -86,16 +88,24 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			try
 			{
+				var category = new CategoryListDto();
 				input.MaxResultCount = page_size;
 				input.SkipCount = (page - 1) * page_size;
 
 				var result = await _productAppService.SearchProducts(input);
-
+				if(input.Category != null)
+				{
+					int categoryId = Convert.ToInt32(input.Category);
+					category = await _categoryAppService.GetByIdCategory(new EntityDto<int>(categoryId));
+				}
+				
 				int totalProducts = result.TotalCount;
 				int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
 
 				var model = new ProductViewModel(result.Items)
 				{
+					Category = category?.Name,
+					Keyword = input.Keyword,
 					TotalPages = totalPages,
 					PageNumber = page
 				};

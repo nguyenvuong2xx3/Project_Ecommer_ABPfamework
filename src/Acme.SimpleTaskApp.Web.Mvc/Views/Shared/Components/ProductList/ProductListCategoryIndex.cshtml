@@ -1,10 +1,9 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 @using static Acme.SimpleTaskApp.Products.Product
 @model ProductListViewModel
-
-<div class="container mt-4 ml-5 mr-5 customeContrainer" style="width: 1200px; padding-top: 100px; padding-left: 5px;">
+<div class="container mt-4 customeContrainer" style="width: 1200px; margin: 0 auto; padding-top: 100px;">
   <h3 style="padding-bottom: 25px;">Sản phẩm mới</h3>
-  <div class="row row-cols-6 g-3 d-flex flex-wrap">
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 d-flex flex-wrap">
 
     @{
       var recentProducts = Model.RelatedProducts.Items

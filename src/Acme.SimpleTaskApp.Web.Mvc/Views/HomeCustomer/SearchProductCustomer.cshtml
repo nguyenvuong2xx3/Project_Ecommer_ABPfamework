@@ -18,8 +18,17 @@
 	</environment>
 }
 
-<div class="container mt-4 ml-5 mr-5 " style="width: 1120px;">
-	<h3 style="padding-bottom: 25px;">Tất cả sản phẩm</h3>
+<div class="container mt-4" style="margin: 0 auto; padding-top: 200px;">
+    <h3 style="padding-bottom: 25px;">  
+       @if (!string.IsNullOrEmpty(Model.Keyword))  
+       {  
+           <span>Kết quả tìm kiếm - @Model.Keyword</span>  
+       }  
+       else if (!string.IsNullOrEmpty(Model.Category))  
+       {
+			<span>Kết quả tìm kiếm Danh mục - @Model.Category</span>
+		}  
+    </h3>
 	<div class="row row-cols-6 g-3 d-flex flex-wrap" style="padding-top: 30px;">
 		@foreach (var product in Model.Products)
 		{
@@ -61,6 +70,7 @@
 		}
 	</div>
 </div>
+
 <style>
 	/* Main container styling */
 	.customeContrainer {

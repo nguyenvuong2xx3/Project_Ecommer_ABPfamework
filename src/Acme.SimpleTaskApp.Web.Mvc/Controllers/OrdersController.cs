@@ -1,54 +1,110 @@
-﻿using Acme.SimpleTaskApp.Controllers;
+﻿using Abp.UI;
+using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Carts.Dtos;
+using Acme.SimpleTaskApp.Controllers;
+using Acme.SimpleTaskApp.OrderItems;
+using Acme.SimpleTaskApp.Orders;
+using Acme.SimpleTaskApp.Orders.Dtos;
+using Acme.SimpleTaskApp.Web.Models.Orders;
 using Microsoft.AspNetCore.Mvc;
-using MyProject.Orders;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
 	public class OrdersController : SimpleTaskAppControllerBase
 	{
-		private readonly IOrderDetailAppService _orderDetailAppService;
-		private readonly IOrderAppService _orderAppService;
-		private readonly IProductAppService _productAppService;
-
-
-		public OrdersController(IOrderDetailAppService orderDetailAppService, IProductAppService productAppService, IOrderAppService orderAppService)
+		private readonly ICartAppService _cartAppService;
+		private readonly IOrdersAppService _ordersAppService;
+		public OrdersController(ICartAppService cartAppService, IOrdersAppService ordersAppService)
 		{
-			_orderDetailAppService = orderDetailAppService;
-			_productAppService = productAppService;
-			_orderAppService = orderAppService;
+			_cartAppService = cartAppService;
+			_ordersAppService = ordersAppService;
 		}
-		public ActionResult Index()
+		public IActionResult Index()
+		{
+			return View();
+		}
+		public IActionResult IndexForCustomer()
 		{
 			return View();
 		}
 
+		public async Task<IActionResult> CreateOrder()
+		{
+			var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
+			var getCart = await _cartAppService.GetCart(new GetCartInput { UserId = currentUserId });
+			if (getCart.CartItems.Count > 0)
+			{
+				var orderDetails = getCart.CartItems.Select(cartItem => new OrderDetailDto
+				{
+					ProductId = cartItem.ProductId,
+					Quantity = cartItem.Quantity
+				}).ToList();
+
+				var orderId = await _ordersAppService.CreateOrder(new CreateOrderInput
+				{
+					UserId = currentUserId,
+					OrderDetails = orderDetails
+				});
+				await _cartAppService.DeleteCart(currentUserId);
+
+				var viewModel = await _ordersAppService.GetOrder(orderId);
+
+				var model = new OrderViewModel()
+				{
+					Status = viewModel.Status,
+					UserName = viewModel.UserName,
+					EmailAddress = viewModel.EmailAddress,
+					OrderDetails = viewModel.OrderDetails,
+					TotalPrice = viewModel.TotalPrice
+				};
+
+				return PartialView("_OrderSuccess", model);
+			}
+
+			return PartialView("_OrderSuccess", null);
+		}
+
 		public async Task<IActionResult> DetailOrder(int orderId)
 		{
-			var orderDetail = await _orderDetailAppService.GetAllOrder(orderId);
+			var viewModel = await _ordersAppService.GetOrder(orderId);
 
-			var productIds = orderDetail.Select(x => x.ProductId).Distinct().ToList();
-			var products = await _productAppService.GetProductByIds(productIds);
-
-			var model = new DetailOrderViewModel
+			var model = new OrderViewModel()
 			{
-				OrderList = orderDetail,
-				ProductList = products
+				Status = viewModel.Status,
+				UserName = viewModel.UserName,
+				EmailAddress = viewModel.EmailAddress,
+				OrderDetails  = viewModel.OrderDetails
 			};
-			return View("DetailOrder", model);
+			return PartialView("_DetailOrderModal", model);
 		}
-
-		public async Task<IActionResult> EditOrderModal(int orderId)
+		public async Task<IActionResult> DetailOrderForUser()
 		{
-			var order = await _orderAppService.GetOrderById(orderId);
+			var viewModel = await _ordersAppService.GetOrderByUserId();
 
-			var model = new OrderViewModel
+			var model = new OrderViewModel()
 			{
-				Order = order,
+				Status = viewModel.Status,
+				UserName = viewModel.UserName,
+				EmailAddress = viewModel.EmailAddress,
+				OrderDetails = viewModel.OrderDetails
 			};
-
-			return PartialView("EditOrderModal", model);
+			return PartialView("DetailOrderUserModal", model);
 		}
+		//public async Task<IActionResult> HistoryDetailOrderForUser()
+		//{
+		//	var viewModel = await _ordersAppService.GetOrdersByUserId();
+
+		//	var model = new OrderViewModel()
+		//	{
+		//		Status = viewModel.Status,
+		//		UserName = viewModel.UserName,
+		//		EmailAddress = viewModel.EmailAddress,
+		//		OrderDetails = viewModel.OrderDetails
+		//	};
+		//	return PartialView("DetailOrderUserModal", model);
+		//}
 	}
 }

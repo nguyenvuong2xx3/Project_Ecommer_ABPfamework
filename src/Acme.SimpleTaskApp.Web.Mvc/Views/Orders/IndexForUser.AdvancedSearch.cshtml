@@ -1,14 +1,6 @@
 ﻿<div class="abp-advanced-search p-3" style="width: 100%;">
   <form id="OrderSearchForm" class="form-horizontal" style="max-width: 100%;">
     <div style="display: flex; flex-wrap: wrap; gap: 15px; width: 100%;" class="align-items-center">
-      <!-- Ô tìm kiếm từ khóa -->
-      <div style="min-width: 250px;">
-        <label for="Keyword" class="font-weight-bold">@L("NameUser")</label>
-        <div class="input-group">
-          <input type="text" id="NameUser" name="NameUser" class="form-control txt-search w-100" placeholder="Nhập tên người dùng...">
-        </div>
-      </div>
-
       <!-- Dropdown phương tiện di chuyển -->
       <div style="min-width: 200px;">
         <label for="PaymentMethod" class="font-weight-bold">@L("PaymentMethod")</label>
@@ -26,7 +18,8 @@
           <option value="0">@L("Pending")</option>
           <option value="1">@L("Delivery")</option>
           <option value="2">@L("Success")</option>
-          <option value="3">@L("Canceled")</option>
+          <option value="3">@L("Reject")</option>
+          <option value="4">@L("Canceled")</option>
         </select>
       </div>
 

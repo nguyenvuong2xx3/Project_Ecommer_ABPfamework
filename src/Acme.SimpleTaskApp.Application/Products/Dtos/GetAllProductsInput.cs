@@ -16,7 +16,7 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 
         public DateTime CreateTime { get; set; }
 
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
 		    public string StateInput { get; set; }
 

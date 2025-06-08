@@ -102,15 +102,20 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			}
 
 			var loginResult = await GetLoginResultAsync(loginModel.UsernameOrEmailAddress, loginModel.Password, GetTenancyNameOrNull());
+			var getRoles = await _userManager.GetRolesAsync(loginResult.User);
 			// Kiểm tra vai trò người dùng và chuyển hướng đến view tương ứng
+			// Mặc định chuyển hướng về trang người dùng
 			returnUrl = "/HomeCustomer";
-			if (loginResult.User.Id == 2 || loginResult.User.Id == 1)
+
+			// Kiểm tra role
+			if (getRoles.Contains("Admin"))
 			{
 				returnUrl = "/Users";
 			}
-			// gọi service roles kiểm tra vai trò của tài khoản 
-			//var roles = await _userManager.GetRolesAsync()
-
+			else if (getRoles.Contains("User"))
+			{
+				returnUrl = "/HomeCustomer";
+			}
 
 			await _signInManager.SignInAsync(loginResult.Identity, loginModel.RememberMe);
 			await UnitOfWorkManager.Current.SaveChangesAsync();

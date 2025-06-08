@@ -4,19 +4,19 @@
 }
 
 <div class="container success-container" style="padding-top: 100px; margin-top: 100px; margin-bottom: 50px;">
-  <div class="text-center">
-    <div class="success-icon">
-      <i class="bi bi-check-circle-fill"></i>
-    </div>
-    <h2 class="mb-3">Đặt hàng thành công!</h2>
-    <p class="text-muted">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p>
-    <a asp-controller="HomeCustomer" asp-action="Index" class="btn btn-success mt-3">Tiếp tục mua sắm</a>
-  </div>
+  @* <div class="text-center"> *@
+  @*   <div class="success-icon"> *@
+  @*     <i class="bi bi-check-circle-fill"></i> *@
+  @*   </div> *@
+  @*   <h2 class="mb-3">Đặt hàng thành công!</h2> *@
+  @*   <p class="text-muted">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p> *@
+  @*   <a asp-controller="HomeCustomer" asp-action="Index" class="btn btn-success mt-3">Tiếp tục mua sắm</a> *@
+  @* </div> *@
 
   <div class="row mt-5">
     <div class="col-md-12">
       <div class="summary-box p-4">
-        <h4 class="mb-4 text-center">Tóm tắt đơn hàng</h4>
+        <h4 class="mb-4 text-center">Chi tiết đơn hàng</h4>
 
         <!-- Thông tin chung -->
         <div class="row mb-4">
@@ -43,36 +43,6 @@
                     break;
                   default:
                     <span class="badge bg-secondary text-white">Không xác định</span>
-                    break;
-                }
-              </span>
-            </div>
-            <div class="info-item mt-2">
-              <span class="fw-bold">Tên người đặt:</span>
-              <span>@Model.UserName</span>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="info-item">
-              <span class="fw-bold">Email:</span>
-              <span>@Model.EmailAddress</span>
-            </div>
-            <div class="info-item mt-2">
-              <span class="fw-bold">Phương thức thanh toán:</span>
-              <span class="payment-badge">
-                @switch (Model.PaymentMethod)
-                {
-                  case 0:
-                    <span class="badge bg-cash">Tiền mặt</span>
-                    break;
-                  case 1:
-                    <span class="badge bg-bank-transfer">Chuyển khoản</span>
-                    break;
-                  case 2:
-                    <span class="badge bg-credit-card">Thẻ tín dụng</span>
-                    break;
-                  default:
-                    <span class="badge bg-secondary">Khác</span>
                     break;
                 }
               </span>

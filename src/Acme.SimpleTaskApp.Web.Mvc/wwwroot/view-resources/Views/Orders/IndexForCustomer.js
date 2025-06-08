@@ -29,7 +29,7 @@
     serverSide: true,
     processing: true,
     listAction: {
-      ajaxFunction: _orderService.getAllOrder,
+      ajaxFunction: _orderService.getAllOrderForUser,
       inputFilter: getFilter
     },
     buttons: [
@@ -100,32 +100,36 @@
 
           if (row.status === 0) { // Chờ duyệt
             buttons.push(
-              `<button type="button" class="btn btn-sm bg-primary approve-order" data-order-id="${row.id}">`,
-              `<i class="fas fa-check"></i> ${l('Duyệt đơn')}`,
-              '</button>',
-              `<button type="button" class="btn btn-sm bg-danger reject-order" data-order-id="${row.id}">`,
-              `<i class="fas fa-times"></i> ${l('Từ chối')}`,
-              '</button>'
-            );
-          }
-          if (row.status === 1) { // Đã duyệt
-            buttons.push(
-              `<button type="button" class="btn btn-sm bg-success complete-order" data-order-id="${row.id}">`,
-              `<i class="fas fa-flag-checkered"></i> ${l('Hoàn thành')}`,
+              `<button type="button" style="color: white;" class="btn btn-sm bg-danger cancel-order" data-order-id="${row.id}">`,
+              `<i class="fas fa-times"></i> ${l('Hủy đơn')}`,
               '</button>'
             );
           }
 
-          // Nút chi tiết luôn hiển thị
+          if (row.status === 4) { // Đã hủy → cho đặt lại
+            buttons.push(
+              `<button type="button" style="color: white;" class="btn btn-sm bg-success reorder-order" data-order-id="${row.id}">`,
+              `<i class="fas fa-redo"></i> ${l('Đặt lại đơn')}`,
+              '</button>'
+            );
+          }
+
+          // Nút Detail luôn có
           buttons.push(
-            `<button type="button" class="btn btn-sm bg-info detail-order" data-order-id="${row.id}">`,
+            `<button type="button" style="color: white;" class="btn btn-sm bg-info detail-order" data-order-id="${row.id}">`,
             `<i class="fas fa-eye"></i> ${l('Detail')}`,
             '</button>'
           );
 
-          return buttons.join('');
+          // Bọc trong div để căn giữa + khoảng cách
+          return `
+      <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+        ${buttons.join('')}
+      </div>
+    `;
         }
       }
+
     ]
   });
 
@@ -146,39 +150,29 @@
     });
   });
 
-  $(document).on('click', '.reject-order', function () {
+  $(document).on('click', '.cancel-order', function () {
     var orderId = $(this).data('order-id');
-    _orderService.rejectOrder(orderId)
+    _orderService.cancelOrder(orderId)
       .done(function () {
-        abp.notify.success('Đã từ chối đơn thành công!');
+        abp.notify.success('Đã hủy đơn thành công!');
         _$ordersTable.ajax.reload();
 
       })
       .fail(function () {
-        abp.notify.error('Từ chối đơn thất bại!');
+        abp.notify.error('Hủy đơn thất bại!');
       });
   });
 
-  $(document).on('click', '.approve-order', function () {
+  $(document).on('click', '.reorder-order', function () {
     var orderId = $(this).data('order-id');
-    _orderService.approveOrder(orderId)
+    _orderService.reorderOrder(orderId)
       .done(function () {
-        abp.notify.success('Đã duyệt đơn thành công!');
+        abp.notify.success('Đã đặt lại đơn thành công!');
         _$ordersTable.ajax.reload();
+
       })
       .fail(function () {
-        abp.notify.error('Duyệt đơn thất bại!');
-      });
-  });
-  $(document).on('click', '.complete-order', function () {
-    var orderId = $(this).data('order-id');
-    _orderService.completeOrder(orderId)
-      .done(function () {
-        abp.notify.success('Đã duyệt đơn thành công!');
-        _$ordersTable.ajax.reload();
-      })
-      .fail(function () {
-        abp.notify.error('Duyệt đơn thất bại!');
+        abp.notify.error('Hủy đơn thất bại!');
       });
   });
 

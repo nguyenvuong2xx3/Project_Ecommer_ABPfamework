@@ -95,5 +95,16 @@
 		<text name="FullName" value="Tên đầy đủ" />
 		<text name="IsActive" value="Đang hoạt động" />
 		<text name="Version" value="Phiên bản" />
+		<text name="PaymentMethod" value="Phương thức thanh toán" />
+		<text name="CashPayment" value="Tiền mặt" />
+		<text name="TransferBank" value="Chuyển khoản" />
+		<text name="Pending" value="Đang chờ" />
+		<text name="Delivery" value="Đang giao" />
+		<text name="Success" value="Hoàn thành" />
+		<text name="Canceled" value="Đã hủy" />
+		<text name="Reject" value="Từ chối" />
+		<text name="OrderStatus" value="Trạng thái đơn hàng" />
+		<text name="TotalAmount" value="Tổng giá trị đơn hàng" />
+		<text name="Status" value="Trạng thái đơn hàng" />
 	</texts>
 </localizationDictionary>

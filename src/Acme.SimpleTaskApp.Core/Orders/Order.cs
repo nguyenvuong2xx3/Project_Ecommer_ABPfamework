@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Acme.SimpleTaskApp.OrderItems;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,5 +19,9 @@ namespace Acme.SimpleTaskApp.Orders
 		public long UserId { get; set; }
 		//public decimal TotalAmount { get; set; }
 		public int Status { get; set; } // 0: Pending, 1: Completed, 2: Cancelled
+
+		public decimal TotalPrice { get; set; }
+		public virtual ICollection<OrderDetails> OrderDetails { get; set; }
+
 	}
 }

@@ -2,14 +2,15 @@
 @model Acme.SimpleTaskApp.Web.Models.Orders.OrderViewModel
 
 @{
-	ViewBag.Title = L("Orders");
-	ViewBag.CurrentPageName = PageNames.Orders;
+	ViewData["Title"] = "Order";
+	Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
+
 
 @section scripts
 {
 	<environment names="Development">
-		<script src="~/view-resources/Views/Orders/Index.js" asp-append-version="true"></script>
+		<script src="~/view-resources/Views/Orders/IndexForCustomer.js" asp-append-version="true"></script>
 	</environment>
 
 }
@@ -26,9 +27,9 @@
 </section>
 <section class="content">
 	<div class="container-fluid">
-		<div class="row">
+		<div class="row" style="padding: 100px 300px 0 300px;">
 			<div class="col-12">
-				@await Html.PartialAsync("~/Views/Orders/Index.AdvancedSearch.cshtml")
+				@await Html.PartialAsync("~/Views/Orders/IndexForUser.AdvancedSearch.cshtml")
 				<div class="card">
 					<div class="card-header">
 						<div class="row">

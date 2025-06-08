@@ -15,5 +15,7 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 		public decimal NewPrice { get; set; } // Price at the time of order
 
 		public int Quantity { get; set; } // Quantity ordered
+
+		public decimal TotalUnit { get; set; }
 	}
 }

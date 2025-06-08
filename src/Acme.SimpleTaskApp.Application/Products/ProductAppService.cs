@@ -181,6 +181,7 @@ namespace Acme.SimpleTaskApp.Products
 			if (!string.IsNullOrWhiteSpace(input.Category))
 			{
 				int categoryId = Convert.ToInt32(input.Category);
+				var getcategory = await _categoryRepository.GetAsync(categoryId);
 				productQuery = productQuery.Where(x => x.CategoryId == categoryId);
 			}
 			if (!string.IsNullOrWhiteSpace(input.StateInput) && Enum.TryParse<ProductState>(input.StateInput, out var state))
@@ -199,7 +200,7 @@ namespace Acme.SimpleTaskApp.Products
 																				Price = p.Price,
 																				State = p.State,
 																				CreationTime = p.CreationTime,
-																				Image = p.Image
+																				Image = p.Image,
 																			}).ToListAsync();
 
 			return new PagedResultDto<ProductListDto>(count, productDtos);

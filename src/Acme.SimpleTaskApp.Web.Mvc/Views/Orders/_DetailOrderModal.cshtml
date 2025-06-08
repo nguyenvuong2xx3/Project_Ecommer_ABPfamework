@@ -1,0 +1,104 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Orders
+@model OrderViewModel
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chi tiết đơn hàng"))
+
+<div class="modal-body">
+  <div class="form-group row">
+    <label class="col-md-3 col-form-label">Trạng thái</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @switch (Model.Status)
+        {
+          case 0:
+            @:Chờ xác nhận
+            break;
+          case 1:
+            @:Đã xác nhận
+            break;
+          case 2:
+            @:Đang giao
+            break;
+          case 3:
+            @:Hoàn thành
+            break;
+          case 4:
+            @:Đã hủy
+            break;
+          default:
+            @:Không xác định
+            break;
+        }
+      </p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-md-3 col-form-label">Tên người đặt</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">@Model.UserName</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-md-3 col-form-label">Email</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">@Model.EmailAddress</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-md-3 col-form-label">Phương thức thanh toán</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @switch (Model.PaymentMethod)
+        {
+          case 0:
+            @:Tiền mặt
+            break;
+          case 1:
+            @:Chuyển khoản
+            break;
+          case 2:
+            @:Thẻ tín dụng
+            break;
+          default:
+            @:Khác
+            break;
+        }
+      </p>
+    </div>
+  </div>
+  <hr />
+  <h5>Chi tiết sản phẩm</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Mã SP</th>
+          <th>Tên sản phẩm</th>
+          <th>Ảnh</th>
+          <th>Giá tại thời điểm đặt</th>
+          <th>Số lượng</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var item in Model.OrderDetails)
+        {
+          <tr>
+            <td>@item.ProductId</td>
+            <td>@item.ProductName</td>
+            <td>
+              @if (!string.IsNullOrEmpty(item.ImageUrl))
+              {
+                <img src="@item.ImageUrl" alt="@item.ProductName" style="width:60px;height:60px;object-fit:cover;" class="img-thumbnail" />
+              }
+            </td>
+            <td>@item.NewPrice.ToString("N0")</td>
+            <td>@item.Quantity</td>
+            <td>@item.TotalUnit.ToString("N0")</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

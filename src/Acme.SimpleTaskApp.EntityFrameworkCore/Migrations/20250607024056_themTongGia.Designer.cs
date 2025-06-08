@@ -4,6 +4,7 @@ using Acme.SimpleTaskApp.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Acme.SimpleTaskApp.Migrations
 {
     [DbContext(typeof(SimpleTaskAppDbContext))]
-    partial class SimpleTaskAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250607024056_themTongGia")]
+    partial class themTongGia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
