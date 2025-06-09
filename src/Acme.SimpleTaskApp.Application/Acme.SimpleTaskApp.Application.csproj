@@ -12,6 +12,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+		<PackageReference Include="Abp.MailKit" Version="8.4.0" />
 		<PackageReference Include="EPPlus" Version="7.2.5" />
 		<PackageReference Include="EPPlus.System.Drawing" Version="7.5.0" />
 		<PackageReference Include="MiniExcel" Version="1.41.1" />

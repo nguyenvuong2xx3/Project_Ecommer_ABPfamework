@@ -175,7 +175,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 											"Orders",
 											L("Orders"),
 											url: "Orders",
-											icon: "fa fa-globe",
+											icon: "fas fa-box-open",
 							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_orders)
 
 							)

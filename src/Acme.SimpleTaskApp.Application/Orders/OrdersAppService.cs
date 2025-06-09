@@ -55,7 +55,7 @@ namespace Acme.SimpleTaskApp.Orders
 				OrderDetails orderDetail = new OrderDetails
 				{
 					ProductId = orderDetailDto.ProductId,
-					OrderId = orderId, // Associate the order detail with the created order
+					OrderId = orderId,
 					Quantity = orderDetailDto.Quantity,
 					NewPrice = getProduct.Price
 				};

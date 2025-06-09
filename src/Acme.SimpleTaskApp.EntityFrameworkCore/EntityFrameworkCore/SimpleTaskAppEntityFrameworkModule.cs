@@ -1,4 +1,5 @@
 ﻿using Abp.EntityFrameworkCore.Configuration;
+using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.EntityFrameworkCore;
@@ -8,7 +9,7 @@ namespace Acme.SimpleTaskApp.EntityFrameworkCore
 {
     [DependsOn(
         typeof(SimpleTaskAppCoreModule), 
-        typeof(AbpZeroCoreEntityFrameworkCoreModule))]
+        typeof(AbpZeroCoreEntityFrameworkCoreModule), typeof(AbpMailKitModule))]
     public class SimpleTaskAppEntityFrameworkModule : AbpModule
     {
         /* Used it tests to skip dbcontext registration, in order to use in-memory database of EF Core */

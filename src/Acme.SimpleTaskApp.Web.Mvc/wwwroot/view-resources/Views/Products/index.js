@@ -91,7 +91,7 @@
                        `   <button type="button" class="btn btn-sm bg-danger delete-product" data-product-id="${row.id}" data-product-name="${row.name}">`,
                        `       <i class="fas fa-trash"></i> ${l('Delete')}`,
                        '   </button>',
-                       `   <button type="button" class="btn btn-sm bg-info detail-product" data-product-id="${row.id}" data-toggle="modal" >`,
+                       `   <button type="button" class="btn btn-sm bg-info detail-product" style="margin-top: 5px;" data-product-id="${row.id}" data-toggle="modal" >`,
                        `       <i class="fas fa-eye"></i> ${l('Details')}`,
                        '   </button>'
                    ].join('');
@@ -119,19 +119,16 @@
 
     if (input.files && input.files[0]) {
       const reader = new FileReader();
-
       reader.onload = function (e) {
         preview.src = e.target.result;
         preview.style.display = 'block';
-        deleteBtn.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block'; // Chỉ hiện khi có ảnh
       };
-
       reader.readAsDataURL(input.files[0]);
     } else {
-      // Ẩn ảnh và nút xóa nếu không có file
       preview.src = '';
       preview.style.display = 'none';
-      deleteBtn.style.display = 'none';
+      deleteBtn.style.display = 'none'; // Ẩn nếu không có ảnh
     }
   }
 
@@ -184,7 +181,8 @@
                 $("#error-message").html(errorMessage).show();
             }
         }).done(function () {
-            /*resetDefaultImage();*/
+          /*resetDefaultImage();*/
+          resetDefaultImage();
             _$modal.modal('hide');
             _$form[0].reset();
             abp.notify.info(l('Lưu thành công'));
@@ -333,6 +331,24 @@
            return false;  
        }  
    });
+  function resetDefaultImage() {
+    const input = document.getElementById('productImage');
+    const preview = document.getElementById('productImagePreview');
+    const deleteBtn = document.getElementById('deleteProductImageBtn');
+    if (input) input.value = '';
+    if (preview) {
+      preview.src = '';
+      preview.style.display = 'none';
+    }
+    if (deleteBtn) deleteBtn.style.display = 'none';
+  }
+  // Khi modal đóng, reset cả form & ảnh:
+  $('#ProductCreateModal').on('hidden.bs.modal', function () {
+    $('#ProductCreateModal form')[0].reset(); // hoặc _$form[0].reset();
+    resetDefaultImage();
+    $("#error-message").hide(); // reset lỗi nếu có
+  });
+
 
   // ===== Xử lý Import Excel =====
   $(document).ready(function () {
@@ -427,6 +443,7 @@
         Price: {
           required: "Giá sản phẩm không được để trống",
           min: "Giá phải lớn hơn 1000",
+					number: "Giá phải là một số hợp lệ"
         },
         ImageFile: {
           extension: "Ảnh phải có định dạng .jpg, .jpeg, .png, .gif"

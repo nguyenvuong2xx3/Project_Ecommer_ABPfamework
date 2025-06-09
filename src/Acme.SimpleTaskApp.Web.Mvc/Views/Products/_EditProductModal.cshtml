@@ -25,12 +25,20 @@
 				<input type="text" class="form-control" name="Price" value="@Model.Product.Price.ToString("0")" required>
 			</div>
 		</div>
-		<div class="form-group row required">
-			<label class="col-md-3 col-form-label">@L("Image")</label>
+		<div class="form-group row">
+			<label class="col-md-3 col-form-label">Ảnh sản phẩm</label>
 			<div class="col-md-9">
-				<label for="productImage" class="form-label">Ảnh sản phẩm ban đầu</label>
-				<img src="@Model.Product.Image" alt="Ảnh sản phẩm" class="img-thumbnail d-block mx-auto" width="400" height="400" style="object-fit: cover;">
-				<input type="file" class="form-control" id="productImage" name="ImageFile" accept="image/*">
+				<div class="row">
+					<div class="col-md-6 text-center">
+						<div>Ảnh ban đầu</div>
+						<img src="@Model.Product.Image" alt="Ảnh cũ" id="oldProductImage" class="img-thumbnail mb-2" width="200" height="200" style="object-fit:cover;">
+					</div>
+					<div class="col-md-6 text-center">
+						<div>Ảnh mới</div>
+						<img src="" alt="Ảnh mới" id="newProductImagePreview" class="img-thumbnail mb-2" width="200" height="200" style="object-fit:cover; display:none;">
+					</div>
+				</div>
+				<input type="file" class="form-control mt-2" id="productImage" name="ImageFile" accept="image/*">
 			</div>
 		</div>
 		<div class="form-group row required">

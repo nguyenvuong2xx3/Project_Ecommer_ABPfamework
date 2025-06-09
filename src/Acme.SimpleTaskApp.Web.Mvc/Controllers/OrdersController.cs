@@ -31,7 +31,9 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return View();
 		}
 
-		public async Task<IActionResult> CreateOrder()
+
+		[HttpPost]
+		public async Task<IActionResult> CreateOrder(int PaymentMethod)
 		{
 			var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
 			var getCart = await _cartAppService.GetCart(new GetCartInput { UserId = currentUserId });
@@ -46,7 +48,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				var orderId = await _ordersAppService.CreateOrder(new CreateOrderInput
 				{
 					UserId = currentUserId,
-					OrderDetails = orderDetails
+					OrderDetails = orderDetails,
+					PaymentMethod = PaymentMethod
 				});
 				await _cartAppService.DeleteCart(currentUserId);
 

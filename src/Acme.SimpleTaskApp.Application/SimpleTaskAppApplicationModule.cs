@@ -1,4 +1,5 @@
 ﻿using Abp.AutoMapper;
+using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Acme.SimpleTaskApp.Authorization;
@@ -7,7 +8,8 @@ namespace Acme.SimpleTaskApp
 {
     [DependsOn(
         typeof(SimpleTaskAppCoreModule), 
-        typeof(AbpAutoMapperModule))]
+        typeof(AbpAutoMapperModule), typeof(AbpMailKitModule))
+    ]
     public class SimpleTaskAppApplicationModule : AbpModule
     {
         public override void PreInitialize()

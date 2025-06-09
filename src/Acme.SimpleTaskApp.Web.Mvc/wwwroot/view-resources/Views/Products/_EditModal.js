@@ -6,6 +6,21 @@
         _$form = _$modal.find('form');
 
 
+  // Đảm bảo chỉ gắn sự kiện 1 lần
+  $(document).off('change', '#productImage');
+  $(document).on('change', '#productImage', function (event) {
+    const input = event.target;
+    const $preview = $('#newProductImagePreview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        $preview.attr('src', e.target.result).show();
+      };
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      $preview.attr('src', '').hide();
+    }
+  });
 
     _$form.find('.save-button').on('click', (e) => {
         e.preventDefault();

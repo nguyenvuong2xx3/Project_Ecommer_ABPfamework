@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Thông báo đặt hàng thành công</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mail-container {
+      max-width: 520px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px 28px 24px 28px;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      width: 120px;
+      height: auto;
+    }
+
+    .title {
+      color: #1b6dc1;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .content {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .footer {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-top: 28px;
+    }
+
+    .order-btn {
+      display: block;
+      background: #1b6dc1;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+      padding: 10px 0;
+      margin: 28px 0 0 0;
+      font-weight: bold;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mail-container">
+    <img class="logo" src="https://scontent.fhan17-1.fna.fbcdn.net/v/t39.30808-6/453497900_910157747795300_3529064844416801387_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=pukwBV4iVG0Q7kNvwH5rrXZ&_nc_oc=Admw5ozE17ILQXSZA7fd4a0ly3Fu5H4vq2xlR-wKJSgU4qweIo5x5I4Afxur5Dp-7pI&_nc_zt=23&_nc_ht=scontent.fhan17-1.fna&_nc_gid=lCBWiCEfFIcVYB53Df0VtA&oh=00_AfPz8Imj6mcbYhHg3z5XwUcDkyqwBeFcCOkSX2zlWnqrOw&oe=684C6A5D" alt="HUMG Logo" />
+    <div class="title">Đặt hàng thành công!</div>
+    <div class="content">
+      <p>Xin chào <b>{{UserName}}</b>,</p>
+      <p>
+        Cảm ơn bạn đã đặt hàng tại <b>HUMG Store</b> vào lúc <b>{{OrderTime}}</b>.<br>
+        Chúng tôi đã nhận được đơn hàng của bạn và đang xử lý.<br>
+        Bạn có thể kiểm tra tình trạng đơn hàng tại mục chi tiết đơn hàng
+      </p>
+      <p>
+        Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ lại với chúng tôi.<br>
+        Cảm ơn bạn đã tin tưởng và mua sắm tại HUMG!
+      </p>
+    </div>
+    <div class="footer">
+      &copy; 2025 HUMG Store. Mọi quyền được bảo lưu.
+    </div>
+  </div>
+</body>
+</html>

@@ -97,30 +97,40 @@
 				</table>
 			</div>
 
-			<div class="mt-5">
-				<input type="text" class="border-0 border-bottom rounded me-5 py-3 mb-4" placeholder="Coupon Code">
-				<button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply Coupon</button>
-			</div>
-
 			<div class="row g-4 justify-content-end">
 				<div class="col-8"></div>
 				<div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
 					<div class="bg-light rounded">
-						<div class="p-4">
-							<h1 class="display-6 mb-4">Cart <span class="fw-normal">Total</span></h1>
-							<div class="d-flex justify-content-between mb-4">
-								<h5 class="mb-0 me-4">Subtotal:</h5>
-								<p class="mb-0">@total.ToString("N0")đ</p>
-							</div>
-						</div>
-						<div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-							<h5 class="mb-0 ps-4 me-4">Total</h5>
-							<p class="mb-0 pe-4">@total.ToString("N0")đ</p>
-						</div>
 						<form asp-controller="Orders" asp-action="CreateOrder" method="post">
-							<button type="submit" class="btn btn-order w-100">
-								<i class="fa fa-credit-card me-2"></i>Đặt hàng
-							</button>
+							<div class="p-4">
+								<h1 class="display-6 mb-4">Tổng đơn hàng</h1>
+							</div>
+							<div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 ps-4 me-4">Tổng giá tiền</h5>
+								<p class="mb-0 pe-4">@total.ToString("N0")đ</p>
+							</div>
+							<div class="px-4 py-2">
+								<div class="d-flex flex-row align-items-center gap-3 mb-3 justify-content-center">
+									<div class="form-check mb-0 me-3">
+										<input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="0" checked>
+										<label class="form-check-label" for="paymentCOD">
+											Thanh toán khi nhận hàng (COD)
+										</label>
+									</div>
+									<div class="form-check mb-0">
+										<input class="form-check-input" type="radio" name="PaymentMethod" id="paymentBank" value="1">
+										<label class="form-check-label" for="paymentBank">
+											Chuyển khoản ngân hàng
+										</label>
+									</div>
+								</div>
+								<!-- Nút đặt hàng căn giữa và nổi bật -->
+								<div class="d-flex justify-content-center mt-3">
+									<button type="submit" id="Btn_addOrder" class="btn btn-primary btn-lg fw-bold shadow">
+										<i class="fa fa-credit-card me-2"></i>Đặt hàng
+									</button>
+								</div>
+							</div>
 						</form>
 					</div>
 				</div>

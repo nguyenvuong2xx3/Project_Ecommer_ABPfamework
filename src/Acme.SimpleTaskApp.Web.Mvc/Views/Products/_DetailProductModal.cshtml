@@ -2,7 +2,7 @@
 @using Acme.SimpleTaskApp.Web.Models.Products
 @model DetailProductModalViewModel
 
-@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("Chi tiết sản phẩm")))
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chi tiết sản phẩm"))
 
 <div class="modal-body">
     <!-- Các trường dữ liệu sản phẩm -->

@@ -1,4 +1,5 @@
 ﻿using Abp.Localization;
+using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Security;
@@ -14,8 +15,8 @@ using Acme.SimpleTaskApp.Timing;
 
 namespace Acme.SimpleTaskApp
 {
-    [DependsOn(typeof(AbpZeroCoreModule))]
-    public class SimpleTaskAppCoreModule : AbpModule
+    [DependsOn(typeof(AbpZeroCoreModule),typeof(AbpMailKitModule))]
+	public class SimpleTaskAppCoreModule : AbpModule
     {
         public override void PreInitialize()
         {
@@ -33,7 +34,7 @@ namespace Acme.SimpleTaskApp
 
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
-
+            
             Configuration.Settings.Providers.Add<AppSettingProvider>();
             
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));

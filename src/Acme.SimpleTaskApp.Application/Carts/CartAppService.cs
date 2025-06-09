@@ -27,6 +27,8 @@ public class CartAppService : ApplicationService, ICartAppService
 
 	}
 
+	[Authorize]
+
 	public async Task CreateCart(int productId, int quantity)
 	{
 		var userId = AbpSession.UserId;

@@ -47,7 +47,7 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\img\Sliders\" />
+    <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\Tours\" />
     <Folder Include="wwwroot\libs\" />
     <Folder Include="wwwroot\view-resources\Views\_Bundles\" />
