@@ -38,10 +38,10 @@
 						<h5 class="card-name">@product.Name</h5>
 						<div class="product-price">
 							<h5 class="current-price">@product.Price.ToString("#,##0")₫</h5>
-							<div class="old-price">
-								<h5 class="strikethrough">2.990.000₫</h5>
-								<span class="discount" style="color: #ff0000;">-13%</span>
-							</div>
+							@* <div class="old-price"> *@
+							@* 	<h5 class="strikethrough">2.990.000₫</h5> *@
+							@* 	<span class="discount" style="color: #ff0000;">-13%</span> *@
+							@* </div> *@
 						</div>
 						<div class="stock-status">
 							@if (product.State == ProductState.Available)

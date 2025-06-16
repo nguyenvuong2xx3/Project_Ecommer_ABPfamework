@@ -34,16 +34,16 @@
       var newCount = currentCount > 0 ? currentCount - 1 : 0;
 
       // Nếu số lượng sau khi giảm <= 0, xóa sản phẩm khỏi giỏ hàng
-      if (quantity <= 1) {
-        deleteCartItem(productId, cartId);
+      if (quantity < 1) {
+        deleteCartItem(productId, cartId, $cartCount);
 
-        // Giảm badge giỏ hàng
-        $cartCount.text(newCount);
-        if (newCount > 0) {
-          $cartCount.css('display', 'inline-block');
-        } else {
-          $cartCount.css('display', 'none');
-        }
+        //// Giảm badge giỏ hàng
+        //$cartCount.text(newCount);
+        //if (newCount > 0) {
+        //  $cartCount.css('display', 'inline-block');
+        //} else {
+        //  $cartCount.css('display', 'none');
+        //}
       } else {
         // Giảm số lượng sản phẩm
         let newQuantity = quantity - 1;
@@ -114,6 +114,13 @@
             .done(function () {
               abp.notify.info('Xóa thành công!');
               location.reload();
+              //// Giảm badge giỏ hàng
+              //$cartCount.text(newCount);
+              //if (newCount > 0) {
+              //  $cartCount.css('display', 'inline-block');
+              //} else {
+              //  $cartCount.css('display', 'none');
+              //}
             })
             .fail(function (error) {
               abp.notify.error('Xóa thất bại!');

@@ -21,6 +21,8 @@ using System.Drawing;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
 using Abp.Extensions;
+using Abp.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 //using Abp.Authorization;
 //using Acme.SimpleTaskApp.Authorization;
 namespace Acme.SimpleTaskApp.Products
@@ -40,7 +42,7 @@ namespace Acme.SimpleTaskApp.Products
 			_env = env;
 		}
 
-		//[AbpAuthorize(PermissionNames.Pages_products)]
+		[AbpAuthorize(PermissionNames.Pages_products)]
 		public async Task<PagedResultDto<ProductListDto>> GetAllProducts(GetAllProductsInput input)
 		{
 			var products = _productRepository.GetAll();
@@ -64,7 +66,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 
 
-		//[AbpAuthorize(PermissionNames.Pages_products_create)]
+		[AbpAuthorize(PermissionNames.Pages_products_create)]
 		public async Task<ProductListDto> CreateProducts(CreateProductDto input)
 		{
 			var product = new Product
@@ -93,7 +95,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 
 
-		//[AbpAuthorize(PermissionNames.Pages_products_delete)]
+		[AbpAuthorize(PermissionNames.Pages_products_delete)]
 		public async Task DeleteProducts(EntityDto<int> input)
 		{
 			// Xóa sản phẩm
@@ -125,7 +127,7 @@ namespace Acme.SimpleTaskApp.Products
 			}
 		}
 
-		//[AbpAuthorize(PermissionNames.Pages_products_update)]
+		[AbpAuthorize(PermissionNames.Pages_products_update)]
 		public async Task<ProductListDto> UpdateProducts(UpdateProductDto input)
 		{
 			// Lấy sản phẩm hiện có
@@ -168,7 +170,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 
 
-		//[AbpAuthorize(PermissionNames.Pages_products_search)]
+		[AbpAuthorize(PermissionNames.Pages_products_search)]
 		public async Task<PagedResultDto<ProductListDto>> SearchProducts(GetAllProductsInput input)
 		{
 			var productQuery = _productRepository.GetAll();

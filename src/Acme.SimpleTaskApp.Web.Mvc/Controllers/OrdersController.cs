@@ -61,7 +61,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					UserName = viewModel.UserName,
 					EmailAddress = viewModel.EmailAddress,
 					OrderDetails = viewModel.OrderDetails,
-					TotalPrice = viewModel.TotalPrice
+					TotalPrice = viewModel.TotalPrice,
+					PaymentMethod = viewModel.PaymentMethod
 				};
 
 				return PartialView("_OrderSuccess", model);

@@ -113,5 +113,15 @@
 		<text name="Orders" value="Đơn đặt hàng" />
 		<text name="HomeCustomer" value="Trang người dùng" />
 		<text name="EditProduct" value="Chỉnh sửa sản phẩm" />
+		<text name="EditCategory" value="Chỉnh sửa danh mục" />
+		<text name="CreateCategory" value="Tạo mới danh mục" />
+		<text name="DeleteCategory" value="Xóa danh mục" />
+		<text name="SearchProduct" value="Tìm kiếm sản phẩm" />
+		<text name="CreateProduct" value="Tạo mới sản phẩm" />
+		<text name="UpdateCategory" value="Chỉnh sửa danh mục" />
+		<text name="DeleteProduct" value="Xóa sản phẩm" />
+		<text name="UpdateProduct" value="Chỉnh sửa sản phẩm" />
+		<text name="RoleDescription" value="Mô tả vai trò" />
+		<text name="Permissions" value="Danh sách quyền" />
 	</texts>
 </localizationDictionary>

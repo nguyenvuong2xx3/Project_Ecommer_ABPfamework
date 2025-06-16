@@ -8,8 +8,8 @@
   var getFilter = function () {
     let dataFilter = {};
 
-    // Lấy giá trị từ ô tìm kiếm NameUser
-    dataFilter.userName = $('#NameUser').val();
+    //// Lấy giá trị từ ô tìm kiếm NameUser
+    //dataFilter.userName = $('#NameUser').val();
 
     // Lấy giá trị từ dropdown PaymentMethod
     let paymentMethod = $('#PaymentMethod').val();

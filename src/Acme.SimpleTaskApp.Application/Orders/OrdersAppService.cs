@@ -119,7 +119,7 @@ namespace Acme.SimpleTaskApp.Orders
 			var query = _ordersRepository.GetAll();
 			var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
 			// Filter theo NameUser (tên user)
-			query.Where(order => order.UserId == currentUserId);
+			query = query.Where(order => order.UserId == currentUserId);
 			if (!string.IsNullOrWhiteSpace(input.UserName))
 			{
 				// Lọc những order mà User liên quan có Name hoặc UserName chứa input.NameUser

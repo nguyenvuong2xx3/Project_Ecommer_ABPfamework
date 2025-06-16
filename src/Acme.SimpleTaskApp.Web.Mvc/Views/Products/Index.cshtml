@@ -107,7 +107,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="ImportExcelModalLabel">@L("ImportFromExcel")</h5>
+				<h5 class="modal-title" id="ImportExcelModalLabel">Nhập sản phẩm bằng file Excel</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -117,16 +117,16 @@
 					<div class="form-group">
 						<div class="custom-file">
 							<input type="file" class="custom-file-input" id="excelFile" accept=".xlsx,.xls" required>
-							<label class="custom-file-label" for="excelFile">@L("ChooseExcelFile")</label>
+							<label class="custom-file-label" for="excelFile">Chọn file Excel</label>
 						</div>
-						<small class="form-text text-muted">@L("OnlyExcelFilesAllowed")</small>
+						<small class="form-text text-muted">Chỉ nhận file excel</small>
 						<div id="importError" class="text-danger mt-2" style="display: none;"></div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">@L("Cancel")</button>
 					<button type="button" id="btnImportExcel" class="btn btn-primary">
-						<i class="fa fa-upload"></i> @L("Import")
+						<i class="fa fa-upload"></i> Nhập
 					</button>
 				</div>
 			</form>
