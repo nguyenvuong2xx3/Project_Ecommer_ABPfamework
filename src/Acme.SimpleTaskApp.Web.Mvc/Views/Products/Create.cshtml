@@ -1,0 +1,274 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Products
+@model CreateProductViewModel
+
+@{
+  ViewBag.Title = "Thêm mới sản phẩm";
+}
+
+@section styles {
+  <link rel="stylesheet" href="~/Common/tagify/dist/tagify.css">
+}
+@section scripts
+{
+  <script src="~/Common/tagify/dist/tagify.js"></script>
+  <environment names="Development">
+    <script src="~/view-resources/Views/Products/create.js" asp-append-version="true"></script>
+  </environment>
+}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1><i class="fas fa-plus-circle"></i> @ViewBag.Title</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index">Sản phẩm</a></li>
+          <li class="breadcrumb-item active">Thêm mới</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <form id="productCreateForm" method="post" asp-controller="Products" asp-action="CreateProduct" enctype="multipart/form-data">
+      <div class="card card-primary card-tabs">
+        <div class="card-header p-0 pt-1">
+          <ul class="nav nav-tabs" id="product-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="tab-general-link" data-toggle="pill" href="#tab-general" role="tab" aria-controls="tab-general" aria-selected="true"><i class="fas fa-info-circle"></i> Thông tin chung</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab-images-link" data-toggle="pill" href="#tab-images" role="tab" aria-controls="tab-images" aria-selected="false"><i class="fas fa-images"></i> Hình ảnh chung</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab-variants-link" data-toggle="pill" href="#tab-variants" role="tab" aria-controls="tab-variants" aria-selected="false"><i class="fas fa-sitemap"></i> Các biến thể</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content" id="product-tabs-content">
+            <!-- Tab 1: Thông tin chung & Thông số kỹ thuật -->
+            <div class="tab-pane fade show active" id="tab-general" role="tabpanel" aria-labelledby="tab-general-link">
+              <div class="row">
+                <div class="col-md-7">
+                  <h5 class="mb-3">Thông tin cơ bản</h5>
+                  <div class="form-group">
+                    <label for="Name">Tên sản phẩm <span class="text-danger">*</span></label>
+                    <input type="text" name="Name" id="Name" class="form-control" required minlength="5" maxlength="256" placeholder="Ví dụ: iPhone 15 Pro">
+                  </div>
+                  <div class="form-group">
+                    <label for="Description">Mô tả chung</label>
+                    <textarea name="Description" id="Description" class="form-control" rows="5" placeholder="Mô tả các tính năng chung, thiết kế của dòng sản phẩm..."></textarea>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="CategoryId">Danh mục <span class="text-danger">*</span></label>
+                        <select name="CategoryId" id="CategoryId" class="form-control" required>
+                          <option value="">-- Chọn danh mục --</option>
+                          @foreach (var category in Model.Categories)
+                          {
+                            <option value="@category.Id">@category.Name</option>
+                          }
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="BrandId">Thương hiệu <span class="text-danger">*</span></label>
+                        <select name="BrandId" id="BrandId" class="form-control" required>
+                          <option value="">-- Chọn thương hiệu --</option>
+                          @* Giả sử bạn có Model.Brands *@
+                          @* @foreach (var brand in Model.Brands) 
+                                                    {
+                                                        <option value="@brand.Id">@brand.Name</option>
+                                                    } *@
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5">
+                  <h5 class="mb-3">Thông số kỹ thuật chung</h5>
+                  <div class="form-group">
+                    <label for="Screen">Màn hình</label>
+                    <input type="text" name="Screen" id="Screen" class="form-control" placeholder="Ví dụ: 6.1 inch, Super Retina XDR">
+                  </div>
+                  <div class="form-group">
+                    <label for="Processor">Bộ xử lý</label>
+                    <input type="text" name="Processor" id="Processor" class="form-control" placeholder="Ví dụ: Apple A17 Pro">
+                  </div>
+                  <div class="form-group">
+                    <label for="CameraSystem">Hệ thống Camera</label>
+                    <input type="text" name="CameraSystem" id="CameraSystem" class="form-control" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)">
+                  </div>
+                  <div class="form-group">
+                    <label for="Battery">Pin</label>
+                    <input type="text" name="Battery" id="Battery" class="form-control" placeholder="Ví dụ: Xem video 23 giờ">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Hình ảnh chung -->
+            <div class="tab-pane fade" id="tab-images" role="tabpanel" aria-labelledby="tab-images-link">
+              <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+              <div class="image-uploader" onclick="document.getElementById('ImageFiles').click()">
+                <div class="uploader-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <p>Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
+                <small class="text-muted">Đây là các ảnh chung cho sản phẩm (ảnh marketing, tính năng,...)</small>
+              </div>
+              <div class="mt-3" id="imagePreviewContainer">
+                <!-- Image previews will be shown here -->
+              </div>
+            </div>
+
+            <!-- Tab 3: Các biến thể -->
+            <div class="tab-pane fade" id="tab-variants" role="tabpanel" aria-labelledby="tab-variants-link">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card card-outline card-info">
+                    <div class="card-header">
+                      <h3 class="card-title">1. Nhập các loại thuộc tính</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-4">
+                          <label>Màu sắc</label>
+                          <input name="option_color" class="form-control" placeholder="Nhập các màu, nhấn Enter để thêm">
+                        </div>
+                        <div class="col-md-4">
+                          <label>Dung lượng</label>
+                          <input name="option_storage" class="form-control" placeholder="Ví dụ: 128GB, 256GB,...">
+                        </div>
+                        <div class="col-md-4">
+                          <label>RAM</label>
+                          <input name="option_ram" class="form-control" placeholder="Ví dụ: 8GB, 12GB,...">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card card-outline card-success mt-4">
+                    <div class="card-header">
+                      <h3 class="card-title">2. Chỉnh sửa các biến thể được tạo</h3>
+                      <div class="card-tools">
+                        <button type="button" id="generateVariantsBtn" class="btn btn-success btn-sm">
+                          <i class="fas fa-cogs"></i> Tạo biến thể
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="variantsTable">
+                          <thead>
+                            <tr>
+                              <th>Biến thể</th>
+                              <th style="width: 20%;">Giá <span class="text-danger">*</span></th>
+                              <th style="width: 15%;">Số lượng <span class="text-danger">*</span></th>
+                              <th style="width: 20%;">Mã SKU</th>
+                              <th style="width: 10%;"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!-- Variant rows will be generated here by JS -->
+                            <tr id="variant-placeholder">
+                              <td colspan="5" class="text-center text-muted p-4">
+                                <p>Chưa có biến thể nào.</p>
+                                <small>Hãy nhập các thuộc tính ở trên và nhấn nút "Tạo biến thể".</small>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer text-right">
+          <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Hủy
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Lưu sản phẩm
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  .nav-tabs .nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+  }
+
+  /* Drag & Drop Image Uploader */
+  .image-uploader {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+    .image-uploader:hover {
+      background-color: #f8f9fa;
+    }
+
+    .image-uploader .uploader-icon {
+      font-size: 40px;
+      color: #007bff;
+    }
+
+    .image-uploader p {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #6c757d;
+    }
+
+  #imagePreviewContainer .img-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  #imagePreviewContainer .img-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  #imagePreviewContainer .remove-img-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    line-height: 25px;
+    text-align: center;
+  }
+
+  /* Tagify custom style */
+  .tagify {
+    --tag-bg: #007bff;
+    --tag-text-color: white;
+  }
+</style>

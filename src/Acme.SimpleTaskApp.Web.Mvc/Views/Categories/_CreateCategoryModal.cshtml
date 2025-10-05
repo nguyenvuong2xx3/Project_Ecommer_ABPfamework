@@ -1,0 +1,51 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Categories
+@model CategoryViewModel
+@{
+	Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("CreateNewCategory")))
+<form name="CreateForm" role="form" class="form-horizontal" >
+	<div class="modal-body">
+		<!-- Category Name -->
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label fw-bold">@L("CategoryName")</label>
+			<div class="col-md-9">
+				<input type="text" class="form-control" name="Name" required maxlength="256" placeholder="Nhập tên danh mục.." />
+			</div>
+		</div>
+		<!-- Parent Category -->
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label fw-bold">@L("ParentCategory")</label>
+			<div class="col-md-9">
+				<select class="form-select" name="ParentId">
+					<option value="">-- @L("SelectParentCategory") --</option>
+					@* Bind danh mục cha nếu cần *@
+					@if (Model?.Categories != null)
+					{
+						foreach (var c in Model.Categories)
+						{
+							<option value="@c.Id" >@c.Name</option> 
+						}
+					}
+				</select>
+			</div>
+		</div>
+		<!-- Description -->
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label fw-bold">@L("Description")</label>
+			<div class="col-md-9">
+				<textarea class="form-control" name="Description" maxlength="500" rows="3" placeholder="Nhập mô tả danh mục..."></textarea>
+			</div>
+		</div>
+		<!-- Order -->
+		<div class="row mb-3">
+			<label class="col-md-3 col-form-label fw-bold">@L("Order")</label>
+			<div class="col-md-9">
+				<input type="number" class="form-control" name="Order" value="0" min="0" placeholder="Nhập thứ tự hiển thị" />
+			</div>
+		</div>
+	</div>
+		@await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
