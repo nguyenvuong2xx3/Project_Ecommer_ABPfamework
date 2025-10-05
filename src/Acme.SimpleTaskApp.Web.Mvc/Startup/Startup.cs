@@ -53,7 +53,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 
             services.AddScoped<IWebResourceManager, WebResourceManager>();
 
-			      services.AddScoped<ICategoryAppService, CategoryAppService>();
+			      //services.AddScoped<ICategoryAppService, CategoryAppService>();
 
 			      services.AddSignalR();
 

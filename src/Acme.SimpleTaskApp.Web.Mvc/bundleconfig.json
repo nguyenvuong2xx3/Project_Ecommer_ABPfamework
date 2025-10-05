@@ -53,7 +53,6 @@
     "outputFileName": "wwwroot/view-resources/Views/_Bundles/shared-layout.min.js",
     "inputFiles": [
       "wwwroot/libs/jquery/jquery.js",
-
       "wwwroot/libs/bootstrap/dist/js/bootstrap.bundle.js",
       "wwwroot/libs/datatables/js/jquery.dataTables.min.js",
       "wwwroot/Common/helpers.js",
@@ -64,7 +63,6 @@
       "wwwroot/libs/datatables/js/dataTables.buttons.js",
       "wwwroot/libs/datatables/js/buttons.bootstrap4.js",
       "wwwroot/libs/admin-lte/dist/js/adminlte.js",
-
       "wwwroot/libs/block-ui/jquery.blockUI.js",
       "wwwroot/libs/spin/spin.js",
       "wwwroot/libs-ext/spin/jquery.spin.js",
@@ -72,7 +70,6 @@
       "wwwroot/libs/toastr/toastr.min.js",
       "wwwroot/libs/moment/moment-with-locales.js",
       "wwwroot/libs/signalr/dist/browser/signalr.js",
-
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/abp.js",
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.jquery.js",
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.toastr.js",
@@ -80,11 +77,9 @@
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.spin.js",
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.sweet-alert.js",
       "wwwroot/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js",
-      
       "wwwroot/libs/jquery-validate/jquery.validate.js",
       "wwwroot/libs/jquery-validate/jquery.validate.unobtrusive.js",
       "wwwroot/libs/push.js/push.js",
-
       "wwwroot/js/abp.dataTable.js",
       "wwwroot/js/main.js",
       "wwwroot/view-resources/Views/Shared/_Layout.js"
@@ -155,6 +150,24 @@
     "outputFileName": "wwwroot/view-resources/Views/_Bundles/helpers.min.js",
     "inputFiles": [
       "wwwroot/Common/helpers.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Categories/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Categories/_CreateModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Categories/Index2.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Categories/Index2.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Products/Create.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Products/Create.js"
     ]
   }
 ]

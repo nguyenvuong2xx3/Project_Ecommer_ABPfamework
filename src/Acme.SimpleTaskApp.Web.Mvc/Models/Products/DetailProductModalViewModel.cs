@@ -1,7 +1,5 @@
-﻿using Acme.SimpleTaskApp.Categories.Dto;
-using Acme.SimpleTaskApp.Products.Dtos;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
+﻿using Acme.SimpleTaskApp.Products.Dtos;
+using Acme.SimpleTaskApp.Categories.Dtos;
 
 namespace Acme.SimpleTaskApp.Web.Models.Products
 {

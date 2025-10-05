@@ -1,9 +1,6 @@
-﻿using Acme.SimpleTaskApp.Categories.Dto;
-using Acme.SimpleTaskApp.Products.Dtos;
+﻿using Acme.SimpleTaskApp.Products.Dtos;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using static Acme.SimpleTaskApp.Products.Product;
-using static Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList.CategoryListViewModel;
 
 namespace Acme.SimpleTaskApp.Web.Models.Products
 {
@@ -22,6 +19,5 @@ namespace Acme.SimpleTaskApp.Web.Models.Products
 			Products = products;
 		}
 	}
-
 }
 

@@ -1,7 +1,7 @@
 ﻿@using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
-@model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel
+@* @model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel *@
 
 @{
 	ViewData["Title"] = "Index";
@@ -44,14 +44,14 @@
 							@* </div> *@
 						</div>
 						<div class="stock-status">
-							@if (product.State == ProductState.Available)
+							@* @if (product.State == ProductState.Available)
 							{
 								<span class="text-success">Còn hàng</span>
 							}
 							else
 							{
 								<span class="text-danger">Hết hàng</span>
-							}
+							} *@
 						</div>
 					</div>
 					<button class="detail-btn product-click-detail" data-id="@product.Id">

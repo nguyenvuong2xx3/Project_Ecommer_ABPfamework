@@ -60,7 +60,7 @@
                 <option value="">Chọn danh mục</option>
                 @foreach (var category in Model.Categories)
                 {
-                  <option value="@category.Value">@category.Text</option>
+                  <option value="@category.Id">@category.Name</option>
                 }
               </select>
             </div>

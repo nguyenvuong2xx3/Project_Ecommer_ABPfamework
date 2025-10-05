@@ -12,7 +12,7 @@ namespace Acme.SimpleTaskApp.Products.Dtos
     {
         public string Name { get; set; } // Tìm kiếm theo tên sản phẩm
 
-        public ProductState? State { get; set; } // Lọc theo trạng thái sản phẩm
+        //public ProductState? State { get; set; } // Lọc theo trạng thái sản phẩm
 
         public DateTime CreateTime { get; set; }
 

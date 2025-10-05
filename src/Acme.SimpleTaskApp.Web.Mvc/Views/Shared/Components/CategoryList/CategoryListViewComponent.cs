@@ -1,5 +1,6 @@
 ﻿using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Categories.Dtos;
+using Acme.SimpleTaskApp.Web.Models.Categories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -16,9 +17,9 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList
 
 		public async Task<IViewComponentResult> InvokeAsync(string viewName = "Default")
 		{
-			var model = new CategoryListViewModel
+			var model = new CategoryViewModel
 			{
-				Categories = await _categoryFEAppService.GetAllCategories(new GetAllCategoryDto { })
+				//Categories = await _categoryFEAppService.GetAllCategories(new GetAllCategoryDto { })
 			};
 
 			return View(viewName, model);

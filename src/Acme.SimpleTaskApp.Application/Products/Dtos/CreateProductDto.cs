@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using static Acme.SimpleTaskApp.Products.Product;
+using System.Collections.Generic;
 
 namespace Acme.SimpleTaskApp.Products.Dtos
 {
@@ -19,8 +20,11 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 
         public IFormFile ImageFile { get; set; }
 
-        public ProductState State { get; set; }
+        // Support multiple images
+        public List<IFormFile> ImageFiles { get; set; }
 
-        public DateTime CreationTime { get; set; }
+        //public ProductState State { get; set; }
+
+    public DateTime CreationTime { get; set; }
     }
 }

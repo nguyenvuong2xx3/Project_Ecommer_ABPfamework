@@ -2,7 +2,7 @@
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
-@model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel
+@* @model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel *@
 
 @{
 	ViewBag.Title = L("Products");
@@ -86,7 +86,7 @@
 </section>
 
 <!-- Create Modal -->
-@await Html.PartialAsync("~/Views/Products/_CreateModal.cshtml", new CreateProductViewModel(Model.Categories))
+@* @await Html.PartialAsync("~/Views/Products/_CreateModal.cshtml", new CreateProductViewModel(Model.Categories)) *@
 
 <!-- Edit Modal -->
 <div class="modal fade" id="ProductEditModal" tabindex="-1" role="dialog" aria-labelledby="ProductEditModalLabel" data-backdrop="static">

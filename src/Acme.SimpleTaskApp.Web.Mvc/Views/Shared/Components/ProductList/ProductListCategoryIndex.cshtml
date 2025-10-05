@@ -34,14 +34,14 @@
               @* </div> *@
             </div>
             <div class="stock-status">
-              @if (product.State == ProductState.Available)
+              @* @if (product.State == ProductState.Available)
               {
                 <span class="text-success">Còn hàng</span>
               }
               else
               {
                 <span class="text-danger">Hết hàng</span>
-              }
+              } *@
             </div>
           </div>
           <button class="detail-btn product-click-detail" data-id="@product.Id">

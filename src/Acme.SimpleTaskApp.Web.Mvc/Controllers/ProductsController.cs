@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Abp.AspNetCore.Mvc.Authorization;
+using System.Collections.Generic;
+using Abp.Domain.Repositories;
 
 
 namespace Acme.SimpleTaskApp.Web.Controllers
@@ -25,15 +27,17 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		private readonly IProductAppService _productAppService;
 		private readonly IWebHostEnvironment webHostEnvironment;
 		private readonly ICategoryAppService _categoryAppService;
+		private readonly IRepository<Category> _categoryRepository;
 		public ProductsController(IProductAppService productAppService,
-															ICategoryAppService categoryAppService,
-															IWebHostEnvironment webHostEnvironment)
+							ICategoryAppService categoryAppService,
+							IWebHostEnvironment webHostEnvironment,
+							IRepository<Category>  categoryRepository)
 		{
+			_categoryRepository = categoryRepository;
 			_productAppService = productAppService;
 			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
-		[AbpMvcAuthorize]
 		public async Task<ActionResult> Index(GetAllProductsInput input, GetAllCategoryDto input1)
 		{
 			var output = await _productAppService.GetAllProducts(input);
@@ -89,39 +93,50 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return "/img/products/default.png"; // Trả về ảnh mặc định nếu không có ảnh upload
 		}
 
-		[AbpMvcAuthorize]
-		[HttpPost]
-		public async Task<IActionResult> Create(CreateProductDto model)
-		{
-			try
-			{
-				if (ModelState.IsValid)
-				{
-					// Upload ảnh và lấy tên file duy nhất
-					string uniqueFileName = UploadImage(model.ImageFile);
+		//public async Task<IActionResult> Create(CreateProductDto model)
+		//{
+		//	try
+		//	{
+		//		if (ModelState.IsValid)
+		//		{
+		//			// Collect uploaded files (support multiple)
+		//			var files = new List<IFormFile>();
+		//			if (model.ImageFiles != null && model.ImageFiles.Any())
+		//			{
+		//				files = model.ImageFiles;
+		//			}
+		//			else if (Request?.Form?.Files != null && Request.Form.Files.Count > 0)
+		//			{
+		//				foreach (var f in Request.Form.Files)
+		//				{
+		//					// Accept both ImageFiles[] or ImageFile field names
+		//					if (f.Length > 0)
+		//						files.Add(f);
+		//				}
+		//			}
 
-					// Gán đường dẫn file vào model
-					model.Image = uniqueFileName;
-					await _productAppService.CreateProducts(model);
-					return Json(new { success = true, message = "Thêm sản phẩm thành công" });
-				}
+		//			if (files.Any())
+		//			{
+		//				model.ImageFiles = files;
+		//			}
 
-				var errors = ModelState.Values
-						.SelectMany(v => v.Errors)
-						.Select(e => e.ErrorMessage)
-						.ToList();
+		//			await _productAppService.CreateProducts(model);
+		//			return Json(new { success = true, message = "Thêm sản phẩm thành công" });
+		//		}
 
-				return Json(new { success = false, errors });
-			}
-			catch (Exception ex)
-			{
-				return Json(new { success = false, message = ex.Message });
-			}
-		}
+		//		var errors = ModelState.Values
+		//				.SelectMany(v => v.Errors)
+		//				.Select(e => e.ErrorMessage)
+		//				.ToList();
 
-		[HttpPost]
-		[AbpMvcAuthorize]
-		[Route("Products/EditModal")] // Đảm bảo route đúng
+		//		return Json(new { success = false, errors });
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		return Json(new { success = false, message = ex.Message });
+		//	}
+		//}
+
 		public async Task<PartialViewResult> EditModal(int productId)
 		{
 			try
@@ -137,19 +152,18 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					Description = product.Description,
 					Price = product.Price,
 					Image = product.Image,
-					State = product.State,
 					CreationTime = product.CreationTime,
 					CategoryId = product.CategoryId
 
 				};
 				// Chuyển đổi CategoryListDto sang SelectListItem   
 				var categoriesSelectList = categories
-					.Select(c => new SelectListItem
-					{
-						Value = c.Id.ToString(),
-						Text = c.Name
-					})
-					.ToList();
+						.Select(c => new SelectListItem
+						{
+							Value = c.Id.ToString(),
+							Text = c.Name
+						})
+						.ToList();
 				var viewModel = new EditProductModalViewModel
 				{
 					Product = editProductDto,
@@ -167,8 +181,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		//. UpdateProductDto model đamg chuyển image null chưa lấy được img sẵn có
-		[AbpMvcAuthorize]
-		[HttpPost]
+
 		public async Task<IActionResult> Update(UpdateProductDto model)
 		{
 			try
@@ -181,7 +194,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 						return Json(new { success = false, message = "Không tìm thấy sản phẩm." }); // Trả về lỗi nếu không tìm thấy
 					}
 
-					// Nếu có upload ảnh mới
+					// Nếu có upload ảnh mới (single)
 					if (model.ImageFile != null && model.ImageFile.Length > 0)
 					{
 						// Danh sách các định dạng ảnh được phép tải lên
@@ -227,8 +240,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			}
 		}
 
-		[HttpGet]
-		[Route("Products/DetailModal")]
 		public async Task<PartialViewResult> DetailProduct(int productId)
 		{
 			try
@@ -250,12 +261,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					Description = product.Description,
 					Price = product.Price,
 					Image = product.Image,
-					State = product.State,
 					CreationTime = product.CreationTime,
 					CategoryId = product.CategoryId,
 					CategoryName = categoryName // Sử dụng giá trị đã xử lý
 				};
-
 
 				var viewModel = new DetailProductModalViewModel(detailProductDto);
 				return PartialView("_DetailProductModal", viewModel);
@@ -268,8 +277,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		//// làm xóa ảnh
-		[AbpMvcAuthorize]
-		[HttpPost]
 		public async Task Delete(EntityDto<int> input)
 		{
 			var product = await _productAppService.GetByIdProducts(input);
@@ -296,7 +303,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			}
 		}
 
-		[HttpPost]
 		public async Task<IActionResult> ImportFromExcel(IFormFile file)
 		{
 			if (file == null || file.Length == 0)
@@ -311,6 +317,69 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				message = "Import hoàn tất",
 				results
 			});
+		}
+
+		public async Task<ActionResult> Create()
+		{
+			var categories = await _categoryRepository.GetAllAsync();
+
+			var model = new CreateProductViewModel { Categories = categories.ToList() };
+			return View(model);
+		}
+
+		// This is the POST action that receives form submission
+		public async Task<IActionResult> CreateProduct(CreateProductDto model)
+		{
+			try
+			{
+				if (ModelState.IsValid)
+				{
+					// Process uploaded files (support multiple images)
+					var files = new List<IFormFile>();
+					if (model.ImageFiles != null && model.ImageFiles.Any())
+					{
+						files = model.ImageFiles;
+					}
+					else if (Request?.Form?.Files != null && Request.Form.Files.Count > 0)
+					{
+						foreach (var f in Request.Form.Files)
+						{
+							// Accept both ImageFiles[] or ImageFile field names
+							if (f.Length > 0)
+								files.Add(f);
+						}
+					}
+
+					if (files.Any())
+					{
+						model.ImageFiles = files;
+					}
+
+					// Save product data
+					var createdProduct = await _productAppService.CreateProducts(model);
+					
+					// Redirect to product list with success message
+					this.Flash("Thêm sản phẩm thành công!", "success");
+					return RedirectToAction("Index");
+				}
+
+				// If we get here, something failed; redisplay form with error messages
+				var categories = await _categoryRepository.GetAllAsync();
+
+				var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
+				return View("Create", viewModel);
+			}
+			catch (Exception ex)
+			{
+				this.Flash("Lỗi khi thêm sản phẩm: " + ex.Message, "error");
+				
+				// Get categories again for the view
+				var categories = await _categoryRepository.GetAllAsync();
+
+
+				var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
+				return View("Create", viewModel);
+			}
 		}
 	}
 }

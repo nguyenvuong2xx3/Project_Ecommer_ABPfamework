@@ -2,7 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using System;
 
-namespace Acme.SimpleTaskApp.Categories.Dto
+namespace Acme.SimpleTaskApp.Categories.Dtos
 {
 	public class CategoryListDto : EntityDto, IHasCreationTime
 	{

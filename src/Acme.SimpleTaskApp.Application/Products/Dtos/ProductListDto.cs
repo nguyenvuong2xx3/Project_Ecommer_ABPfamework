@@ -16,7 +16,7 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 
         public DateTime CreationTime { get; set; }
 
-        public ProductState State { get; set; }
+        //public ProductState State { get; set; }
 
         public string Image { get; set; }  // Lưu đường dẫn ảnh
 

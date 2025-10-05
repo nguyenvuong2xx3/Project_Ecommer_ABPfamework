@@ -1,8 +1,5 @@
 ﻿using Abp.Application.Services;
-using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using Abp.Linq.Extensions;
-using Acme.SimpleTaskApp.Categories.Dto;
 using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Products;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +27,7 @@ namespace Acme.SimpleTaskApp.Categories
 			_categoryRepository = categoryRepository;
 		}
 
-			
+
 
 		public async Task<List<CategoryListDto>> GetAllCategories(GetAllCategoryDto input)
 		{

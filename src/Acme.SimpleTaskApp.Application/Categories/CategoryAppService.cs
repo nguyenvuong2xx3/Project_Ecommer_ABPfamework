@@ -1,18 +1,14 @@
 ﻿using Abp.Application.Services;
-using System;
-using System.Threading.Tasks;
-using Acme.SimpleTaskApp.Categories.Dto;
 using Abp.Application.Services.Dto;
-using Acme.SimpleTaskApp.Categories.Dtos;
 using Abp.Domain.Repositories;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Abp.Linq.Extensions;
 using Abp.UI;
-using Acme.SimpleTaskApp.Products.Dtos;
+using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Products;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Categories
 {
@@ -20,181 +16,139 @@ namespace Acme.SimpleTaskApp.Categories
 	{
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<Category> _categoryRepository;
-		private readonly IWebHostEnvironment _env;
-		public CategoryAppService(IRepository<Category> categoryRepository, IWebHostEnvironment env, IRepository<Product> productRepository)
+		public CategoryAppService(IRepository<Category> categoryRepository, IRepository<Product> productRepository)
 		{
 			_productRepository = productRepository;
 			_categoryRepository = categoryRepository;
-			_env = env;
 		}
 
-		public async Task<CategoryListDto> CreateCategory(CreateCategoryDto input)
+		public async Task<Category> CreateCategory(Category input)
 		{
-
-			var checkcategory = _categoryRepository.GetAll();
-			checkcategory = checkcategory.Where(p => p.Name == input.Name);
-			if (await checkcategory.AnyAsync())
-			{
-				throw new UserFriendlyException("Danh mục đã tồn tại");
-			}
-			var category = new Category
-			{
-				Name = input.Name,
-				Description = input.Description
-			};
-
-			await _categoryRepository.InsertAsync(category);
-			await CurrentUnitOfWork.SaveChangesAsync();
-
-			return new CategoryListDto
-			{
-				Id = category.Id,
-				Name = category.Name,
-			};
+			var category = await _categoryRepository.InsertAsync(input);
+			return category;
 		}
 
 		public async Task DeleteCategory(EntityDto<int> input)
 		{
-				// Lấy danh mục cần xóa
-				var category = await _categoryRepository.GetAsync(input.Id);
-				if (category == null)
-				{
-					throw new UserFriendlyException("Không tìm thấy danh mục!");
-				}
-
-				var productsInCategory = await _productRepository.GetAll()
-				.Where(p => p.CategoryId == input.Id)
-				.ToListAsync();
-				if (productsInCategory.Count >= 0)
-				{
-					throw new UserFriendlyException($"Danh mục {category.Name} đang có sản phẩm không được xóa");
-				}
-				// Xóa danh mục
-				await _categoryRepository.DeleteAsync(category);
-
-				// Lưu thay đổi
-				await CurrentUnitOfWork.SaveChangesAsync();
+			await _categoryRepository.DeleteAsync(input.Id);
 		}
 
-		public async Task<PagedResultDto<CategoryListDto>> GetAllCategories(GetAllCategoryDto input)
+		public async Task<PagedResultDto<Category>> GetAllCategories(GetAllCategoryDto input)
 		{
-			var category = _categoryRepository.GetAll();
-			var count = await category.CountAsync();
+			var query = _categoryRepository.GetAll()
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Name), c => c.Name.Contains(input.Name))
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Description), c => c.Description.Contains(input.Description));
 
-			var categoryDtos = await category.OrderByDescending(x => x.CreationTime)
-																			.PageBy(input)
-																			.Select(p => new CategoryListDto
-																			{
-																				Id = p.Id,
-																				Name = p.Name,
-																				Description = p.Description,
-																				CreationTime = p.CreationTime,
-																			}).ToListAsync();
+			var totalCount = await query.CountAsync();
 
-			return new PagedResultDto<CategoryListDto>(count, categoryDtos);
+			var categories = await query
+				.OrderBy(c => c.Order)
+				.PageBy(input)
+				.ToListAsync();
+
+			return new PagedResultDto<Category>(totalCount, categories);
 		}
 
 		public async Task<List<CategoryListDto>> GetAllCategoriesProduct(GetAllCategoryDto input)
 		{
-			var category = _categoryRepository.GetAll();
-			var count = await category.CountAsync();
+			var categories = await _categoryRepository.GetAll()
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Name), c => c.Name.Contains(input.Name))
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Description), c => c.Description.Contains(input.Description))
+				.OrderBy(c => c.Order)
+				.ToListAsync();
 
-			var categoryDtos = await category.OrderByDescending(x => x.CreationTime)
-																			.Select(p => new CategoryListDto
-																			{
-																				Id = p.Id,
-																				Name = p.Name,
-																				Description = p.Description,
-																				CreationTime = p.CreationTime,
-																			}).ToListAsync();
-
-			return new List<CategoryListDto>(categoryDtos);
+			return categories.Select(c => new CategoryListDto
+			{
+				Id = c.Id,
+				Name = c.Name,
+				Description = c.Description,
+				CreationTime = c.CreationTime
+			}).ToList();
 		}
 
-
-		public async Task<CategoryListDto> GetByIdCategory(EntityDto<int> input)
+		public async Task<Category> GetByIdCategory(EntityDto<int> input)
 		{
-			// Lấy sản phẩm theo Id
 			var category = await _categoryRepository.GetAsync(input.Id);
 			if (category == null)
 			{
-				throw new UserFriendlyException("Category not found!");
+				throw new UserFriendlyException("Could not find the category, maybe it's deleted.");
 			}
-			else
-			{
-				// Ánh xạ sang DTO
-				return new CategoryListDto
-				{
-					Id = category.Id,
-					Name = category.Name,
-					Description = category.Description
-				};
-			}
+			return category;
 		}
 
-		public Task<PagedResultDto<CategoryListDto>> SearchCategory(GetAllCategoryDto input)
+		public async Task<PagedResultDto<CategoryListDto>> SearchCategory(GetAllCategoryDto input)
 		{
-			throw new NotImplementedException();
+			var query = _categoryRepository.GetAll()
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Name), c => c.Name.Contains(input.Name))
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Description), c => c.Description.Contains(input.Description));
+
+			var totalCount = await query.CountAsync();
+
+			var categories = await query
+				.OrderBy(c => c.Order)
+				.PageBy(input)
+				.ToListAsync();
+
+			var categoryDtos = categories.Select(c => new CategoryListDto
+			{
+				Id = c.Id,
+				Name = c.Name,
+				Description = c.Description,
+				CreationTime = c.CreationTime
+			}).ToList();
+
+			return new PagedResultDto<CategoryListDto>(totalCount, categoryDtos);
 		}
 
-		public async Task<CategoryListDto> UpdateCategory(UpdateCategoryDto input)
+		public async Task<Category> UpdateCategory(Category input)
 		{
-			var checkcategory = _categoryRepository.GetAll();
-			checkcategory = checkcategory.Where(p => p.Name == input.Name);
-			if (await checkcategory.AnyAsync())
-			{
-				throw new UserFriendlyException("Danh mục đã tồn tại");
-			}
-			// Lấy sản phẩm hiện có
 			var category = await _categoryRepository.GetAsync(input.Id);
 			if (category == null)
 			{
-				throw new UserFriendlyException("Không tìm thấy danh mục");
+				throw new UserFriendlyException("Could not find the category, maybe it's deleted.");
 			}
-			// Cập nhật thông tin
+
 			category.Name = input.Name;
 			category.Description = input.Description;
+			category.ParentId = input.ParentId;
+			category.Order = input.Order;
 
-			// Lưu thay đổi vào database
 			await _categoryRepository.UpdateAsync(category);
-			await CurrentUnitOfWork.SaveChangesAsync();
-
-			// Ánh xạ sang DTO để trả về
-			return new CategoryListDto
-			{
-				Id = category.Id,
-				Name = category.Name,
-				Description = category.Description
-			};
+			return category;
 		}
 
-		//public async Task<CategoryListDto> GetByIdCategory(EntityDto<int> input)
-		//{
-		//	var category = await _categoryRepository.GetAsync(input.Id);
-		//	return ObjectMapper.Map<CategoryListDto>(category);
-		//}
+		public async Task<List<CategoryTreeDto>> GetAllCategoriesTree(GetAllCategoryDto input)
+		{
+			var categories = await _categoryRepository.GetAll()
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Name), c => c.Name.Contains(input.Name))
+				.WhereIf(!string.IsNullOrWhiteSpace(input.Description), c => c.Description.Contains(input.Description))
+				.OrderBy(c => c.Order)
+				.ToListAsync();
 
-		//public async Task<PagedResultDto<CategoryListDto>> SearchCategory(GetAllCategoryDto input)
-		//{
-		//	var query = _categoryRepository.GetAll()
-		//			.WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword))
-		//			.WhereIf(input.State.HasValue, x => x.State == input.State);
+			// build map
+			var map = categories.ToDictionary(c => c.Id, c => new CategoryTreeDto
+			{
+				Id = c.Id,
+				Name = c.Name,
+				Description = c.Description,
+				ParentId = c.ParentId,
+				CreationTime = c.CreationTime
+			});
 
-		//	var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-		//	var categories = await AsyncQueryableExecuter.ToListAsync(query);
+			var roots = new List<CategoryTreeDto>();
+			foreach (var dto in map.Values)
+			{
+				if (dto.ParentId.HasValue && map.ContainsKey(dto.ParentId.Value))
+				{
+					map[dto.ParentId.Value].Children.Add(dto);
+				}
+				else
+				{
+					roots.Add(dto);
+				}
+			}
 
-		//	return new PagedResultDto<CategoryListDto>(
-		//			totalCount,
-		//			ObjectMapper.Map<List<CategoryListDto>>(categories)
-		//	);
-		//}
-
-		//public async Task<CategoryListDto> UpdateCategory(UpdateCategoryDto input)
-		//{
-		//	var category = await _categoryRepository.GetAsync(input.Id);
-		//	ObjectMapper.Map(input, category);
-		//	await _categoryRepository.UpdateAsync(category);
-		//	return ObjectMapper.Map<CategoryListDto>(category);
-		//}
+			return roots;
+		}
 	}
 }

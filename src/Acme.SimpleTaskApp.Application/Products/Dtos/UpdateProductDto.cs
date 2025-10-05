@@ -10,22 +10,22 @@ using static Acme.SimpleTaskApp.Products.Product;
 
 namespace Acme.SimpleTaskApp.Products.Dtos
 {
-    public class UpdateProductDto : EntityDto, IHasCreationTime
-    {
-        public string Name { get; set; }
+	public class UpdateProductDto : EntityDto, IHasCreationTime
+	{
+		public string Name { get; set; }
 
-        public string Description { get; set; }
+		public string Description { get; set; }
 
-        public decimal Price { get; set; }
+		public decimal Price { get; set; }
 
-        public string Image { get; set; }
+		public string Image { get; set; }
 
-        public IFormFile ImageFile { get; set; }
+		public IFormFile ImageFile { get; set; }
 
-        public ProductState State { get; set; }
+		//public ProductState State { get; set; }
 
-        public DateTime CreationTime { get; set; }
+		public DateTime CreationTime { get; set; }
 
-		    public int? CategoryId { get; set; } 
+		public int? CategoryId { get; set; }
 	}
 }

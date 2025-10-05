@@ -17,7 +17,7 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 
         public DateTime CreationTime { get; set; }
 
-        public ProductState State { get; set; }
+        //public ProductState State { get; set; }
 
         public string Keyword { get; set; }
 
