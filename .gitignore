@@ -4,7 +4,8 @@
 
 # Logs
 Logs/
-
+# Bỏ qua các file log tự động sinh ra
+src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/
 # Generated files
 project.lock.json
 .vs/
@@ -192,4 +193,5 @@ src/Acme.SimpleTaskApp.Web.Mvc/appsettings.json
 *.txt
 *.txt
 *.txt
+src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/Logs.txt
 src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/Logs.txt
