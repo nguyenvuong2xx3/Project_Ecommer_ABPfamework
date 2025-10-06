@@ -195,3 +195,4 @@ src/Acme.SimpleTaskApp.Web.Mvc/appsettings.json
 *.txt
 src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/Logs.txt
 src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/Logs.txt
+src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/Logs.txt
