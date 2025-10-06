@@ -16,6 +16,7 @@ namespace Acme.SimpleTaskApp.Categories
 		[StringLength(MaxNameLength)]
 		public string Name { get; set; }
 		public int? ParentId { get; set; }
+		[NotMapped] public Category Parent { get; set; }
 
 		[StringLength(MaxDescriptionLength)]
 		public string Description { get; set; }

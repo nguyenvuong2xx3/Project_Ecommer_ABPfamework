@@ -31,7 +31,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		public ProductsController(IProductAppService productAppService,
 							ICategoryAppService categoryAppService,
 							IWebHostEnvironment webHostEnvironment,
-							IRepository<Category>  categoryRepository)
+							IRepository<Category> categoryRepository)
 		{
 			_categoryRepository = categoryRepository;
 			_productAppService = productAppService;
@@ -330,56 +330,60 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		// This is the POST action that receives form submission
 		public async Task<IActionResult> CreateProduct(CreateProductDto model)
 		{
-			try
-			{
-				if (ModelState.IsValid)
-				{
-					// Process uploaded files (support multiple images)
-					var files = new List<IFormFile>();
-					if (model.ImageFiles != null && model.ImageFiles.Any())
-					{
-						files = model.ImageFiles;
-					}
-					else if (Request?.Form?.Files != null && Request.Form.Files.Count > 0)
-					{
-						foreach (var f in Request.Form.Files)
-						{
-							// Accept both ImageFiles[] or ImageFile field names
-							if (f.Length > 0)
-								files.Add(f);
-						}
-					}
+			//try
+			//{
+			//	if (ModelState.IsValid)
+			//	{
+			//		// Xử lý upload ảnh
+			//		var files = new List<IFormFile>();
+			//		if (model.ImageFiles != null && model.ImageFiles.Any())
+			//		{
+			//			files = model.ImageFiles;
+			//		}
+			//		else if (Request?.Form?.Files != null && Request.Form.Files.Count > 0)
+			//		{
+			//			foreach (var f in Request.Form.Files)
+			//			{
+			//				if (f.Length > 0)
+			//					files.Add(f);
+			//			}
+			//		}
+			//		if (files.Any())
+			//		{
+			//			model.ImageFiles = files;
+			//			model.ProductImages = new List<ProductImage>();
+			//			int sort = 0;
+			//			foreach (var file in files)
+			//			{
+			//				var imageUrl = UploadImage(file);
+			//				model.ProductImages.Add(new ProductImage
+			//				{
+			//					ImageUrl = imageUrl,
+			//					SortOrder = sort++
+			//				});
+			//			}
+			//		}
 
-					if (files.Any())
-					{
-						model.ImageFiles = files;
-					}
+			//		// Xử lý biến thể nếu có (giả sử nhận từ form)
+			//		// model.Variants đã là List<ProductVariant> nếu truyền đúng
 
-					// Save product data
-					var createdProduct = await _productAppService.CreateProducts(model);
-					
-					// Redirect to product list with success message
-					this.Flash("Thêm sản phẩm thành công!", "success");
-					return RedirectToAction("Index");
-				}
+			//		var createdProduct = await _productAppService.CreateProducts(model);
+			//		this.Flash("Thêm sản phẩm thành công!", "success");
+			//		return RedirectToAction("Index");
+			//	}
 
-				// If we get here, something failed; redisplay form with error messages
-				var categories = await _categoryRepository.GetAllAsync();
-
-				var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
-				return View("Create", viewModel);
-			}
-			catch (Exception ex)
-			{
-				this.Flash("Lỗi khi thêm sản phẩm: " + ex.Message, "error");
-				
-				// Get categories again for the view
-				var categories = await _categoryRepository.GetAllAsync();
-
-
-				var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
-				return View("Create", viewModel);
-			}
+			//	var categories = await _categoryRepository.GetAllAsync();
+			//	var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
+			//	return View("Create", viewModel);
+			//}
+			//catch (Exception ex)
+			//{
+			//	this.Flash("Lỗi khi thêm sản phẩm: " + ex.Message, "error");
+			//	var categories = await _categoryRepository.GetAllAsync();
+			//	var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
+			//	return View("Create", viewModel);
+			//}
+				return View("Create");
 		}
 	}
 }

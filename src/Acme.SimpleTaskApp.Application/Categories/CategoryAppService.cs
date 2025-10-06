@@ -69,6 +69,10 @@ namespace Acme.SimpleTaskApp.Categories
 		public async Task<Category> GetByIdCategory(EntityDto<int> input)
 		{
 			var category = await _categoryRepository.GetAsync(input.Id);
+			if (category.ParentId.HasValue)
+			{
+				category.Parent = await _categoryRepository.GetAsync(category.ParentId.Value);
+			}
 			if (category == null)
 			{
 				throw new UserFriendlyException("Could not find the category, maybe it's deleted.");

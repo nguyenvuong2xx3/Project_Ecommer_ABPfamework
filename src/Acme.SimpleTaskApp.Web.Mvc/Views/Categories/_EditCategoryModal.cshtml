@@ -6,6 +6,7 @@
 <form name="CategoryEditForm" role="form" class="form-horizontal">
   <div class="modal-body">
     <!-- Category Name -->
+    <input type="hidden" name="Id" value="@Model.Category.Id" />
     <div class="row mb-3">
       <label class="col-md-3 col-form-label fw-bold">@L("CategoryName")</label>
       <div class="col-md-9">

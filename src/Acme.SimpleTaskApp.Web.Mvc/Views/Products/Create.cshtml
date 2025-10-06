@@ -65,7 +65,7 @@
                     <textarea name="Description" id="Description" class="form-control" rows="5" placeholder="Mô tả các tính năng chung, thiết kế của dòng sản phẩm..."></textarea>
                   </div>
                   <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <label for="CategoryId">Danh mục <span class="text-danger">*</span></label>
                         <select name="CategoryId" id="CategoryId" class="form-control" required>
@@ -77,19 +77,19 @@
                         </select>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    @* <div class="col-md-6">
                       <div class="form-group">
                         <label for="BrandId">Thương hiệu <span class="text-danger">*</span></label>
                         <select name="BrandId" id="BrandId" class="form-control" required>
                           <option value="">-- Chọn thương hiệu --</option>
-                          @* Giả sử bạn có Model.Brands *@
-                          @* @foreach (var brand in Model.Brands) 
+                           Giả sử bạn có Model.Brands 
+                           @foreach (var brand in Model.Brands) 
                                                     {
                                                         <option value="@brand.Id">@brand.Name</option>
-                                                    } *@
+                                                    } 
                         </select>
                       </div>
-                    </div>
+                    </div> *@
                   </div>
                 </div>
                 <div class="col-md-5">
@@ -116,16 +116,27 @@
 
             <!-- Tab 2: Hình ảnh chung -->
             <div class="tab-pane fade" id="tab-images" role="tabpanel" aria-labelledby="tab-images-link">
-              <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
-              <div class="image-uploader" onclick="document.getElementById('ImageFiles').click()">
-                <div class="uploader-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                <p>Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
-                <small class="text-muted">Đây là các ảnh chung cho sản phẩm (ảnh marketing, tính năng,...)</small>
-              </div>
-              <div class="mt-3" id="imagePreviewContainer">
-                <!-- Image previews will be shown here -->
+              <div class="row">
+                <!-- Cột trái - Uploader -->
+                <div class="col-md-4">
+                  <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+                  <div class="image-uploader">
+                    <div class="uploader-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p>Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
+                    <small class="text-muted">Đây là các ảnh chung cho sản phẩm (ảnh marketing, tính năng,...)</small>
+                  </div>
+                </div>
+                <!-- Cột phải - Preview -->
+                <div class="col-md-8">
+                  <div id="imagePreviewContainer">
+                    <!-- Image previews will be shown here -->
+                  </div>
+                </div>
               </div>
             </div>
+
+
+
 
             <!-- Tab 3: Các biến thể -->
             <div class="tab-pane fade" id="tab-variants" role="tabpanel" aria-labelledby="tab-variants-link">
@@ -168,16 +179,17 @@
                           <thead>
                             <tr>
                               <th>Biến thể</th>
-                              <th style="width: 20%;">Giá <span class="text-danger">*</span></th>
+                              <th style="width: 30%;">Ảnh<span class="text-danger">*</span></th>
+                              <th style="width: 15%;">Giá <span class="text-danger">*</span></th>
                               <th style="width: 15%;">Số lượng <span class="text-danger">*</span></th>
-                              <th style="width: 20%;">Mã SKU</th>
+                              @* <th style="width: 20%;">Mã SKU</th> *@
                               <th style="width: 10%;"></th>
                             </tr>
                           </thead>
                           <tbody>
                             <!-- Variant rows will be generated here by JS -->
                             <tr id="variant-placeholder">
-                              <td colspan="5" class="text-center text-muted p-4">
+                              <td colspan="6" class="text-center text-muted p-4">
                                 <p>Chưa có biến thể nào.</p>
                                 <small>Hãy nhập các thuộc tính ở trên và nhấn nút "Tạo biến thể".</small>
                               </td>
@@ -245,7 +257,8 @@
     overflow: hidden;
   }
 
-  #imagePreviewContainer .img-preview {
+  #imagePreviewContainer .img-preview,
+  .variant-img-preview {
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -265,6 +278,38 @@
     line-height: 25px;
     text-align: center;
   }
+
+  .variant-image-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+
+  .variant-img-preview {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  .variant-img-placeholder {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #f8f9fa;
+  }
+
+    .variant-img-placeholder i {
+      font-size: 24px;
+      color: #6c757d;
+    }
 
   /* Tagify custom style */
   .tagify {

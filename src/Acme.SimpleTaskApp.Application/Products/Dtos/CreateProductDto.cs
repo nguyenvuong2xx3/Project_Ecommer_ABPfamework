@@ -1,30 +1,27 @@
 ﻿using Abp.Application.Services.Dto;
+using Acme.SimpleTaskApp.Products;
 using Microsoft.AspNetCore.Http;
 using System;
-using static Acme.SimpleTaskApp.Products.Product;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Acme.SimpleTaskApp.Products.Dtos
 {
-    public class CreateProductDto : EntityDto<int>
+	public class CreateProductDto : EntityDto<int>
 	{
-        public string Name { get; set; }
-        
-        public int? CategoryId { get; set; }
+		public string SKU { get; set; }           // Mã sản phẩm
+		public string Name { get; set; }  // tên sản phẩm
+		public string? Description { get; set; } //mô tả
+		public string Screen { get; set; }      // Ví dụ: "6.1 inch, Super Retina XDR, ProMotion"
+		public string Processor { get; set; }   // Ví dụ: "Apple A17 Pro"
+		public string CameraSystem { get; set; } // Ví dụ: "Hệ thống 3 camera: 48MP Chính,..."
+		public string Battery { get; set; }     // Ví dụ: "Xem video lên đến 23 giờ"
+		public int? CategoryId { get; set; }       // Danh mục sản phẩm
+		public int StockQuantity { get; set; }    // Tồn kho hiện tại tổng của các biến thể??
+		public DateTime CreationTime { get; set; }
 
-		    public string Description { get; set; }
-
-        public decimal Price { get; set; }
-
-        public string Image { get; set; }
-
-        public IFormFile ImageFile { get; set; }
-
-        // Support multiple images
-        public List<IFormFile> ImageFiles { get; set; }
-
-        //public ProductState State { get; set; }
-
-    public DateTime CreationTime { get; set; }
-    }
+		// Thêm danh sách biến thể và ảnh
+		public List<ProductVariant> ProductVariants { get; set; }
+		public List<ProductImage> ProductImages { get; set; }
+	}
 }
