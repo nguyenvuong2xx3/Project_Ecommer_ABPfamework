@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Templates\" />
+    <Folder Include="wwwroot\img\products\general\" />
+    <Folder Include="wwwroot\img\products\variants\" />
     <Folder Include="wwwroot\img\Tours\" />
     <Folder Include="wwwroot\libs\" />
     <Folder Include="wwwroot\view-resources\Views\_Bundles\" />

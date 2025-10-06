@@ -40,24 +40,24 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 		public async Task<ActionResult> Index(GetAllProductsInput input, GetAllCategoryDto input1)
 		{
-			var output = await _productAppService.GetAllProducts(input);
-			var categories = await _categoryAppService.GetAllCategoriesProduct(input1);
+			//var output = await _productAppService.GetAllProducts(input);
+			//var categories = await _categoryAppService.GetAllCategoriesProduct(input1);
 
-			// Chuyển đổi CategoryListDto sang SelectListItem
-			var categoriesSelectList = categories
-					.Select(c => new SelectListItem
-					{
-						Value = c.Id.ToString(),
-						Text = c.Name
-					})
-					.ToList();
+			//// Chuyển đổi CategoryListDto sang SelectListItem
+			//var categoriesSelectList = categories
+			//		.Select(c => new SelectListItem
+			//		{
+			//			Value = c.Id.ToString(),
+			//			Text = c.Name
+			//		})
+			//		.ToList();
 
-			var model = new ProductViewModel(output.Items)
-			{
-				Categories = categoriesSelectList // Gán danh sách đã chuyển đổi
-			};
+			//var model = new ProductViewModel(output.Items)
+			//{
+			//	Categories = categoriesSelectList // Gán danh sách đã chuyển đổi
+			//};
 
-			return View(model);
+			return View();
 		}
 		public async Task<FileResult> ExportToExcel([FromBody] GetAllProductsInput input)
 		{
@@ -330,60 +330,15 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		// This is the POST action that receives form submission
 		public async Task<IActionResult> CreateProduct(CreateProductDto model)
 		{
-			//try
-			//{
-			//	if (ModelState.IsValid)
-			//	{
-			//		// Xử lý upload ảnh
-			//		var files = new List<IFormFile>();
-			//		if (model.ImageFiles != null && model.ImageFiles.Any())
-			//		{
-			//			files = model.ImageFiles;
-			//		}
-			//		else if (Request?.Form?.Files != null && Request.Form.Files.Count > 0)
-			//		{
-			//			foreach (var f in Request.Form.Files)
-			//			{
-			//				if (f.Length > 0)
-			//					files.Add(f);
-			//			}
-			//		}
-			//		if (files.Any())
-			//		{
-			//			model.ImageFiles = files;
-			//			model.ProductImages = new List<ProductImage>();
-			//			int sort = 0;
-			//			foreach (var file in files)
-			//			{
-			//				var imageUrl = UploadImage(file);
-			//				model.ProductImages.Add(new ProductImage
-			//				{
-			//					ImageUrl = imageUrl,
-			//					SortOrder = sort++
-			//				});
-			//			}
-			//		}
-
-			//		// Xử lý biến thể nếu có (giả sử nhận từ form)
-			//		// model.Variants đã là List<ProductVariant> nếu truyền đúng
-
-			//		var createdProduct = await _productAppService.CreateProducts(model);
-			//		this.Flash("Thêm sản phẩm thành công!", "success");
-			//		return RedirectToAction("Index");
-			//	}
-
-			//	var categories = await _categoryRepository.GetAllAsync();
-			//	var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
-			//	return View("Create", viewModel);
-			//}
-			//catch (Exception ex)
-			//{
-			//	this.Flash("Lỗi khi thêm sản phẩm: " + ex.Message, "error");
-			//	var categories = await _categoryRepository.GetAllAsync();
-			//	var viewModel = new CreateProductViewModel { Categories = categories.ToList() };
-			//	return View("Create", viewModel);
-			//}
-				return View("Create");
+			if (ModelState.IsValid)
+			{
+				var result = _productAppService.CreateProducts(model);
+				if (result != null)
+				{
+					return RedirectToAction("Index");
+				}
+			}
+			return View("Create");
 		}
 	}
 }

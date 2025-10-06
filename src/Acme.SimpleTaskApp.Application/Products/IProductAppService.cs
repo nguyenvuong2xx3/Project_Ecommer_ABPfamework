@@ -10,9 +10,7 @@ namespace Acme.SimpleTaskApp.Products
 	public interface IProductAppService : IApplicationService
 	{
 		Task<PagedResultDto<ProductListDto>> GetAllProducts(GetAllProductsInput input);
-
 		Task<ProductListDto> CreateProducts(CreateProductDto input);
-
 		Task<ProductListDto> GetByIdProducts(EntityDto<int> input);
 
 		Task DeleteProducts(EntityDto<int> input);

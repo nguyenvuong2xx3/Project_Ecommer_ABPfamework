@@ -169,5 +169,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Products/Create.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Categories/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Categories/Index.js"
+    ]
   }
 ]
