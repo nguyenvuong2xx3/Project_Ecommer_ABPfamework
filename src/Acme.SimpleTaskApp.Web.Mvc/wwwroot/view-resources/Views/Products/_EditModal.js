@@ -1,155 +1,210 @@
 ﻿(function ($) {
-    // Sửa từ "_userService" sang "_productService"
-    var _productService = abp.services.app.product, // Đảm bảo service name đúng
-        l = abp.localization.getSource('SimpleTaskApp'),
-        _$modal = $('#ProductEditModal'),
-        _$form = _$modal.find('form');
+	app.modals.ProductEditModal = function () {
+		var _modalManager;
+		var _$form = null;
+		var l = abp.localization.getSource('SimpleTaskApp');
 
+		let newImageFiles = new DataTransfer();   // ảnh mới
+		let deletedImageUrls = [];                // ảnh cũ bị xóa
+		let isImageUploaderInitialized = false;
 
-  // Đảm bảo chỉ gắn sự kiện 1 lần
-  $(document).off('change', '#productImage');
-  $(document).on('change', '#productImage', function (event) {
-    const input = event.target;
-    const $preview = $('#newProductImagePreview');
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        $preview.attr('src', e.target.result).show();
-      };
-      reader.readAsDataURL(input.files[0]);
-    } else {
-      $preview.attr('src', '').hide();
-    }
-  });
+		this.init = function (modalManager) {
+			_modalManager = modalManager;
+			var $modal = _modalManager.getModal();
+			_$form = $modal.find('form[name=EditProductForm]');
 
-    _$form.find('.save-button').on('click', (e) => {
-        e.preventDefault();
+			// Lấy ProductId từ form hoặc data attribute
+			var productId = _$form.find('input[name=Id]').val() || $modal.data('product-id');
 
-        if (!_$form.valid()) {
-            return;
-        }
+			// Validate
+			if ($.fn.validate) {
+				_$form.validate({
+					validClass: 'valid',
+					errorClass: 'invalid-feedback',
+					highlight: (el) => $(el).addClass('is-invalid').removeClass('is-valid'),
+					unhighlight: (el) => $(el).addClass('is-valid').removeClass('is-invalid'),
+					rules: {
+						Name: { required: true, minlength: 5, maxlength: 256 },
+						CategoryId: { required: true },
+						Description: { maxlength: 500 }
+					},
+					messages: {
+						Name: { required: 'Tên sản phẩm không được để trống', minlength: 'Tối thiểu 5 ký tự' },
+						CategoryId: { required: 'Vui lòng chọn danh mục' },
+						Description: { maxlength: 'Mô tả không được vượt quá 500 ký tự' }
+					},
+					errorPlacement: function (error, element) {
+						error.addClass('text-danger').insertAfter(element);
+					}
+				});
+			}
 
-        var product = _$form.serializeFormToObject(); // Lấy dữ liệu từ form
-        var formData = new FormData(_$form[0]);
-        abp.ui.setBusy(_$modal);
+			// Setup uploader
+			if (!isImageUploaderInitialized) {
+				setupImageUploader($modal);
+				isImageUploaderInitialized = true;
+			}
 
-        $.ajax({
+			// Focus
+			setTimeout(() => _$form.find('input[name=Name]').first().focus(), 250);
+		};
 
-            url: abp.appPath + 'Products/Update', // Đường dẫn đến phương thức trong controller
-            type: 'POST',
-            processData: false, // Important! Không xử lý dữ liệu
-            contentType: false, // Important!  Không đặt kiểu dữ liệu
-            data: formData,
-            error: function (xhr, textStatus, errorThrown) {
-                var errorMessage;
-                if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
-                    errorMessage = xhr.responseJSON.errors.join("<br/>");
-                }
-                else {
-                    errorMessage = "Có lỗi xảy ra khi tạo mới sản phẩm (Có thể do upload ảnh không đúng định dạng (.jpg, .jpeg, .png, .gif)";
-                }
-                $("#error-message").html(errorMessage).show();
-            }
+		function setupImageUploader($modal) {
+			const imageUploader = $modal.find('.image-uploader');
+			const imageInput = $modal.find('#ImageFiles');
+			const previewContainer = $modal.find('#imagePreviewContainer');
 
-        }).done(function () {
-            /*resetDefaultImage();*/
-            _$modal.modal('hide');
-            _$form[0].reset();
-            abp.notify.info(l('Lưu thành công'));
-            abp.event.trigger('product.edited', product);
+			if (!imageUploader.length || !imageInput.length) {
+				console.error('Image uploader elements not found');
+				return;
+			}
 
-        }).always(function () {
+			// Reset lại data
+			newImageFiles = new DataTransfer();
+			deletedImageUrls = [];
 
-            abp.ui.clearBusy(_$modal);
+			// Gán event cho ảnh cũ (chỉ xử lý xóa)
+			previewContainer.find('.img-preview-wrapper').each(function () {
+				const $wrapper = $(this);
+				const imgUrl = $wrapper.find('img').attr('src');
+				const $removeBtn = $wrapper.find('.remove-img-btn');
 
-        });
-    });
+				$removeBtn.off('click').on('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
 
+					// Ghi nhớ ảnh bị xóa
+					deletedImageUrls.push(imgUrl);
+					$wrapper.remove();
+				});
+			});
 
+			// Xử lý ảnh mới
+			imageUploader.off('click dragover dragleave drop');
+			imageInput.off('change');
 
-    //function save() {
-    //    if (!_$form.valid()) {
-    //        return;
-    //    }
+			imageUploader.on('click', function (e) {
+				if (!$(e.target).is('input[type="file"]')) {
+					e.preventDefault();
+					imageInput.trigger('click');
+				}
+			});
 
-    //    // Lấy dữ liệu từ form
-    //    var product = _$form.serializeFormToObject();
-    //    var formData = new FormData(_$form[0]);
-    //    abp.ui.setBusy(_$form);
+			imageUploader.on('dragover', function (e) {
+				e.preventDefault();
+				$(this).css('background-color', '#e9ecef');
+			});
 
-    //    // Gọi service update PRODUCT
-    //    _productService.updateProducts(product).done(function () {
-    //        _$modal.modal('hide');
-    //        abp.notify.info(l('SavedSuccessfully'));
-    //        abp.event.trigger('product.edited'); // Kích hoạt sự kiện reload bảng
-    //    }).always(function () {
-    //        abp.ui.clearBusy(_$form);
-    //    });
-    //}
+			imageUploader.on('dragleave drop', function (e) {
+				e.preventDefault();
+				$(this).css('background-color', 'transparent');
+			});
 
-    // Xử lý sự kiện click nút Save
-    //_$form.closest('div.modal-content').find(".save-button").click(function (e) {
-    //    e.preventDefault();
-    //    save();
-    //});
+			imageUploader.on('drop', function (e) {
+				const files = e.originalEvent.dataTransfer.files;
+				handleNewFiles(files, previewContainer);
+			});
 
-    // Xử lý phím Enter
-    _$form.find('input').on('keypress', function (e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            save();
-        }
-    });
+			imageInput.on('change', function (e) {
+				handleNewFiles(e.target.files, previewContainer);
+			});
+		}
 
-    // Focus vào trường đầu tiên khi modal hiển thị
-    _$modal.on('shown.bs.modal', function () {
-        _$form.find('input[type=text]:first').focus();
-    });
+		function handleNewFiles(files, previewContainer) {
+			if (!files || files.length === 0) return;
 
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+				if (!file.type.startsWith('image/')) continue;
 
-  //validate
-  $(document).ready(function () {
-    $("form[name='ProductEditForm']").validate({
-      rules: {
-        Name: {
-          required: true,
-          minlength: 5,
-          maxlength: 256
-        },
-        Description: {
-          required: true,
-          minlength: 10,
-          maxlength: 500
-        },
-        Price: {
-          required: true,
-          number: true,
-          min: 1000,
-        },
-        ImageFile: {
-        }
-      },
-      messages: {
-        Name: {
-          required: "Tên sản phẩm không được để trống",
-          minlength: "Tên sản phẩm phải có ít nhất 5 ký tự",
-          maxlength: "Tên sản phẩm tối đa 256 ký tự"
-        },
-        Description: {
-          required: "Mô tả không được để trống",
-          minlength: "Mô tả phải có ít nhất 10 ký tự",
-          maxlength: "Mô tả tối đa 500 ký tự"
-        },
-        Price: {
-          required: "Giá sản phẩm không được để trống",
-          min: "Giá không thể nhỏ hơn 1000",
-        },
-        ImageFile: {
-          extension: "Chỉ chấp nhận tệp ảnh (.jpg, .jpeg, .png, .gif)"
-        }
-      },
-      errorElement: "div",
-      errorClass: "text-danger"
-    });
-  });
+				newImageFiles.items.add(file);
+
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const preview = createNewImagePreview(e.target.result, file);
+					previewContainer.append(preview);
+				};
+				reader.readAsDataURL(file);
+			}
+			$('#ImageFiles')[0].files = newImageFiles.files;
+		}
+
+		function createNewImagePreview(src, file) {
+			const wrapper = $('<div>').addClass('img-preview-wrapper');
+			const img = $('<img>').attr('src', src).addClass('img-preview');
+			const removeBtn = $('<button>').html('&times;').addClass('remove-img-btn').attr('type', 'button');
+
+			removeBtn.on('click', function (e) {
+				e.preventDefault();
+				const newFiles = new DataTransfer();
+				for (let i = 0; i < newImageFiles.files.length; i++) {
+					if (newImageFiles.files[i] !== file) {
+						newFiles.items.add(newImageFiles.files[i]);
+					}
+				}
+				newImageFiles = newFiles;
+				$('#ImageFiles')[0].files = newImageFiles.files;
+				wrapper.remove();
+			});
+
+			wrapper.append(img, removeBtn);
+			return wrapper;
+		}
+
+		this.save = function () {
+			if (!_$form || _$form.length === 0) {
+				console.error("Form không tồn tại trong modal!");
+				return;
+			}
+
+			// Kiểm tra validator có hoạt động không
+			if ($.fn.validate) {
+				_$form.validate().form(); // <- ép chạy validate cho toàn form
+				if (!_$form.valid()) {
+					console.warn("Form không hợp lệ, dừng lại!");
+					return;
+				}
+			}
+
+			_modalManager.setBusy(true);
+
+			const formData = new FormData(_$form[0]);
+			const productId = _$form.find('input[name=Id]').val();
+			if (productId) formData.set('Id', productId);
+
+			// Gắn ảnh mới
+			Array.from(newImageFiles.files).forEach((file, i) => {
+				formData.append(`Images[${i}]`, file);
+			});
+
+			// Gắn url ảnh bị xóa
+			deletedImageUrls.forEach((url, i) => {
+				formData.append(`DeletedImageUrls[${i}]`, url);
+			});
+
+			console.log(">>> Dữ liệu gửi đi:", Array.from(formData.entries()));
+
+			$.ajax({
+				url: abp.appPath + 'Products/EditProduct',
+				type: 'POST',
+				processData: false,
+				contentType: false,
+				data: formData,
+				success: function (res) {
+					console.log("Phản hồi thành công:", res);
+					_modalManager.setBusy(false);
+					abp.notify.info(l('Cập nhật thành công'));
+					_modalManager.close();
+					setTimeout(() => window.location.href = abp.appPath + 'Products', 500);
+				},
+				error: function (xhr) {
+					_modalManager.setBusy(false);
+					console.error("Lỗi AJAX:", xhr);
+					const msg = xhr.responseJSON?.error?.message || "Có lỗi xảy ra khi cập nhật sản phẩm.";
+					abp.message.error(msg);
+				}
+			});
+		};
+
+	};
 })(jQuery);

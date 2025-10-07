@@ -2,7 +2,7 @@
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
-@* @model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel *@
+@model ProductViewModel
 
 @{
 	ViewBag.Title = L("Products");
@@ -32,9 +32,13 @@
 						<a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal	">Nhập Excel</a>
 					</div>
 				</div>
-				<a href="javascript:;" data-toggle="modal" data-target="#ProductCreateModal" style="margin-right: 5px;" class="btn bg-blue float-sm-right">
+				@* <a href="Products/Create" style="margin-right: 5px;" class="btn bg-blue float-sm-right">
 					<i class="fa fa-plus-square"></i> @L("Create")
-				</a>
+				</a> *@
+				<button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
+					<i class="fa fa-plus-square"></i>
+					@L("Create")
+				</button>
 			</div>
 		</div>
 	</div>
@@ -54,7 +58,7 @@
 							@* 	@await Html.PartialAsync("~/Views/Products/CategoryList.cshtml") *@
 							@* </div> *@
 							<div class="col-md-6">
-								@await Html.PartialAsync("~/Views/Products/Index.AdvancedSearch.cshtml")
+								@* @await Html.PartialAsync("~/Views/Products/Index.AdvancedSearch.cshtml") *@
 							</div>
 						</div>
 					</div>
@@ -67,10 +71,10 @@
 									<tr>
 										<th>@L("Name")</th>
 										<th style="width: 300px">@L("Description")</th>
-										<th>@L("Price")</th>
-										<th style="width: 100px">@L("CreationTime")</th>
-										<th style="width: 100px">@L("Image")</th>
-										<th>@L("State")</th>
+										@* <th>@L("Price")</th> *@
+										@* <th style="width: 100px">@L("Screen")</th> *@
+										<th style="width: 100px">@L("ImageUrl")</th>
+										<th>@L("StockQuantity")</th>
 										<th style="width: 210px">@L("Actions")</th>
 									</tr>
 								</thead>
@@ -78,58 +82,8 @@
 							</table>
 						</div>
 					</div>
-
 				</div> <!-- End Card -->
 			</div>
 		</div>
 	</div>
 </section>
-
-<!-- Create Modal -->
-@* @await Html.PartialAsync("~/Views/Products/_CreateModal.cshtml", new CreateProductViewModel(Model.Categories)) *@
-
-<!-- Edit Modal -->
-<div class="modal fade" id="ProductEditModal" tabindex="-1" role="dialog" aria-labelledby="ProductEditModalLabel" data-backdrop="static">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content"></div>
-	</div>
-</div>
-
-<!-- Detail Modal -->
-<div class="modal fade" id="ProductDetailModal" tabindex="-1" role="dialog" aria-labelledby="ProductDetailModalLabel" data-backdrop="static">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content"></div>
-	</div>
-</div>
-
-<!-- Import Excel Modal -->
-<div class="modal fade" id="ImportExcelModal" tabindex="-1" role="dialog" aria-labelledby="ImportExcelModalLabel" data-backdrop="static">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="ImportExcelModalLabel">Nhập sản phẩm bằng file Excel</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<form id="ImportExcelForm">
-				<div class="modal-body">
-					<div class="form-group">
-						<div class="custom-file">
-							<input type="file" class="custom-file-input" id="excelFile" accept=".xlsx,.xls" required>
-							<label class="custom-file-label" for="excelFile">Chọn file Excel</label>
-						</div>
-						<small class="form-text text-muted">Chỉ nhận file excel</small>
-						<div id="importError" class="text-danger mt-2" style="display: none;"></div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">@L("Cancel")</button>
-					<button type="button" id="btnImportExcel" class="btn btn-primary">
-						<i class="fa fa-upload"></i> Nhập
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>

@@ -175,5 +175,17 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Categories/Index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Products/index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Products/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Products/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Products/_CreateModal.js"
+    ]
   }
 ]

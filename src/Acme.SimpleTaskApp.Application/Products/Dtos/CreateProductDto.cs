@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Acme.SimpleTaskApp.Products;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 		public string Battery { get; set; }     // Ví dụ: "Xem video lên đến 23 giờ"
 		public int? CategoryId { get; set; }       // Danh mục sản phẩm
 		public int StockQuantity { get; set; }    // Tồn kho hiện tại tổng của các biến thể??
-		public DateTime CreationTime { get; set; }
+		//public Product Product { get; set; }
 
 		// Thêm danh sách biến thể và ảnh
 		public List<ProductVariant> ProductVariants { get; set; }

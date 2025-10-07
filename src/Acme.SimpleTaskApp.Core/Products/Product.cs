@@ -19,10 +19,12 @@ namespace Acme.SimpleTaskApp.Products
 		public string Processor { get; set; }   // Ví dụ: "Apple A17 Pro"
 		public string CameraSystem { get; set; } // Ví dụ: "Hệ thống 3 camera: 48MP Chính,..."
 		public string Battery { get; set; }     // Ví dụ: "Xem video lên đến 23 giờ"
-		[NotMapped] public List<IFormFile> Image { get; set; }
+		[NotMapped] public List<IFormFile> Images { get; set; } // cho BE nhận file từ FE
+		[NotMapped] public string ImageUrl { get; set; } // cho BE trả về
+		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về
+		[NotMapped] public List<string> DeletedImageUrls { get; set; } // cho BE trả về
 		public int? CategoryId { get; set; }       // Danh mục sản phẩm
 		public int StockQuantity { get; set; }    // Tồn kho hiện tại tổng của các biến thể??
-		public DateTime? ExpiryDate { get; set; } // Hạn sử dụng
 		
 	}
 }

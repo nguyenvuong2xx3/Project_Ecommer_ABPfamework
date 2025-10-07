@@ -10,9 +10,9 @@ namespace Acme.SimpleTaskApp.Web.Models.Orders
 		public List<OrderDetailDto> OrderList { get; set; }
 		public List<ProductListDto> ProductList { get; set; }
 
-		public ProductListDto GetProductById(int productId)
-		{
-			return ProductList?.FirstOrDefault(p => p.Id == productId);
-		}
+		//public ProductListDto GetProductById(int productId)
+		//{
+		//	return ProductList?.FirstOrDefault(p => p.Id == productId);
+		//}
 	}
 }

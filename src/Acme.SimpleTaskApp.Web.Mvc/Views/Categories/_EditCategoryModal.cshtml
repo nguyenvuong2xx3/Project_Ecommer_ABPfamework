@@ -19,7 +19,6 @@
       <div class="col-md-9">
         <select class="form-select" name="ParentId">
           <option value="">-- @L("SelectParentCategory") --</option>
-          @* Bind danh mục cha nếu cần *@
           @if (Model?.Categories != null)
           {
             foreach (var c in Model.Categories)

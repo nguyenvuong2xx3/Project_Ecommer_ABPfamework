@@ -5,15 +5,14 @@
   Layout = null;
 }
 
-@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chỉnh sửa sản phẩm"))
-<form name="EditProductForm" role="form" class="form-horizontal">
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thêm mới sản phẩm"))
+<form name="CreateProductForm" role="form" class="form-horizontal">
   <div class="modal-body">
-    <input type="hidden" name="Id" value="@Model.Product.Id" />
     <!-- Product Name -->
     <div class="row mb-3">
       <label class="col-md-3 col-form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
       <div class="col-md-9">
-        <input type="text" class="form-control" name="Name" required minlength="5" value="@Model.Product.Name" maxlength="256" placeholder="Ví dụ: iPhone 15 Pro" />
+        <input type="text" class="form-control" name="Name" required minlength="5" maxlength="256" placeholder="Ví dụ: iPhone 15 Pro" />
       </div>
     </div>
 
@@ -23,13 +22,9 @@
       <div class="col-md-9">
         <select name="CategoryId" class="form-select" required>
           <option value="">-- Chọn danh mục --</option>
-          @if (Model?.Categories != null)
+          @foreach (var category in Model.Categories)
           {
-            foreach (var c in Model.Categories)
-            {
-              var isSelected = Model.Product.CategoryId == c.Id ? "selected" : "";
-              <option value="@c.Id" isSelected>@c.Name</option>
-            }
+            <option value="@category.Id">@category.Name</option>
           }
         </select>
       </div>
@@ -39,7 +34,7 @@
     <div class="row mb-3">
       <label class="col-md-3 col-form-label fw-bold">Mô tả chung</label>
       <div class="col-md-9">
-        <textarea class="form-control" name="Description" rows="3" maxlength="500" placeholder="Mô tả các tính năng chung, thiết kế của sản phẩm...">@Model.Product.Description</textarea>
+        <textarea class="form-control" name="Description" rows="3" maxlength="500" placeholder="Mô tả các tính năng chung, thiết kế của sản phẩm..."></textarea>
       </div>
     </div>
 
@@ -54,7 +49,7 @@
     <div class="row mb-3">
       <label class="col-md-3 col-form-label">Màn hình</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" name="Screen" value="@Model.Product.Screen" placeholder="Ví dụ: 6.1 inch, Super Retina XDR" />
+        <input type="text" class="form-control" name="Screen" placeholder="Ví dụ: 6.1 inch, Super Retina XDR" />
       </div>
     </div>
 
@@ -62,7 +57,7 @@
     <div class="row mb-3">
       <label class="col-md-3 col-form-label">Bộ xử lý</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" name="Processor" value="@Model.Product.Processor" placeholder="Ví dụ: Apple A17 Pro" />
+        <input type="text" class="form-control" name="Processor" placeholder="Ví dụ: Apple A17 Pro" />
       </div>
     </div>
 
@@ -70,7 +65,7 @@
     <div class="row mb-3">
       <label class="col-md-3 col-form-label">Hệ thống Camera</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" name="CameraSystem" value="@Model.Product.CameraSystem" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
+        <input type="text" class="form-control" name="CameraSystem" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
       </div>
     </div>
 
@@ -78,7 +73,7 @@
     <div class="row mb-3">
       <label class="col-md-3 col-form-label">Pin</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" name="Battery" value="@Model.Product.Battery" placeholder="Ví dụ: Xem video 23 giờ" />
+        <input type="text" class="form-control" name="Battery" placeholder="Ví dụ: Xem video 23 giờ" />
       </div>
     </div>
 
@@ -96,18 +91,6 @@
         </div>
         <div id="imagePreviewContainer" class="mt-3 d-flex flex-wrap gap-2">
           <!-- Image previews will appear here -->
-          <div id="imagePreviewContainer" class="mt-3 d-flex flex-wrap gap-2">
-            @if (Model?.Product?.ImageUrls != null && Model.Product.ImageUrls.Any())
-            {
-              foreach (var img in Model.Product.ImageUrls)
-              {
-                <div class="img-preview-wrapper">
-                  <img src="@img" alt="Product Image" class="img-preview" />
-                  <button class="remove-img-btn" type="button">×</button>
-                </div>
-              }
-            }
-          </div>
         </div>
       </div>
     </div>
@@ -144,7 +127,13 @@
     margin: 5px;
   }
 
-
+  .img-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
 
   .remove-img-btn {
     position: absolute;
@@ -169,19 +158,4 @@
     .remove-img-btn:hover {
       background: #c82333;
     }
-
-  #imagePreviewContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .img-preview {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-  }
-
 </style>
