@@ -4,6 +4,7 @@
 
 # Logs
 Logs/
+*.log
 # Bỏ qua các file log tự động sinh ra
 src/Acme.SimpleTaskApp.Web.Mvc/App_Data/Logs/
 # Generated files
