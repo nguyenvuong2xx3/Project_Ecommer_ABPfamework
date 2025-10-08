@@ -164,7 +164,6 @@ namespace Acme.SimpleTaskApp.Products
 			}
 			return new PagedResultDto<Product>(totalCount, products);
 		}
-
 		public async Task<Product> GetProductById(int id)
 		{
 			if (id <= 0)
@@ -175,7 +174,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 		public async Task<Product> EditProduct(Product input)
 		{
-			var product = await _productRepository.FirstOrDefaultAsync(input.Id);
+			var product = _productRepository.FirstOrDefault(input.Id);
 			if (product == null)
 			{
 				throw new UserFriendlyException("Product not found");
@@ -189,17 +188,19 @@ namespace Acme.SimpleTaskApp.Products
 			product.CameraSystem = input.CameraSystem;
 			product.Battery = input.Battery;
 
-			await _productRepository.UpdateAsync(product);
+			_productRepository.Update(product);
 			CurrentUnitOfWork.SaveChanges();
-
-			foreach (var item in input.ImageUrls)
+			if (input.DeletedImageUrls != null && input.DeletedImageUrls.Any())
 			{
-				// ảnh cần xóa
-				var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
-				await _productImageRepository.DeleteAsync(existingImages.Id);
-				if (existingImages != null)
+				foreach (var item in input.DeletedImageUrls)
 				{
-					_uploadFileAppService.RemoveImage(item);
+					// ảnh cần xóa
+					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
+					 _productImageRepository.Delete(existingImages.Id);
+					if (existingImages != null)
+					{
+						await _uploadFileAppService.RemoveImage(item);
+					}
 				}
 			}
 			if (input.Images != null && input.Images.Any())
@@ -217,10 +218,29 @@ namespace Acme.SimpleTaskApp.Products
 						SortOrder = generalSortOrder++,
 						AltText = input.Name
 					};
-					_productImageRepository.InsertAsync(productImage);
+					_productImageRepository.Insert(productImage);
 				}
 			}
 			return product;
+		}
+
+		public async Task<Product> DeleteProduct(int id)
+		{
+			var item = await _productRepository.GetAsync(id);
+			if (item == null)
+			{
+				throw new UserFriendlyException("Product not found");
+			}
+			_productRepository.Delete(item);
+
+			// Xóa ảnh liên quan
+			_productImageRepository.GetAll().Where(x => x.ProductId == id).ToList().ForEach(img =>
+			{
+				_uploadFileAppService.RemoveImage(img.ImageUrl);
+			});
+			_productImageRepository.Delete(x => x.ProductId == id);
+			CurrentUnitOfWork.SaveChanges();
+			return item;
 		}
 	}
 }

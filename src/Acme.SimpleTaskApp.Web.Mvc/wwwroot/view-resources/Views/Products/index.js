@@ -61,15 +61,6 @@
 				data: 'description',
 				sortable: false
 			},
-			//{
-			//	targets: 2,
-			//	data: 'price',
-			//	sortable: false,
-			//	render: function (data, type, row) {
-			//		// Định dạng số với dấu phân cách hàng nghìn + thêm "đ"
-			//		return data.toLocaleString('vi-VN') + ' đ';
-			//	}
-			//},
 			{
 				targets: 2,
 				data: 'imageUrl',
@@ -83,7 +74,7 @@
 			},
 			{
 				targets: 3,
-				data: 'stockQuantity',
+				data: 'creationTime',
 				sortable: false,
 				render: function (data, type, row) {
 					if (data) {
@@ -93,17 +84,6 @@
 				}
 
 			},
-			//{
-			//	targets: 5,
-			//	data: 'state',
-			//	sortable: false,
-			//	render: function (data, type, row) {
-			//		switch (data) {
-			//			case 0: return '<span class="badge bg-success">Còn hàng</span>';
-			//			case 1: return '<span class="badge bg-warning">Hết hàng</span>';
-			//		}
-			//	}
-			//},
 			{
 				targets: 4,
 				data: null,
@@ -207,27 +187,6 @@
 		);
 	}
 
-	// Xử lý sự kiện click nút "Edit"
-	//$(document).on('click', '.edit-product', function () {
-	//	var productId = $(this).data("product-id");
-
-	//	abp.ajax({
-	//		url: abp.appPath + 'Products/EditModal?productId=' + productId,
-	//		type: 'POST',
-	//		processData: false, // Important! Không xử lý dữ liệu
-	//		contentType: false, // Important!  Không đặt kiểu dữ liệu
-	//		dataType: 'html',
-	//		success: function (content) {
-	//			// Chèn nội dung vào modal-content
-	//			$('#ProductEditModal .modal-content').html(content);
-	//			// Hiển thị modal
-	//			$('#ProductEditModal').modal('show');
-	//		},
-	//		error: function (e) {
-	//			abp.notify.error('Could not load edit form');
-	//		}
-	//	});
-	//});
 
 	$('#ExportExcelBtn').click(function () {
 		var input = {

@@ -81,10 +81,13 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return PartialView("_EditProductModal", model);
 		}
-		public IActionResult EditProduct(Product model)
+		public async Task EditProduct(Product model)
 		{
-			var product = _productAppService.EditProduct(model);
-			return RedirectToAction("Index");
+			var product = await _productAppService.EditProduct(model);
+		}
+		public async Task Delete(int id)
+		{
+			await _productAppService.DeleteProduct(id);
 		}
 	}
 }

@@ -12,5 +12,6 @@ namespace Acme.SimpleTaskApp.Products
 		void CreateGeneralProductImages(int productId, List<ProductImage> imageInputs, string productName);
 		Task<Product> GetProductById(int id);
 		Task<Product> EditProduct(Product input);
+		Task<Product> DeleteProduct(int id);
 	}
 }

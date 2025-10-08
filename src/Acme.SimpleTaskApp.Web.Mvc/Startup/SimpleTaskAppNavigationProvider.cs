@@ -12,23 +12,16 @@ namespace Acme.SimpleTaskApp.Web.Startup
 	{
 		public override void SetNavigation(INavigationProviderContext context)
 		{
-			context.Manager.MainMenu
+			var menu = context.Manager.MainMenu;
+
+			// ===== QUẢN TRỊ HỆ THỐNG (Menu cha có submenu) =====
+			menu.AddItem(
+					new MenuItemDefinition(
+							"Administration",
+							L("Administration"),
+							icon: "fas fa-cog"
+					)
 					.AddItem(
-							new MenuItemDefinition(
-									PageNames.About,
-									L("About"),
-									url: "About",
-									icon: "fas fa-info-circle"
-							)
-					).AddItem(
-							new MenuItemDefinition(
-									PageNames.Home,
-									L("HomePage"),
-									url: "",
-									icon: "fas fa-home",
-									requiresAuthentication: true
-							)
-					).AddItem(
 							new MenuItemDefinition(
 									PageNames.Tenants,
 									L("Tenants"),
@@ -36,7 +29,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									icon: "fas fa-building",
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Tenants)
 							)
-					).AddItem(
+					)
+					.AddItem(
 							new MenuItemDefinition(
 									PageNames.Users,
 									L("Users"),
@@ -44,7 +38,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									icon: "fas fa-users",
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Users)
 							)
-					).AddItem(
+					)
+					.AddItem(
 							new MenuItemDefinition(
 									PageNames.Roles,
 									L("Roles"),
@@ -53,62 +48,69 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
 							)
 					)
+			);
+
+			// ===== QUẢN LÝ SẢN PHẨM (Menu cha có submenu) =====
+			menu.AddItem(
+					new MenuItemDefinition(
+							"CommodityManagement",
+							L("CommodityManagement"),
+							icon: "fas fa-box"
+					)
 					.AddItem(
 							new MenuItemDefinition(
-									"Quản lý mẫu sản phẩm",
-									L("Products"),
-									url: "Products",
-									icon: "fa fa-cart-plus",
-									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
-
+									"Categories",
+									L("Categories"),
+									url: "Categories",
+									icon: "fa fa-list",
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
 							)
 					)
 					.AddItem(
 							new MenuItemDefinition(
-									"Quản lý sản phẩm",
-									L("ProductVariant"),
-									url: "ProductVariant",
+									"Products",
+									L("Products"),
+									url: "Products",
 									icon: "fa fa-cart-plus",
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
 							)
 					).AddItem(
 							new MenuItemDefinition(
-											"Categories",
-											L("Categories"),
-											url: "Categories",
-											icon: "fa fa-list",
-											permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
-
+									"ProductVariant",
+									L("ProductVariant"),
+									url: "ProductVariant",
+									icon: "fa fa-cubes",
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
 							)
-					).AddItem(
+					)
+			);
+
+			// ===== QUẢN LÝ ĐƠN HÀNG (Menu cha có submenu) =====
+			menu.AddItem(
+					new MenuItemDefinition(
+							"OrderManagement",
+							L("OrderManagement"),
+							icon: "fas fa-shopping-cart"
+					)
+					.AddItem(
 							new MenuItemDefinition(
-											"HomeCustomer",
-											L("HomeCustomer"),
-											url: "HomeCustomer",
-											icon: "fa fa-globe",
-											permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_homeCustomer)
-
+									"HomeCustomer",
+									L("HomeCustomer"),
+									url: "HomeCustomer",
+									icon: "fa fa-home",
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_homeCustomer)
 							)
-					).AddItem(
+					)
+					.AddItem(
 							new MenuItemDefinition(
-											"Orders",
-											L("Orders"),
-											url: "Orders",
-											icon: "fas fa-box-open",
-							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_orders)
-
+									"Orders",
+									L("Orders"),
+									url: "Orders",
+									icon: "fas fa-box-open",
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_orders)
 							)
-					);
-					//.AddItem(
-					//		new MenuItemDefinition(
-					//						"Tours",
-					//						L("Tours"),
-					//						url: "Tours",
-					//						icon: "fa fa-globe"
-					//		//permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
-
-					//		)
-					//);
+					)
+			);
 		}
 
 		private static ILocalizableString L(string name)

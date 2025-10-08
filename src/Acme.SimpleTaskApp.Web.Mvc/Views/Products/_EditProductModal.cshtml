@@ -23,13 +23,9 @@
       <div class="col-md-9">
         <select name="CategoryId" class="form-select" required>
           <option value="">-- Chọn danh mục --</option>
-          @if (Model?.Categories != null)
+          @foreach (var item in Model.Categories)
           {
-            foreach (var c in Model.Categories)
-            {
-              var isSelected = Model.Product.CategoryId == c.Id ? "selected" : "";
-              <option value="@c.Id" isSelected>@c.Name</option>
-            }
+            <option selected="@(item.Id == Model.Product.CategoryId ? "selected" : null)" value="@item.Id">@item.Name</option>
           }
         </select>
       </div>
@@ -87,7 +83,7 @@
       <div class="col-12">
         <h6 class="fw-bold border-bottom pb-2">Hình ảnh sản phẩm</h6>
         <div class="image-uploader border rounded p-3 text-center">
-          <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+          <input type="file" id="ImageFiles" name="Images" multiple accept="image/*" class="d-none">
           <div class="uploader-content">
             <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
             <p class="mb-1">Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>

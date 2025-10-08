@@ -187,5 +187,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Products/_CreateModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/customs/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/customs/site.css"
+    ]
   }
 ]
