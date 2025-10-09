@@ -9,9 +9,10 @@ namespace Acme.SimpleTaskApp.ProductVariant
 {
 	public interface IProductVariantAppService : IApplicationService
 	{
-		Task CreateOrUpdate(Products.ProductVariant input);
-		Task Delete(int id);
+		Task CreateProductVariant(Products.ProductVariant input);
+		Task EditProductVariant(Products.ProductVariant input);
+		Task DeleteProductVariant(int id);
+		Task<PagedResultDto<Products.ProductVariant>> GetAllProductVariant(GetProductVariantsInput input);
 		Task<Products.ProductVariant> GetById(int id);
-		Task<PagedResultDto<Products.ProductVariant>> GetAll(GetProductVariantsInput input);
 	}
 }

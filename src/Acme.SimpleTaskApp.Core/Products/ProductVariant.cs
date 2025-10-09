@@ -1,20 +1,23 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Acme.SimpleTaskApp.Products
 {
 	public class ProductVariant : FullAuditedEntity<int>
 	{
-		public int ProductId { get; set; } // Liên kết với sản phẩm
-		public string Ram { get; set; }            // 4GB, 8GB
-		public string Storage { get; set; }        // 64GB, 128GB
-		public string Color { get; set; }          // Đen, Trắng, Xanh
-		public decimal Price { get; set; }         // Giá riêng cho biến thể
-		public int StockQuantity { get; set; }     // Tồn kho riêng
-		public string SKU { get; set; }            // Mã riêng cho biến thể tự sinh ở BE
+		public int ProductId { get; set; }
+		[NotMapped] public string ProductName { get; set; } // cho BE trả về
+		public string Ram { get; set; }
+		public string Storage { get; set; }
+		public string Color { get; set; }
+		public decimal Price { get; set; }
+		public int StockQuantity { get; set; }
+		public string SKU { get; set; }
 		[NotMapped] public List<IFormFile> ImageFiles { get; set; }
-
+		[NotMapped] public List<string> DeletedImageUrls { get; set; }
+		[NotMapped] public string ImageUrl { get; set; } // cho BE trả về
+		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về
 	}
 }
