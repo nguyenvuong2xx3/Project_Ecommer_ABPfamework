@@ -76,9 +76,9 @@ namespace Acme.SimpleTaskApp.Web.Startup
 							)
 					).AddItem(
 							new MenuItemDefinition(
-									"ProductVariant",
-									L("ProductVariant"),
-									url: "ProductVariant",
+									"ProductVariants",
+									L("ProductVariants"),
+									url: "ProductVariants",
 									icon: "fa fa-cubes",
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
 							)
