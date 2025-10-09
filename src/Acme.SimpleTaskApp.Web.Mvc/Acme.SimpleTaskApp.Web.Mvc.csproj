@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Acme.SimpleTaskApp.Application\Acme.SimpleTaskApp.Application.csproj" />
     <ProjectReference Include="..\Acme.SimpleTaskApp.Core\Acme.SimpleTaskApp.Core.csproj" />
+    <ProjectReference Include="..\Acme.SimpleTaskApp.EntityFrameworkCore\Acme.SimpleTaskApp.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Acme.SimpleTaskApp.Web.Core\Acme.SimpleTaskApp.Web.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -47,10 +48,10 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.4.1" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Acme\SimpleTaskApp\Web\Models\Products\" />
     <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />
-    <Folder Include="wwwroot\img\Tours\" />
     <Folder Include="wwwroot\libs\" />
     <Folder Include="wwwroot\view-resources\Views\_Bundles\" />
   </ItemGroup>

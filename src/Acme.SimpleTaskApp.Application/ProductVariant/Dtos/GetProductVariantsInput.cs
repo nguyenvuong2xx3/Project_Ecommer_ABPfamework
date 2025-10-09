@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 
-namespace Acme.SimpleTaskApp.ProductVariant.Dtos
+namespace Acme.SimpleTaskApp.ProductVariants.Dtos
 {
 	public class GetProductVariantsInput : PagedAndSortedResultRequestDto
 	{

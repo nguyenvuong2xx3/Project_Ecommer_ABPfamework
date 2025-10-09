@@ -193,5 +193,41 @@
     "inputFiles": [
       "wwwroot/css/customs/site.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/ProductVariants/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/ProductVariants/_CreateModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/ProductVariants/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/ProductVariants/_EditModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/ProductVariants/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/ProductVariants/Index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Categories/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Categories/_EditModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Products/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Products/_EditModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/ProductVariants/_DetailModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/ProductVariants/_DetailModal.js"
+    ]
   }
 ]

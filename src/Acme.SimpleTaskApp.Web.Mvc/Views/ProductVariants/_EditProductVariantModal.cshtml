@@ -1,0 +1,157 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.ProductVariants
+@model ProductVariantViewModel
+@{
+  Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chỉnh sửa biến thể sản phẩm"))
+<form name="EditProductVariantForm" role="form" class="form-horizontal">
+  <div class="modal-body">
+    <input type="hidden" name="Id" value="@Model.ProductVariant.Id" />
+    <!-- Product Selection -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Sản phẩm <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <select name="ProductId" class="form-select" required>
+          <option value="">-- Chọn sản phẩm --</option>
+          @foreach (var product in Model.Products)
+          {
+            <option selected="@(product.Id == Model.ProductVariant.ProductId ? "selected" : null)" value="@product.Id">@product.Name</option>
+          }
+        </select>
+      </div>
+    </div>
+    <!-- Ram -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">RAM</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" value="@Model.ProductVariant.Ram" name="Ram" maxlength="50" placeholder="Ví dụ: 8GB, 12GB" />
+      </div>
+    </div>
+    <!-- Color -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label">Màu sắc</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Color" maxlength="50"
+               value="@Model.ProductVariant.Color" placeholder="Ví dụ: Đen Titan" />
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Giá <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Price" required min="0" step="0.01"
+               value="@Model.ProductVariant.Price" placeholder="Ví dụ: 29990000" />
+      </div>
+    </div>
+
+    <!-- Storage -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Dung lượng bộ nhớ</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Storage" value="@Model.ProductVariant.Storage" placeholder="Ví dụ: 23990000" required />
+      </div>
+    </div>
+
+    <!-- StockQuantity -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Số lượng tồn kho <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Stock" required min="0"
+               value="@Model.ProductVariant.StockQuantity" placeholder="Ví dụ: 100" />
+      </div>
+    </div>
+
+    <!-- Variant Images -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <h6 class="fw-bold border-bottom pb-2">Hình ảnh biến thể</h6>
+        <div class="image-uploader border rounded p-3 text-center">
+          <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+          <div class="uploader-content">
+            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+            <p class="mb-1">Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
+            <small class="text-muted">Hỗ trợ nhiều ảnh, định dạng: JPG, PNG, GIF</small>
+          </div>
+        </div>
+        <div id="imagePreviewContainer" class="mt-3 d-flex flex-wrap gap-2">
+          <!-- Existing images -->
+          @if (Model?.ProductVariant?.ImageUrls != null && Model.ProductVariant.ImageUrls.Any())
+          {
+            foreach (var img in Model.ProductVariant.ImageUrls)
+            {
+              <div class="img-preview-wrapper">
+                <img src="@img" alt="Variant Image" class="img-preview" />
+                <button class="remove-img-btn" type="button">×</button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<style>
+  .image-uploader {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+    .image-uploader:hover {
+      background-color: #f8f9fa;
+    }
+
+  .img-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+    .remove-img-btn:hover {
+      background: #c82333;
+    }
+
+  #imagePreviewContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .img-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+</style>

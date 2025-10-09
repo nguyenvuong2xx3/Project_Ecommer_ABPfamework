@@ -1,0 +1,186 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.ProductVariants
+@model ProductVariantViewModel
+@{
+  Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chi tiết biến thể sản phẩm"))
+<div class="modal-body">
+  <!-- Product Information -->
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Sản phẩm:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @Model.ProductVariant.ProductName
+      </p>
+    </div>
+  </div>
+
+  <!-- ID -->
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Mã biến thể:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">@Model.ProductVariant.Id</p>
+    </div>
+  </div>
+
+  <!-- Price & Stock -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <h6 class="fw-bold border-bottom pb-2">Giá & Kho hàng</h6>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Giá:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext text-danger fw-bold">
+        @Model.ProductVariant.Price.ToString("N0") ₫
+      </p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Số lượng tồn kho:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @Model.ProductVariant.StockQuantity
+        @if (Model.ProductVariant.StockQuantity <= 0)
+        {
+          <span class="badge bg-danger ms-2">Hết hàng</span>
+        }
+        else if (Model.ProductVariant.StockQuantity < 10)
+        {
+          <span class="badge bg-warning text-dark ms-2">Sắp hết</span>
+        }
+        else
+        {
+          <span class="badge bg-success ms-2">Còn hàng</span>
+        }
+      </p>
+    </div>
+  </div>
+
+  <!-- Variant Attributes -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <h6 class="fw-bold border-bottom pb-2">Thuộc tính biến thể</h6>
+    </div>
+  </div>
+
+  <!-- Color -->
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Màu sắc:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @(string.IsNullOrWhiteSpace(Model.ProductVariant.Color) ? "Không có" : Model.ProductVariant.Color)
+      </p>
+    </div>
+  </div>
+
+  <!-- RAM (nếu có) -->
+  @if (!string.IsNullOrWhiteSpace(Model.ProductVariant.Ram))
+  {
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">RAM:</label>
+      <div class="col-md-9">
+        <p class="form-control-plaintext">@Model.ProductVariant.Ram</p>
+      </div>
+    </div>
+  }
+
+  <!-- Variant Images -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <h6 class="fw-bold border-bottom pb-2">Hình ảnh biến thể</h6>
+      @if (Model?.ProductVariant?.ImageUrls != null && Model.ProductVariant.ImageUrls.Any())
+      {
+        <div class="image-gallery d-flex flex-wrap gap-3 mt-3">
+          @foreach (var img in Model.ProductVariant.ImageUrls)
+          {
+            <div class="image-item">
+              <a href="@img" target="_blank" data-lightbox="variant-gallery" data-title="@Model.ProductVariant.Color">
+                <img src="@img" alt="Variant Image" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;" />
+              </a>
+            </div>
+          }
+        </div>
+      }
+      else
+      {
+        <p class="text-muted mt-3">
+          <i class="fas fa-image"></i> Không có hình ảnh
+        </p>
+      }
+    </div>
+  </div>
+
+  <!-- Metadata -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <h6 class="fw-bold border-bottom pb-2">Thông tin khác</h6>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <label class="col-md-3 col-form-label fw-bold">Ngày tạo:</label>
+    <div class="col-md-9">
+      <p class="form-control-plaintext">
+        @Model.ProductVariant.CreationTime.ToString("dd/MM/yyyy HH:mm:ss")
+      </p>
+    </div>
+  </div>
+
+  @if (Model.ProductVariant.LastModificationTime.HasValue)
+  {
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Cập nhật lần cuối:</label>
+      <div class="col-md-9">
+        <p class="form-control-plaintext">
+          @Model.ProductVariant.LastModificationTime.Value.ToString("dd/MM/yyyy HH:mm:ss")
+        </p>
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- Footer with Close button only -->
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+    <i class="fas fa-times"></i> Đóng
+  </button>
+  <a href="@Url.Action("Edit", "ProductVariants", new { id = Model.ProductVariant.Id })" class="btn btn-primary">
+    <i class="fas fa-edit"></i> Chỉnh sửa
+  </a>
+</div>
+
+<style>
+  .form-control-plaintext {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+
+  .image-gallery {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .image-item img {
+    transition: transform 0.2s;
+    border: 2px solid #dee2e6;
+  }
+
+    .image-item img:hover {
+      transform: scale(1.05);
+      border-color: #007bff;
+    }
+
+  .border-bottom {
+    border-bottom: 2px solid #007bff !important;
+  }
+</style>

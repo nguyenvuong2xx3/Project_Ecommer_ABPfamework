@@ -1,0 +1,126 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.ProductVariants
+@using Microsoft.AspNetCore.Http
+@model ProductVariantViewModel
+@{
+  Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thêm mới biến thể sản phẩm"))
+<form asp-action="Create" asp-controller="ProductVariant" enctype="multipart/form-data" method="post" name="CreateProductVariantForm" class="form-horizontal">
+  <div class="modal-body">
+    <!-- ProductId (hoặc chọn sản phẩm) -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Sản phẩm <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <select name="ProductId" class="form-select" required>
+          <option value="">-- Chọn sản phẩm --</option>
+          @foreach (var product in Model.Products)
+          {
+            <option value="@product.Id">@product.Name</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Ram -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">RAM</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Ram" maxlength="50" placeholder="Ví dụ: 8GB, 12GB" />
+      </div>
+    </div>
+
+    <!-- Color -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Màu sắc</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Color" maxlength="50" placeholder="Ví dụ: Đen, Trắng, Xanh" />
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Giá bán</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Price" placeholder="Ví dụ: 23990000" required />
+      </div>
+    </div>
+
+    <!-- Storage -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Dung lượng bộ nhớ</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Storage" placeholder="Ví dụ: 23990000" required />
+      </div>
+    </div>
+
+    <!-- StockQuantity -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Số lượng tồn kho</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="StockQuantity" placeholder="Nhập số lượng" required />
+      </div>
+    </div>
+
+    <!-- Upload nhiều hình ảnh -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <h6 class="fw-bold border-bottom pb-2">Hình ảnh sản phẩm</h6>
+        <div class="image-uploader border rounded p-3 text-center">
+          <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+          <div class="uploader-content">
+            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+            <p class="mb-1">Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
+            <small class="text-muted">Hỗ trợ nhiều ảnh, định dạng: JPG, PNG, GIF</small>
+          </div>
+        </div>
+        <div id="imagePreviewContainer" class="mt-3 d-flex flex-wrap gap-2">
+          <!-- Image previews will appear here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+
+<style>
+  .img-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+  }
+
+  .img-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+    .remove-img-btn:hover {
+      background: #c82333;
+    }
+</style>

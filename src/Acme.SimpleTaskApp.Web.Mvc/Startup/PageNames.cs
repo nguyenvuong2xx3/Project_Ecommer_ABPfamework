@@ -8,6 +8,7 @@
         public const string Users = "Users";
         public const string Roles = "Roles"; 
         public const string Products = "Products";
+        public const string ProductVariants = "ProductVariants";
 		    public const string Categories = "Categories";
         public const string HomeCustomer = "HomeCustomer";
         public const string Orders = "Orders";

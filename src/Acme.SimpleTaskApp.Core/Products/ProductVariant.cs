@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Acme.SimpleTaskApp.Products
 {
+	[Table("AppProductVariants")]
 	public class ProductVariant : FullAuditedEntity<int>
 	{
 		public int ProductId { get; set; }

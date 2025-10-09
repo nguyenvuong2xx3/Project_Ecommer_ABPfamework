@@ -1,5 +1,5 @@
 ﻿(function ($) {
-	app.modals.ProductEditModal = function () {
+	app.modals.ProductVariantEditModal = function () {
 		var _modalManager;
 		var _$form = null;
 		var l = abp.localization.getSource('SimpleTaskApp');
@@ -10,7 +10,7 @@
 		this.init = function (modalManager) {
 			_modalManager = modalManager;
 			var $modal = _modalManager.getModal();
-			_$form = $modal.find('form[name=EditProductForm]');
+			_$form = $modal.find('form[name=EditProductVariantForm]');
 
 			// Validate
 			_$form.validate({
@@ -19,14 +19,46 @@
 				highlight: (el) => $(el).addClass('is-invalid').removeClass('is-valid'),
 				unhighlight: (el) => $(el).addClass('is-valid').removeClass('is-invalid'),
 				rules: {
-					Name: { required: true, minlength: 5, maxlength: 256 },
-					CategoryId: { required: true },
-					Description: { maxlength: 500 }
+					ProductId: {
+						required: true
+					},
+					Ram: {
+						maxlength: 50
+					},
+					Color: {
+						maxlength: 50
+					},
+					Price: {
+						required: true,
+						number: true,
+						min: 0
+					},
+					StockQuantity: {
+						required: true,
+						digits: true,  // Chỉ chấp nhận số nguyên dương
+						min: 0
+					}
 				},
 				messages: {
-					Name: { required: 'Tên sản phẩm không được để trống', minlength: 'Tối thiểu 5 ký tự' },
-					CategoryId: { required: 'Vui lòng chọn danh mục' },
-					Description: { maxlength: 'Mô tả không được vượt quá 500 ký tự' }
+					ProductId: {
+						required: 'Vui lòng chọn sản phẩm'
+					},
+					Ram: {
+						maxlength: 'RAM không được vượt quá 50 ký tự'
+					},
+					Color: {
+						maxlength: 'Màu sắc không được vượt quá 50 ký tự'
+					},
+					Price: {
+						required: 'Giá bán không được để trống',
+						number: 'Giá bán phải là số hợp lệ',
+						min: 'Giá bán phải lớn hơn hoặc bằng 0'
+					},
+					StockQuantity: {
+						required: 'Số lượng tồn kho không được để trống',
+						digits: 'Số lượng phải là số hợp lệ',
+						min: 'Số lượng phải lớn hơn hoặc bằng 0'
+					}
 				},
 				errorPlacement: (error, element) => error.addClass('text-danger').insertAfter(element)
 			});
@@ -35,7 +67,7 @@
 			setupImageUploader($modal);
 
 			// Focus
-			setTimeout(() => _$form.find('input[name=Name]').first().focus(), 250);
+			setTimeout(() => _$form.find('input[name=SKU]').first().focus(), 250);
 		};
 
 		function setupImageUploader($modal) {
@@ -101,7 +133,7 @@
 				reader.onload = (e) => {
 					const $wrapper = $('<div>').addClass('img-preview-wrapper');
 					const $img = $('<img>').attr('src', e.target.result).addClass('img-preview');
-					const $removeBtn = $('<button>').html('&times;').addClass('remove-img-btn').attr('type', 'button');
+					const $removeBtn = $('<button>').html('×').addClass('remove-img-btn').attr('type', 'button');
 
 					$removeBtn.on('click', function (e) {
 						e.preventDefault();
@@ -129,18 +161,38 @@
 
 			_modalManager.setBusy(true);
 
-			const formData = new FormData();
+			const formData = new FormData();	
 
 			// Thêm các field thông thường (trừ ImageFiles)
 			_$form.serializeArray().forEach(item => {
 				if (item.name !== 'ImageFiles') {
 					formData.append(item.name, item.value);
+					// Convert các trường số
+					if (item.name === 'Price') {
+						// Convert sang decimal/float
+						const price = parseFloat(item.value) || 0;
+						formData.append(item.name, price);
+					}
+					else if (item.name === 'StockQuantity') {
+						// Convert sang integer
+						const stock = parseInt(item.value, 10) || 0;
+						formData.append(item.name, stock);
+					}
+					else if (item.name === 'ProductId') {
+						// Convert ID sang integer
+						const id = parseInt(item.value, 10);
+						formData.append(item.name, id);
+					}
+					else {
+						// Các trường khác giữ nguyên
+						formData.append(item.name, item.value);
+					}
 				}
 			});
 
 			// Thêm ảnh mới (chỉ 1 lần)
 			newImageFiles.forEach(file => {
-				formData.append('Images', file);
+				formData.append('ImageFiles', file);
 			});
 
 			// Thêm danh sách ảnh bị xóa
@@ -151,20 +203,20 @@
 			console.log(">>> Dữ liệu gửi đi:", Array.from(formData.entries()));
 
 			$.ajax({
-				url: abp.appPath + 'Products/EditProduct',
+				url: abp.appPath + 'ProductVariants/Edit',
 				type: 'POST',
 				processData: false,
 				contentType: false,
 				data: formData,
 				success: function (res) {
 					_modalManager.setBusy(false);
-					abp.notify.info(l('Cập nhật thành công'));
+					abp.notify.info(l('Cập nhật biến thể thành công'));
 					_modalManager.close();
-					setTimeout(() => window.location.href = abp.appPath + 'Products', 500);
+					setTimeout(() => window.location.href = abp.appPath + 'ProductVariants', 500);
 				},
 				error: function (xhr) {
 					_modalManager.setBusy(false);
-					const msg = xhr.responseJSON?.error?.message || "Có lỗi xảy ra khi cập nhật sản phẩm.";
+					const msg = xhr.responseJSON?.error?.message || "Có lỗi xảy ra khi cập nhật biến thể sản phẩm.";
 					abp.message.error(msg);
 				}
 			});

@@ -6,7 +6,7 @@ using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Products;
-using Acme.SimpleTaskApp.ProductVariant.Dtos;
+using Acme.SimpleTaskApp.ProductVariants.Dtos;
 using Acme.SimpleTaskApp.UploadFile;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +16,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Acme.SimpleTaskApp.ProductVariant
+namespace Acme.SimpleTaskApp.ProductVariants
 {
 	public class ProductVariantAppService : ApplicationService, IProductVariantAppService
 	{
 		private readonly IRepository<Product> _productRepository;
-		private readonly IRepository<Products.ProductVariant> _productVariantRepository;
+		private readonly IRepository<ProductVariant> _productVariantRepository;
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<ProductImage> _productImageRepository;
 		private readonly IWebHostEnvironment _env;
@@ -30,7 +30,7 @@ namespace Acme.SimpleTaskApp.ProductVariant
 		public ProductVariantAppService(IRepository<Product> productRepository,
 								IRepository<Category> categoryRepository,
 								IRepository<ProductImage> productImageRepository,
-								IRepository<Products.ProductVariant> productVariantRepository,
+								IRepository<ProductVariant> productVariantRepository,
 								IUploadFileAppService uploadFileAppService,
 								IWebHostEnvironment env)
 		{
@@ -41,7 +41,7 @@ namespace Acme.SimpleTaskApp.ProductVariant
 			_productImageRepository = productImageRepository;
 			_env = env;
 		}
-		public async Task CreateProductVariant(Products.ProductVariant input)
+		public async Task CreateProductVariant(ProductVariant input)
 		{
 			if (input == null)
 			{
@@ -50,34 +50,36 @@ namespace Acme.SimpleTaskApp.ProductVariant
 
 			await _productVariantRepository.InsertAsync(input);
 			CurrentUnitOfWork.SaveChanges();
-
-			int sortOrder = 0;
-			foreach (var item in input.ImageFiles)
+			if (input.ImageFiles != null && input.ImageFiles.Any())
 			{
-				var imageUrl = _uploadFileAppService.UploadImageAsync(item, "products/variants");
-				var producImage = new ProductImage
+				int sortOrder = 0;
+				foreach (var item in input.ImageFiles)
 				{
-					ImageUrl = imageUrl,
-					SortOrder = sortOrder++,
-					AltText = item.Name,
-					ProductVariantId = input.Id,
-					ProductId = input.ProductId,
-				};
-				await _productImageRepository.InsertAsync(producImage);
+					var imageUrl = _uploadFileAppService.UploadImageAsync(item, "products/variants");
+					var producImage = new ProductImage
+					{
+						ImageUrl = imageUrl,
+						SortOrder = sortOrder++,
+						AltText = item.Name,
+						ProductVariantId = input.Id,
+						ProductId = input.ProductId,
+					};
+					await _productImageRepository.InsertAsync(producImage);
+				}
 			}
 		}
-		public async Task EditProductVariant(Products.ProductVariant input)
+		public async Task EditProductVariant(ProductVariant input)
 		{
 			if (input == null)
 			{
 				throw new UserFriendlyException("Dữ liệu không được để trống");
 			}
 			var get = await _productVariantRepository.GetAsync(input.Id);
-			if(get == null)
+			if (get == null)
 			{
 				throw new UserFriendlyException("Không tìm thấy dữ liệu");
 			}
-			if (input.DeletedImageUrls.Count > 0) 
+			if (input.DeletedImageUrls.Count < 0 && input.DeletedImageUrls.Any())
 			{
 				foreach (var item in input.DeletedImageUrls)
 				{
@@ -90,7 +92,7 @@ namespace Acme.SimpleTaskApp.ProductVariant
 					}
 				}
 			}
-			if(input.ImageFiles != null && input.ImageFiles.Any())
+			if (input.ImageFiles != null && input.ImageFiles.Any())
 			{
 				int generalSortOrder = 0;
 
@@ -129,7 +131,7 @@ namespace Acme.SimpleTaskApp.ProductVariant
 			CurrentUnitOfWork.SaveChanges();
 		}
 
-		public async Task<PagedResultDto<Products.ProductVariant>> GetAllProductVariant(GetProductVariantsInput input)
+		public async Task<PagedResultDto<ProductVariant>> GetAllProductVariant(GetProductVariantsInput input)
 		{
 			var query = _productVariantRepository.GetAll();
 			if (input.ProductId.HasValue)
@@ -137,10 +139,11 @@ namespace Acme.SimpleTaskApp.ProductVariant
 				query = query.Where(v => v.ProductId == input.ProductId.Value);
 			}
 
-			var totalCount = query.Count();
-			var items = query.OrderByDescending(p => p.CreationTime)
+			var totalCount = await query.CountAsync();
+
+			var items = await query.OrderByDescending(p => p.CreationTime)
 					.PageBy(input)
-					.ToList();
+					.ToListAsync();
 
 			// Get product images
 			var productVariantIds = query.Select(p => p.Id).ToList();
@@ -168,7 +171,7 @@ namespace Acme.SimpleTaskApp.ProductVariant
 			var resultItems = items.Select(item =>
 			{
 				var productName = products.ContainsKey(item.ProductId) ? products[item.ProductId] : null;
-				return new Products.ProductVariant
+				return new ProductVariant
 				{
 					Id = item.Id,
 					ProductId = item.ProductId,
@@ -182,14 +185,22 @@ namespace Acme.SimpleTaskApp.ProductVariant
 					ImageUrl = defaultImages.ContainsKey(item.Id) ? defaultImages[item.Id] : null
 				};
 			}).ToList();
-			return new PagedResultDto<Products.ProductVariant>(totalCount, items);
+			return new PagedResultDto<ProductVariant>(totalCount, resultItems);
 		}
-		public async Task<Products.ProductVariant> GetById(int id)
+		public async Task<ProductVariant> GetById(int id)
 		{
 			if (id <= 0)
 				throw new UserFriendlyException("Dữ liệu không được để trống");
+
 			var item = await _productVariantRepository.GetAsync(id);
-			item.ImageUrls = _productImageRepository.GetAll().Where(x => x.ProductVariantId == item.Id).Select(ig => ig.ImageUrl).ToList(); // lấy tất cả đường dẫn ảnh để hiển thị
+			var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
+			item.ProductName = product?.Name;
+
+			item.ImageUrls = await _productImageRepository.GetAll()
+				.Where(x => x.ProductVariantId == item.Id)
+				.Select(ig => ig.ImageUrl)
+				.ToListAsync();
+
 			return item;
 		}
 	}
