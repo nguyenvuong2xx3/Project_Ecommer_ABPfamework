@@ -1,16 +1,230 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.CategoryList
-@* @model CategoryListViewModel *@
+@model CategoryViewCustomerModel
+<ul class="menu-category">
+  @foreach (var category in Model.Categories)
+  {
+    <li class="menu-item @(category.Children != null && category.Children.Any() ? "has-dropdown" : "")">
+      <a href="@($"/category/{category.Id}")" class="category-link">
+        <i class="category-icon">
+          <img src="https://cdn.tgdd.vn/content/may-cu-24x24.png" alt="@category.Name" />
+        </i>
+        <span class="category-name">
+          @category.Name
+        </span>
+        @if (category.Children != null && category.Children.Any())
+        {
+          <i class="fas fa-chevron-down arrow-icon"></i>
+        }
+      </a>
 
-<div class="col text-center navbar2">
-  <ul class="nav nav-pills d-inline-flex text-center position-relative">
-    <li class="nav-item">
+      @if (category.Children != null && category.Children.Any())
+      {
+        <div class="dropdown-menu">
+          <div class="dropdown-content">
+            <div class="dropdown-header">
+              <strong>@category.Name</strong>
+            </div>
+            <div class="dropdown-items">
+              @foreach (var child in category.Children)
+              {
+                <div class="dropdown-item-wrapper @(child.Children != null && child.Children.Any() ? "has-sub-dropdown" : "")">
+                  <a href="@($"/category/{child.Id}")" class="dropdown-item">
+                    <img class="item-icon" width="25"
+                         src="https://cdnv2.tgdd.vn/mwg-static/common/Common/47/1b/471b8073fdb15619b6c958e5316e7f61.png"
+                         alt="@child.Name" />
+                    <span class="item-name">@child.Name</span>
+                    @if (child.Children != null && child.Children.Any())
+                    {
+                      <i class="fas fa-chevron-right item-arrow"></i>
+                    }
+                  </a>
+
+                  @if (child.Children != null && child.Children.Any())
+                  {
+                    <div class="sub-dropdown">
+                      @foreach (var subChild in child.Children)
+                      {
+                        <a href="@($"/category/{subChild.Id}")" class="sub-dropdown-item">
+                          <span>@subChild.Name</span>
+                        </a>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
     </li>
+  }
+</ul>
+<style>
+  /* Menu Category Styles */
+  .menu-category {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Căn giữa menu */
+  }
 
-    @foreach (var category in Model.Categories)
-    {
-      <li class="nav-item category-click-getid" data-id="@category.Id">
-        <a href="#" style="padding-right: 24px;"><i class=""></i>@category.Name</a>
-      </li>
+  .menu-item {
+    position: relative;
+  }
+
+  .category-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+
+    .category-link:hover {
+      background-color: #f5f5f5;
     }
-  </ul>
-</div>
+
+  .category-icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .category-name {
+    text-transform: capitalize;
+    font-weight: 500;
+  }
+
+  .arrow-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    margin-left: 5px;
+  }
+
+  /* Dropdown Menu - CĂNG GIỮA */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 50%; /* Căn giữa theo menu item */
+    transform: translateX(-50%) translateY(-10px); /* Căn giữa + animation */
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    min-width: 280px;
+    z-index: 1000;
+    /* Animation */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Show dropdown on hover - GIỮ CĂN GIỮA */
+  .menu-item.has-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Giữ căn giữa */
+  }
+
+  .menu-item.has-dropdown:hover .arrow-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown Content */
+  .dropdown-content {
+    padding: 15px;
+  }
+
+  .dropdown-header {
+    padding: 10px 15px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 10px;
+  }
+
+    .dropdown-header strong {
+      text-transform: uppercase;
+      font-size: 14px;
+      color: #666;
+    }
+
+  .dropdown-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      transform: translateX(5px);
+    }
+
+  .item-icon {
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .item-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* Arrow pointer - CĂNG GIỮA */
+  .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%; /* Căn giữa mũi tên */
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item.has-dropdown');
+    let hideTimeout;
+
+    menuItems.forEach(item => {
+      const dropdown = item.querySelector('.dropdown-menu');
+      const arrowIcon = item.querySelector('.arrow-icon');
+
+      item.addEventListener('mouseenter', function() {
+        clearTimeout(hideTimeout);
+        if (dropdown) {
+          dropdown.classList.add('show');
+        }
+        if (arrowIcon) {
+          arrowIcon.classList.add('rotate');
+        }
+      });
+
+      item.addEventListener('mouseleave', function() {
+        hideTimeout = setTimeout(() => {
+          if (dropdown) {
+            dropdown.classList.remove('show');
+          }
+          if (arrowIcon) {
+            arrowIcon.classList.remove('rotate');
+          }
+        }, 200);
+      });
+    });
+  });
+</script>

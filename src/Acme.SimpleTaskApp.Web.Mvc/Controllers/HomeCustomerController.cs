@@ -1,170 +1,125 @@
-﻿//using Abp.Application.Services.Dto;
-//using Abp.UI;
-//using Acme.SimpleTaskApp.Authorization.Users;
-//using Acme.SimpleTaskApp.CartItems;
-//using Acme.SimpleTaskApp.CartItems.Dtos;
-//using Acme.SimpleTaskApp.Carts;
-//using Acme.SimpleTaskApp.Carts.Dtos;
-//using Acme.SimpleTaskApp.Categories;
-//using Acme.SimpleTaskApp.Categories.Dto;
-//using Acme.SimpleTaskApp.Categories.Dtos;
-//using Acme.SimpleTaskApp.Controllers;
-//using Acme.SimpleTaskApp.Identity;
-//using Acme.SimpleTaskApp.Products;
-//using Acme.SimpleTaskApp.Products.Dtos;
-//using Acme.SimpleTaskApp.Web.Models.Carts;
-//using Acme.SimpleTaskApp.Web.Models.Products;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.AspNetCore.Mvc.Rendering;
-//using Microsoft.CodeAnalysis;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Categories;
+using Acme.SimpleTaskApp.Controllers;
+using Acme.SimpleTaskApp.HomeCustomers;
+using Acme.SimpleTaskApp.HomeCustomers.Dtos;
+using Acme.SimpleTaskApp.Identity;
+using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-//namespace Acme.SimpleTaskApp.Web.Controllers
-//{
-//	public class HomeCustomerController : SimpleTaskAppControllerBase
-//	{
-//		private readonly IProductAppService _productAppService;
-//		private readonly IWebHostEnvironment webHostEnvironment;
-//		private readonly ICategoryAppService _categoryAppService;
-//		private readonly ICartAppService _cartAppService;
-//		private readonly SignInManager _signInManager;
+	namespace Acme.SimpleTaskApp.Web.Controllers
+	{
+		public class HomeCustomerController : SimpleTaskAppControllerBase
+		{
+			private readonly IProductAppService _productAppService;
+			private readonly ICategoryAppService _categoryAppService;
+			//private readonly ICartAppService _cartAppService;
+			private readonly IHomeCustomerAppService _homeCustomerAppService;
+			private readonly SignInManager _signInManager;
 
 
-//		//private readonly ICartItemAppService _cartItemAppService;
+			//private readonly ICartItemAppService _cartItemAppService;
 
 
-//		public HomeCustomerController(IProductAppService productAppService,
-//															SignInManager signInManager,
-//															ICategoryAppService categoryAppService,
-//															IWebHostEnvironment webHostEnvironment,
-//															ICartAppService cartAppService
-//															//ICartItemAppService cartItemAppService
-//															)
-//		{
-//			//_cartItemAppService = cartItemAppService;
-//			_cartAppService = cartAppService;
-//			_signInManager = signInManager;
-//			_productAppService = productAppService;
-//			_categoryAppService = categoryAppService;
-//			this.webHostEnvironment = webHostEnvironment;
-//		}
-//		public async Task<ActionResult> SignOut()
-//		{
-//				await _signInManager.SignOutAsync();
-//				return RedirectToAction("Index");
-//		}
-//		public async Task<ActionResult> Index(int page = 1, int page_size = 12)
-//		{
-//		var input = new GetAllProductsInput
-//			{
-//				MaxResultCount = page_size,
-//				SkipCount = (page - 1) * page_size
-//			};
+			public HomeCustomerController(IProductAppService productAppService,
+																IHomeCustomerAppService homeCustomerAppService,
+																SignInManager signInManager,
+																ICategoryAppService categoryAppService
+																//ICartAppService cartAppService
+																//ICartItemAppService cartItemAppService
+																)
+			{
+				_homeCustomerAppService = homeCustomerAppService;
+				//_cartItemAppService = cartItemAppService;
+				//_cartAppService = cartAppService;
+				_signInManager = signInManager;
+				_productAppService = productAppService;
+				_categoryAppService = categoryAppService;
+			}
+			public async Task<ActionResult> SignOut()
+			{
+				await _signInManager.SignOutAsync();
+				return RedirectToAction("Index");
+			}
+			public async Task<ActionResult> Index(SearchHomeCustomerDto input)
+			{
+				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
 
-//			var output = await _productAppService.GetAllProducts(input);
+				var model = new HomeCustomerViewModel()
+				{
+					ProductsInfo = output.Items.ToList(),
+				};
 
-//			// Tính toán số trang  
-//			int totalProducts = output.TotalCount;
-//			int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
+				return View(model);
+			}
 
-//			var model = new ProductViewModel(output.Items)
-//			{
-//				TotalPages = totalPages,
-//				PageNumber = page
-//			};
+			//public async Task<IActionResult> DetailProductCusTomer(int productId)
+			//{
+			//	var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
 
-//			return View(model);
-//		}
+			//	var model = new DetailProductModalViewModel(product)
+			//	{
+			//	};
 
-//		public async Task<IActionResult> DetailProductCusTomer(int productId)
-//		{
-//			var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
+			//	return View(model);
+			//}
 
-//			var model = new DetailProductModalViewModel(product)
-//			{
-//			};
+			// Trong HomeCustomerController.cs
+			public async Task<ActionResult> SearchProductCustomer(SearchHomeCustomerDto input)
+			{
+				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
 
-//			return View(model);
-//		}
+				var model = new HomeCustomerViewModel()
+				{
+					ProductsInfo = output.Items.ToList(),
+					Filter = input.Filter,
+					//CategoryName = input.
+				};
 
-//		// Trong HomeCustomerController.cs
-//		public async Task<ActionResult> SearchProductCustomer(GetAllProductsInput input, int page = 1, int page_size = 12)
-//		{
-//			try
-//			{
-//				var category = new CategoryListDto();
-//				input.MaxResultCount = page_size;
-//				input.SkipCount = (page - 1) * page_size;
-
-//				var result = await _productAppService.SearchProducts(input);
-//				if(input.Category != null)
-//				{
-//					int categoryId = Convert.ToInt32(input.Category);
-//					category = await _categoryAppService.GetByIdCategory(new EntityDto<int>(categoryId));
-//				}
-				
-//				int totalProducts = result.TotalCount;
-//				int totalPages = (int)Math.Ceiling((double)totalProducts / page_size);
-
-//				var model = new ProductViewModel(result.Items)
-//				{
-//					Category = category?.Name,
-//					Keyword = input.Keyword,
-//					TotalPages = totalPages,
-//					PageNumber = page
-//				};
-
-//				return View(model);
-//			}
-//			catch (Exception ex)
-//			{
-//				Logger.Error(ex.Message, ex);
-//				throw new UserFriendlyException("Có lỗi xảy ra khi tìm kiếm sản phẩm");
-//			}
-//		}
+				return View(model);
+			}
 
 
-//		// Thêm action cho form search
-//		public async Task<ActionResult> LoginMember()
-//		{
-//			return  View();
-//		}
-//		//[Authorize]
-//		public async Task<ActionResult> Cart(GetCartInput input)
-//		{
-//			// Kiểm tra user đã đăng nhập chưa
-//			if (!AbpSession.UserId.HasValue)
-//			{
-//				// Nếu chưa đăng nhập → trả về view có message
-//				ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
-//				return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
-//			}
+			//// Thêm action cho form search
+			//public async Task<ActionResult> LoginMember()
+			//{
+			//	return View();
+			//}
+			////[Authorize]
+			//public async Task<ActionResult> Cart(GetCartInput input)
+			//{
+			//	// Kiểm tra user đã đăng nhập chưa
+			//	if (!AbpSession.UserId.HasValue)
+			//	{
+			//		// Nếu chưa đăng nhập → trả về view có message
+			//		ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
+			//		return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
+			//	}
 
-//			// Có userId
-//			input.UserId = AbpSession.UserId.Value;
+			//	// Có userId
+			//	input.UserId = AbpSession.UserId.Value;
 
-//			// Gọi service lấy thông tin giỏ hàng
-//			var cart = await _cartAppService.GetCart(input);
+			//	// Gọi service lấy thông tin giỏ hàng
+			//	var cart = await _cartAppService.GetCart(input);
 
-//			// Ánh xạ sang ViewModel
-//			var viewModel = new CartViewModel
-//			{
-//				UserId = cart.UserId,
-//				Id = cart.Id,
-//				CreationTime = cart.CreationTime,
-//				CartItems = cart.CartItems
-//			};
+			//	// Ánh xạ sang ViewModel
+			//	var viewModel = new CartViewModel
+			//	{
+			//		UserId = cart.UserId,
+			//		Id = cart.Id,
+			//		CreationTime = cart.CreationTime,
+			//		CartItems = cart.CartItems
+			//	};
 
-//			return View(viewModel);
-//		}
+			//	return View(viewModel);
+			//}
 
-//	}
-//}
+		}
+	}
 }

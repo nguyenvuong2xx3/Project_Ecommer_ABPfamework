@@ -101,7 +101,7 @@
       const keyword = searchInput.value.trim();
 
       if (keyword) {
-        window.location.href = '/HomeCustomer/SearchProductCustomer?keyword=' + keyword;
+        window.location.href = '/HomeCustomer/SearchProductCustomer?filter=' + keyword;
       } else {
         alert('Vui lòng nhập từ khóa tìm kiếm');
       }

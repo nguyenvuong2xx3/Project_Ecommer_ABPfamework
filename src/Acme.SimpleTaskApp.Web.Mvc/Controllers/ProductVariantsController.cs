@@ -69,5 +69,13 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return PartialView("_DetailProductVariantModal", model);
 		}
+		public async Task Delete(int id)
+		{
+			if (id <= 0)
+			{
+				throw new UserFriendlyException("Dữ liệu không hợp lệ");
+			}
+			await _productVariantAppService.DeleteProductVariant(id);
+		}
 	}
 }

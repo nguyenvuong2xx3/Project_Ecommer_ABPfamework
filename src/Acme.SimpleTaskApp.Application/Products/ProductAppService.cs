@@ -164,6 +164,7 @@ namespace Acme.SimpleTaskApp.Products
 			}
 			return new PagedResultDto<Product>(totalCount, products);
 		}
+
 		public async Task<Product> GetProductById(int id)
 		{
 			if (id <= 0)

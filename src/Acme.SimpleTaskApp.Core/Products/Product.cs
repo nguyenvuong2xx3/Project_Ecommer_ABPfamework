@@ -23,6 +23,8 @@ namespace Acme.SimpleTaskApp.Products
 		[NotMapped] public string ImageUrl { get; set; } // cho BE trả về
 		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về
 		[NotMapped] public List<string> DeletedImageUrls { get; set; } // cho BE trả về
+		[NotMapped] public List<ProductVariant> ProductVariants { get; set; } // cho BE trả về
+		[NotMapped] public List<ProductImage> ProductImages { get; set; } // cho BE trả về
 		public int? CategoryId { get; set; }       // Danh mục sản phẩm
 		public int StockQuantity { get; set; }    // Tồn kho hiện tại tổng của các biến thể??
 		

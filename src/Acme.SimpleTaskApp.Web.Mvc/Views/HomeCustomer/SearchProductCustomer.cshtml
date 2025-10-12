@@ -1,8 +1,8 @@
 ﻿@using Acme.SimpleTaskApp.Products;
+@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
-@* @model Acme.SimpleTaskApp.Web.Models.Products.ProductViewModel *@
-
+@model HomeCustomerViewModel
 @{
 	ViewData["Title"] = "Index";
 	Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
@@ -20,53 +20,56 @@
 
 <div class="container mt-4" style="margin: 0 auto; padding-top: 200px;">
     <h3 style="padding-bottom: 25px;">  
-       @if (!string.IsNullOrEmpty(Model.Keyword))  
+       @if (!string.IsNullOrEmpty(Model.Filter))  
        {  
-           <span>Kết quả tìm kiếm - @Model.Keyword</span>  
+           <span>Kết quả tìm kiếm - @Model.Filter</span>  
        }  
-       else if (!string.IsNullOrEmpty(Model.Category))  
+       else if (!string.IsNullOrEmpty(Model.CategoryName))  
        {
-			<span>Kết quả tìm kiếm Danh mục - @Model.Category</span>
+			<span>Kết quả tìm kiếm Danh mục - @Model.CategoryName</span>
 		}  
     </h3>
 	<div class="row row-cols-6 g-3 d-flex flex-wrap" style="padding-top: 30px;">
-		@foreach (var product in Model.Products)
+		@foreach (var product in Model.ProductsInfo)
 		{
+			@foreach (var item in product.ProductVariants)
+			{
 			<div class="col" style="width: 183px; margin-top: 0; padding-bottom: 10px;">
 				<div class="card product-click-detail" data-id="@product.Id">
-					@if (@product.Image != "")
-					{
-						<img src="@product.Image" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
-					}
-					else
-					{
-						<img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
-					}
-					<div class="card-body">
-						<h5 class="card-name">@product.Name</h5>
-						<div class="product-price">
-							<h5 class="current-price">@product.Price.ToString("#,##0")₫</h5>
-							@* <div class="old-price"> *@
-							@* 	<h5 class="strikethrough">2.990.000₫</h5> *@
-							@* 	<span class="discount" style="color: #ff0000;">-13%</span> *@
-							@* </div> *@
-						</div>
-						<div class="stock-status">
-							@* @if (product.State == ProductState.Available)
-							{
+						@if (item.ImageUrl != "")
+						{
+							<img src="@item.ImageUrl" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+						}
+						else
+						{
+							<img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
+						}
+						<div class="card-body">
+							<h5 class="card-name">@product.Name @item.Ram/@item.Storage</h5>
+							<div class="product-price">
+								<h5 class="current-price">@item.Price.ToString("#,##0")₫</h5>
 								<span class="text-success">Còn hàng</span>
-							}
-							else
-							{
-								<span class="text-danger">Hết hàng</span>
-							} *@
+								<div class="item-compare gray-bg">
+									<span>@product.Screen</span>
+									<span>@product.Battery</span>
+									<span>@product.CameraSystem</span>
+								</div>
+								@* giảm giá *@
+								@* <div class="old-price">
+                	<h5 class="strikethrough">2.990.000₫</h5>
+                	<span class="discount" style="color: #ff0000;">-13%</span>
+                </div> *@
+							</div>
+							<div class="stock-status">
+								<span class="text-success">Còn hàng</span>
+							</div>
 						</div>
-					</div>
 					<button class="detail-btn product-click-detail" data-id="@product.Id">
 						Xem chi tiết
 					</button>
 				</div>
 			</div>
+			}
 		}
 	</div>
 </div>
@@ -221,7 +224,7 @@
 	}
 
 </style>
-<nav aria-label="Page navigation example" class="mt-4 d-flex justify-content-center">
+@* <nav aria-label="Page navigation example" class="mt-4 d-flex justify-content-center">
 	<ul class="pagination">
 		<li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
 			<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="1" aria-label="First">
@@ -252,5 +255,5 @@
 			</a>
 		</li>
 	</ul>
-</nav>
+</nav> *@
 

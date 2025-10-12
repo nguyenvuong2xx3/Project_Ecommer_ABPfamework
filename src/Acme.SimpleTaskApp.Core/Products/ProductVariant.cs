@@ -20,5 +20,7 @@ namespace Acme.SimpleTaskApp.Products
 		[NotMapped] public List<string> DeletedImageUrls { get; set; }
 		[NotMapped] public string ImageUrl { get; set; } // cho BE trả về
 		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về
+		[NotMapped] public List<ProductImage> ProductImages { get; set; } // cho BE trả về
+
 	}
 }

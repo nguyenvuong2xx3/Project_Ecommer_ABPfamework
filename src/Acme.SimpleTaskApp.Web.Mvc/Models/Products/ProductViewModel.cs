@@ -11,6 +11,7 @@ namespace Acme.SimpleTaskApp.Web.Models.Products
 		public List<Category> Categories { get; set; }
 		public Category Category { get; set; }
 		public Product Product { get; set; }
+		//public List<Product> Products { get; set; }
 	}
 }
 

@@ -38,12 +38,12 @@
 			<div class="d-flex align-items-center cart-login">
 				<!-- Giỏ hàng -->
 				<!-- Đăng nhập -->
-				@await Component.InvokeAsync("CartMenu")
+				@* @await Component.InvokeAsync("CartMenu") *@
 				@await Component.InvokeAsync("User")
 			</div>
 		</div>
 	</nav>
-	@await Component.InvokeAsync("CategoryList", new { viewName = "CategoryListIndex" })
+	@await Component.InvokeAsync("CategoryList", new { viewName = "CategoryListIndex" }) 
 
 </div>
 
@@ -110,5 +110,4 @@
 	.cart-login {
 		padding-right: 180px;
 	}
-
 </style>

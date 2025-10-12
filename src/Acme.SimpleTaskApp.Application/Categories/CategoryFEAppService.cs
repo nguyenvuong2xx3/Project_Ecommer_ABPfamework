@@ -12,7 +12,8 @@ namespace Acme.SimpleTaskApp.Categories
 {
 	public interface ICategoryFEAppService : IApplicationService
 	{
-		Task<List<CategoryListDto>> GetAllCategories(GetAllCategoryDto input);
+		Task<List<Category>> GetAllCategories();
+		Task<List<CategoryTreeDto>> GetAllCategoriesTree();
 	}
 
 	public class CategoryFEAppService : ApplicationService, ICategoryFEAppService
@@ -27,27 +28,41 @@ namespace Acme.SimpleTaskApp.Categories
 			_categoryRepository = categoryRepository;
 		}
 
-
-
-		public async Task<List<CategoryListDto>> GetAllCategories(GetAllCategoryDto input)
+		// cây danh mục
+		public async Task<List<CategoryTreeDto>> GetAllCategoriesTree()
 		{
 			using var uow = UnitOfWorkManager.Begin();
 			using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
 				try
 				{
-					var category = _categoryRepository.GetAll();
-					var count = await category.CountAsync();
+					var categories = await _categoryRepository.GetAll()
+				.OrderBy(c => c.Order)
+				.ToListAsync();
 
-					var categoryDtos = await category.OrderByDescending(x => x.CreationTime)
-																					.Select(p => new CategoryListDto
-																					{
-																						Id = p.Id,
-																						Name = p.Name,
-																						Description = p.Description,
-																						CreationTime = p.CreationTime,
-																					}).ToListAsync();
+					// build map
+					var map = categories.ToDictionary(c => c.Id, c => new CategoryTreeDto
+					{
+						Id = c.Id,
+						Name = c.Name,
+						Description = c.Description,
+						ParentId = c.ParentId,
+						CreationTime = c.CreationTime
+					});
 
-					return categoryDtos;
+					var roots = new List<CategoryTreeDto>();
+					foreach (var dto in map.Values)
+					{
+						if (dto.ParentId.HasValue && map.ContainsKey(dto.ParentId.Value))
+						{
+							map[dto.ParentId.Value].Children.Add(dto);
+						}
+						else
+						{
+							roots.Add(dto);
+						}
+					}
+					return roots;
+
 				}
 				catch (Exception)
 				{
@@ -57,7 +72,26 @@ namespace Acme.SimpleTaskApp.Categories
 				{
 					await uow.CompleteAsync();
 				}
+		}
 
+		// dữ liệu phẳng
+		public async Task<List<Category>> GetAllCategories()
+		{
+			using var uow = UnitOfWorkManager.Begin();
+			using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
+				try
+				{
+					var query = _categoryRepository.GetAll();
+					return query.ToList();
+				}
+				catch (Exception)
+				{
+					return null;
+				}
+				finally
+				{
+					await uow.CompleteAsync();
+				}
 		}
 	}
 }

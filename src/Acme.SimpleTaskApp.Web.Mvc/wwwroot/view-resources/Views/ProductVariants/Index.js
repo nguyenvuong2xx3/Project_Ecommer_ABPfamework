@@ -41,7 +41,7 @@
 		_detailModal.open({ id: productvariantId });
 	});
 
-	var _$productsTable = _$table.DataTable({
+	var _$productvariantsTable = _$table.DataTable({
 		paging: true,
 		serverSide: true,
 		listAction: {
@@ -54,7 +54,7 @@
 			{
 				name: 'refresh',
 				text: '<i class="fas fa-redo-alt"></i>',
-				action: () => _$productsTable.draw(false),
+				action: () => _$productvariantsTable.draw(false),
 			}
 		],
 		responsive: {
@@ -141,16 +141,42 @@
 
 	// refresh
 	$(document).on('click', '.buttons-refresh', function () {
-		_$productsTable.ajax.reload();
+		_$productvariantsTable.ajax.reload();
 	});
 
+	$(document).on('click', '.delete-productvariant', function () {
+		var productvariantId = $(this).attr("data-productvariant-id");
+		var productvariantName = $(this).attr('data-productvariant-name');
+
+		deleteProductVariant(productvariantId, productvariantName);
+	});
+	function deleteProductVariant(productvariantId, productvariantName) {
+		abp.message.confirm(
+			abp.utils.formatString(
+				l('Bạn có muốn xóa'),
+				productvariantName),
+			null,
+			(isConfirmed) => {
+				if (isConfirmed) {
+					$.ajax({
+						url: '/ProductVariants/Delete',
+						type: 'POST',
+						data: { id: productvariantId }
+					}).done(() => {
+						abp.notify.info(l('Xoá thành công'));
+						_$productvariantsTable.ajax.reload();
+					});
+				}
+			}
+		);
+	}
 	$('.btn-search').on('click', (e) => {
-		_$productsTable.ajax.reload();
+		_$productvariantsTable.ajax.reload();
 	});
 
 	$('.txt-search').on('keypress', (e) => {
 		if (e.which == 13) {
-			_$productsTable.ajax.reload();
+			_$productvariantsTable.ajax.reload();
 			return false;
 		}
 	});
