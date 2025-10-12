@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
+using Abp.UI;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
@@ -33,73 +34,72 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	{
 		if (input == null) input = new SearchHomeCustomerDto();
 
-		// Base product query
+		// lấy sản phẩm ra
 		var prodQuery = _productRepository.GetAll();
 
-		// Text filter on Name
-		// Replace exact match filter with approximate (contains) match
 		// Thay thế đoạn lọc tên sản phẩm bằng bộ lọc không phân biệt khoảng trắng và chữ hoa/thường
+		// lọc theo tên tìm kiếm
 		if (!string.IsNullOrWhiteSpace(input.Filter))
 		{
 			var f = input.Filter.Trim().ToLower().Replace(" ", "");
 			prodQuery = prodQuery.Where(x => x.Name != null && x.Name.ToLower().Replace(" ", "").Contains(f));
 		}
 
-		// Category filter
+		// Lọc theo danh mục
 		if (input.CategoryId.HasValue)
 		{
 			prodQuery = prodQuery.Where(p => p.CategoryId == input.CategoryId.Value);
 		}
 
-		// Price filter based on product variants
-		var variantQueryForPriceFiltering = _productVariantRepository.GetAll();
+		// lọc theo giá
+		var productVariant = _productVariantRepository.GetAll();
 		var priceFilteringNeeded = false;
 		if (input.MinPrice > 0)
 		{
-			variantQueryForPriceFiltering = variantQueryForPriceFiltering.Where(v => v.Price >= input.MinPrice);
+			productVariant = productVariant.Where(v => v.Price >= input.MinPrice);
 			priceFilteringNeeded = true;
 		}
 		if (input.MaxPrice > 0)
 		{
-			variantQueryForPriceFiltering = variantQueryForPriceFiltering.Where(v => v.Price <= input.MaxPrice);
+			productVariant = productVariant.Where(v => v.Price <= input.MaxPrice);
 			priceFilteringNeeded = true;
 		}
 		if (priceFilteringNeeded)
 		{
-			var productIdsWithVariantsInPriceRange = await variantQueryForPriceFiltering
+			// trả ra Id sản phẩm thỏa mãn
+			var productIdsWithVariantsInPriceRange = await productVariant
 				.Select(v => v.ProductId)
 				.Distinct() // chú ý 
 				.ToListAsync();
 
 			prodQuery = prodQuery.Where(p => productIdsWithVariantsInPriceRange.Contains(p.Id));
 		}
-
-		// Total count before paging
 		var totalCount = await prodQuery.CountAsync();
-			prodQuery = prodQuery.OrderBy(p => p.CreationTime).PageBy(input);
-
-
-		// Apply sorting: if no sorting provided, default to Name
-		//if (string.IsNullOrWhiteSpace(input.Sorting))
-		//{
-		//	prodQuery = prodQuery.OrderBy(p => p.Name);
-		//}
-
-
-		// Ensure sensible paging values
-		//var skip = Math.Max(0, input.SkipCount);
-		//var take = input.MaxResultCount > 0 ? input.MaxResultCount : 10;
-
-		// Fetch products page
-		//var products = await prodQuery.Skip(skip).Take(take).ToListAsync();
-
-		//// If no products, return empty DTO
-		//if (products.Count == 0)
-		//{
-		//	var emptyDto = new GetAllProductCustomerDto { ProductsInfo = new List<Product>() };
-		//	var emptyResult = new PagedResultDto<GetAllProductCustomerDto>(totalCount, new List<GetAllProductCustomerDto> { emptyDto });
-		//	return emptyResult;
-		//}
+			prodQuery = prodQuery.PageBy(input);
+		
+		if (input.SortingByPrice)
+		{
+			prodQuery = input.SortDirection == "DESC"
+					? prodQuery.OrderByDescending(p => p.ProductVariants.Min(v => v.Price))
+					: prodQuery.OrderBy(p => p.ProductVariants.Min(v => v.Price));
+		}
+		else if (input.SortingByName)
+		{
+			prodQuery = input.SortDirection == "DESC"
+					? prodQuery.OrderByDescending(p => p.Name)
+					: prodQuery.OrderBy(p => p.Name);
+		}
+		else if (input.SortingCreation)
+		{
+			prodQuery = input.SortDirection == "ASC"
+					? prodQuery.OrderBy(p => p.CreationTime)
+					: prodQuery.OrderByDescending(p => p.CreationTime);
+		}
+		else
+		{
+			// Default: sort by creation date descending
+			prodQuery = prodQuery.OrderByDescending(p => p.CreationTime);
+		}
 
 		var productIds = prodQuery.Select(p => p.Id).ToList();
 
@@ -146,5 +146,33 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 
 		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
 		return result;
+	}
+
+	public async Task<Product> GetProductById(int id)
+	{
+		if (id <= 0)
+			throw new UserFriendlyException("Dữ liệu không được để trống");
+		// lấy biến thể
+		var item = await _productVariantRepository.GetAsync(id);
+		//lấy hết biến thể liên quan đến sản phẩm
+		var allVariants = await _productVariantRepository.GetAll()
+			.Where(x => x.ProductId == item.ProductId)
+			.ToListAsync();
+		// lấy sản phẩm tổng quát
+		var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
+		// lấy ảnh biến thể
+		item.ImageUrls = await _productImageRepository.GetAll()
+			.Where(x => x.ProductId == item.Id)
+			.Select(ig => ig.ImageUrl)
+			.ToListAsync();
+		// add vào product
+		product.ProductVariants.AddRange(allVariants);
+		product.ProductVariant = item;
+		// lấy ảnh product
+		product.ImageUrls = await _productImageRepository.GetAll()
+			.Where(x => x.ProductId == product.Id)
+			.Select(ig => ig.ImageUrl)
+			.ToListAsync();
+		return product;
 	}
 }

@@ -229,5 +229,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/ProductVariants/_DetailModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/HomeCustomer/SearchProductCustomer.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/HomeCustomer/SearchProductCustomer.js"
+    ]
   }
 ]

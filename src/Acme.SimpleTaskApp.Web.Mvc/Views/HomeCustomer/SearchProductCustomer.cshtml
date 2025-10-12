@@ -1,259 +1,727 @@
-﻿@using Acme.SimpleTaskApp.Products;
+﻿﻿@using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.HomeCustomers
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
 @model HomeCustomerViewModel
 @{
-	ViewData["Title"] = "Index";
-	Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+  ViewData["Title"] = "Index";
+  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 
 @section scripts
 {
-	<environment names="Development">
-		<script src="~/view-resources/Views/HomeCustomer/mainCustomer.js" asp-append-version="true"></script>
-		<script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
-		<link href="~/css/style.css" rel="stylesheet" />
-
-	</environment>
+  <environment names="Development">
+    <script src="~/view-resources/Views/HomeCustomer/MainCustomer.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/HomeCustomer/SearchProductCustomer.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+    <link href="~/css/style.css" rel="stylesheet" />
+  </environment>
 }
 
-<div class="container mt-4" style="margin: 0 auto; padding-top: 200px;">
-    <h3 style="padding-bottom: 25px;">  
-       @if (!string.IsNullOrEmpty(Model.Filter))  
-       {  
-           <span>Kết quả tìm kiếm - @Model.Filter</span>  
-       }  
-       else if (!string.IsNullOrEmpty(Model.CategoryName))  
-       {
-			<span>Kết quả tìm kiếm Danh mục - @Model.CategoryName</span>
-		}  
-    </h3>
-	<div class="row row-cols-6 g-3 d-flex flex-wrap" style="padding-top: 30px;">
-		@foreach (var product in Model.ProductsInfo)
-		{
-			@foreach (var item in product.ProductVariants)
-			{
-			<div class="col" style="width: 183px; margin-top: 0; padding-bottom: 10px;">
-				<div class="card product-click-detail" data-id="@product.Id">
-						@if (item.ImageUrl != "")
-						{
-							<img src="@item.ImageUrl" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
-						}
-						else
-						{
-							<img src="~/img/products/default.png" class="card-img-top" alt="@product.Name" style="width: auto; height: auto;">
-						}
-						<div class="card-body">
-							<h5 class="card-name">@product.Name @item.Ram/@item.Storage</h5>
-							<div class="product-price">
-								<h5 class="current-price">@item.Price.ToString("#,##0")₫</h5>
-								<span class="text-success">Còn hàng</span>
-								<div class="item-compare gray-bg">
-									<span>@product.Screen</span>
-									<span>@product.Battery</span>
-									<span>@product.CameraSystem</span>
-								</div>
-								@* giảm giá *@
-								@* <div class="old-price">
-                	<h5 class="strikethrough">2.990.000₫</h5>
-                	<span class="discount" style="color: #ff0000;">-13%</span>
-                </div> *@
-							</div>
-							<div class="stock-status">
-								<span class="text-success">Còn hàng</span>
-							</div>
-						</div>
-					<button class="detail-btn product-click-detail" data-id="@product.Id">
-						Xem chi tiết
-					</button>
-				</div>
-			</div>
-			}
-		}
-	</div>
+<div class="search-container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="/">Trang chủ</a>
+    <span>></span>
+    <span>Tìm kiếm</span>
+  </div>
+
+  <!-- Header -->
+  <!-- Header -->
+  <div class="d-flex align-items-center mb-3">
+    <h1 class="mb-0 me-3">Tìm kiếm</h1>
+    <span class="results-count text-muted">@Model.ProductsInfo.Count() kết quả</span>
+  </div>
+
+  <div class="search-header">
+    <div class="search-results-info">
+      <div class="sort-options">
+        <div class="sort-bar">
+          <span class="sort-label">Sắp xếp theo</span>
+          <button class="sort-btn active" data-sort="relevant">Liên quan</button>
+          <button class="sort-btn" data-sort="newest">Mới nhất</button>
+          <button class="sort-btn" data-sort="bestseller">Bán chạy</button>
+          <div class="sort-dropdown">
+            <button class="sort-btn dropdown-toggle" data-sort="price">
+              Giá tiền
+              <span class="arrow">▾</span>
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" data-direction="asc">Giá: Thấp đến cao</button>
+              <button class="dropdown-item" data-direction="desc">Giá: Cao đến thấp</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-content">
+    <!-- Sidebar Filters -->
+    <div class="filters-sidebar">
+      <!-- Thương hiệu -->
+      <div class="filter-section">
+        <h3 class="filter-title">Thương hiệu</h3>
+        <div class="brand-list">
+          <label class="brand-item">
+            <input type="checkbox" name="brand" value="samsung">
+            <span class="checkmark"></span>
+            SAMSUNG
+          </label>
+          <label class="brand-item">
+            <input type="checkbox" name="brand" value="apple">
+            <span class="checkmark"></span>
+            APPLE
+          </label>
+          <label class="brand-item">
+            <input type="checkbox" name="brand" value="xiaomi">
+            <span class="checkmark"></span>
+            XIAOMI
+          </label>
+          <label class="brand-item">
+            <input type="checkbox" name="brand" value="oppo">
+            <span class="checkmark"></span>
+            OPPO
+          </label>
+        </div>
+      </div>
+
+      <!-- Mức giá -->
+      <div class="filter-section">
+        <h3 class="filter-title">Mức giá</h3>
+        <div class="price-range">
+          <div class="price-inputs">
+            <input type="number" placeholder="0" class="price-min">
+            <span>-</span>
+            <input type="number" placeholder="318,800,000" class="price-max">
+          </div>
+          <button class="apply-price-btn">ÁP DỤNG</button>
+          <div class="price-presets">
+            <label class="price-preset">
+              <input type="radio" name="price" value="0-5000000">
+              <span>Dưới 5 triệu</span>
+            </label>
+            <label class="price-preset">
+              <input type="radio" name="price" value="0-7000000">
+              <span>Dưới 7 triệu</span>
+            </label>
+            <label class="price-preset">
+              <input type="radio" name="price" value="1000000-2000000">
+              <span>1 đến 2 triệu</span>
+            </label>
+            <label class="price-preset">
+              <input type="radio" name="price" value="1000000-3000000">
+              <span>1 đến 3 triệu</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danh mục khác -->
+      <div class="filter-section">
+        <h3 class="filter-title">Khác</h3>
+        <div class="other-filters">
+          @* <label class="filter-item">
+            <input type="checkbox" name="featured">
+            <span class="checkmark"></span>
+            Sản phẩm nổi bật
+          </label> *@
+          <label class="filter-item">
+            <input type="checkbox" name="discount">
+            <span class="checkmark"></span>
+            Đang giảm giá
+          </label>
+          <label class="filter-item">
+            <input type="checkbox" name="instock">
+            <span class="checkmark"></span>
+            Còn hàng
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-grid">
+      @foreach (var product in Model.ProductsInfo)
+      {
+        @foreach (var item in product.ProductVariants)
+        {
+          <div class="product-card">
+            <div class="product-image">
+              @if (!string.IsNullOrEmpty(item.ImageUrl))
+              {
+                <img src="@item.ImageUrl" alt="@product.Name">
+              }
+              else
+              {
+                <img src="~/img/products/default.png" alt="@product.Name">
+              }
+            </div>
+
+            <div class="product-info">
+              <h3 class="product-name">@product.Name @item.Ram/@item.Storage</h3>
+
+              <div class="price-section">
+                <div class="current-price">@item.Price.ToString("#,##0")₫</div>
+              </div>
+
+              <div class="member-benefits">
+                <div class="member-points">
+                  <span class="points-badge">Hùng Hà Member</span>
+                </div>
+                <div class="installment">
+                </div>
+              </div>
+
+              <div class="product-features">
+                <span>@product.Screen</span>
+                <span>@product.Battery</span>
+                <span>@product.CameraSystem</span>
+              </div>
+
+              <button class="view-detail-btn product-click-detail" data-id="@product.Id">
+                Xem chi tiết
+              </button>
+            </div>
+          </div>
+        }
+      }
+      <div>
+        <div>
+        </div>
+        <div class="col-12 text-center mt-4">
+          <button id="btn-see-more" class="btn btn-outline-primary px-4 py-2">
+            Xem thêm
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <style>
-	/* Main container styling */
-	.customeContrainer {
-		padding-left: 59px !important;
-	}
+  /* ====== Layout tổng ====== */
+  .search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Roboto', Arial, sans-serif;
+  }
 
-	.container {
-		font-family: 'Roboto', Arial, sans-serif;
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 20px;
-	}
+  .breadcrumb {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
 
-	h3 {
-		font-size: 24px;
-		font-weight: 700;
-		color: #444;
-		margin-bottom: 20px;
-		text-transform: uppercase;
-		border-bottom: 1px solid #eee;
-		padding-bottom: 15px;
-	}
+    .breadcrumb a {
+      color: #288ad6;
+      text-decoration: none;
+    }
 
-	/* Product grid layout */
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -10px;
-	}
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
 
-	.col {
-		padding: 0 10px;
-		margin-bottom: 20px;
-	}
+  /* ====== Header tìm kiếm ====== */
+  .search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+  }
 
-	/* Product card styling */
-	.card {
-		border: 1px solid #e1e1e1;
-		border-radius: 8px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+    .search-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+    }
 
-		.card:hover {
-			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-			transform: translateY(-5px);
-			border-color: #288ad6;
-		}
+  .search-results-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 
-	.card-img-top {
-		width: 100%;
-		height: 180px;
-		object-fit: contain;
-		padding: 15px;
-		background: #fff;
-		border-bottom: 1px solid #f3f3f3;
-	}
+  .results-count {
+    font-size: 14px;
+    color: #666;
+  }
 
-	.card-body {
-		padding: 15px;
-		flex-grow: 1;
-	}
+  /* ====== Bộ lọc & sắp xếp ====== */
+  .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
 
-	.card-name {
-		font-size: 14px;
-		font-weight: 400;
-		color: #444;
-		height: 40px;
-		overflow: hidden;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		margin-bottom: 10px;
-		line-height: 1.4;
-	}
+  .sort-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+  }
 
-	/* Price styling */
-	.product-price {
-		margin-bottom: 10px;
-	}
+  .sort-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fff;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
 
-	.current-price {
-		font-size: 16px;
-		font-weight: 700;
-		color: #d0021b;
-		margin-bottom: 5px;
-	}
+    .sort-btn:hover {
+      border-color: #288ad6;
+      color: #288ad6;
+    }
 
-	.old-price {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
+    .sort-btn.active {
+      background: #288ad6;
+      color: #fff;
+      border-color: #288ad6;
+    }
 
-	.strikethrough {
-		font-size: 14px;
-		color: #888;
-		text-decoration: line-through;
-		margin: 0;
-	}
+  .sort-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
 
-	.discount {
-		font-size: 12px;
-		font-weight: 700;
-		background: #f6f6f6;
-		padding: 2px 5px;
-		border-radius: 4px;
-	}
+    .sort-group .sort-btn {
+      border: none;
+      border-right: 1px solid #e0e0e0;
+      border-radius: 0;
+    }
 
-	/* Stock status */
-	.stock-status {
-		font-size: 13px;
-		margin-bottom: 10px;
-	}
+    .sort-group.active {
+      border-color: #288ad6;
+    }
 
-	.text-success {
-		color: #288ad6;
-	}
+      .sort-group.active .sort-btn {
+        background: #288ad6;
+        color: #fff;
+      }
 
-	.text-danger {
-		color: #d0021b;
-	}
+  .direction-btn {
+    padding: 8px 12px;
+    background: transparent;
+    color: #666;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+  }
 
-	/* Button styling */
-	.detail-btn {
-		background: #288ad6;
-		color: white;
-		border: none;
-		padding: 10px;
-		width: 100%;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background 0.3s;
-		margin-top: auto;
-	}
+    .direction-btn:hover {
+      background: #f5f5f5;
+      color: #288ad6;
+    }
 
-		.detail-btn:hover {
-			background: #1a7bc8;
-		}
+    .direction-btn.active {
+      background: #288ad6;
+      color: #fff;
+    }
 
+  /* ====== Nội dung tìm kiếm ====== */
+  .search-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+  }
 
-	.card-img-top {
-		height: 150px;
-	}
+  /* ====== Sidebar lọc ====== */
+  .filters-sidebar {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+  }
 
+  .filter-section {
+    margin-bottom: 30px;
+  }
+
+  .filter-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .brand-list,
+  .other-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .brand-item,
+  .filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+    .brand-item input,
+    .filter-item input {
+      display: none;
+    }
+
+  .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+    position: relative;
+  }
+
+  input[type="checkbox"]:checked + .checkmark {
+    background: #288ad6;
+    border-color: #288ad6;
+  }
+
+    input[type="checkbox"]:checked + .checkmark::after {
+      content: '✓';
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+    }
+
+  /* ====== Bộ lọc giá ====== */
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+    .price-inputs input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+  .apply-price-btn {
+    background: #288ad6;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+    .apply-price-btn:hover {
+      background: #1a7bc8;
+    }
+
+  .price-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .price-preset {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+    .price-preset input {
+      display: none;
+    }
+
+    .price-preset span {
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .price-preset input:checked + span {
+      background: #288ad6;
+      color: #fff;
+      border-color: #288ad6;
+    }
+
+  /* ====== Lưới sản phẩm ====== */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card {
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s;
+  }
+
+    .product-card:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+  .product-image {
+    position: relative;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: #f8f9fa;
+  }
+
+    .product-image img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+  .discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff4444;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .product-info {
+    padding: 15px;
+  }
+
+  .product-name {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    height: 40px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .original-price {
+    font-size: 13px;
+    color: #888;
+    text-decoration: line-through;
+  }
+
+  .current-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #d0021b;
+  }
+
+  .member-benefits {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .member-points {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+
+  .points-badge {
+    background: #ff6b00;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .points-text {
+    font-size: 12px;
+    color: #ff6b00;
+    font-weight: 500;
+  }
+
+  .installment-text {
+    font-size: 12px;
+    color: #288ad6;
+  }
+
+  .product-features {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 15px;
+  }
+
+    .product-features span {
+      font-size: 12px;
+      color: #666;
+    }
+
+  .view-detail-btn {
+    width: 100%;
+    background: #288ad6;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+    .view-detail-btn:hover {
+      background: #1a7bc8;
+    }
+
+  .search-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    font-family: 'Roboto', sans-serif;
+  }
+
+    .search-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+    }
+
+  .search-results-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .results-count {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .sort-options {
+    width: 100%;
+  }
+
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f5f5f5;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+
+  .sort-label {
+    color: #555;
+    white-space: nowrap;
+  }
+
+  .sort-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #000;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+    .sort-btn:hover {
+      border-color: #00a98f;
+      color: #00a98f;
+    }
+
+    .sort-btn.active {
+      background: #00a98f;
+      color: #fff;
+      border-color: #00a98f;
+    }
+
+  .sort-dropdown {
+    position: relative;
+  }
+
+  .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .arrow {
+    font-size: 12px;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+    width: 160px;
+  }
+
+  .dropdown-item {
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+    .dropdown-item:hover {
+      background: #f2f2f2;
+    }
+
+  /* Hover để mở dropdown */
+  .sort-dropdown:hover .dropdown-menu {
+    display: block;
+  }
 </style>
-@* <nav aria-label="Page navigation example" class="mt-4 d-flex justify-content-center">
-	<ul class="pagination">
-		<li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-			<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="1" aria-label="First">
-				<span aria-hidden="true">&laquo;&laquo;</span>
-			</a>
-		</li>
-		<li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-			<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="@(Model.PageNumber - 1)" aria-label="Previous">
-				<span aria-hidden="true">&laquo;</span>
-			</a>
-		</li>
-
-		@for (int i = 1; i <= Model.TotalPages; i++)
-		{
-			<li class="page-item @(i == Model.PageNumber ? "active" : "")">
-				<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="@i">@i</a>
-			</li>
-		}
-
-		<li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
-			<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="@(Model.PageNumber + 1)" aria-label="Next">
-				<span aria-hidden="true">&raquo;</span>
-			</a>
-		</li>
-		<li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
-			<a class="page-link" asp-action="SearchProductCustomer" asp-route-page="@Model.TotalPages" aria-label="Last">
-				<span aria-hidden="true">&raquo;&raquo;</span>
-			</a>
-		</li>
-	</ul>
-</nav> *@
-

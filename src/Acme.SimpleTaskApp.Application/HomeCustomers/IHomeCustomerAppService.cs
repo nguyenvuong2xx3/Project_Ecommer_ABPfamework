@@ -13,6 +13,6 @@ namespace Acme.SimpleTaskApp.HomeCustomers
 	public interface IHomeCustomerAppService : IApplicationService
 	{
 		Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input);
-
+		Task<Product> GetProductById(int id);
 	}
 }

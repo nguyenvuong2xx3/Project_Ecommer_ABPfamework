@@ -1,0 +1,204 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
+@* @model HomeCustomerViewModel *@
+
+@* Modal Lọc Sản Phẩm Nâng Cao *@
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chi tiết biến thể sản phẩm"))
+<div class="modal-body">
+<div class="modal fade" id="ProductFilterModal" tabindex="-1" role="dialog" aria-labelledby="productFilterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" id="wrapper" style="display: block;">
+
+      @* Modal Header *@
+      <div class="modal-header">
+        <h5 class="modal-title" id="productFilterModalLabel">
+          <i class="fas fa-filter text-primary me-2"></i>Lọc Sản Phẩm
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="filterForm">
+        <div class="modal-body show-total-main">
+
+          @* Danh mục tìm kiếm *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Danh mục:</label>
+            <div class="col-md-9">
+              <select class="form-select" name="CategoryId">
+                <option value="">-- Tất cả --</option>
+                @* @if (Model.Categories != null)
+                {
+                  foreach (var cat in Model.Categories)
+                  {
+                    <option value="@cat.Id">@cat.Name</option>
+                  }
+                } *@
+              </select>
+            </div>
+          </div>
+
+          @* Đặc quyền *@
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" value="true" id="monopolyCheck" name="monopoly">
+                <label class="form-check-label fw-bold" for="monopolyCheck">
+                  Đặc quyền tại Thế Giới Di Động
+                </label>
+              </div>
+            </div>
+          </div>
+
+          @* Hãng (Brands) *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Hãng:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                @* @if (Model.Brands != null)
+                {
+                  foreach (var brand in Model.Brands)
+                  {
+                    <label class="brand-checkbox">
+                      <input type="checkbox" name="BrandIds" value="@brand.Id" class="me-1" />
+                      <img src="@brand.ImageUrl" alt="@brand.Name" width="48" height="22" class="me-1" />
+                      @brand.Name
+                    </label>
+                  }
+                } *@
+              </div>
+            </div>
+          </div>
+
+          @* Giá *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Giá:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label class="price-radio"><input type="radio" name="PriceRange" value="0-1999999" /> Dưới 2 triệu</label>
+                <label class="price-radio"><input type="radio" name="PriceRange" value="2000000-4000000" /> 2 - 4 triệu</label>
+                <label class="price-radio"><input type="radio" name="PriceRange" value="4000001-7000000" /> 4 - 7 triệu</label>
+                <label class="price-radio"><input type="radio" name="PriceRange" value="7000001-13000000" /> 7 - 13 triệu</label>
+                <label class="price-radio"><input type="radio" name="PriceRange" value="13000001-20000000" /> 13 - 20 triệu</label>
+                <label class="price-radio"><input type="radio" name="PriceRange" value="20000001-100000000" /> Trên 20 triệu</label>
+              </div>
+              <div class="mt-2">
+                <div class="input-group">
+                  <span class="input-group-text">Từ</span>
+                  <input type="number" min="0" class="form-control" name="PriceMin" placeholder="Giá tối thiểu">
+                  <span class="input-group-text">đến</span>
+                  <input type="number" min="0" class="form-control" name="PriceMax" placeholder="Giá tối đa">
+                  <span class="input-group-text">VNĐ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          @* Loại điện thoại *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Loại điện thoại:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label><input type="checkbox" name="PhoneType" value="Android" /> Android</label>
+                <label><input type="checkbox" name="PhoneType" value="iPhone (iOS)" /> iPhone (iOS)</label>
+                <label><input type="checkbox" name="PhoneType" value="Điện thoại phổ thông" /> Điện thoại phổ thông</label>
+              </div>
+            </div>
+          </div>
+
+          @* Nhu cầu *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Nhu cầu:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label><input type="checkbox" name="Demand" value="Chơi game / Cấu hình cao" /> Chơi game / Cấu hình cao</label>
+                <label><input type="checkbox" name="Demand" value="Pin khủng trên 5000 mAh" /> Pin khủng trên 5000 mAh</label>
+                <label><input type="checkbox" name="Demand" value="Chụp ảnh, quay phim" /> Chụp ảnh, quay phim</label>
+                <label><input type="checkbox" name="Demand" value="Livestream" /> Livestream</label>
+                <label><input type="checkbox" name="Demand" value="Mỏng nhẹ" /> Mỏng nhẹ</label>
+              </div>
+            </div>
+          </div>
+
+          @* RAM *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">RAM:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label><input type="checkbox" name="Ram" value="3 GB" /> 3 GB</label>
+                <label><input type="checkbox" name="Ram" value="4 GB" /> 4 GB</label>
+                <label><input type="checkbox" name="Ram" value="6 GB" /> 6 GB</label>
+                <label><input type="checkbox" name="Ram" value="8 GB" /> 8 GB</label>
+                <label><input type="checkbox" name="Ram" value="12 GB" /> 12 GB</label>
+                <label><input type="checkbox" name="Ram" value="16 GB" /> 16 GB</label>
+              </div>
+            </div>
+          </div>
+
+          @* Dung lượng lưu trữ *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Dung lượng lưu trữ:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label><input type="checkbox" name="Storage" value="64 GB" /> 64 GB</label>
+                <label><input type="checkbox" name="Storage" value="128 GB" /> 128 GB</label>
+                <label><input type="checkbox" name="Storage" value="256 GB" /> 256 GB</label>
+                <label><input type="checkbox" name="Storage" value="512 GB" /> 512 GB</label>
+                <label><input type="checkbox" name="Storage" value="1 TB" /> 1 TB</label>
+              </div>
+            </div>
+          </div>
+
+          @* Tính năng đặc biệt *@
+          <div class="row mb-3">
+            <label class="col-md-3 col-form-label fw-bold">Tính năng đặc biệt:</label>
+            <div class="col-md-9">
+              <div class="d-flex flex-wrap gap-2">
+                <label><input type="checkbox" name="SpecialFeature" value="Điện thoại AI" /> Điện thoại AI</label>
+                <label><input type="checkbox" name="SpecialFeature" value="Chỉnh ảnh AI" /> Chỉnh ảnh AI</label>
+                <label><input type="checkbox" name="SpecialFeature" value="Hỗ trợ 5G" /> Hỗ trợ 5G</label>
+                <label><input type="checkbox" name="SpecialFeature" value="Kháng nước, bụi" /> Kháng nước, bụi</label>
+                <label><input type="checkbox" name="SpecialFeature" value="Bảo mật khuôn mặt 3D" /> Bảo mật khuôn mặt 3D</label>
+                <label><input type="checkbox" name="SpecialFeature" value="Công nghệ NFC" /> Công nghệ NFC</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @* Modal Footer *@
+        <div class="modal-footer">
+          <button type="reset" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fas fa-times"></i> Bỏ chọn
+          </button>
+          <button type="submit" class="btn btn-primary btn-filter-readmore">
+            <i class="fas fa-search"></i> Xem <b class="total-reloading">...</b> kết quả
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<style>
+  .brand-checkbox {
+    display: inline-flex;
+    align-items: center;
+    background: #f7f7f8;
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+    margin-right: 8px;
+  }
+
+  .price-radio {
+    margin-right: 10px;
+    margin-bottom: 5px;
+    padding: 4px 10px;
+    background: #f7f7f8;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+  }
+</style>

@@ -6,8 +6,10 @@ using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Identity;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
+using Acme.SimpleTaskApp.Web.Models.Products;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,16 +61,17 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				return View(model);
 			}
 
-			//public async Task<IActionResult> DetailProductCusTomer(int productId)
-			//{
-			//	var product = await _productAppService.GetByIdProducts(new EntityDto<int>(productId));
+			public async Task<IActionResult> DetailProductCustomer(int id)
+			{
+				var product = await _homeCustomerAppService.GetProductById(id);
 
-			//	var model = new DetailProductModalViewModel(product)
-			//	{
-			//	};
+				var model = new HomeCustomerViewModel()
+				{
+					ProductInfo = product
+				};
 
-			//	return View(model);
-			//}
+				return View(model);
+			}
 
 			// Trong HomeCustomerController.cs
 			public async Task<ActionResult> SearchProductCustomer(SearchHomeCustomerDto input)
@@ -84,7 +87,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 				return View(model);
 			}
-
+			public async Task<PartialViewResult> FilterAdvancedModal()
+			{
+				
+				return PartialView("_FilterAdvancedModal");
+			}
 
 			//// Thêm action cho form search
 			//public async Task<ActionResult> LoginMember()

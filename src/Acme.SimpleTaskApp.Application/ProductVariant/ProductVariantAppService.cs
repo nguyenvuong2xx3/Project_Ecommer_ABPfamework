@@ -75,11 +75,19 @@ namespace Acme.SimpleTaskApp.ProductVariants
 				throw new UserFriendlyException("Dữ liệu không được để trống");
 			}
 			var get = await _productVariantRepository.GetAsync(input.Id);
+			get.SKU = input.SKU;
+			get.Ram = input.Ram;
+			get.Storage = input.Storage;
+			get.Color = input.Color;
+			get.Price = input.Price;
+			get.StockQuantity = input.StockQuantity;
+			get.ProductId = input.ProductId;
+
 			if (get == null)
 			{
 				throw new UserFriendlyException("Không tìm thấy dữ liệu");
 			}
-			if (input.DeletedImageUrls.Count < 0 && input.DeletedImageUrls.Any())
+			if (input.DeletedImageUrls != null)
 			{
 				foreach (var item in input.DeletedImageUrls)
 				{
@@ -110,7 +118,8 @@ namespace Acme.SimpleTaskApp.ProductVariants
 					_productImageRepository.Insert(productImage);
 				}
 			}
-			await _productVariantRepository.UpdateAsync(input);
+
+			await _productVariantRepository.UpdateAsync(get);
 		}
 
 		public async Task DeleteProductVariant(int id)
