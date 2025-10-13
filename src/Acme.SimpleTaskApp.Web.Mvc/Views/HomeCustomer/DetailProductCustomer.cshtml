@@ -11,238 +11,98 @@
 {
   <environment names="Development">
     <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/HomeCustomer/DetailProductHomeCustomer.js" asp-append-version="true"></script>
   </environment>
 }
-<style>
-  .main-image-container {
-    position: relative;
-    background: #000;
-    min-height: 400px;
-  }
-
-  .gallery-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-  }
-
-  .image-label {
-    position: absolute;
-    bottom: 40%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .thumbnail {
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-    .thumbnail:hover {
-      border-color: #0066cc !important;
-    }
-</style>
-<div class="container-fluid py-3">
-  <!-- Header -->
+<div class="container-fluid py-3" style="padding: 0 390px">
   <div class="bg-white p-3 mb-3 rounded">
     <div class="row align-items-center">
       <div class="col">
         <h1 class="h4 fw-bold mb-2">
           @Model.ProductInfo.Name @Model.ProductInfo.ProductVariant.Ram @Model.ProductInfo.ProductVariant.Storage @Model.ProductInfo.ProductVariant.Color
         </h1>
-        <div class="d-flex gap-3 align-items-center flex-wrap">
-          <span class="badge bg-danger">Mẫu mới</span>
-          <span class="text-muted small">Đã bán 1.4k</span>
-          <span class="text-warning">
-            <i class="bi bi-star-fill"></i> 5
-          </span>
-          <a href="#" class="text-primary text-decoration-none small">
-            <i class="bi bi-bar-chart"></i> Thông số
-          </a>
-          <a href="#" class="text-primary text-decoration-none small">
-            <i class="bi bi-clock-history"></i> So sánh
-          </a>
-        </div>
-      </div>
-      <div class="col-auto">
-        <button class="btn btn-primary">
-          <i class="bi bi-hand-thumbs-up"></i> Thích 0
-        </button>
-        <button class="btn btn-outline-secondary">Chia sẻ</button>
       </div>
     </div>
   </div>
 
-  <div class="row g-3">
-    <!-- Left Side - Gallery -->
+  <div class="d-flex flex-wrap">
     <div class="col-lg-8">
       <div class="bg-white p-3 rounded">
-        <!-- Main Image -->
-        <div class="main-image-container position-relative rounded overflow-hidden mb-3">
-          <img src="https://via.placeholder.com/700x400/000/fff?text=iPhone+17" class="img-fluid w-100" alt="iPhone 17">
-          <span class="image-label badge bg-dark bg-opacity-75 text-white border border-white">
-            @Model.ProductInfo.Name @Model.ProductInfo.ProductVariant.Ram @Model.ProductInfo.ProductVariant.Storage @Model.ProductInfo.ProductVariant.Color
-          </span>
-          <button class="gallery-nav btn btn-light rounded-circle start-0 ms-2">
+        <div class="main-image-container position-relative rounded overflow-hidden mb-3 d-flex justify-content-center align-items-center bg-light"
+             style="height: 400px;">
+          <img src="@Model.ProductInfo.ImageUrls.First()"
+               class="img-fluid h-100 w-auto object-fit-contain"
+               alt="iPhone 17">
+
+          <button class="gallery-nav btn btn-light rounded-circle position-absolute start-0 ms-2">
             <i class="bi bi-chevron-left"></i>
           </button>
-          <button class="gallery-nav btn btn-light rounded-circle end-0 me-2">
+          <button class="gallery-nav btn btn-light rounded-circle position-absolute end-0 me-2">
             <i class="bi bi-chevron-right"></i>
           </button>
         </div>
 
-        <!-- Thumbnails -->
-        <div class="d-flex gap-2 overflow-auto pb-2">
-          <div class="thumbnail border border-2 border-primary rounded p-1" style="min-width: 60px;">
-            @foreach (var imgpd in Model.ProductInfo.ImageUrls)
-            {
-              <div class="position-relative">
-                <i class="bi bi-star-fill text-primary position-absolute top-0 start-0 small"></i>
-                <img src="@imgpd" class="img-fluid" alt="Thumb">
-                <span class="badge bg-primary w-100 position-absolute bottom-0 start-0" style="font-size: 8px;">Nổi bật</span>
-              </div>
-            }
-          </div>
+        <div class="d-flex gap-2 mb-3 flex-wrap justify-content-center">
           @foreach (var imgpd in Model.ProductInfo.ProductVariants)
-            @foreach (var img in imgpd.ImageUrls)
+          {
+            foreach (var img in imgpd.ImageUrls)
             {
-              <div class="thumbnail border border-2 rounded p-1" style="min-width: 60px;">
-                <img src="@img" class="img-fluid" alt="Thumb">)
+              <div class="color-option border border-2 rounded p-2 text-center d-flex flex-column align-items-center"
+                   style="width: 60px; margin-right: 10px; border-radius: 7px;">
+                <img src="@img" style="height: 45px; object-fit: contain;">
+                <span class="small mt-1">@imgpd.Color</span>
               </div>
             }
-        </div>
-
-        <!-- Tabs -->
-        <ul class="nav nav-tabs mt-4" role="tablist">
-          <li class="nav-item flex-fill" role="presentation">
-            <button class="nav-link active w-100" data-bs-toggle="tab" data-bs-target="#specs">
-              Thông số kỹ thuật
-            </button>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <button class="nav-link w-100" data-bs-toggle="tab" data-bs-target="#info">
-              Thông tin sản phẩm
-            </button>
-          </li>
-        </ul>
-        <div class="tab-content p-3 border border-top-0 rounded-bottom">
-          <div class="tab-pane fade show active" id="specs">
-            <p>Nội dung thông số kỹ thuật...</p>
-          </div>
-          <div class="tab-pane fade" id="info">
-            <p>Nội dung thông tin sản phẩm...</p>
-          </div>
+          }
         </div>
       </div>
     </div>
 
     <!-- Right Side - Purchase Options -->
     <div class="col-lg-4">
-      <div class="bg-white p-3 rounded sticky-top" style="top: 20px;">
+      <div class="bg-white p-3 rounded" style="top: 20px;">
         <!-- Storage Options -->
         <div class="mb-3">
-          <div class="btn-group w-100" role="group">
+          <div class="btn-group" role="group" style="width: 75px">
             @foreach (var item in Model.ProductInfo.ProductVariants)
             {
-              <input type="radio" class="btn-check" name="storage" id="storage1" checked>
               <label class="btn btn-outline-primary" for="storage1">@item.Storage</label>
             }
           </div>
         </div>
         <!-- Color Options -->
         <div class="mb-3">
-          <div class="d-flex gap-2 flex-wrap">
-            @foreach (var item in Model.ProductInfo.ProductVariants)
+          <div class="d-flex gap-3 mb-3 flex-wrap justify-content-center">
+            @foreach (var imgpd in Model.ProductInfo.ProductVariants)
             {
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="color" id="color1">
-                <label class="form-check-label" for="color1">
-                  <span class="badge bg-light text-dark border">
-                    <span class="rounded-circle bg-purple d-inline-block" style="width: 12px; height: 12px;"></span>
-                    @item.Color
-                  </span>
-                </label>
-              </div>
+              foreach (var img in imgpd.ImageUrls)
+              {
+                <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center"
+                     style="min-width: 150px; border-radius: 10px; margin-right: 10px">
+                  <!-- Ảnh bên trái -->
+                  <img src="@img" style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
+
+                  <!-- Thông tin bên phải -->
+                  <div class="ms-2 d-flex flex-column align-items-start">
+                    <span class="small fw-semibold">@imgpd.Color</span>
+                    <span class="small text-muted">@imgpd.Price.ToString("#,##0")₫</span>
+                  </div>
+                </div>
+              }
             }
           </div>
         </div>
 
-        <!-- Location -->
-        <div class="mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <span class="small text-muted">Giá tại</span>
-            <a href="#" class="text-primary text-decoration-none">
-              Thành phố Hồ Chí Minh <i class="bi bi-chevron-down"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Price -->
-        <div class="mb-3">
-          <h2 class="h3 text-danger fw-bold mb-1">@Model.ProductInfo.ProductVariant.Price</h2>
-          <small class="text-muted">Trả chậm 0% trả trước 0₫</small>
-        </div>
-
         <!-- Payment Options -->
         <div class="mb-3">
-          <p class="fw-semibold mb-2">Ưu đãi thanh toán Online <span class="text-muted">(Click chọn để áp dụng)</span></p>
-
-          <div class="row g-2">
-            <div class="col-6">
-              <div class="card">
-                <div class="card-body p-2">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment" id="uob">
-                    <label class="form-check-label small" for="uob">
-                      <img src="https://via.placeholder.com/60x20/e30613/fff?text=UOB" alt="UOB" class="img-fluid mb-1">
-                      <div class="fw-bold small">GIẢM 2.000.000Đ</div>
-                      <div class="text-muted" style="font-size: 10px;">Sản phẩm iPhone 17 và iPhone Air</div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="card">
-                <div class="card-body p-2">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment" id="fecredit">
-                    <label class="form-check-label small" for="fecredit">
-                      <img src="https://via.placeholder.com/60x20/00a651/fff?text=FE" alt="FE Credit" class="img-fluid mb-1">
-                      <div class="fw-bold small">Giảm 250.000đ</div>
-                      <div class="text-muted" style="font-size: 10px;">Áp dụng sản phẩm từ 3 triệu trở lên</div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="d-grid gap-2 mb-3">
+            <button class="btn btn-outline-primary btn-lg add-to-cart">
+              <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+            </button>
+            <button class="btn btn-warning btn-lg text-white fw-bold">
+              Mua ngay
+            </button>
           </div>
-        </div>
-
-        <!-- Location Selection -->
-        <div class="alert alert-info small mb-3">
-          <i class="bi bi-geo-alt"></i> Chọn địa chỉ nhận hàng để biết thời gian giao.
-        </div>
-
-        <!-- VIP Program -->
-        <div class="mb-3">
-          <span class="fw-semibold">+24.990</span> điểm tích lũy Quà Tặng VIP
-          <i class="bi bi-question-circle text-muted"></i>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="d-grid gap-2 mb-3">
-          <button class="btn btn-outline-primary btn-lg">
-            <i class="bi bi-cart-plus"></i> Thêm vào giỏ
-          </button>
-          <button class="btn btn-warning btn-lg text-white fw-bold">
-            Mua ngay
-          </button>
-          <button class="btn btn-primary btn-lg">
-            Mua trả chậm 0% <i class="bi bi-chevron-right"></i>
-            <div class="small">Qua thẻ tín dụng, nhà tài chính, mua trước trả sau</div>
-          </button>
         </div>
 
         <!-- Contact Info -->
