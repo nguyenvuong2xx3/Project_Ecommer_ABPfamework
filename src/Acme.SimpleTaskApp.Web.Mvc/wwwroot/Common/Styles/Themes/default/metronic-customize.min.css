@@ -1,0 +1,96 @@
+.cc-window {
+  background-color: #282a3a;
+}
+.cc-btn {
+  background-color: #5867dd;
+  border-color: #5867dd;
+  color: #ffffff;
+}
+.cc-message {
+  color: #fefefe;
+}
+.unread-notification-count {
+  position: absolute;
+  top: 13px;
+  right: 3px;
+}
+.unread-chat-message-count {
+  position: absolute;
+  top: 13px;
+}
+.searchMenuContainerSelect2 .select2-container {
+  width: 214px !important;
+}
+@media (max-width: 991.98px) {
+  .searchMenuContainerSelect2 .select2-container {
+    width: 180px !important;
+  }
+}
+[data-kt-aside-minimize="on"] .searchMenuContainerSelect2 .select2-container {
+  width: 45px !important;
+}
+[data-kt-aside-minimize="on"] .searchMenuContainerSelect2 .select2-selection__placeholder,
+.side-minimize .searchMenuContainerSelect2 .select2-selection__arrow {
+  display: none;
+}
+[data-kt-aside-minimize="on"] .searchMenuContainerSelect2 span.select2-selection.select2-selection--single:before {
+  left: 15px;
+}
+[data-kt-aside-minimize="on"] .searchMenuDropDownSelect2.select2-dropdown {
+  width: 235px !important;
+}
+.searchMenuContainerSelect2 {
+  margin: 15px;
+}
+.searchMenuContainerSelect2 .select2-selection {
+  height: 40px !important;
+}
+.searchMenuContainerSelect2 .select2-selection__rendered {
+  padding-top: 8px;
+}
+.searchMenuContainerSelect2 .select2-selection__arrow {
+  margin-top: 7px;
+}
+#ActiveUserDelegationsCombobox {
+  max-width: 120px;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuContainerSelect2 .select2-selection {
+  background-color: #12121e !important;
+  border: 1px solid #2c2d44 !important;
+  color: #9899ac !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuContainerSelect2 .select2-selection:focus {
+  border-color: #7380fc !important;
+  color: #fff !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuContainerSelect2 .searchMenuSelect2 {
+  background-color: #12121e !important;
+  border: 1px solid #2c2d44 !important;
+  color: #9899ac !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuContainerSelect2 .searchMenuSelect2:focus {
+  border-color: #7380fc !important;
+  color: #fff !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuDropDownSelect2.select2-dropdown.select2-dropdown--below {
+  background-color: #1e1e2d !important;
+  border: 1px solid #323248 !important;
+  color: #999 !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuDropDownSelect2.select2-dropdown.select2-dropdown--below input {
+  background-color: #1e1e2d !important;
+  border: 1px solid #323248 !important;
+  color: #999 !important;
+}
+body[data-kt-app-layout=dark-sidebar] .searchMenuDropDownSelect2.select2-dropdown.select2-dropdown--below input:focus-visible {
+  border: 1px solid #323248 !important;
+}
+body[data-kt-app-toolbar-fixed=true] .app-sidebar-logo {
+  height: 71px;
+}
+[data-kt-app-header-fixed=true][data-kt-app-toolbar-fixed=true] .app-wrapper {
+  margin-top: 120px;
+}
+.app-content {
+  padding-bottom: 0;
+}

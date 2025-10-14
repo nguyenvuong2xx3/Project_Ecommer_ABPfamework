@@ -49,10 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Acme\SimpleTaskApp\Web\Models\Products\" />
+    <Folder Include="Models\App\" />
     <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />
     <Folder Include="wwwroot\libs\" />
-    <Folder Include="wwwroot\view-resources\Views\_Bundles\" />
   </ItemGroup>
 </Project>

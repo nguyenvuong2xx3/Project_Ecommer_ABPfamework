@@ -1,0 +1,386 @@
+﻿/* ----------------------------------------------------------------
+	Custom CSS
+
+	Add all your Custom Styled CSS here for New Styles or
+	Overwriting Default Theme Styles for Better Handling Updates
+-----------------------------------------------------------------*/
+
+.layout-menu {
+  padding-bottom: 90px;
+}
+
+.card-form-filter {
+  flex: 1 1 auto;
+  padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+  color: var(--bs-card-color);
+}
+
+.common-f {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 5px;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.card-control {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  display: flex;
+  gap: 5px;
+  padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+}
+
+.input-group-f {
+  flex-grow: 1;
+  width: auto;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.right-header-content .header-right-item .admin-profile .dropdown-menu {
+  width: auto;
+}
+
+.img-60 {
+  height: 60px;
+}
+
+/* DATATABLE */
+table.dataTable thead > tr > th.sorting_asc, table.dataTable thead > tr > th.sorting_desc, table.dataTable thead > tr > th.sorting,
+table.dataTable thead > tr > td.sorting_asc,
+table.dataTable thead > tr > td.sorting_desc,
+table.dataTable thead > tr > td.sorting {
+  padding-right: 30px;
+}
+
+table.dataTable thead > tr > th:active,
+table.dataTable thead > tr > td:active {
+  outline: none;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+  cursor: pointer;
+  position: relative;
+}
+
+  table.dataTable thead .sorting:before, table.dataTable thead .sorting:after,
+  table.dataTable thead .sorting_asc:before,
+  table.dataTable thead .sorting_asc:after,
+  table.dataTable thead .sorting_desc:before,
+  table.dataTable thead .sorting_desc:after,
+  table.dataTable thead .sorting_asc_disabled:before,
+  table.dataTable thead .sorting_asc_disabled:after,
+  table.dataTable thead .sorting_desc_disabled:before,
+  table.dataTable thead .sorting_desc_disabled:after {
+    position: absolute;
+    bottom: 0.9em;
+    display: block;
+    opacity: 0.3;
+  }
+
+  table.dataTable thead .sorting:before,
+  table.dataTable thead .sorting_asc:before,
+  table.dataTable thead .sorting_desc:before,
+  table.dataTable thead .sorting_asc_disabled:before,
+  table.dataTable thead .sorting_desc_disabled:before {
+    right: 1em;
+    content: "\2191";
+  }
+
+  table.dataTable thead .sorting:after,
+  table.dataTable thead .sorting_asc:after,
+  table.dataTable thead .sorting_desc:after,
+  table.dataTable thead .sorting_asc_disabled:after,
+  table.dataTable thead .sorting_desc_disabled:after {
+    right: 0.5em;
+    content: "\2193";
+  }
+
+  table.dataTable thead .sorting_asc:before,
+  table.dataTable thead .sorting_desc:after {
+    opacity: 1;
+  }
+
+  table.dataTable thead .sorting_asc_disabled:before,
+  table.dataTable thead .sorting_desc_disabled:after {
+    opacity: 0;
+  }
+
+div.dataTables_scrollHead table.dataTable {
+  margin-bottom: 0 !important;
+}
+
+div.dataTables_scrollBody table {
+  border-top: none;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+  div.dataTables_scrollBody table thead .sorting:after,
+  div.dataTables_scrollBody table thead .sorting_asc:after,
+  div.dataTables_scrollBody table thead .sorting_desc:after {
+    display: none;
+  }
+
+  div.dataTables_scrollBody table tbody tr:first-child th,
+  div.dataTables_scrollBody table tbody tr:first-child td {
+    border-top: none;
+  }
+
+div.dataTables_scrollFoot table {
+  margin-top: 0 !important;
+  border-top: none;
+}
+
+@media screen and (max-width: 767px) {
+  div.dataTables_wrapper div.dataTables_length,
+  div.dataTables_wrapper div.dataTables_filter,
+  div.dataTables_wrapper div.dataTables_info,
+  div.dataTables_wrapper div.dataTables_paginate {
+    text-align: center;
+  }
+}
+
+table.dataTable.table-condensed > thead > tr > th {
+  padding-right: 20px;
+}
+
+table.dataTable.table-condensed .sorting:after,
+table.dataTable.table-condensed .sorting_asc:after,
+table.dataTable.table-condensed .sorting_desc:after {
+  top: 6px;
+  right: 6px;
+}
+
+.table-responsive .row {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #605DFF;
+  color: #fff;
+  z-index: 0 !important;
+}
+
+.table-responsive ul.pagination {
+  margin-bottom: 0rem;
+}
+
+.mviewcol-ititle {
+  min-width: 430px;
+}
+
+table#ThuThapDuLieuTable tbody td {
+  white-space: nowrap;
+}
+
+.dataTables_length {
+  margin-right: 10px;
+}
+/* TOAST */
+.toast-success {
+  background-color: rgba(55, 216, 10, 0.8);
+}
+
+.toast-info {
+  background-color: rgba(47,150,180,0.8);
+}
+
+.toast-warning {
+  background-color: rgba(248,148,6,0.8);
+}
+
+.toast-error {
+  background-color: rgb(189, 54, 47,0.8);
+}
+
+/* MODAL */
+.modal-body .input-group-text {
+  border-color: #D5D9E2;
+}
+
+/** FORM ***/
+.trieudong-donvi-text {
+  position: absolute !important;
+  top: 18px !important;
+  padding-right: 0.25rem !important;
+  right: 0 !important;
+}
+
+.trieudong-donvi-input {
+  padding-right: 78px
+}
+
+.ngay-donvi-text {
+  position: absolute !important;
+  top: 18px !important;
+  padding-right: 0.25rem !important;
+  right: 0 !important;
+}
+
+.ngay-donvi-input {
+  padding-right: 41px;
+}
+/** SELECTIZE **/
+.selectize-control.multi .selectize-input {
+  height: 50px;
+  font-size: 15px;
+  padding: 12px 14px;
+}
+
+  .selectize-control.multi .selectize-input.has-items {
+    height: auto;
+    padding: 12px 16px;
+  }
+
+/* Bootstrap Filestyle */
+.fileinput-custom .group-span-filestyle {
+  align-content: center !important;
+  background: #3A4252 !important;
+  color : white !important;
+  padding :  0 0.5rem !important;
+}
+
+.bootstrap-filestyle span.group-span-filestyle {
+  align-content: center;
+  padding: 0px;
+  border: none;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.bootstrap-filestyle .buttonText {
+  cursor: pointer;
+}
+
+.stats-box .countcustom {
+  width: auto;
+  min-width : 52px;
+
+}
+
+.attachments-inline {
+  display: flex;
+  border: 1px dashed #ccc;
+}
+/* Button */
+a.btn i.fa {
+  margin-right: 5px;
+}
+
+/* Logo */
+
+.logo-customs {
+  height: 60px;
+  width: 187px;
+}
+/* dropdown-menu */
+.dropdown-menu.show {
+  z-index: 100;
+  position: absolute;
+  inset: 0px auto auto 0px;
+  margin: 0px;
+  transform: translate(0px, 52px);
+}
+/* dropdown-menu */
+.dropdown-menu-end.show {
+  z-index: 100;
+}
+
+.text-overflow {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+}
+
+/* sildebar */
+.menu-vertical .menu-item.open .menu-link.menu-toggle.active {
+  background-color : #5858ed;
+}
+  .menu-vertical .menu-item.open .menu-link.menu-toggle.active .title  {
+    /*background-color: #5858ed;*/
+    color: white;
+  }
+  .menu-vertical .menu-item.open .menu-link.menu-toggle.active .menu-icon {
+    /*background-color: #5858ed;*/
+    color: white;
+  }
+.menu-vertical .menu-sub .menu-item .menu-link.active {
+  background-color: #ECF0FF;
+  color : #605DFF;
+}
+
+/* Trang chủ */
+
+/* Default styles (cho mọi màn hình) */
+.diachitrangchu {
+  max-width: 100%; /* Mặc định */
+}
+
+/* Medium screens (≥ 768px) */
+@media (min-width: 320px) {
+  .diachitrangchu {
+    max-width: 144px;
+  }
+}
+
+/* Medium screens (≥ 768px) */
+@media (min-width: 375px) {
+  .diachitrangchu {
+    max-width: 197px;
+  }
+}
+/* Medium screens (≥ 768px) */
+@media (min-width: 425px) {
+  .diachitrangchu {
+    max-width: 240px;
+  }
+}
+
+/* Medium screens (≥ 768px) */
+@media (min-width: 768px) {
+  .diachitrangchu {
+    max-width: 192px;
+  }
+}
+
+/* Large screens (≥ 992px) */
+@media (min-width: 992px) {
+  .diachitrangchu {
+    max-width: 340px;
+  }
+}
+
+/* Extra large screens (≥ 1200px) */
+@media (min-width: 1200px) {
+  .diachitrangchu {
+    max-width: 425px;
+  }
+}
+
+/* Extra extra large screens (≥ 1400px) */
+@media (min-width: 1450px) {
+  .diachitrangchu {
+    max-width: 565px;
+  }
+}
+
+.w-20 {
+  width: 20% !important;
+}

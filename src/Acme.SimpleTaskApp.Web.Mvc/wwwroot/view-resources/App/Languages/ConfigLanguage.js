@@ -1,0 +1,15 @@
+﻿(function () {
+  $(function () {
+    var _hrmLanguageTextService = abp.services.app.hrmLanguageText;
+
+    $('#ConfigLanguage').click(function (e) {
+      e.preventDefault();
+      _hrmLanguageTextService.configLanguageTextFromUpload().done(function (result) {
+        abp.message.success("Đồng bộ thành công!");
+      }).fail(function (error) {
+        abp.message.error("Đồng bộ thất bại!");
+      });
+    });
+
+  });
+})();

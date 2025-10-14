@@ -1,10 +1,10 @@
 ﻿/* ===== SIDEBAR STYLING ===== */
-.sidebar {
+/*.sidebar {
   background: #343a40;
-}
+}*/
 
 /* User panel */
-.user-panel {
+/*.user-panel {
   border-bottom: 1px solid #4f5962;
 }
 
@@ -15,15 +15,15 @@
 
     .user-panel .info a:hover {
       color: #fff;
-    }
+    }*/
 
 /* ===== NAVIGATION STYLING ===== */
-.nav-sidebar {
+/*.nav-sidebar {
   padding: 0;
-}
+}*/
 
   /* Menu item chính */
-  .nav-sidebar > .nav-item > .nav-link {
+  /*.nav-sidebar > .nav-item > .nav-link {
     color: #c2c7d0;
     padding: 12px 15px;
     margin-bottom: 2px;
@@ -40,10 +40,10 @@
       background-color: #007bff;
       color: #fff;
       box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-    }
+    }*/
 
   /* Icon styling */
-  .nav-sidebar .nav-icon {
+  /*.nav-sidebar .nav-icon {
     margin-right: 10px;
     font-size: 1.1rem;
     width: 25px;
@@ -53,19 +53,19 @@
 
   .nav-sidebar > .nav-item > .nav-link.active .nav-icon {
     color: #fff;
-  }
+  }*/
 
   /* Arrow icon */
-  .nav-sidebar .right {
+  /*.nav-sidebar .right {
     transition: transform 0.3s ease;
   }
 
   .nav-sidebar .nav-item.menu-open > .nav-link .right {
     transform: rotate(-90deg);
-  }
+  }*/
 
 /* ===== SUBMENU STYLING ===== */
-.nav-treeview {
+/*.nav-treeview {
   background-color: rgba(0, 0, 0, 0.1);
   padding: 5px 0;
   margin-top: 2px;
@@ -100,22 +100,22 @@
   .nav-treeview > .nav-item > .nav-link.active .nav-icon {
     opacity: 1;
     color: #007bff;
-  }
+  }*/
 
 /* ===== MENU LABEL STYLING ===== */
-.nav-sidebar p {
+/*.nav-sidebar p {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-}
+}*/
 
 /* ===== HOVER EFFECTS ===== */
-.nav-sidebar > .nav-item:hover > .nav-link {
+/*.nav-sidebar > .nav-item:hover > .nav-link {
   transform: translateX(3px);
-}
+}*/
 
 /* ===== SCROLLBAR STYLING ===== */
-.sidebar::-webkit-scrollbar {
+/*.sidebar::-webkit-scrollbar {
   width: 6px;
 }
 
@@ -130,10 +130,10 @@
 
   .sidebar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
-  }
+  }*/
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 767px) {
+/*@media (max-width: 767px) {
   .nav-sidebar > .nav-item > .nav-link {
     padding: 10px 12px;
   }
@@ -141,10 +141,10 @@
   .nav-treeview > .nav-item > .nav-link {
     padding: 8px 12px 8px 35px;
   }
-}
+}*/
 
 /* ===== ACTIVE STATE ANIMATION ===== */
-@keyframes slideIn {
+/*@keyframes slideIn {
   from {
     opacity: 0;
     transform: translateX(-10px);
@@ -158,10 +158,10 @@
 
 .nav-treeview {
   animation: slideIn 0.3s ease;
-}
+}*/
 
 /* ===== BADGE SUPPORT (nếu cần) ===== */
-.nav-sidebar .badge {
+/*.nav-sidebar .badge {
   margin-left: auto;
   font-size: 0.7rem;
-}
+}*/

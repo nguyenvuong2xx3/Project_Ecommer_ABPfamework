@@ -1,0 +1,349 @@
+﻿@using Abp.Configuration.Startup
+@using Abp.MultiTenancy
+@using Abp.Web.Mvc.Alerts
+@using Abp.Web.Security.AntiForgery
+@using Acme.SimpleTaskApp.Web.Resources
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@inject IMultiTenancyConfig MultiTenancyConfig
+@inject IWebResourceManager WebResourceManager
+@inject IAlertManager AlertManager
+@inject ILanguageManager LanguageManager
+@{
+  AbpAntiForgeryManager.SetCookie(Context);
+  // var isChatEnabled = AbpSession.MultiTenancySide == MultiTenancySides.Host || IsFeatureEnabled(AppFeatures.ChatFeature);
+  // var headerViewModel = new HeaderViewModel();
+  // var theme = await GetTheme();
+  // var themeCustomizer = await ThemeCustomizerFactory.GetCurrentUiCustomizer();
+  var textHeader = "Thương mại điện tử";
+  // var copyRightText = await SettingManager.GetSettingValueAsync(SaaSAppSettings.Administration.Copyright);
+  var words = "Thương mại điện tử";
+}
+
+<!DOCTYPE html>
+@* <html lang="en" dir="@(CultureHelper.IsRtl ? "rtl" : "")" data-theme="@(theme.BaseSettings.Layout.DarkMode ? "dark" : "light")"> *@
+<html dir="ltr" lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta content="@textHeader" name="description" />
+  <meta content="@textHeader" name="keywords">
+  <meta content="@textHeader" name="author" />
+
+  <meta property="og:title" content="@textHeader" />
+  @* <meta property="og:image" content="@headerViewModel.GetLogoUrl(ApplicationPath, await GetLogoSkin())" /> *@
+  <meta property="og:description" content="Base solution for your next web application" />
+  <meta property="og:url" content="@($" {Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}")">
+
+  <title>@textHeader</title>
+
+  <link rel="shortcut icon" href="~/favicon.ico" />
+  @*<link rel="icon" type="image/png" href="~/themes/trezo/assets/images/logo_SM.PNG">*@
+
+  <!-- Font Imports -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <!-- Font Icons -->
+  <link rel="stylesheet" abp-href="/view-resources/_bundles/font-icons.min.css" asp-append-version="true">
+  <link rel="stylesheet" abp-href="/view-resources/App/_Bundles/vendors.bundle.css" asp-append-version="true" />
+
+  @* <link rel="stylesheet" abp-href="/view-resources/App/_Bundles/common-styles.css" asp-append-version="true" /> *@
+  @* <link rel="stylesheet" abp-href="/Common/Scripts/Datatables/datatables@(CultureHelper.IsRtl ? "-rtl" : "").css" asp-append-version="true" /> *@
+
+  @* <link rel="stylesheet" abp-href="/view-resources/App/_Bundles/app-layout-libs.css" asp-append-version="true" /> *@
+  <link rel="stylesheet" abp-href="/view-resources/App/_Bundles/app-trezolayout-libs.css" asp-append-version="true" />
+
+  <!-- trezo theme: Links Of CSS File -->
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/sidebar-menu.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/simplebar.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/apexcharts.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/prism.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/rangeslider.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/sweetalert.min.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/quill.snow.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/google-icon.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/remixicon.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/swiper-bundle.min.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/fullcalendar.main.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/jsvectormap.min.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/lightpick.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/style.css">
+  <link rel="stylesheet" asp-append-version="true" href="/themes/trezo/assets/css/custom.css">
+
+  @await RenderSectionAsync("Styles", false)
+
+  @*
+	<!-- remove to load only on frontend -->
+	@{
+	var loginInfo = await SessionCache.GetCurrentLoginInformationsAsync();
+	}
+	@if (loginInfo?.Tenant?.CustomCssId != null)
+	{
+	<!-- id parameter is used to prevent caching -->
+	<link id="TenantCustomCss" rel="stylesheet" href="@Url.Action("GetCustomCss", "TenantCustomization", new {area = string.Empty, tenantId = loginInfo?.Tenant?.Id})" asp-append-version="true" />
+	} *@
+
+  @* This is used to get the application's root path from javascript.
+	It's useful if you're running application in a virtual directory under IIS. *@
+  <script type="text/javascript">
+    var abp = abp || {}; abp.appPath = '@ApplicationPath';
+  </script>
+</head>
+<body class="stretched">
+  <!-- Start Preloader Area -->
+  <div class="preloader" id="preloader">
+    <div class="preloader">
+      <div class="waviy position-relative">
+        @foreach (var word in words)
+        {
+          <span class="d-inline-block">@word</span>
+        }
+      </div>
+    </div>
+  </div>
+  <!-- End Preloader Area -->
+  <!-- Start Sidebar Area -->
+  @* <partial name="~/Views/Shared/LayoutTrezo/_SideBar.cshtml" /> *@
+  <!-- End Sidebar Area -->
+  <!-- Start Main Content Area -->
+  <div class="container-fluid">
+    <div class="main-content d-flex flex-column">
+      <!-- Start Header Area -->
+      @* <partial name="~/Views/Shared/LayoutTrezo/_PageHeader.cshtml" /> *@
+      <!-- End Header Area -->
+
+      <div class="main-content-container overflow-hidden" id="main-content-app">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+          @* <h3 class="mb-0 text-primary">@ViewBag.PageTitle</h3> *@
+
+          <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb align-items-center mb-0 lh-1">
+              @* <li class="breadcrumb-item">
+								@if (IsGranted(SaaSHrmPermissions.Pages_Hrm_Administration_DashboardAdmin))
+								{
+									<a href="/Hrm/Dashboard" class="d-flex align-items-center text-decoration-none">
+										<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+										<span class="text-secondary fw-medium hover">@L("AttendanceManagement")</span>
+									</a>
+								}
+								else if (IsGranted(SaaSHrmPermissions.Pages_Hrm_Administration_DashboardDepartment))
+								{
+									<a href="/Hrm/DashboardDepartment" class="d-flex align-items-center text-decoration-none">
+										<i class="ri-home-4-line fs-18 text-primary me-1"></i>
+										<span class="text-secondary fw-medium hover">@L("AttendanceManagement")</span>
+									</a>
+								}
+							</li> *@
+              @if (ViewBag.Category != null)
+              {
+                <li class="breadcrumb-item active" aria-current="page">
+                  <span class="fw-medium">@ViewBag.Category</span>
+                  <a href="@ViewBag.CategoryUrl" class="d-flex align-items-center text-decoration-none">
+                    <span class="text-secondary fw-medium hover">@ViewBag.Category</span>
+                  </a>
+                </li>
+              }
+              <li class="breadcrumb-item active" aria-current="page">
+                <a href="@ViewBag.PageUrl" class="d-flex align-items-center text-decoration-none">
+                  <span class="fw-medium">@ViewBag.PageTitle</span>
+                </a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+        @* @await Component.InvokeAsync(typeof(HrmNotificationViewComponent)) *@
+
+        @RenderBody()
+      </div>
+
+      <div class="flex-grow-1"></div>
+
+      <!-- Start Footer Area -->
+      <partial name="~/Views/Shared/LayoutTrezo/_PageFooter.cshtml" />
+      <!-- End Footer Area -->
+    </div>
+  </div>
+  <!-- Start Main Content Area -->
+  <!-- Start Theme Setting Area -->
+  <div class="offcanvas offcanvas-end bg-white" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
+    <div class="offcanvas-header bg-body-bg py-3 px-4">
+      <h5 class="offcanvas-title fs-18" id="offcanvasScrollingLabel">Theme Settings</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-4">
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">RTL / LTR</h4>
+        <div class="settings-btn rtl-btn">
+          <label id="switch" class="switch">
+            <input type="checkbox" onchange="toggleTheme()" id="slider">
+            <span class="sliders round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Container Style Fluid / Boxed</h4>
+        <button class="boxed-style settings-btn fluid-boxed-btn" id="boxed-style">
+          Click To <span class="fluid">Fluid</span> <span class="boxed">Boxed</span>
+        </button>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Only Sidebar Light / Dark</h4>
+        <button class="sidebar-light-dark settings-btn sidebar-dark-btn" id="sidebar-light-dark">
+          Click To <span class="dark1">Dark</span> <span class="light1">Light</span>
+        </button>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Only Header Light / Dark</h4>
+        <button class="header-light-dark settings-btn header-dark-btn" id="header-light-dark">
+          Click To <span class="dark2">Dark</span> <span class="light2">Light</span>
+        </button>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Only Footer Light / Dark</h4>
+        <button class="footer-light-dark settings-btn footer-dark-btn" id="footer-light-dark">
+          Click To <span class="dark3">Dark</span> <span class="light3">Light</span>
+        </button>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Card Style Radius / Square</h4>
+        <button class="card-radius-square settings-btn card-style-btn" id="card-radius-square">
+          Click To <span class="square">Square</span> <span class="radius">Radius</span>
+        </button>
+      </div>
+      <div class="mb-4 pb-2">
+        <h4 class="fs-15 fw-semibold border-bottom pb-2 mb-3">Card Style BG White / Gray</h4>
+        <button class="card-bg settings-btn card-bg-style-btn" id="card-bg">
+          Click To <span class="white">White</span> <span class="gray">Gray</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- End Theme Setting Area -->
+  <!-- begin::Chat Bar -->
+  @* 	@if (isChatEnabled)
+	{
+	@await Html.PartialAsync("~/Areas/App/Views/Layout/_ChatBar.cshtml")
+	} *@
+  <!-- end::Chat Bar -->
+  <!-- begin::Theme Selection Panel -->
+  @* @if (await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.IsQuickThemeSelectEnabled)) *@
+  {
+  @* @await Html.PartialAsync("~/Areas/App/Views/Layout/_ThemeSelectionPanel.cshtml") *@
+  }
+  <!-- end::Theme Selection Panel -->
+
+  <script abp-src="/view-resources/App/_Bundles/app-trezolayout-libs.js" asp-append-version="true"></script>
+
+  <!-- Link Of JS File -->
+  <script src="/themes/trezo/assets/js/bootstrap.bundle.min.js"></script>
+  <script src="/themes/trezo/assets/js/sidebar-menu.js"></script>
+  <script src="/themes/trezo/assets/js/dragdrop.js"></script>
+  <script src="/themes/trezo/assets/js/rangeslider.min.js"></script>
+  <script src="/themes/trezo/assets/js/sweetalert.js"></script>
+  <script src="/themes/trezo/assets/js/quill.min.js"></script>
+  <script src="/themes/trezo/assets/js/data-table.js"></script>
+  <script src="/themes/trezo/assets/js/prism.js"></script>
+  <script src="/themes/trezo/assets/js/clipboard.min.js"></script>
+  <script src="/themes/trezo/assets/js/feather.min.js"></script>
+  <script src="/themes/trezo/assets/js/simplebar.min.js"></script>
+  <script src="/themes/trezo/assets/js/apexcharts.min.js"></script>
+  <script src="/themes/trezo/assets/js/swiper-bundle.min.js"></script>
+  <script src="/themes/trezo/assets/js/jsvectormap.min.js"></script>
+  <script src="/themes/trezo/assets/js/world-merc.js"></script>
+  <script src="/themes/trezo/assets/js/lightpick.js"></script>
+  <script src="/themes/trezo/assets/js/custom/apexcharts.js"></script>
+  <script src="/themes/trezo/assets/js/custom/custom.js"></script>
+
+  <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+  @* <script src="@(ApplicationPath)AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+	@if (GetScriptsResponsePerUserConfiguration.IsEnabled)
+	{
+		<script src="@(ApplicationPath)AbpScripts/GetScripts?v=@(await CachedUniqueKeyPerUser.GetKeyAsync(GetScriptsResponsePerUserCache.CacheName))" type="text/javascript"></script>
+	}
+	else
+	{
+		<script src="@(ApplicationPath)AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+	} *@
+
+  @* <script type="text/javascript">
+		abp.localization.currentCulture = $.extend({}, abp.localization.currentCulture, { displayNameEnglish: '@CultureInfo.CurrentUICulture.EnglishName' });
+		abp.localization.defaultSourceName = '@LocalizationSourceName';
+		moment.locale('@(GetMomentLocale())'); //Localizing moment.js
+	</script> *@
+
+  <script src="@(ApplicationPath)view-resources/App/_Bundles/signalr.bundle.min.js" asp-append-version="true"></script>
+
+  <script abp-src="/view-resources/App/_Bundles/common-scripts.js" asp-append-version="true"></script>
+  <script abp-src="/view-resources/App/_Bundles/app-common-scripts.js" asp-append-version="true"></script>
+  <script abp-src="/view-resources/App/Layout/_Header.js" asp-append-version="true"></script>
+  <script abp-src="/view-resources/App/Layout/_Layout.js" asp-append-version="true"></script>
+  @* @if (await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.IsQuickThemeSelectEnabled))
+	{
+		<script src="@(ApplicationPath)view-resources/Areas/App/Views/Layout/_ThemeSelectionPanel.js" asp-append-version="true"></script>
+	}
+
+	@if (isChatEnabled)
+	{
+		<script src="@(ApplicationPath)view-resources/App/Layout/_ChatBar.js" asp-append-version="true"></script>
+		<script src="@(ApplicationPath)Common/Scripts/Chat/chat.signalr.js" asp-append-version="true"></script>
+	} *@
+
+  @* @if (await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.SessionTimeOut.IsEnabled) && AbpSession.UserId.HasValue)
+	{
+		<script src="@(ApplicationPath)view-resources/Areas/App/Views/_Bundles/InactivityController.min.js" asp-append-version="true"></script>
+	}
+	<script src="~@ScriptPaths.JQuery_Validation_Localization" asp-append-version="true"></script>
+	<script src="~@ScriptPaths.JQuery_Timeago_Localization" asp-append-version="true"></script> *@
+
+
+
+  @* <script src="~@ScriptPaths.Select2_Localization" asp-append-version="true"></script> *@
+
+  @* <script src="@(ApplicationPath)view-resources/Areas/App/Views/Layout/_ToggleDarkMode.js" asp-append-version="true"></script>
+	@if (theme.BaseSettings.Menu.SearchActive)
+	{
+	<script src="~/view-resources/App/Layout/_MenuSearchBar.min.js" asp-append-version="true"></script>
+	} *@
+
+  <!--end::Base Scripts -->
+  <!--begin::Page Snippets -->
+  @* <script>
+		app.supportsTenancyNameInUrl = @(WebUrlService.SupportsTenancyNameInUrl.ToString().ToLower());
+
+		// $(document).ready(function () {
+		// 	$(".sidebar-scrollhere")[0].scrollIntoView({
+		// 		behavior: "smooth", or "auto" or "instant"
+		// 		block: "start", or "end"
+		// 		inline: 'center'
+		// 	});
+		// });
+
+	</script> *@
+  @await Html.PartialAsync("_Scripts.cshtml")
+  @RenderSection("scripts", required: false)
+  <!--end::Page Snippets -->
+  <!--begin: svg symbols for alerts-->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+    <symbol id="warning-icon" fill="none" viewBox="0 0 24 24">
+      <path opacity="0.3" d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z" fill="black"></path>
+      <path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z" fill="black"></path>
+    </symbol>
+  </svg>
+  <!--end: svg symbols for alerts-->
+</body>
+<!-- end::Body -->
+</html>

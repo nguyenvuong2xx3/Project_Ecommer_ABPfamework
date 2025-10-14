@@ -1,0 +1,2534 @@
+.famfamfam-flags {
+  background: url('/dist/img/famfamfam-flags.png') no-repeat;
+  background-size: 224px 199px;
+}
+.famfamfam-flags.me {
+  width: 16px;
+  height: 12px;
+  background-position: 0px 0px;
+}
+.famfamfam-flags.ky {
+  width: 16px;
+  height: 11px;
+  background-position: -16px 0px;
+}
+.famfamfam-flags.af {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -12px;
+}
+.famfamfam-flags.ag {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -12px;
+}
+.famfamfam-flags.ai {
+  width: 16px;
+  height: 11px;
+  background-position: -32px 0px;
+}
+.famfamfam-flags.al {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -11px;
+}
+.famfamfam-flags.am {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -23px;
+}
+.famfamfam-flags.an {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -23px;
+}
+.famfamfam-flags.ao {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -23px;
+}
+.famfamfam-flags.ar {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -34px;
+}
+.famfamfam-flags.as {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -34px;
+}
+.famfamfam-flags.at {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -34px;
+}
+.famfamfam-flags.au {
+  width: 16px;
+  height: 11px;
+  background-position: -48px 0px;
+}
+.famfamfam-flags.aw {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -11px;
+}
+.famfamfam-flags.ax {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -22px;
+}
+.famfamfam-flags.az {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -33px;
+}
+.famfamfam-flags.ba {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -45px;
+}
+.famfamfam-flags.bb {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -45px;
+}
+.famfamfam-flags.bd {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -45px;
+}
+.famfamfam-flags.be {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -45px;
+}
+.famfamfam-flags.bf {
+  width: 16px;
+  height: 11px;
+  background-position: -64px 0px;
+}
+.famfamfam-flags.bg {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -11px;
+}
+.famfamfam-flags.bh {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -22px;
+}
+.famfamfam-flags.bi {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -33px;
+}
+.famfamfam-flags.bj {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -44px;
+}
+.famfamfam-flags.bm {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -56px;
+}
+.famfamfam-flags.bn {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -56px;
+}
+.famfamfam-flags.bo {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -56px;
+}
+.famfamfam-flags.br {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -56px;
+}
+.famfamfam-flags.bs {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -56px;
+}
+.famfamfam-flags.bt {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -67px;
+}
+.famfamfam-flags.bv {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -67px;
+}
+.famfamfam-flags.bw {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -67px;
+}
+.famfamfam-flags.by {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -67px;
+}
+.famfamfam-flags.bz {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -67px;
+}
+.famfamfam-flags.ca {
+  width: 16px;
+  height: 11px;
+  background-position: -80px 0px;
+}
+.famfamfam-flags.catalonia {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -11px;
+}
+.famfamfam-flags.cc {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -22px;
+}
+.famfamfam-flags.cd {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -33px;
+}
+.famfamfam-flags.cf {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -44px;
+}
+.famfamfam-flags.cg {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -55px;
+}
+.famfamfam-flags.zm {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -66px;
+}
+.famfamfam-flags.ci {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -78px;
+}
+.famfamfam-flags.ck {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -78px;
+}
+.famfamfam-flags.cl {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -78px;
+}
+.famfamfam-flags.cm {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -78px;
+}
+.famfamfam-flags.cn {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -78px;
+}
+.famfamfam-flags.co {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -78px;
+}
+.famfamfam-flags.cr {
+  width: 16px;
+  height: 11px;
+  background-position: -96px 0px;
+}
+.famfamfam-flags.cs {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -11px;
+}
+.famfamfam-flags.cu {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -22px;
+}
+.famfamfam-flags.cv {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -33px;
+}
+.famfamfam-flags.cx {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -44px;
+}
+.famfamfam-flags.cy {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -55px;
+}
+.famfamfam-flags.cz {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -66px;
+}
+.famfamfam-flags.de {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -77px;
+}
+.famfamfam-flags.dj {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -89px;
+}
+.famfamfam-flags.dk {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -89px;
+}
+.famfamfam-flags.dm {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -89px;
+}
+.famfamfam-flags.do {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -89px;
+}
+.famfamfam-flags.dz {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -89px;
+}
+.famfamfam-flags.ec {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -89px;
+}
+.famfamfam-flags.ee {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -89px;
+}
+.famfamfam-flags.eg {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -100px;
+}
+.famfamfam-flags.eh {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -100px;
+}
+.famfamfam-flags.england {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -100px;
+}
+.famfamfam-flags.er {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -100px;
+}
+.famfamfam-flags.es {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -100px;
+}
+.famfamfam-flags.et {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -100px;
+}
+.famfamfam-flags.europeanunion {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -100px;
+}
+.famfamfam-flags.fam {
+  width: 16px;
+  height: 11px;
+  background-position: -112px 0px;
+}
+.famfamfam-flags.fi {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -11px;
+}
+.famfamfam-flags.fj {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -22px;
+}
+.famfamfam-flags.fk {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -33px;
+}
+.famfamfam-flags.fm {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -44px;
+}
+.famfamfam-flags.fo {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -55px;
+}
+.famfamfam-flags.gp,
+.famfamfam-flags.mf,
+.famfamfam-flags.re,
+.famfamfam-flags.yt,
+.famfamfam-flags.fr {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -66px;
+}
+.famfamfam-flags.ga {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -77px;
+}
+.famfamfam-flags.gb {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -88px;
+}
+.famfamfam-flags.gd {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -99px;
+}
+.famfamfam-flags.ge {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -111px;
+}
+.famfamfam-flags.gf {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -111px;
+}
+.famfamfam-flags.gg {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -111px;
+}
+.famfamfam-flags.gh {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -111px;
+}
+.famfamfam-flags.gi {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -111px;
+}
+.famfamfam-flags.gl {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -111px;
+}
+.famfamfam-flags.gm {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -111px;
+}
+.famfamfam-flags.gn {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -111px;
+}
+.famfamfam-flags.gp {
+  width: 16px;
+  height: 11px;
+  background-position: -128px 0px;
+}
+.famfamfam-flags.gq {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -11px;
+}
+.famfamfam-flags.gr {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -22px;
+}
+.famfamfam-flags.gs {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -33px;
+}
+.famfamfam-flags.gt {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -44px;
+}
+.famfamfam-flags.gu {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -55px;
+}
+.famfamfam-flags.gw {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -66px;
+}
+.famfamfam-flags.gy {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -77px;
+}
+.famfamfam-flags.hk {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -88px;
+}
+.famfamfam-flags.hm {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -99px;
+}
+.famfamfam-flags.hn {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -110px;
+}
+.famfamfam-flags.hr {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -122px;
+}
+.famfamfam-flags.ht {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -122px;
+}
+.famfamfam-flags.hu {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -122px;
+}
+.famfamfam-flags.id {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -122px;
+}
+.famfamfam-flags.ie {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -122px;
+}
+.famfamfam-flags.il {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -122px;
+}
+.famfamfam-flags.in {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -122px;
+}
+.famfamfam-flags.io {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -122px;
+}
+.famfamfam-flags.iq {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -122px;
+}
+.famfamfam-flags.ir {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -133px;
+}
+.famfamfam-flags.is {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -133px;
+}
+.famfamfam-flags.it {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -133px;
+}
+.famfamfam-flags.je {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -133px;
+}
+.famfamfam-flags.jm {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -133px;
+}
+.famfamfam-flags.jo {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -133px;
+}
+.famfamfam-flags.jp {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -133px;
+}
+.famfamfam-flags.ke {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -133px;
+}
+.famfamfam-flags.kg {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -133px;
+}
+.famfamfam-flags.kh {
+  width: 16px;
+  height: 11px;
+  background-position: -144px 0px;
+}
+.famfamfam-flags.ki {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -11px;
+}
+.famfamfam-flags.km {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -22px;
+}
+.famfamfam-flags.kn {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -33px;
+}
+.famfamfam-flags.kp {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -44px;
+}
+.famfamfam-flags.kr {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -55px;
+}
+.famfamfam-flags.kw {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -66px;
+}
+.famfamfam-flags.ae {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -77px;
+}
+.famfamfam-flags.kz {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -88px;
+}
+.famfamfam-flags.la {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -99px;
+}
+.famfamfam-flags.lb {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -110px;
+}
+.famfamfam-flags.lc {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -121px;
+}
+.famfamfam-flags.li {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -132px;
+}
+.famfamfam-flags.lk {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -144px;
+}
+.famfamfam-flags.lr {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -144px;
+}
+.famfamfam-flags.ls {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -144px;
+}
+.famfamfam-flags.lt {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -144px;
+}
+.famfamfam-flags.lu {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -144px;
+}
+.famfamfam-flags.lv {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -144px;
+}
+.famfamfam-flags.ly {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -144px;
+}
+.famfamfam-flags.ma {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -144px;
+}
+.famfamfam-flags.mc {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -144px;
+}
+.famfamfam-flags.md {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -144px;
+}
+.famfamfam-flags.ad {
+  width: 16px;
+  height: 11px;
+  background-position: -160px 0px;
+}
+.famfamfam-flags.mg {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -11px;
+}
+.famfamfam-flags.mh {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -22px;
+}
+.famfamfam-flags.mk {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -33px;
+}
+.famfamfam-flags.ml {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -44px;
+}
+.famfamfam-flags.mm {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -55px;
+}
+.famfamfam-flags.mn {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -66px;
+}
+.famfamfam-flags.mo {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -77px;
+}
+.famfamfam-flags.mp {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -88px;
+}
+.famfamfam-flags.mq {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -99px;
+}
+.famfamfam-flags.mr {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -110px;
+}
+.famfamfam-flags.ms {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -121px;
+}
+.famfamfam-flags.mt {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -132px;
+}
+.famfamfam-flags.mu {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -143px;
+}
+.famfamfam-flags.mv {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -155px;
+}
+.famfamfam-flags.mw {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -155px;
+}
+.famfamfam-flags.mx {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -155px;
+}
+.famfamfam-flags.my {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -155px;
+}
+.famfamfam-flags.mz {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -155px;
+}
+.famfamfam-flags.na {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -155px;
+}
+.famfamfam-flags.nc {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -155px;
+}
+.famfamfam-flags.ne {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -155px;
+}
+.famfamfam-flags.nf {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -155px;
+}
+.famfamfam-flags.ng {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -155px;
+}
+.famfamfam-flags.ni {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -155px;
+}
+.famfamfam-flags.bq,
+.famfamfam-flags.nl {
+  width: 16px;
+  height: 11px;
+  background-position: -176px 0px;
+}
+.famfamfam-flags.no {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -11px;
+}
+.famfamfam-flags.za {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -22px;
+}
+.famfamfam-flags.nr {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -33px;
+}
+.famfamfam-flags.nu {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -44px;
+}
+.famfamfam-flags.nz {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -55px;
+}
+.famfamfam-flags.om {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -66px;
+}
+.famfamfam-flags.pa {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -77px;
+}
+.famfamfam-flags.pe {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -88px;
+}
+.famfamfam-flags.pf {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -99px;
+}
+.famfamfam-flags.pg {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -110px;
+}
+.famfamfam-flags.ph {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -121px;
+}
+.famfamfam-flags.pk {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -132px;
+}
+.famfamfam-flags.pl {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -143px;
+}
+.famfamfam-flags.pm {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -154px;
+}
+.famfamfam-flags.pn {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -166px;
+}
+.famfamfam-flags.pr {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -166px;
+}
+.famfamfam-flags.ps {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -166px;
+}
+.famfamfam-flags.pt {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -166px;
+}
+.famfamfam-flags.pw {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -166px;
+}
+.famfamfam-flags.py {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -166px;
+}
+.famfamfam-flags.qa {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -166px;
+}
+.famfamfam-flags.re {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -166px;
+}
+.famfamfam-flags.ro {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -166px;
+}
+.famfamfam-flags.rs {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -166px;
+}
+.famfamfam-flags.ru {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -166px;
+}
+.famfamfam-flags.rw {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -166px;
+}
+.famfamfam-flags.sa {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -177px;
+}
+.famfamfam-flags.sb {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -177px;
+}
+.famfamfam-flags.sc {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -177px;
+}
+.famfamfam-flags.scotland {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -177px;
+}
+.famfamfam-flags.sd {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -177px;
+}
+.famfamfam-flags.se {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -177px;
+}
+.famfamfam-flags.sg {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -177px;
+}
+.famfamfam-flags.sh {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -177px;
+}
+.famfamfam-flags.si {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -177px;
+}
+.famfamfam-flags.sj {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -177px;
+}
+.famfamfam-flags.sk {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -177px;
+}
+.famfamfam-flags.sl {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -177px;
+}
+.famfamfam-flags.sm {
+  width: 16px;
+  height: 11px;
+  background-position: -192px 0px;
+}
+.famfamfam-flags.sn {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -11px;
+}
+.famfamfam-flags.so {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -22px;
+}
+.famfamfam-flags.sr {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -33px;
+}
+.famfamfam-flags.st {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -44px;
+}
+.famfamfam-flags.sv {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -55px;
+}
+.famfamfam-flags.sy {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -66px;
+}
+.famfamfam-flags.sz {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -77px;
+}
+.famfamfam-flags.tc {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -88px;
+}
+.famfamfam-flags.td {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -99px;
+}
+.famfamfam-flags.tf {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -110px;
+}
+.famfamfam-flags.tg {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -121px;
+}
+.famfamfam-flags.th {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -132px;
+}
+.famfamfam-flags.tj {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -143px;
+}
+.famfamfam-flags.tk {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -154px;
+}
+.famfamfam-flags.tl {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -165px;
+}
+.famfamfam-flags.tm {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -176px;
+}
+.famfamfam-flags.tn {
+  width: 16px;
+  height: 11px;
+  background-position: 0px -188px;
+}
+.famfamfam-flags.to {
+  width: 16px;
+  height: 11px;
+  background-position: -16px -188px;
+}
+.famfamfam-flags.tr {
+  width: 16px;
+  height: 11px;
+  background-position: -32px -188px;
+}
+.famfamfam-flags.tt {
+  width: 16px;
+  height: 11px;
+  background-position: -48px -188px;
+}
+.famfamfam-flags.tv {
+  width: 16px;
+  height: 11px;
+  background-position: -64px -188px;
+}
+.famfamfam-flags.tw {
+  width: 16px;
+  height: 11px;
+  background-position: -80px -188px;
+}
+.famfamfam-flags.tz {
+  width: 16px;
+  height: 11px;
+  background-position: -96px -188px;
+}
+.famfamfam-flags.ua {
+  width: 16px;
+  height: 11px;
+  background-position: -112px -188px;
+}
+.famfamfam-flags.ug {
+  width: 16px;
+  height: 11px;
+  background-position: -128px -188px;
+}
+.famfamfam-flags.um {
+  width: 16px;
+  height: 11px;
+  background-position: -144px -188px;
+}
+.famfamfam-flags.us {
+  width: 16px;
+  height: 11px;
+  background-position: -160px -188px;
+}
+.famfamfam-flags.uy {
+  width: 16px;
+  height: 11px;
+  background-position: -176px -188px;
+}
+.famfamfam-flags.uz {
+  width: 16px;
+  height: 11px;
+  background-position: -192px -188px;
+}
+.famfamfam-flags.va {
+  width: 16px;
+  height: 11px;
+  background-position: -208px 0px;
+}
+.famfamfam-flags.vc {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -11px;
+}
+.famfamfam-flags.ve {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -22px;
+}
+.famfamfam-flags.vg {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -33px;
+}
+.famfamfam-flags.vi {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -44px;
+}
+.famfamfam-flags.vn {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -55px;
+}
+.famfamfam-flags.vu {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -66px;
+}
+.famfamfam-flags.wales {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -77px;
+}
+.famfamfam-flags.wf {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -88px;
+}
+.famfamfam-flags.ws {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -99px;
+}
+.famfamfam-flags.ye {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -110px;
+}
+.famfamfam-flags.yt {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -121px;
+}
+.famfamfam-flags.zw {
+  width: 16px;
+  height: 11px;
+  background-position: -208px -132px;
+}
+.famfamfam-flags.ch {
+  width: 11px;
+  height: 11px;
+  background-position: -208px -143px;
+}
+.famfamfam-flags.np {
+  width: 9px;
+  height: 11px;
+  background-position: -208px -154px;
+}
+
+/*!
+ * Cropper.js v1.5.12
+ * https://fengyuanchen.github.io/cropperjs
+ *
+ * Copyright 2015-present Chen Fengyuan
+ * Released under the MIT license
+ *
+ * Date: 2021-06-12T08:00:11.623Z
+ */
+.cropper-container {
+  direction: ltr;
+  font-size: 0;
+  line-height: 0;
+  position: relative;
+  -ms-touch-action: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.cropper-container img {
+  display: block;
+  height: 100%;
+  image-orientation: 0deg;
+  max-height: none !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  width: 100%;
+}
+.cropper-wrap-box,
+.cropper-canvas,
+.cropper-drag-box,
+.cropper-crop-box,
+.cropper-modal {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.cropper-wrap-box,
+.cropper-canvas {
+  overflow: hidden;
+}
+.cropper-drag-box {
+  background-color: #fff;
+  opacity: 0;
+}
+.cropper-modal {
+  background-color: #000;
+  opacity: 0.5;
+}
+.cropper-view-box {
+  display: block;
+  height: 100%;
+  outline: 1px solid #39f;
+  outline-color: rgba(51, 153, 255, 0.75);
+  overflow: hidden;
+  width: 100%;
+}
+.cropper-dashed {
+  border: 0 dashed #eee;
+  display: block;
+  opacity: 0.5;
+  position: absolute;
+}
+.cropper-dashed.dashed-h {
+  border-bottom-width: 1px;
+  border-top-width: 1px;
+  height: calc(100% / 3);
+  left: 0;
+  top: calc(100% / 3);
+  width: 100%;
+}
+.cropper-dashed.dashed-v {
+  border-left-width: 1px;
+  border-right-width: 1px;
+  height: 100%;
+  left: calc(100% / 3);
+  top: 0;
+  width: calc(100% / 3);
+}
+.cropper-center {
+  display: block;
+  height: 0;
+  left: 50%;
+  opacity: 0.75;
+  position: absolute;
+  top: 50%;
+  width: 0;
+}
+.cropper-center::before,
+.cropper-center::after {
+  background-color: #eee;
+  content: ' ';
+  display: block;
+  position: absolute;
+}
+.cropper-center::before {
+  height: 1px;
+  left: -3px;
+  top: 0;
+  width: 7px;
+}
+.cropper-center::after {
+  height: 7px;
+  left: 0;
+  top: -3px;
+  width: 1px;
+}
+.cropper-face,
+.cropper-line,
+.cropper-point {
+  display: block;
+  height: 100%;
+  opacity: 0.1;
+  position: absolute;
+  width: 100%;
+}
+.cropper-face {
+  background-color: #fff;
+  left: 0;
+  top: 0;
+}
+.cropper-line {
+  background-color: #39f;
+}
+.cropper-line.line-e {
+  cursor: ew-resize;
+  right: -3px;
+  top: 0;
+  width: 5px;
+}
+.cropper-line.line-n {
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+  top: -3px;
+}
+.cropper-line.line-w {
+  cursor: ew-resize;
+  left: -3px;
+  top: 0;
+  width: 5px;
+}
+.cropper-line.line-s {
+  bottom: -3px;
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+}
+.cropper-point {
+  background-color: #39f;
+  height: 5px;
+  opacity: 0.75;
+  width: 5px;
+}
+.cropper-point.point-e {
+  cursor: ew-resize;
+  margin-top: -3px;
+  right: -3px;
+  top: 50%;
+}
+.cropper-point.point-n {
+  cursor: ns-resize;
+  left: 50%;
+  margin-left: -3px;
+  top: -3px;
+}
+.cropper-point.point-w {
+  cursor: ew-resize;
+  left: -3px;
+  margin-top: -3px;
+  top: 50%;
+}
+.cropper-point.point-s {
+  bottom: -3px;
+  cursor: s-resize;
+  left: 50%;
+  margin-left: -3px;
+}
+.cropper-point.point-ne {
+  cursor: nesw-resize;
+  right: -3px;
+  top: -3px;
+}
+.cropper-point.point-nw {
+  cursor: nwse-resize;
+  left: -3px;
+  top: -3px;
+}
+.cropper-point.point-sw {
+  bottom: -3px;
+  cursor: nesw-resize;
+  left: -3px;
+}
+.cropper-point.point-se {
+  bottom: -3px;
+  cursor: nwse-resize;
+  height: 20px;
+  opacity: 1;
+  right: -3px;
+  width: 20px;
+}
+@media (min-width: 768px) {
+  .cropper-point.point-se {
+    height: 15px;
+    width: 15px;
+  }
+}
+@media (min-width: 992px) {
+  .cropper-point.point-se {
+    height: 10px;
+    width: 10px;
+  }
+}
+@media (min-width: 1200px) {
+  .cropper-point.point-se {
+    height: 5px;
+    opacity: 0.75;
+    width: 5px;
+  }
+}
+.cropper-point.point-se::before {
+  background-color: #39f;
+  bottom: -50%;
+  content: ' ';
+  display: block;
+  height: 200%;
+  opacity: 0;
+  position: absolute;
+  right: -50%;
+  width: 200%;
+}
+.cropper-invisible {
+  opacity: 0;
+}
+.cropper-bg {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC');
+}
+.cropper-hide {
+  display: block;
+  height: 0;
+  position: absolute;
+  width: 0;
+}
+.cropper-hidden {
+  display: none !important;
+}
+.cropper-move {
+  cursor: move;
+}
+.cropper-crop {
+  cursor: crosshair;
+}
+.cropper-disabled .cropper-drag-box,
+.cropper-disabled .cropper-face,
+.cropper-disabled .cropper-line,
+.cropper-disabled .cropper-point {
+  cursor: not-allowed;
+}
+
+.cc-window {
+  opacity: 1;
+  -webkit-transition: opacity 1s ease;
+  transition: opacity 1s ease;
+}
+.cc-window.cc-invisible {
+  opacity: 0;
+}
+.cc-animate.cc-revoke {
+  -webkit-transition: transform 1s ease;
+  -webkit-transition: -webkit-transform 1s ease;
+  transition: -webkit-transform 1s ease;
+  transition: transform 1s ease;
+  transition: transform 1s ease, -webkit-transform 1s ease;
+}
+.cc-animate.cc-revoke.cc-top {
+  -webkit-transform: translateY(-2em);
+  transform: translateY(-2em);
+}
+.cc-animate.cc-revoke.cc-bottom {
+  -webkit-transform: translateY(2em);
+  transform: translateY(2em);
+}
+.cc-animate.cc-revoke.cc-active.cc-top {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+.cc-animate.cc-revoke.cc-active.cc-bottom {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+.cc-revoke:hover {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+.cc-grower {
+  max-height: 0;
+  overflow: hidden;
+  -webkit-transition: max-height 1s;
+  transition: max-height 1s;
+}
+.cc-revoke,
+.cc-window {
+  position: fixed;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: Helvetica, Calibri, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  z-index: 9999;
+}
+.cc-window.cc-static {
+  position: static;
+}
+.cc-window.cc-floating {
+  padding: 2em;
+  max-width: 24em;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+.cc-window.cc-banner {
+  padding: 1em 1.8em;
+  width: 100%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+.cc-revoke {
+  padding: 0.5em;
+}
+.cc-revoke:hover {
+  text-decoration: underline;
+}
+.cc-header {
+  font-size: 18px;
+  font-weight: 700;
+}
+.cc-btn,
+.cc-close,
+.cc-link,
+.cc-revoke {
+  cursor: pointer;
+}
+.cc-link {
+  opacity: 0.8;
+  display: inline-block;
+  padding: 0.2em;
+  text-decoration: underline;
+}
+.cc-link:hover {
+  opacity: 1;
+}
+.cc-link:active,
+.cc-link:visited {
+  color: initial;
+}
+.cc-btn {
+  display: block;
+  padding: 0.4em 0.8em;
+  font-size: 0.9em;
+  font-weight: 700;
+  border-width: 2px;
+  border-style: solid;
+  text-align: center;
+  white-space: nowrap;
+}
+.cc-highlight .cc-btn:first-child {
+  background-color: transparent;
+  border-color: transparent;
+}
+.cc-highlight .cc-btn:first-child:focus,
+.cc-highlight .cc-btn:first-child:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}
+.cc-close {
+  display: block;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  font-size: 1.6em;
+  opacity: 0.9;
+  line-height: 0.75;
+}
+.cc-close:focus,
+.cc-close:hover {
+  opacity: 1;
+}
+.cc-revoke.cc-top {
+  top: 0;
+  left: 3em;
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+}
+.cc-revoke.cc-bottom {
+  bottom: 0;
+  left: 3em;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+.cc-revoke.cc-left {
+  left: 3em;
+  right: unset;
+}
+.cc-revoke.cc-right {
+  right: 3em;
+  left: unset;
+}
+.cc-top {
+  top: 1em;
+}
+.cc-left {
+  left: 1em;
+}
+.cc-right {
+  right: 1em;
+}
+.cc-bottom {
+  bottom: 1em;
+}
+.cc-floating > .cc-link {
+  margin-bottom: 1em;
+}
+.cc-floating .cc-message {
+  display: block;
+  margin-bottom: 1em;
+}
+.cc-window.cc-floating .cc-compliance {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+.cc-window.cc-banner {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.cc-banner.cc-top {
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.cc-banner.cc-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.cc-banner .cc-message {
+  display: block;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  max-width: 100%;
+  margin-right: 1em;
+}
+.cc-compliance {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-line-pack: justify;
+  align-content: space-between;
+}
+.cc-floating .cc-compliance > .cc-btn {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+.cc-btn + .cc-btn {
+  margin-left: 0.5em;
+}
+@media print {
+  .cc-revoke,
+  .cc-window {
+    display: none;
+  }
+}
+@media screen and (max-width: 900px) {
+  .cc-btn {
+    white-space: normal;
+  }
+}
+@media screen and (max-width: 414px) and (orientation: portrait), screen and (max-width: 736px) and (orientation: landscape) {
+  .cc-window.cc-top {
+    top: 0;
+  }
+  .cc-window.cc-bottom {
+    bottom: 0;
+  }
+  .cc-window.cc-banner,
+  .cc-window.cc-floating,
+  .cc-window.cc-left,
+  .cc-window.cc-right {
+    left: 0;
+    right: 0;
+  }
+  .cc-window.cc-banner {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  .cc-window.cc-banner .cc-compliance {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+  }
+  .cc-window.cc-floating {
+    max-width: none;
+  }
+  .cc-window .cc-message {
+    margin-bottom: 1em;
+  }
+  .cc-window.cc-banner {
+    -webkit-box-align: unset;
+    -ms-flex-align: unset;
+    align-items: unset;
+  }
+  .cc-window.cc-banner .cc-message {
+    margin-right: 0;
+  }
+}
+.cc-floating.cc-theme-classic {
+  padding: 1.2em;
+  border-radius: 5px;
+}
+.cc-floating.cc-type-info.cc-theme-classic .cc-compliance {
+  text-align: center;
+  display: inline;
+  -webkit-box-flex: 0;
+  -ms-flex: none;
+  flex: none;
+}
+.cc-theme-classic .cc-btn {
+  border-radius: 5px;
+}
+.cc-theme-classic .cc-btn:last-child {
+  min-width: 140px;
+}
+.cc-floating.cc-type-info.cc-theme-classic .cc-btn {
+  display: inline-block;
+}
+.cc-theme-edgeless.cc-window {
+  padding: 0;
+}
+.cc-floating.cc-theme-edgeless .cc-message {
+  margin: 2em;
+  margin-bottom: 1.5em;
+}
+.cc-banner.cc-theme-edgeless .cc-btn {
+  margin: 0;
+  padding: 0.8em 1.8em;
+  height: 100%;
+}
+.cc-banner.cc-theme-edgeless .cc-message {
+  margin-left: 1em;
+}
+.cc-floating.cc-theme-edgeless .cc-btn + .cc-btn {
+  margin-left: 0;
+}
+
+/*!
+ * bootstrap-fileinput v5.5.2
+ * http://plugins.krajee.com/file-input
+ *
+ * Krajee default styling for bootstrap-fileinput.
+ *
+ * Author: Kartik Visweswaran
+ * Copyright: 2014 - 2022, Kartik Visweswaran, Krajee.com
+ *
+ * Licensed under the BSD-3-Clause
+ * https://github.com/kartik-v/bootstrap-fileinput/blob/master/LICENSE.md
+ */
+.btn-file input[type=file],
+.file-caption-icon,
+.file-no-browse,
+.file-preview .fileinput-remove,
+.file-zoom-dialog .btn-navigate,
+.file-zoom-dialog .floating-buttons,
+.krajee-default .file-thumb-progress {
+  position: absolute;
+}
+.file-loading input[type=file],
+input[type=file].file-loading {
+  width: 0;
+  height: 0;
+}
+.file-no-browse {
+  left: 50%;
+  bottom: 20%;
+  width: 1px;
+  height: 1px;
+  font-size: 0;
+  opacity: 0;
+  border: none;
+  background: 0 0;
+  outline: 0;
+  box-shadow: none;
+}
+.btn-kv-rotate,
+.file-caption-icon,
+.file-input-ajax-new .fileinput-remove-button,
+.file-input-ajax-new .fileinput-upload-button,
+.file-input-ajax-new .no-browse .input-group-btn,
+.file-input-new .close,
+.file-input-new .file-preview,
+.file-input-new .fileinput-remove-button,
+.file-input-new .fileinput-upload-button,
+.file-input-new .glyphicon-file,
+.file-input-new .no-browse .input-group-btn,
+.file-preview .kv-zoom-cache,
+.file-zoom-dialog .modal-header:after,
+.file-zoom-dialog .modal-header:before,
+.hide-content .kv-file-content,
+.is-locked .fileinput-remove-button,
+.is-locked .fileinput-upload-button,
+.kv-file-rotate,
+.kv-hidden {
+  display: none;
+}
+.file-caption .input-group {
+  align-items: center;
+}
+.btn-file,
+.file-caption,
+.file-input,
+.file-loading:before,
+.file-preview,
+.file-zoom-dialog .modal-dialog,
+.krajee-default .file-thumbnail-footer,
+.krajee-default.file-preview-frame {
+  position: relative;
+}
+.file-caption-icon .kv-caption-icon {
+  line-height: inherit;
+}
+.file-error-message pre,
+.file-error-message ul,
+.krajee-default .file-actions,
+.krajee-default .file-other-error {
+  text-align: left;
+}
+.file-error-message pre,
+.file-error-message ul {
+  margin: 0;
+}
+.krajee-default .file-drag-handle,
+.krajee-default .file-upload-indicator {
+  float: left;
+  margin-top: 10px;
+  width: 16px;
+  height: 16px;
+}
+.file-thumb-progress .progress,
+.file-thumb-progress .progress-bar {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 0.7rem;
+}
+.krajee-default .file-thumb-progress .progress,
+.kv-upload-progress .progress {
+  background-color: #ccc;
+}
+.krajee-default .file-caption-info,
+.krajee-default .file-size-info {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 160px;
+  height: 15px;
+  margin: auto;
+}
+.file-caption.icon-visible .file-caption-icon,
+.file-loading:before,
+.rotatable:not(.hide-rotate) .btn-kv-rotate,
+.rotatable:not(.hide-rotate) .kv-file-rotate {
+  display: inline-block;
+}
+.file-zoom-content > .file-object.type-flash,
+.file-zoom-content > .file-object.type-image,
+.file-zoom-content > .file-object.type-video {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+}
+.file-zoom-content > .file-object.type-flash,
+.file-zoom-content > .file-object.type-video {
+  height: 100%;
+}
+.file-zoom-content > .file-object.type-default,
+.file-zoom-content > .file-object.type-html,
+.file-zoom-content > .file-object.type-pdf,
+.file-zoom-content > .file-object.type-text {
+  width: 100%;
+}
+.file-loading:before {
+  content: " Loading...";
+  padding-left: 20px;
+  line-height: 16px;
+  font-size: 13px;
+  font-variant: small-caps;
+  color: #999;
+  background: url(/dist/img/loading.gif) top left no-repeat;
+}
+.file-object {
+  margin: 0 0 -5px;
+  padding: 0;
+}
+.btn-file,
+.kv-overflow-hidden {
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  text-align: right;
+  opacity: 0;
+  background: none;
+  cursor: inherit;
+  display: block;
+}
+.btn-file ::-ms-browse {
+  font-size: 10000px;
+  width: 100%;
+  height: 100%;
+}
+.file-caption.icon-visible .file-caption-name {
+  padding-left: 25px;
+}
+.file-caption.icon-visible > .input-group-lg .file-caption-name {
+  padding-left: 30px;
+}
+.file-caption.icon-visible > .input-group-sm .file-caption-name {
+  padding-left: 22px;
+}
+.file-caption-name:not(.file-caption-disabled) {
+  background-color: transparent;
+}
+.file-caption-name.file-processing {
+  font-style: italic;
+  border-color: #bbb;
+  opacity: 0.5;
+}
+.file-caption-icon {
+  padding: 7px 5px;
+  left: 4px;
+}
+.input-group-lg .file-caption-icon {
+  font-size: 1.25rem;
+}
+.input-group-sm .file-caption-icon {
+  font-size: 0.875rem;
+  padding: 0.25rem;
+}
+.file-error-message {
+  color: #a94442;
+  background-color: #f2dede;
+  margin: 5px;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
+  padding: 15px;
+}
+.file-error-message pre {
+  margin: 5px 0;
+}
+.file-caption-disabled {
+  background-color: #eee;
+  cursor: not-allowed;
+  opacity: 1;
+}
+.file-preview {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 8px;
+  width: 100%;
+  margin-bottom: 5px;
+}
+.file-preview .btn-xs {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.file-preview .fileinput-remove {
+  top: 1px;
+  right: 1px;
+  line-height: 10px;
+}
+.clickable .file-drop-zone-title,
+.file-preview .clickable {
+  cursor: pointer;
+}
+.file-preview-image {
+  font: 40px Impact, Charcoal, sans-serif;
+  color: green;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+.krajee-default.file-preview-frame {
+  margin: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  padding: 6px;
+  float: left;
+  text-align: center;
+}
+.krajee-default.file-preview-frame .kv-file-content {
+  width: 213px;
+  height: 160px;
+}
+.krajee-default.file-preview-frame .kv-file-content.kv-pdf-rendered {
+  width: 400px;
+}
+.krajee-default.file-preview-frame[data-template=audio] .kv-file-content {
+  width: 240px;
+  height: 55px;
+}
+.krajee-default.file-preview-frame .file-thumbnail-footer {
+  height: 70px;
+}
+.krajee-default.file-preview-frame:not(.file-preview-error):hover {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+}
+.krajee-default .file-preview-text {
+  color: #428bca;
+  border: 1px solid #ddd;
+  outline: 0;
+  resize: none;
+}
+.krajee-default .file-preview-html {
+  border: 1px solid #ddd;
+}
+.krajee-default .file-other-icon {
+  font-size: 6em;
+  line-height: 1;
+}
+.krajee-default .file-footer-buttons {
+  float: right;
+}
+.krajee-default .file-footer-caption {
+  display: block;
+  text-align: center;
+  padding-top: 4px;
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 30px;
+}
+.file-upload-stats {
+  font-size: 10px;
+  text-align: center;
+  width: 100%;
+}
+.kv-upload-progress .file-upload-stats {
+  font-size: 12px;
+  margin: -10px 0 5px;
+}
+.krajee-default .file-preview-error {
+  opacity: 0.65;
+  box-shadow: none;
+}
+.krajee-default .file-thumb-progress {
+  top: 37px;
+  left: 0;
+  right: 0;
+}
+.krajee-default.kvsortable-ghost {
+  background: #e1edf7;
+  border: 2px solid #a1abff;
+}
+.krajee-default .file-preview-other:hover {
+  opacity: 0.8;
+}
+.krajee-default .file-preview-frame:not(.file-preview-error) .file-footer-caption:hover {
+  color: #000;
+}
+.kv-upload-progress .progress {
+  height: 20px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+.kv-upload-progress .progress-bar {
+  height: 20px;
+  font-family: Verdana, Helvetica, sans-serif;
+}
+.file-zoom-dialog .file-other-icon {
+  font-size: 50vmin;
+}
+.btn-navigate *,
+.file-zoom-dialog .modal-dialog {
+  width: auto;
+}
+.file-zoom-dialog .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.file-zoom-dialog .btn-navigate {
+  margin: 0 0.1rem;
+  padding: 0;
+  font-size: 1.2rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  top: 50%;
+  border-radius: 50%;
+  text-align: center;
+}
+.file-zoom-dialog .floating-buttons {
+  top: 5px;
+  right: 10px;
+}
+.file-zoom-dialog .btn-kv-prev {
+  left: 0;
+}
+.file-zoom-dialog .btn-kv-next {
+  right: 0;
+}
+.file-zoom-dialog .kv-zoom-header {
+  padding: 0.5rem;
+}
+.file-zoom-dialog .kv-zoom-body {
+  padding: 0.25rem;
+}
+.file-zoom-dialog .kv-zoom-description {
+  position: absolute;
+  opacity: 0.8;
+  font-size: 0.8rem;
+  background-color: #1a1a1a;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  color: #fff;
+  left: 15%;
+  right: 15%;
+  bottom: 15%;
+}
+.file-zoom-dialog .kv-desc-hide {
+  float: right;
+  color: #fff;
+  padding: 0 0.1rem;
+  background: 0 0;
+  border: none;
+}
+.file-sortable .file-drag-handle:hover,
+.file-zoom-dialog .kv-desc-hide:hover {
+  opacity: 0.7;
+}
+.file-zoom-dialog .kv-desc-hide:focus {
+  opacity: 0.9;
+}
+.file-input-ajax-new .no-browse .form-control,
+.file-input-new .no-browse .form-control {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.file-caption {
+  width: 100%;
+}
+.file-thumb-loading {
+  background: url(/dist/img/loading.gif) center center no-repeat content-box !important;
+}
+.file-drop-zone {
+  border: 1px dashed #aaa;
+  min-height: 260px;
+  border-radius: 4px;
+  text-align: center;
+  vertical-align: middle;
+  margin: 12px 15px 12px 12px;
+  padding: 5px;
+}
+.file-drop-zone.clickable:hover {
+  border: 2px dashed #999;
+}
+.file-drop-zone.clickable:focus {
+  border: 2px solid #5acde2;
+}
+.file-drop-zone .file-preview-thumbnails {
+  cursor: default;
+}
+.file-drop-zone-title {
+  color: #aaa;
+  font-size: 1.6em;
+  text-align: center;
+  padding: 85px 10px;
+  cursor: default;
+}
+.file-highlighted {
+  border: 2px dashed #999 !important;
+  background-color: #eee;
+}
+.file-uploading {
+  background: url(/dist/img/loading-sm.gif) center bottom 10px no-repeat;
+  opacity: 0.65;
+}
+.file-zoom-fullscreen .modal-dialog {
+  min-width: 100%;
+  margin: 0;
+}
+.file-zoom-fullscreen .modal-content {
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100vh;
+}
+.file-zoom-fullscreen .kv-zoom-body {
+  overflow-y: auto;
+}
+.floating-buttons {
+  z-index: 3000;
+}
+.floating-buttons .btn-kv {
+  margin-left: 3px;
+  z-index: 3000;
+}
+.kv-zoom-actions {
+  min-width: 140px;
+}
+.kv-zoom-actions .btn-kv {
+  margin-left: 3px;
+}
+.file-zoom-content {
+  text-align: center;
+  white-space: nowrap;
+  min-height: 300px;
+}
+.file-zoom-content:hover {
+  background: 0 0;
+}
+.file-zoom-content .file-preview-image,
+.file-zoom-content .file-preview-video {
+  max-height: 100%;
+}
+.file-zoom-content > .file-object.type-image {
+  height: auto;
+  min-height: inherit;
+}
+.file-zoom-content > .file-object.type-audio {
+  width: auto;
+  height: 30px;
+}
+@media (min-width: 576px) {
+  .file-zoom-dialog .modal-dialog {
+    max-width: 500px;
+  }
+}
+@media (min-width: 992px) {
+  .file-zoom-dialog .modal-lg {
+    max-width: 800px;
+  }
+}
+@media (max-width: 767px) {
+  .file-preview-thumbnails {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .file-zoom-dialog .modal-header {
+    flex-direction: column;
+  }
+}
+@media (max-width: 350px) {
+  .krajee-default.file-preview-frame:not([data-template=audio]) .kv-file-content {
+    width: 160px;
+  }
+}
+@media (max-width: 420px) {
+  .krajee-default.file-preview-frame .kv-file-content.kv-pdf-rendered {
+    width: 100%;
+  }
+}
+.file-loading[dir=rtl]:before {
+  background: url(/dist/img/loading.gif) top right no-repeat;
+  padding-left: 0;
+  padding-right: 20px;
+}
+.file-sortable .file-drag-handle {
+  cursor: grab;
+  opacity: 1;
+}
+.file-grabbing,
+.file-grabbing * {
+  cursor: not-allowed !important;
+}
+.file-grabbing .file-preview-thumbnails * {
+  cursor: grabbing !important;
+}
+.file-preview-frame.sortable-chosen {
+  background-color: #d9edf7;
+  border-color: #17a2b8;
+  box-shadow: none !important;
+}
+.file-preview-object,
+.file-preview-other-frame,
+.kv-file-content,
+.kv-zoom-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rotatable .file-zoom-detail,
+.rotatable .kv-file-content,
+.rotatable .kv-file-content > :first-child {
+  transform-origin: center center;
+}
+.rotate-animate {
+  transition: transform 0.3s;
+}
+
+/*!
+ * bootstrap-fileinput v5.5.0
+ * http://plugins.krajee.com/file-input
+ *
+ * Krajee Explorer theme style for bootstrap-fileinput. Load this theme file after loading `fileinput.css`.
+ *
+ * Author: Kartik Visweswaran
+ * Copyright: 2014 - 2022, Kartik Visweswaran, Krajee.com
+ *
+ * Licensed under the BSD-3-Clause
+ * https://github.com/kartik-v/bootstrap-fileinput/blob/master/LICENSE.md
+ */
+.theme-explorer .file-preview-frame {
+  border: 1px solid #ddd;
+  margin: 2px 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.explorer-frame .file-preview-other,
+.theme-explorer .explorer-frame .kv-file-content,
+.theme-explorer .file-actions,
+.theme-explorer .file-drag-handle,
+.theme-explorer .file-upload-indicator {
+  text-align: center;
+}
+.theme-explorer .file-drag-handle,
+.theme-explorer .file-upload-indicator {
+  position: absolute;
+  display: inline-block;
+  bottom: 8px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+.theme-explorer .explorer-caption,
+.theme-explorer .file-thumb-progress .progress {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.theme-explorer .file-thumb-progress .progress {
+  margin-top: 5px;
+}
+.theme-explorer .explorer-caption,
+.theme-explorer .file-footer-buttons {
+  padding: 5px;
+}
+.theme-explorer .file-footer-buttons {
+  text-align: right;
+}
+.theme-explorer .explorer-caption {
+  color: #777;
+  padding-top: 5px;
+}
+.theme-explorer .kvsortable-ghost {
+  opacity: 0.6;
+  background: #e1edf7;
+  border: 2px solid #a1abff;
+}
+.theme-explorer .file-preview .table {
+  margin: 0;
+}
+.theme-explorer .file-error-message ul {
+  padding: 5px 0 0 20px;
+}
+.explorer-frame .file-preview-text {
+  display: inline-block;
+  color: #428bca;
+  border: 1px solid #ddd;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  outline: 0;
+  padding: 8px;
+  resize: none;
+}
+.explorer-frame .file-preview-html {
+  display: inline-block;
+  border: 1px solid #ddd;
+  padding: 8px;
+  overflow: auto;
+}
+.explorer-frame .file-other-icon {
+  font-size: 2.6em;
+}
+.explorer-frame:not(.kv-zoom-body):hover {
+  background-color: #f5f5f5;
+}
+.theme-explorer .file-preview-frame samp {
+  font-size: 0.9rem;
+}
+.theme-explorer .explorer-frame .kv-file-content {
+  width: 160px;
+  height: 80px;
+  padding: 5px;
+  text-align: left;
+}
+.theme-explorer .file-details-cell {
+  width: 60%;
+  font-size: 0.95rem;
+  text-align: left;
+  margin-right: auto;
+}
+.theme-explorer .file-actions-cell {
+  position: relative;
+  height: 80px;
+  width: 200px;
+}
+.file-zoom-dialog .explorer-frame .file-other-icon {
+  font-size: 22em;
+  font-size: 50vmin;
+}
+@media only screen and (max-width: 1249px) {
+  .theme-explorer .file-preview-frame .file-details-cell {
+    width: 40%;
+  }
+}
+@media only screen and (max-width: 1023px) {
+  .theme-explorer .file-preview-frame .file-details-cell {
+    width: 30%;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .theme-explorer .file-preview-frame .file-details-cell {
+    width: 200px;
+  }
+}
+@media only screen and (max-width: 575px) {
+  .theme-explorer .file-preview-frame {
+    flex-direction: column;
+  }
+  .theme-explorer .file-preview-frame .kv-file-content {
+    text-align: center;
+  }
+  .theme-explorer .file-details-cell {
+    text-align: center;
+    margin-right: 0;
+  }
+  .theme-explorer .file-actions-cell,
+  .theme-explorer .file-details-cell,
+  .theme-explorer .file-preview-frame .kv-file-content {
+    width: 100%;
+  }
+  .theme-explorer .file-actions-cell {
+    height: auto;
+  }
+  .theme-explorer .file-footer-buttons {
+    text-align: left;
+  }
+}

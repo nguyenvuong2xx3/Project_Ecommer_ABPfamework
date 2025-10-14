@@ -1,0 +1,154 @@
+﻿(function () {
+	$(function () {
+
+		//var dz = null;
+		//$("#multiFileUpload").dropzone({
+		//  autoProcessQueue: true,
+		//  paramName: "Uploads",
+		//  maxFilesize: 5, //mb
+		//  maxThumbnailFilesize: 1, //mb
+		//  maxFiles: 5,
+		//  //parallelUploads: 5,
+		//  acceptedFiles: ".jpeg,.png,.jpg,.pdf",
+		//  //uploadMultiple: true,
+		//  //addRemoveLinks: true,
+		//  url: '/CMS/MediasMgr/UploadFiles',
+
+		//  init: function () {
+		//    dz = this;
+
+		//    this.on("sending", function (file, xhr, formData) {
+		//      //console.log(formData, mediaFolderTree.selectedOu.id);
+		//      if (mediaFolderTree.selectedOu.id)
+		//        formData.append("Model.FolderId", mediaFolderTree.selectedOu.id);
+		//    });
+
+		//    //$("#btnupload").click(function () {
+		//    //  dz.processQueue();
+		//    //  $(this).attr("disabled", "disabled");
+		//    //});
+
+		//    //console.log('init ok');
+		//  },
+		//  success: function (file) {
+		//    var preview = $(file.previewElement);
+		//    preview.addClass("dz-success text-success");
+		//    setTimeout(function () {
+		//      dz.removeFile(file);
+
+		//    }, 2000);
+
+		//  },
+		//  queuecomplete: function () {
+		//    alert('Files Uploaded Successfully!');
+		//    dz.removeAllFiles(true);
+
+		//    // reload lists of file in current folder
+		//    medias.load();
+		//  },
+		//  dictDefaultMessage: "You can drag and drop your images here.",
+		//  dictRemoveFile: "File Remove"
+		//});
+
+		jQuery(document).ready(function () {
+			jQuery("#input-5").fileinput({ showCaption: false });
+
+			jQuery("#input-3").fileinput({
+				uploadUrl: "/App/DemoUiComponents/UploadFile",
+				//enableResumableUpload: true,
+				//resumableUploadOptions: {
+				//   // uncomment below if you wish to test the file for previous partial uploaded chunks
+				//   // to the server and resume uploads from that point afterwards
+				//   // testUrl: "http://localhost/test-upload.php"
+				//},
+				//uploadExtraData: {
+				//    'uploadToken': 'SOME-TOKEN', // for access control / security 
+				//},
+				maxFileCount: 5,
+				//allowedFileTypes: ['image'],    // allow only images
+				showCancel: true,
+				initialPreviewAsData: true,
+				overwriteInitial: false,
+				// initialPreview: [],          // if you have previously uploaded preview files
+				// initialPreviewConfig: [],    // if you have previously uploaded preview files
+				//theme: 'fa5',
+				//deleteUrl: "http://localhost/file-delete.php"
+			})
+				//.on('fileuploaded', function (event, previewId, index, fileId) {
+				//	console.log('File Uploaded', 'ID: ' + fileId + ', Thumb ID: ' + previewId);
+				//}).on('fileuploaderror', function (event, data, msg) {
+				//	console.log('File Upload Error', 'ID: ' + data.fileId + ', Thumb ID: ' + data.previewId);
+				//}).on('filebatchuploadcomplete', function (event, preview, config, tags, extraData) {
+				//	console.log('File Batch Uploaded', preview, config, tags, extraData);
+				//})
+				;
+
+			jQuery("#input-6").fileinput({
+				theme: "explorer",
+				uploadUrl: "/App/DemoUiComponents/UploadMedia",
+				maxFileCount: 10,
+				mainClass: "input-group-lg",
+				showCaption: true,
+				showCancel: true,
+			});
+
+			jQuery("#input-8").fileinput({
+				mainClass: "input-group-md",
+				showUpload: true,
+				previewFileType: "image",
+				browseClass: "btn btn-success",
+				browseLabel: "Pick Image",
+				browseIcon: "<i class=\"bi-image\"></i> ",
+				removeClass: "btn btn-danger",
+				removeLabel: "Delete",
+				removeIcon: "<i class=\"bi-trash3\"></i> ",
+				uploadClass: "btn btn-info",
+				uploadLabel: "Upload",
+				uploadIcon: "<i class=\"bi-upload\"></i> "
+			});
+
+			jQuery("#input-9").fileinput({
+				previewFileType: "text",
+				allowedFileExtensions: ["txt", "md", "ini", "text"],
+				previewClass: "bg-warning",
+				browseClass: "btn btn-primary",
+				removeClass: "btn btn-secondary",
+				uploadClass: "btn btn-secondary",
+			});
+
+			jQuery("#input-10").fileinput({
+				showUpload: false,
+				layoutTemplates: {
+					main1: "{preview}\n" +
+						"<div class=\'input-group {class}\'>\n" +
+						"       {browse}\n" +
+						"       {upload}\n" +
+						"       {remove}\n" +
+						"   {caption}\n" +
+						"</div>"
+				}
+			});
+
+			jQuery("#input-11").fileinput({
+				showCaption: true,
+				showPreview: true,
+				uploadUrl: "/App/DemoUiComponents/UploadFile",
+				maxFileCount: 10,
+				allowedFileTypes: ["image", "video"]
+			}).on('fileuploaded', function (event, previewId, index, fileId) {
+				console.log('File Uploaded', 'ID: ' + fileId + ', Thumb ID: ' + previewId);
+				console.log(event, previewId, index, fileId);
+				jQuery("#input-11").fileinput('clear');
+			}).on('fileuploaderror', function (event, data, msg) {
+				console.log('File Upload Error', 'ID: ' + data.fileId + ', Thumb ID: ' + data.previewId);
+			});
+
+			jQuery("#input-12").fileinput({
+				showPreview: false,
+				allowedFileExtensions: ["zip", "rar", "gz", "tgz"],
+				elErrorContainer: "#errorBlock"
+			});
+		});
+
+	});
+})();

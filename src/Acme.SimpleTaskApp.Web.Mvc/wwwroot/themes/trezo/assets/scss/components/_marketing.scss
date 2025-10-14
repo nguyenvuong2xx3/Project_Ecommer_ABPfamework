@@ -1,0 +1,109 @@
+/* Marketing Area Style
+============================================*/
+/* Marketing Dashboard CSS */
+.create-campaigns-tabs {
+    max-width: 960px;
+    margin: auto;
+    margin-bottom: 60px;
+    .tab {
+        button {
+            position: relative;
+            padding: 0;
+            padding-bottom: 5px;
+            letter-spacing: 2px;
+            &::before {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 0;
+                height: 2px;
+                background-color: $primary;
+                transition: $transition;
+            }
+        }
+        &.active {
+            button {
+                color: $primary !important;
+                &::before {
+                    width: 100%;
+                    right: auto;
+                    left: 0;
+                }
+            }
+        }
+    }
+}
+.form-check {
+    &.style {
+        .form-check-input {
+            width: 30px;
+            height: 30px;
+            border: 0;
+            background-color: #ECEEF2;
+        }
+        .form-check-input:checked {
+            background-color: $primary;
+        }
+        &.after-check {
+            .form-check-input {
+                width: 20px;
+                height: 20px;
+                border: 0;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    border: 2px dashed #ECEEF2;
+                    z-index: 1;
+                    border-radius: 6px;
+                }
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: $white;
+                    z-index: -1;
+                    border-radius: 6px;
+                }
+            }
+            .form-check-input:checked {
+                background-color: $primary;
+                &::before {
+                    border-color: #5DA8FF;
+                }
+                &::after {
+                    background-color: #ECEEF2;
+                }
+            }
+        }
+    }
+}
+.tab-content-wrap {
+    .tab-contents {
+        display: none;
+        &.active {
+            display: block;
+        }
+        &.back-none {
+            position: relative;
+            &::before {
+                content: "";
+                position: absolute;
+                bottom: -88px;
+                left: -560px;
+                right: 0;
+                margin: auto;
+                width: 625px;
+                height: 50px;
+                background-color: #f6f7f9;
+            }
+        }
+    }
+}
