@@ -154,17 +154,29 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 			throw new UserFriendlyException("Dữ liệu không được để trống");
 		// lấy biến thể
 		var item = await _productVariantRepository.GetAsync(id);
+
 		//lấy hết biến thể liên quan đến sản phẩm
 		var allVariants = await _productVariantRepository.GetAll()
 			.Where(x => x.ProductId == item.ProductId)
 			.ToListAsync();
+		// lấy ảnh biến thể cho tất cả biến thể
+		foreach (var variant in allVariants)
+		{
+			variant.ImageUrls = await _productImageRepository.GetAll()
+				.Where(x => x.ProductVariantId == variant.Id)
+				.Select(ig => ig.ImageUrl)
+				.ToListAsync();
+		}
+
 		// lấy sản phẩm tổng quát
 		var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
+
 		// lấy ảnh biến thể
 		item.ImageUrls = await _productImageRepository.GetAll()
-			.Where(x => x.ProductId == item.Id)
+			.Where(x => x.ProductVariantId == item.Id)
 			.Select(ig => ig.ImageUrl)
 			.ToListAsync();
+
 		// add vào product
 		product.ProductVariants.AddRange(allVariants);
 		product.ProductVariant = item;

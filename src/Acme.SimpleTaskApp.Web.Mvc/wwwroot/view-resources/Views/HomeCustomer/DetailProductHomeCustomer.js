@@ -20,6 +20,22 @@
       }
     });
   }
+  $(document).ready(function () {
+    initializeVariantEvents();
+  });
+
+  function initializeVariantEvents() {
+    // Gán sự kiện click cho tất cả các phần tử có thuộc tính data-variant-id
+    $('[data-variant-id]').on('click', function () {
+      const variantId = $(this).data('variant-id');
+      changeVariant(variantId);
+    });
+  }
+
+  function changeVariant(variantId) {
+    // Gọi controller DetailProductCustomer với variantId
+    window.location.href = '/HomeCustomer/DetailProductCustomer?id=' + variantId;
+  }
 
   // Bind tất cả events
   function bindEvents() {

@@ -11,9 +11,7 @@
 {
   <environment names="Development">
     <script src="~/view-resources/Views/HomeCustomer/MainCustomer.js" asp-append-version="true"></script>
-    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
-    <link href="~/css/style.css" rel="stylesheet" />
-
+    @* <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script> *@
   </environment>
 }
 @await Html.PartialAsync("~/Views/Shared/Layout/Customer/_SliderCustomer.cshtml")
@@ -40,18 +38,18 @@
               <h5 class="card-name">@product.Name @item.Ram/@item.Storage</h5>
               <div class="product-price">
                 <h5 class="current-price">@item.Price.ToString("#,##0")₫</h5>
-                <span class="text-success">Còn hàng</span>
-                <div class="item-compare gray-bg">
+                <span class="text-success">Giảm giá ở đây</span>
+               @*  <div class="item-compare gray-bg">
                   <span>@product.Screen</span>
                   <span>@product.Battery</span>
                   <span>@product.CameraSystem</span>
-                </div>
+                </div> *@
               </div>
-              <div class="stock-status">
+              @* <div class="stock-status">
                 <span class="text-success">Còn hàng</span>
-              </div>
+              </div> *@
             </div>
-            <button class="detail-btn product-click-detail" data-id="@product.Id">
+            <button class="detail-btn productvariant-click-detail" data-id="@product.Id">
               Xem chi tiết
             </button>
           </div>

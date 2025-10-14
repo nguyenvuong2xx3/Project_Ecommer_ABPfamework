@@ -39,23 +39,18 @@
 		return false;
 	});
 
-	// Product Quantity
-	$('.quantity button').on('click', function () {
-		var button = $(this);
-		var input = button.closest('.quantity').find('input');
-		var oldValue = parseFloat(input.val()) || 0;
-		var newVal = button.hasClass('btn-plus') ? oldValue + 1 : Math.max(0, oldValue - 1);
-		input.val(newVal);
-	});
+	//// Product Quantity
+	//$('.quantity button').on('click', function () {
+	//	var button = $(this);
+	//	var input = button.closest('.quantity').find('input');
+	//	var oldValue = parseFloat(input.val()) || 0;
+	//	var newVal = button.hasClass('btn-plus') ? oldValue + 1 : Math.max(0, oldValue - 1);
+	//	input.val(newVal);
+	//});
 
-	// Product Details
-	window.goToDetail = function (productId) {
-		window.location.href = `/Product/DetailProductCustomer?id=${productId}`;
-	};
-
-	$(document).on('click', '.product-click-detail', function () {
-		var productId = $(this).data('id');
-		window.location.href = '/HomeCustomer/DetailProductCustomer?id=' + productId;
+	$(document).on('click', '.productvariant-click-detail', function () {
+		var productvariantId = $(this).data('id');
+		window.location.href = '/HomeCustomer/DetailProductCustomer?id=' + productvariantId;
 	});
 
 	// ABP ModalManager cho Create Product (chuẩn abp)

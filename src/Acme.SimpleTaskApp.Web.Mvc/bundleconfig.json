@@ -235,5 +235,23 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/HomeCustomer/SearchProductCustomer.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/HomeCustomer/DetailProductHomeCustomer.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/HomeCustomer/DetailProductHomeCustomer.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/HomeCustomer/mainCustomer.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/HomeCustomer/mainCustomer.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/HomeCustomer/_FilterAdvancedModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/HomeCustomer/_FilterAdvancedModal.js"
+    ]
   }
 ]

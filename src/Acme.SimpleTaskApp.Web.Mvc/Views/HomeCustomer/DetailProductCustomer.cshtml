@@ -1,10 +1,17 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
+﻿﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
+@using System.Linq
 
 @model HomeCustomerViewModel
 
 @{
   ViewData["Title"] = "Detail";
   Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+
+  // Lấy danh sách storage duy nhất
+  var uniqueStorages = Model.ProductInfo.ProductVariants
+      .Select(pv => pv.Storage)
+      .Distinct()
+      .ToList();
 }
 <link href="~/css/style.css" rel="stylesheet" />
 @section scripts
@@ -45,14 +52,17 @@
         <div class="d-flex gap-2 mb-3 flex-wrap justify-content-center">
           @foreach (var imgpd in Model.ProductInfo.ProductVariants)
           {
-            foreach (var img in imgpd.ImageUrls)
-            {
-              <div class="color-option border border-2 rounded p-2 text-center d-flex flex-column align-items-center"
-                   style="width: 60px; margin-right: 10px; border-radius: 7px;">
-                <img src="@img" style="height: 45px; object-fit: contain;">
-                <span class="small mt-1">@imgpd.Color</span>
+            var isActive = Model.ProductInfo.ProductVariant.Id == imgpd.Id;
+
+            <div class="variant-item d-flex flex-column align-items-center me-2"
+                 style="margin-right: 10px; cursor: pointer;"
+                 data-variant-id="@imgpd.Id">
+              <div class="color-option border border-2 rounded-3 d-flex justify-content-center align-items-center @(isActive ? "border-primary shadow" : "border-secondary")"
+                   style="width: 60px; height: 60px; overflow: hidden; border-radius: 10px;">
+                <img src="@imgpd.ImageUrls.First()" style="width: 100%; height: 100%; object-fit: cover; display: block;">
               </div>
-            }
+              <span class="small mt-1 text-center">@imgpd.Color</span>
+            </div>
           }
         </div>
       </div>
@@ -63,32 +73,46 @@
       <div class="bg-white p-3 rounded" style="top: 20px;">
         <!-- Storage Options -->
         <div class="mb-3">
-          <div class="btn-group" role="group" style="width: 75px">
-            @foreach (var item in Model.ProductInfo.ProductVariants)
+          <label class="form-label fw-semibold">Bộ nhớ:</label>
+          <div class="btn-group" role="group" style="width: auto;">
+            @foreach (var storage in uniqueStorages)
             {
-              <label class="btn btn-outline-primary" for="storage1">@item.Storage</label>
+              // Tìm variant đầu tiên có storage này để lấy ID
+              var firstVariantWithStorage = Model.ProductInfo.ProductVariants
+              .FirstOrDefault(pv => pv.Storage == storage);
+
+              if (firstVariantWithStorage != null)
+              {
+                var isActive = Model.ProductInfo.ProductVariant.Storage == storage;
+                <label class="btn btn-outline-primary @(isActive ? "active" : "")"
+                       style="margin-right: 10px; border-radius: 10px; cursor: pointer;"
+                       data-variant-id="@firstVariantWithStorage.Id">
+                  @storage
+                </label>
+              }
             }
           </div>
         </div>
+
         <!-- Color Options -->
         <div class="mb-3">
+          <label class="form-label fw-semibold">Màu sắc:</label>
           <div class="d-flex gap-3 mb-3 flex-wrap justify-content-center">
             @foreach (var imgpd in Model.ProductInfo.ProductVariants)
             {
-              foreach (var img in imgpd.ImageUrls)
-              {
-                <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center"
-                     style="min-width: 150px; border-radius: 10px; margin-right: 10px">
-                  <!-- Ảnh bên trái -->
-                  <img src="@img" style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
-
-                  <!-- Thông tin bên phải -->
-                  <div class="ms-2 d-flex flex-column align-items-start">
-                    <span class="small fw-semibold">@imgpd.Color</span>
-                    <span class="small text-muted">@imgpd.Price.ToString("#,##0")₫</span>
-                  </div>
+              var isActive = imgpd.Id == Model.ProductInfo.ProductVariant.Id;
+              <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center @(isActive ? "border-primary shadow-sm" : "border-secondary-subtle")"
+                   style="min-width: 150px; border-radius: 10px; margin-right: 10px; cursor: pointer;"
+                   data-variant-id="@imgpd.Id">
+                <!-- Ảnh bên trái -->
+                <img src="@imgpd.ImageUrls.First()"
+                     style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
+                <!-- Thông tin bên phải -->
+                <div class="ms-2 d-flex flex-column align-items-start">
+                  <span class="small fw-semibold">@imgpd.Color</span>
+                  <span class="small text-muted">@imgpd.Price.ToString("#,##0")₫</span>
                 </div>
-              }
+              </div>
             }
           </div>
         </div>
