@@ -253,5 +253,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/HomeCustomer/_FilterAdvancedModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/themes/trezo/assets/css/sidebar-menu.min.css",
+    "inputFiles": [
+      "wwwroot/themes/trezo/assets/css/sidebar-menu.css"
+    ]
   }
 ]

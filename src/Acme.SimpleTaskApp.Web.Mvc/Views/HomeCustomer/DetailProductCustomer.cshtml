@@ -37,7 +37,8 @@
       <div class="bg-white p-3 rounded">
         <div class="main-image-container position-relative rounded overflow-hidden mb-3 d-flex justify-content-center align-items-center bg-light"
              style="height: 400px;">
-          <img src="@Model.ProductInfo.ImageUrls.First()"
+
+          <img src="@Model.ProductInfo.ImageUrls.FirstOrDefault()"
                class="img-fluid h-100 w-auto object-fit-contain"
                alt="iPhone 17">
 

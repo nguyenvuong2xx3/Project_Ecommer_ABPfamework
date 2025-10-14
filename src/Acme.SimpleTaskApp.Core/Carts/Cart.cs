@@ -5,16 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
 
-[Table("AppCarts")]
-public class Cart : FullAuditedEntity<int>
+namespace Acme.SimpleTaskApp.Carts
 {
-	public long UserId { get; set; }
-
-	public ICollection<CartItem> CartItems { get; set; }
-
-	public Cart()
+	[Table("AppCarts")]
+	public class Cart : FullAuditedEntity<int>
 	{
-		CreationTime = DateTime.Now;
-		CartItems = new List<CartItem>();
+		public long UserId { get; set; }
 	}
 }

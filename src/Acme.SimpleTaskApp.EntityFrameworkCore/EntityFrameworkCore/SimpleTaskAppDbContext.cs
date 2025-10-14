@@ -1,6 +1,7 @@
 ﻿using Abp.Zero.EntityFrameworkCore;
 using Acme.SimpleTaskApp.Authorization.Roles;
 using Acme.SimpleTaskApp.Authorization.Users;
+using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.MultiTenancy;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders;
@@ -15,9 +16,8 @@ namespace Acme.SimpleTaskApp.EntityFrameworkCore
 		public DbSet<ProductImage> ProductImages { get; set; }
 		public DbSet<Products.ProductVariant> ProductVariants { get; set; }
 		public DbSet<Categories.Category> Categories { get; set; }
-
-		//public DbSet<Cart> Carts { get; set; }
-		//public DbSet<CartItem> CartItems { get; set; }
+		public DbSet<Cart> Carts { get; set; }
+		public DbSet<CartItem> CartItems { get; set; }
 		//public DbSet<Order> Orders { get; set; }
 		//public DbSet<OrderDetails> OrderDetails { get; set; }
 

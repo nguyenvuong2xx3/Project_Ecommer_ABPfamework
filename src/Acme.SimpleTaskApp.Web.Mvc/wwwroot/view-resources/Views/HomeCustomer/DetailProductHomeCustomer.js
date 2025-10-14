@@ -74,9 +74,9 @@
     });
 
     // Add to cart
-    $('.add-to-cart').on('click', function () {
-      addToCart(currentVariantId);
-    });
+    //$('.add-to-cart').on('click', function () {
+    //  addToCart(currentVariantId);
+    //});
 
     // Buy now
     $('.buy-now').on('click', function () {
@@ -256,16 +256,16 @@
   }
 
   // Thêm vào giỏ hàng
-  function addToCart(variantId) {
-    abp.services.app.carts.addToCart(variantId, 1)
-      .done(function () {
-        abp.notify.success('Đã thêm vào giỏ hàng');
-        // Có thể update cart counter ở đây
-      })
-      .fail(function (error) {
-        abp.notify.error('Có lỗi khi thêm vào giỏ hàng');
-      });
-  }
+  //function addToCart(variantId) {
+  //  abp.services.app.carts.addToCart(variantId, 1)
+  //    .done(function () {
+  //      abp.notify.success('Đã thêm vào giỏ hàng');
+  //      // Có thể update cart counter ở đây
+  //    })
+  //    .fail(function (error) {
+  //      abp.notify.error('Có lỗi khi thêm vào giỏ hàng');
+  //    });
+  //}
 
   // Mua ngay
   function buyNow(variantId) {

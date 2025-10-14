@@ -14,7 +14,7 @@
   // var headerViewModel = new HeaderViewModel();
   // var theme = await GetTheme();
   // var themeCustomizer = await ThemeCustomizerFactory.GetCurrentUiCustomizer();
-  var textHeader = "Thương mại điện tử";
+  var textHeader = "Dòng thử 1";
   // var copyRightText = await SettingManager.GetSettingValueAsync(SaaSAppSettings.Administration.Copyright);
   var words = "Thương mại điện tử";
 }
@@ -110,34 +110,18 @@
   @* <partial name="~/Views/Shared/LayoutTrezo/_SideBar.cshtml" /> *@
   <!-- End Sidebar Area -->
   <!-- Start Main Content Area -->
-  <div class="container-fluid">
-    <div class="main-content d-flex flex-column">
+@*   <div class="container-fluid">
+    <div class="main-content d-flex flex-column"> *@
       <!-- Start Header Area -->
       @* <partial name="~/Views/Shared/LayoutTrezo/_PageHeader.cshtml" /> *@
       <!-- End Header Area -->
 
-      <div class="main-content-container overflow-hidden" id="main-content-app">
+     @*  <div class="main-content-container overflow-hidden" id="main-content-app">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-          @* <h3 class="mb-0 text-primary">@ViewBag.PageTitle</h3> *@
+           <h3 class="mb-0 text-primary">@ViewBag.PageTitle</h3> 
 
           <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb align-items-center mb-0 lh-1">
-              @* <li class="breadcrumb-item">
-								@if (IsGranted(SaaSHrmPermissions.Pages_Hrm_Administration_DashboardAdmin))
-								{
-									<a href="/Hrm/Dashboard" class="d-flex align-items-center text-decoration-none">
-										<i class="ri-home-4-line fs-18 text-primary me-1"></i>
-										<span class="text-secondary fw-medium hover">@L("AttendanceManagement")</span>
-									</a>
-								}
-								else if (IsGranted(SaaSHrmPermissions.Pages_Hrm_Administration_DashboardDepartment))
-								{
-									<a href="/Hrm/DashboardDepartment" class="d-flex align-items-center text-decoration-none">
-										<i class="ri-home-4-line fs-18 text-primary me-1"></i>
-										<span class="text-secondary fw-medium hover">@L("AttendanceManagement")</span>
-									</a>
-								}
-							</li> *@
               @if (ViewBag.Category != null)
               {
                 <li class="breadcrumb-item active" aria-current="page">
@@ -154,20 +138,25 @@
               </li>
             </ol>
           </nav>
-        </div>
+        </div> *@
 
         @* @await Component.InvokeAsync(typeof(HrmNotificationViewComponent)) *@
 
-        @RenderBody()
-      </div>
-
+        @await Html.PartialAsync("_Header.cshtml")
+        @await Html.PartialAsync("_SideBar.cshtml")
+        <div class="content-wrapper">
+          @await Html.PartialAsync("_Alerts.cshtml")
+          @RenderBody()
+        </div>
+        @await Html.PartialAsync("_Footer.cshtml")
+     @*  </div>
       <div class="flex-grow-1"></div>
 
       <!-- Start Footer Area -->
       <partial name="~/Views/Shared/LayoutTrezo/_PageFooter.cshtml" />
       <!-- End Footer Area -->
     </div>
-  </div>
+  </div> *@
   <!-- Start Main Content Area -->
   <!-- Start Theme Setting Area -->
   <div class="offcanvas offcanvas-end bg-white" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;">
@@ -282,48 +271,6 @@
   <script abp-src="/view-resources/App/_Bundles/app-common-scripts.js" asp-append-version="true"></script>
   <script abp-src="/view-resources/App/Layout/_Header.js" asp-append-version="true"></script>
   <script abp-src="/view-resources/App/Layout/_Layout.js" asp-append-version="true"></script>
-  @* @if (await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.IsQuickThemeSelectEnabled))
-	{
-		<script src="@(ApplicationPath)view-resources/Areas/App/Views/Layout/_ThemeSelectionPanel.js" asp-append-version="true"></script>
-	}
-
-	@if (isChatEnabled)
-	{
-		<script src="@(ApplicationPath)view-resources/App/Layout/_ChatBar.js" asp-append-version="true"></script>
-		<script src="@(ApplicationPath)Common/Scripts/Chat/chat.signalr.js" asp-append-version="true"></script>
-	} *@
-
-  @* @if (await SettingManager.GetSettingValueAsync<bool>(AppSettings.UserManagement.SessionTimeOut.IsEnabled) && AbpSession.UserId.HasValue)
-	{
-		<script src="@(ApplicationPath)view-resources/Areas/App/Views/_Bundles/InactivityController.min.js" asp-append-version="true"></script>
-	}
-	<script src="~@ScriptPaths.JQuery_Validation_Localization" asp-append-version="true"></script>
-	<script src="~@ScriptPaths.JQuery_Timeago_Localization" asp-append-version="true"></script> *@
-
-
-
-  @* <script src="~@ScriptPaths.Select2_Localization" asp-append-version="true"></script> *@
-
-  @* <script src="@(ApplicationPath)view-resources/Areas/App/Views/Layout/_ToggleDarkMode.js" asp-append-version="true"></script>
-	@if (theme.BaseSettings.Menu.SearchActive)
-	{
-	<script src="~/view-resources/App/Layout/_MenuSearchBar.min.js" asp-append-version="true"></script>
-	} *@
-
-  <!--end::Base Scripts -->
-  <!--begin::Page Snippets -->
-  @* <script>
-		app.supportsTenancyNameInUrl = @(WebUrlService.SupportsTenancyNameInUrl.ToString().ToLower());
-
-		// $(document).ready(function () {
-		// 	$(".sidebar-scrollhere")[0].scrollIntoView({
-		// 		behavior: "smooth", or "auto" or "instant"
-		// 		block: "start", or "end"
-		// 		inline: 'center'
-		// 	});
-		// });
-
-	</script> *@
   @await Html.PartialAsync("_Scripts.cshtml")
   @RenderSection("scripts", required: false)
   <!--end::Page Snippets -->
