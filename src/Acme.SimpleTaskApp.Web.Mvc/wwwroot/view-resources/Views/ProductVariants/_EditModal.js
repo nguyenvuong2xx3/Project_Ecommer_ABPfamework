@@ -7,10 +7,25 @@
 		let newImageFiles = [];        // Mảng File object
 		let deletedImageUrls = [];     // URL ảnh cũ bị xóa
 
+		const DEFAULT_IMAGE_PATH = '/img/products/default.png';
+
 		this.init = function (modalManager) {
 			_modalManager = modalManager;
 			var $modal = _modalManager.getModal();
 			_$form = $modal.find('form[name=EditProductVariantForm]');
+
+			// Thêm custom validator cho giá có format
+			$.validator.addMethod("formattedNumber", function (value, element) {
+				// Loại bỏ dấu chấm và kiểm tra xem có phải số hợp lệ không
+				const unformatted = value.replace(/\./g, '');
+				return this.optional(element) || /^\d+$/.test(unformatted);
+			}, "Giá bán phải là số hợp lệ");
+
+			$.validator.addMethod("formattedMin", function (value, element, param) {
+				// Loại bỏ dấu chấm và so sánh với giá trị tối thiểu
+				const unformatted = parseFloat(value.replace(/\./g, '')) || 0;
+				return this.optional(element) || unformatted >= param;
+			}, "Giá bán phải lớn hơn hoặc bằng {0}");
 
 			// Validate
 			_$form.validate({
@@ -30,8 +45,8 @@
 					},
 					Price: {
 						required: true,
-						number: true,
-						min: 0
+						formattedNumber: true,
+						formattedMin: 0
 					},
 					StockQuantity: {
 						required: true,
@@ -51,8 +66,8 @@
 					},
 					Price: {
 						required: 'Giá bán không được để trống',
-						number: 'Giá bán phải là số hợp lệ',
-						min: 'Giá bán phải lớn hơn hoặc bằng 0'
+						formattedNumber: 'Giá bán phải là số hợp lệ',
+						formattedMin: 'Giá bán phải lớn hơn hoặc bằng 0'
 					},
 					StockQuantity: {
 						required: 'Số lượng tồn kho không được để trống',
@@ -82,13 +97,21 @@
 			// Xử lý xóa ảnh cũ (đã có sẵn trên server)
 			$previewContainer.find('.img-preview-wrapper').each(function () {
 				const $wrapper = $(this);
-				const imgUrl = $wrapper.find('img').attr('src');
+				const $img = $wrapper.find('img');
+				const imgUrl = $img.attr('src');
+				const $removeBtn = $wrapper.find('.remove-img-btn');
 
-				$wrapper.find('.remove-img-btn').on('click', function (e) {
-					e.preventDefault();
-					deletedImageUrls.push(imgUrl);
-					$wrapper.remove();
-				});
+				// Kiểm tra nếu là ảnh mặc định thì ẩn nút xóa
+				if (isDefaultImage(imgUrl)) {
+					$removeBtn.hide();
+				} else {
+					// Chỉ bind event click cho ảnh không phải mặc định
+					$removeBtn.on('click', function (e) {
+						e.preventDefault();
+						deletedImageUrls.push(imgUrl);
+						$wrapper.remove();
+					});
+				}
 			});
 
 			// Click để chọn file
@@ -120,6 +143,23 @@
 			});
 		}
 
+		// Hàm kiểm tra xem có phải ảnh mặc định không
+		function isDefaultImage(imageUrl) {
+			if (!imageUrl) return false;
+
+			// Normalize URL để so sánh
+			const normalizedUrl = imageUrl.toLowerCase().trim();
+			const normalizedDefaultPath = DEFAULT_IMAGE_PATH.toLowerCase().trim();
+
+			// Kiểm tra các trường hợp:
+			// 1. URL chính xác bằng đường dẫn mặc định
+			// 2. URL kết thúc bằng đường dẫn mặc định (có thể có domain phía trước)
+			// 3. URL chứa đường dẫn mặc định
+			return normalizedUrl === normalizedDefaultPath ||
+				normalizedUrl.endsWith(normalizedDefaultPath) ||
+				normalizedUrl.includes('/img/products/default.png');
+		}
+
 		function handleNewFiles(files, $previewContainer) {
 			if (!files || files.length === 0) return;
 
@@ -135,6 +175,7 @@
 					const $img = $('<img>').attr('src', e.target.result).addClass('img-preview');
 					const $removeBtn = $('<button>').html('×').addClass('remove-img-btn').attr('type', 'button');
 
+					// Ảnh mới upload luôn có nút xóa
 					$removeBtn.on('click', function (e) {
 						e.preventDefault();
 						// Xóa khỏi mảng
@@ -159,14 +200,37 @@
 				return;
 			}
 
+			// Validate: Kiểm tra xem có ít nhất 1 ảnh không phải mặc định
+			const $previewContainer = $('#imagePreviewContainer');
+			const existingImages = $previewContainer.find('.img-preview-wrapper img');
+			let hasValidImage = false;
+
+			// Kiểm tra ảnh hiện có
+			existingImages.each(function () {
+				const imgUrl = $(this).attr('src');
+				if (!isDefaultImage(imgUrl)) {
+					hasValidImage = true;
+					return false; // Break loop
+				}
+			});
+
+			// Hoặc có ảnh mới được upload
+			if (newImageFiles.length > 0) {
+				hasValidImage = true;
+			}
+
+			//if (!hasValidImage) {
+			//	abp.message.warn('Vui lòng thêm ít nhất một ảnh cho sản phẩm (không phải ảnh mặc định)');
+			//	return;
+			//}
+
 			_modalManager.setBusy(true);
 
-			const formData = new FormData();	
+			const formData = new FormData();
 
 			// Thêm các field thông thường (trừ ImageFiles)
 			_$form.serializeArray().forEach(item => {
 				if (item.name !== 'ImageFiles') {
-					formData.append(item.name, item.value);
 					// Convert các trường số
 					if (item.name === 'Price') {
 						// Convert sang decimal/float
@@ -190,14 +254,16 @@
 				}
 			});
 
-			// Thêm ảnh mới (chỉ 1 lần)
+			// Thêm ảnh mới
 			newImageFiles.forEach(file => {
 				formData.append('ImageFiles', file);
 			});
 
-			// Thêm danh sách ảnh bị xóa
+			// Thêm danh sách ảnh bị xóa (không bao gồm ảnh mặc định)
 			deletedImageUrls.forEach((url, i) => {
-				formData.append(`DeletedImageUrls[${i}]`, url);
+				if (!isDefaultImage(url)) {
+					formData.append(`DeletedImageUrls[${i}]`, url);
+				}
 			});
 
 			console.log(">>> Dữ liệu gửi đi:", Array.from(formData.entries()));

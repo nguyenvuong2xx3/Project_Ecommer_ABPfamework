@@ -8,7 +8,7 @@ namespace Acme.SimpleTaskApp.Carts
 {
 	public interface ICartAppService : IApplicationService
 	{
-		Task<CartListDto> GetCart(GetCartInput input);
+		Task<CartListDto> GetCart();
 		Task CreateCart(int productId, int quantity);
 		Task DeleteCart(long userId);
 	}

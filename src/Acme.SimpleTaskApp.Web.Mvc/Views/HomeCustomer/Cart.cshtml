@@ -50,43 +50,43 @@
 							<tr>
 								<th scope="row">
 									<div class="d-flex align-items-center">
-										<img src="@product.Image" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="">
+										<img src="@product.ImageUrl" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="">
 									</div>
 								</th>
 								<td>
-									<p class="mb-0 mt-4">@product.ProductName</p>
+									<p class="mb-0 mt-4">@product.Name</p>
 								</td>
 								<td>
-									<p class="mb-0 mt-4" id="product-price-@product.ProductId">@product.Price.ToString("N0")đ</p>
+									<p class="mb-0 mt-4" id="productvariant-price-@product.IdProductVariant">@product.Price.ToString("N0")đ</p>
 								</td>
 								<td>
 									<div class="input-group quantity mt-4" style="width: 100px;">
 										<div class="input-group-btn">
 											<button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
-															data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+															data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
 												<i class="fa fa-minus"></i>
 											</button>
 										</div>
 
 										<input type="text" class="form-control form-control-sm text-center border-0"
-													 value="@product.Quantity" id="quantity-@product.ProductId">
+													 value="@product.Quantity" id="quantity-@product.IdProductVariant">
 
 										<div class="input-group-btn">
 											<button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
-															data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+															data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
 												<i class="fa fa-plus"></i>
 											</button>
 										</div>
 									</div>
 								</td>
 								<td>
-									<p id="product-total-@product.ProductId" class="mb-0 mt-4">
+									<p id="productvariant-total-@product.IdProductVariant" class="mb-0 mt-4">
 										@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}đ", product.Price * product.Quantity)
 									</p>
 								</td>
 								<td>
 									<button class="btn btn-md rounded-circle bg-light border mt-4 btl-click-delete"
-													data-product-id="@product.ProductId" data-product-cartid="@product.CartId">
+													data-product-id="@product.IdProductVariant" data-product-cartid="@product.IdCart">
 										<i class="fa fa-times text-danger"></i>
 									</button>
 								</td>

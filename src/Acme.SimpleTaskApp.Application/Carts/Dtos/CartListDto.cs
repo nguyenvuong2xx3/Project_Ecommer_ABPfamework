@@ -10,14 +10,16 @@ namespace Acme.SimpleTaskApp.Carts.Dtos
 {
 	public class CartListDto
 	{
-		public int Id { get; set; }
-
-		public long UserId { get; set; }
-
-		public DateTime CreationTime { get; set; }
-
-		public List<CartItemListDto> CartItems { get; set; }
-
-		public List<ProductListDto> Products { get; set; }
+		public List<CartDto> CartItems { get; set; }	
+	}
+	public class CartDto
+	{
+		public int IdCart { get; set; }
+		public int IdCartItem { get; set; }
+		public int IdProductVariant { get; set; }
+		public int Quantity { get; set; }
+		public decimal Price { get; set; }
+		public string ImageUrl { get; set; }
+		public string Name { get; set; }
 	}
 }

@@ -33,43 +33,43 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 
 		[HttpPost]
-		public async Task<IActionResult> CreateOrder(int PaymentMethod)
-		{
-			var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
-			var getCart = await _cartAppService.GetCart(new GetCartInput { UserId = currentUserId });
-			if (getCart.CartItems.Count > 0)
-			{
-				var orderDetails = getCart.CartItems.Select(cartItem => new OrderDetailDto
-				{
-					ProductId = cartItem.ProductId,
-					Quantity = cartItem.Quantity
-				}).ToList();
+		//public async Task<IActionResult> CreateOrder(int PaymentMethod)
+		//{
+		//	var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Cannot find user");
+		//	var getCart = await _cartAppService.GetCart(new GetCartInput { UserId = currentUserId });
+		//	if (getCart.CartItems.Count > 0)
+		//	{
+		//		var orderDetails = getCart.CartItems.Select(cartItem => new OrderDetailDto
+		//		{
+		//			ProductId = cartItem.ProductId,
+		//			Quantity = cartItem.Quantity
+		//		}).ToList();
 
-				var orderId = await _ordersAppService.CreateOrder(new CreateOrderInput
-				{
-					UserId = currentUserId,
-					OrderDetails = orderDetails,
-					PaymentMethod = PaymentMethod
-				});
-				await _cartAppService.DeleteCart(currentUserId);
+		//		var orderId = await _ordersAppService.CreateOrder(new CreateOrderInput
+		//		{
+		//			UserId = currentUserId,
+		//			OrderDetails = orderDetails,
+		//			PaymentMethod = PaymentMethod
+		//		});
+		//		await _cartAppService.DeleteCart(currentUserId);
 
-				var viewModel = await _ordersAppService.GetOrder(orderId);
+		//		var viewModel = await _ordersAppService.GetOrder(orderId);
 
-				var model = new OrderViewModel()
-				{
-					Status = viewModel.Status,
-					UserName = viewModel.UserName,
-					EmailAddress = viewModel.EmailAddress,
-					OrderDetails = viewModel.OrderDetails,
-					TotalPrice = viewModel.TotalPrice,
-					PaymentMethod = viewModel.PaymentMethod
-				};
+		//		var model = new OrderViewModel()
+		//		{
+		//			Status = viewModel.Status,
+		//			UserName = viewModel.UserName,
+		//			EmailAddress = viewModel.EmailAddress,
+		//			OrderDetails = viewModel.OrderDetails,
+		//			TotalPrice = viewModel.TotalPrice,
+		//			PaymentMethod = viewModel.PaymentMethod
+		//		};
 
-				return PartialView("_OrderSuccess", model);
-			}
+		//		return PartialView("_OrderSuccess", model);
+		//	}
 
-			return PartialView("_OrderSuccess", null);
-		}
+		//	return PartialView("_OrderSuccess", null);
+		//}
 
 		public async Task<IActionResult> DetailOrder(int orderId)
 		{

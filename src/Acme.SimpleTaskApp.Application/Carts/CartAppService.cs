@@ -16,11 +16,18 @@ public class CartAppService : ApplicationService, ICartAppService
 {
 	private readonly IRepository<Cart, int> _cartRepository;
 	private readonly IRepository<Product, int> _productRepository;
+	private readonly IRepository<ProductVariant, int> _productVariantRepository;
 	private readonly IRepository<CartItem, int> _cartItemRepository;
+	private readonly IRepository<ProductImage> _productImageRepository;
+
 
 	public CartAppService(IRepository<Cart, int> cartRepository, IRepository<CartItem, int> cartItemRepository,
-		IRepository<Product, int> productRepository)
+		IRepository<ProductVariant, int> productVariantRepository,
+		IRepository<ProductImage> productImageRepository,
+	IRepository<Product, int> productRepository)
 	{
+		_productImageRepository = productImageRepository;
+		_productVariantRepository = productVariantRepository;
 		_productRepository = productRepository;
 		_cartRepository = cartRepository;
 		_cartItemRepository = cartItemRepository;
@@ -80,44 +87,41 @@ public class CartAppService : ApplicationService, ICartAppService
 		}
 	}
 
-	public Task<CartListDto> GetCart(GetCartInput input)
+	public async Task<CartListDto> GetCart()
 	{
-		throw new NotImplementedException();
+		// 1. Lấy giỏ hàng và kiểm tra null
+		var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == AbpSession.UserId);
+
+		if (cart == null)
+		{
+			// Có thể trả về null hoặc giỏ hàng rỗng tùy logic
+			return new CartListDto { CartItems = new List<CartDto>() };
+		}
+
+		// Thay thế đoạn truy vấn cartItems trong phương thức GetCart bằng đoạn sau để chỉ lấy ảnh đầu tiên cho mỗi ProductVariant
+		var cartItems = (from cartItem in _cartItemRepository.GetAll().Where(ci => ci.CartId == cart.Id)
+										 join productVariant in _productVariantRepository.GetAll() on cartItem.ProductVariantId equals productVariant.Id
+										 join product in _productRepository.GetAll() on productVariant.ProductId equals product.Id
+										 // Lấy ảnh đầu tiên cho mỗi ProductVariant
+										 let firstImage = _productImageRepository.GetAll()
+												 .Where(img => img.ProductVariantId == productVariant.Id)
+												 .OrderBy(img => img.SortOrder)
+												 .FirstOrDefault()
+										 select new CartDto
+										 {
+											 IdCart = cart.Id,
+											 IdCartItem = cartItem.Id,
+											 IdProductVariant = productVariant.Id,
+											 Name = product.Name + " - " + productVariant.Storage + " - " + productVariant.Color,
+											 Quantity = cartItem.Quantity,
+											 Price = productVariant.Price,
+											 ImageUrl = firstImage != null ? firstImage.ImageUrl : null
+										 }).ToList();
+
+		return new CartListDto
+		{
+			CartItems = cartItems
+		};
 	}
-
-	//public async Task<CartListDto> GetCart(GetCartInput input)
-	//{
-	//	// 1. Lấy giỏ hàng và kiểm tra null
-	//	var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == input.UserId);
-
-	//	if (cart == null)
-	//	{
-	//		// Có thể trả về null hoặc giỏ hàng rỗng tùy logic
-	//		return new CartListDto { CartItems = new List<CartItemListDto>() };
-	//	}
-
-	//	// 2. Thực hiện join để lấy productName theo productId
-	//	var cartItems = await (from cartItem in _cartItemRepository.GetAll()
-	//												 join product in _productRepository.GetAll() on cartItem.ProductId equals product.Id
-	//												 where cartItem.CartId == cart.Id
-	//												 select new CartItemListDto
-	//												 {
-	//													 ProductId = cartItem.ProductId,
-	//													 CartId = cartItem.CartId,
-	//													 ProductName = product.Name,
-	//													 Quantity = cartItem.Quantity,
-	//													 Price = product.Price,
-	//													 Image = product.Image
-	//												 }).ToListAsync();
-
-	//	var result = new CartListDto
-	//	{
-	//		UserId = cart.UserId,
-	//		CreationTime = cart.CreationTime,
-	//		CartItems = cartItems
-	//	};
-
-	//	return result;
-	//}
 
 }

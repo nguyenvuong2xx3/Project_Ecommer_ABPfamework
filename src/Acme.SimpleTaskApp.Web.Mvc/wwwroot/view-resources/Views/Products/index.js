@@ -101,14 +101,14 @@
 						`   <button type="button" class="btn btn-sm bg-info detail-product" style="margin-top: 5px;" data-product-id="${row.id}" data-toggle="modal" >`,
 						`       <i class="fas fa-eye"></i> ${l('Details')}`,
 						'   </button>'
-						
+
 					].join('');
 				}
 			}
 		]
 	});
 
-	
+
 
 	// refresh
 	$(document).on('click', '.buttons-refresh', function () {
@@ -181,6 +181,9 @@
 					}).done(() => {
 						abp.notify.info(l('Xoá thành công'));
 						_$productsTable.ajax.reload();
+					}).fail((xhr) => {
+						let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá sản phẩm có thể là do sản phẩm đã được người dùng thêm vào giỏ hàng';
+						abp.notify.error(errorMsg);
 					});
 				}
 			}

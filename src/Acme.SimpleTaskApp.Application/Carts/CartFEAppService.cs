@@ -21,12 +21,18 @@ namespace Acme.SimpleTaskApp.Carts
 	{
 		private readonly IRepository<Cart, int> _cartRepository;
 		private readonly IRepository<CartItem, int> _cartItemRepository;
+		private readonly IRepository<Product, int> _productRepository;
+		private readonly IRepository<ProductVariant> _productVariantRepository;
 
 		public CartFrontendAppService(
 				IRepository<Cart, int> cartRepository,
+				IRepository<Product, int> productRepository,
+				IRepository<ProductVariant> productVariantRepository,
 				IRepository<CartItem, int> cartItemRepository)
 		{
 			_cartRepository = cartRepository;
+			_productVariantRepository = productVariantRepository;
+			_productRepository = productRepository;
 			_cartItemRepository = cartItemRepository;
 		}
 
@@ -35,19 +41,25 @@ namespace Acme.SimpleTaskApp.Carts
 			using var uow = UnitOfWorkManager.Begin();
 			using (CurrentUnitOfWork.SetTenantId(AbpSession.TenantId))
 				try
-			{
-				var currentUserId = AbpSession.UserId ?? throw new Exception("Chưa đăng nhập");
+				{
+					var currentUserId = AbpSession.UserId ?? throw new Exception("Chưa đăng nhập");
 					var cart = await _cartRepository.GetAll().FirstOrDefaultAsync(c => c.UserId == currentUserId);
 					if (cart == null)
 					{
 						return 0;
 
 					}
-					var cartItemCount = await _cartItemRepository.GetAll()
-							.Where(ci => ci.CartId == cart.Id)
-							.SumAsync(ci => ci.Quantity);
+					var cartItems = (from cartItem in _cartItemRepository.GetAll().Where(ci => ci.CartId == cart.Id)
+													 join productVariant in _productVariantRepository.GetAll() on cartItem.ProductVariantId equals productVariant.Id
+													 join product in _productRepository.GetAll() on productVariant.ProductId equals product.Id
+													 select new
+													 {
+														 Quantity = cartItem.Quantity
+													 }).ToList();
+
+					int cartItemCount = cartItems.Sum(ci => ci.Quantity);
 					return cartItemCount;
-			}
+				}
 				catch (Exception)
 				{
 					return 0;

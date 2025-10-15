@@ -5,8 +5,10 @@ using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Identity;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.Web.Models.Carts;
 using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
 using Acme.SimpleTaskApp.Web.Models.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -21,7 +23,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			private readonly IProductAppService _productAppService;
 			private readonly ICategoryAppService _categoryAppService;
-			//private readonly ICartAppService _cartAppService;
+			private readonly ICartAppService _cartAppService;
 			private readonly IHomeCustomerAppService _homeCustomerAppService;
 			private readonly SignInManager _signInManager;
 
@@ -32,14 +34,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			public HomeCustomerController(IProductAppService productAppService,
 																IHomeCustomerAppService homeCustomerAppService,
 																SignInManager signInManager,
-																ICategoryAppService categoryAppService
-																//ICartAppService cartAppService
+																ICategoryAppService categoryAppService,
+																ICartAppService cartAppService
 																//ICartItemAppService cartItemAppService
 																)
 			{
 				_homeCustomerAppService = homeCustomerAppService;
 				//_cartItemAppService = cartItemAppService;
-				//_cartAppService = cartAppService;
+				_cartAppService = cartAppService;
 				_signInManager = signInManager;
 				_productAppService = productAppService;
 				_categoryAppService = categoryAppService;
@@ -98,34 +100,29 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			//{
 			//	return View();
 			//}
-			////[Authorize]
-			//public async Task<ActionResult> Cart(GetCartInput input)
-			//{
-			//	// Kiểm tra user đã đăng nhập chưa
-			//	if (!AbpSession.UserId.HasValue)
-			//	{
-			//		// Nếu chưa đăng nhập → trả về view có message
-			//		ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
-			//		return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
-			//	}
 
-			//	// Có userId
-			//	input.UserId = AbpSession.UserId.Value;
+			[Authorize]
+			public async Task<ActionResult> Cart()
+			{
+				// Kiểm tra user đã đăng nhập chưa
+				if (!AbpSession.UserId.HasValue)
+				{
+					// Nếu chưa đăng nhập → trả về view có message
+					ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
+					return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
+				}
+				
+				// Gọi service lấy thông tin giỏ hàng
+				var cart = await _cartAppService.GetCart();
 
-			//	// Gọi service lấy thông tin giỏ hàng
-			//	var cart = await _cartAppService.GetCart(input);
+				// Ánh xạ sang ViewModel
+				var viewModel = new CartViewModel
+				{
+					CartItems = cart.CartItems
+				};
 
-			//	// Ánh xạ sang ViewModel
-			//	var viewModel = new CartViewModel
-			//	{
-			//		UserId = cart.UserId,
-			//		Id = cart.Id,
-			//		CreationTime = cart.CreationTime,
-			//		CartItems = cart.CartItems
-			//	};
-
-			//	return View(viewModel);
-			//}
+				return View(viewModel);
+			}
 
 		}
 	}

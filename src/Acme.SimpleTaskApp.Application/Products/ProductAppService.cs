@@ -17,6 +17,7 @@ namespace Acme.SimpleTaskApp.Products
 	//[AbpAuthorize]
 	public class ProductAppService : ApplicationService, IProductAppService
 	{
+		private readonly IRepository<CartItem, int> _cartItemRepository;
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductVariant> _productVariantRepository;
 		private readonly IRepository<Category> _categoryRepository;
@@ -25,12 +26,14 @@ namespace Acme.SimpleTaskApp.Products
 		private readonly IUploadFileAppService _uploadFileAppService;
 
 		public ProductAppService(IRepository<Product> productRepository,
+								IRepository<CartItem, int> cartItemRepository,
 								IRepository<Category> categoryRepository,
 								IRepository<ProductImage> productImageRepository,
 								IRepository<ProductVariant> productVariantRepository,
 								IUploadFileAppService uploadFileAppService,
 								IWebHostEnvironment env)
 		{
+			_cartItemRepository = cartItemRepository;
 			_productVariantRepository = productVariantRepository;
 			_productRepository = productRepository;
 			_uploadFileAppService = uploadFileAppService;
@@ -197,7 +200,7 @@ namespace Acme.SimpleTaskApp.Products
 				{
 					// ảnh cần xóa
 					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
-					 _productImageRepository.Delete(existingImages.Id);
+					_productImageRepository.Delete(existingImages.Id);
 					if (existingImages != null)
 					{
 						await _uploadFileAppService.RemoveImage(item);
@@ -228,6 +231,18 @@ namespace Acme.SimpleTaskApp.Products
 		public async Task<Product> DeleteProduct(int id)
 		{
 			var item = await _productRepository.GetAsync(id);
+			// validate nếu cart có sản phẩm được thêm vào giỏ hàng thì không được xóa
+			var cartItem = _cartItemRepository.GetAll();
+			var query = from ci in cartItem
+									join pv in _productVariantRepository.GetAll() on ci.ProductVariantId equals pv.Id
+									join p in _productRepository.GetAll() on pv.ProductId equals p.Id
+									where pv.ProductId == id
+									select p;
+
+			if (query.Any())
+			{
+				throw new UserFriendlyException("Không thể xóa sản phẩm này vì đã được người dùng thêm vào giỏ hàng");
+			}
 			if (item == null)
 			{
 				throw new UserFriendlyException("Product not found");

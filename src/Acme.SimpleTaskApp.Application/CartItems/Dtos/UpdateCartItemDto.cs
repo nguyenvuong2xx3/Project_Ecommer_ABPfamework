@@ -8,7 +8,7 @@ namespace Acme.SimpleTaskApp.CartItems.Dtos
 {
 	public class UpdateCartItemDto
 	{
-		public int ProductId { get; set; }
+		public int ProductVariantId { get; set; }
 
 		public int Quantity { get; set; }
 

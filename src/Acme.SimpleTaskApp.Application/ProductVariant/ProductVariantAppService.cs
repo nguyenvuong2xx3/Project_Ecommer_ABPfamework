@@ -8,6 +8,7 @@ using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.ProductVariants.Dtos;
 using Acme.SimpleTaskApp.UploadFile;
+using MailKit.Search;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -67,6 +68,18 @@ namespace Acme.SimpleTaskApp.ProductVariants
 					await _productImageRepository.InsertAsync(producImage);
 				}
 			}
+			else
+			{
+				var producImage = new ProductImage
+				{
+					ImageUrl = "/img/products/default.png",
+					SortOrder = 0,
+					AltText = "default",
+					ProductVariantId = input.Id,
+					ProductId = input.ProductId,
+				};
+				await _productImageRepository.InsertAsync(producImage);
+			}
 		}
 		public async Task EditProductVariant(ProductVariant input)
 		{
@@ -94,6 +107,16 @@ namespace Acme.SimpleTaskApp.ProductVariants
 					// ảnh cần xóa
 					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
 					_productImageRepository.Delete(existingImages.Id);
+					// tạo đường dẫn ảnh mặc định
+					var producImage = new ProductImage
+					{
+						ImageUrl = "/img/products/default.png",
+						SortOrder = 0,
+						AltText = "default",
+						ProductVariantId = input.Id,
+						ProductId = input.ProductId,
+					};
+					await _productImageRepository.InsertAsync(producImage);
 					if (existingImages != null)
 					{
 						await _uploadFileAppService.RemoveImage(item);
@@ -113,7 +136,7 @@ namespace Acme.SimpleTaskApp.ProductVariants
 						ProductVariantId = input.Id,
 						ImageUrl = imagePath,
 						SortOrder = generalSortOrder++,
-						AltText = "Dữ liệu ảnh lỗi"
+						AltText = "Ảnh sản phẩm",
 					};
 					_productImageRepository.Insert(productImage);
 				}

@@ -4,10 +4,10 @@
 
 	// Xử lý khi nhấn nút tăng
 	$(document).on('click', '.btl-click-plus', function () {
-		let productId = $(this).data('product-id');
-		let input = $(`#quantity-${productId}`);
-		let cartId = $(this).data('product-cartid');
-		let quantity = parseInt(input.val());
+		let productvariantId = $(this).data('productvariant-id');
+		let input = $(`#quantity-${productvariantId}`);
+		let cartId = $(this).data('productvariant-cartid');
+		let quantity = parseInt(input.val()) + 1;
 		// Lấy số hiện tại trong #cart-count
 		var $cartCount = $('#cart-count');
 		var currentCount = parseInt($cartCount.text()) || 0;
@@ -18,15 +18,15 @@
 		if (newCount > 0) {
 			$cartCount.css('display', 'inline-block');
 		}
-		updateCart(productId, quantity, input, cartId);
+		updateCart(productvariantId, quantity, input, cartId);
 	});
 
 	// Xử lý khi nhấn nút giảm
 	$(document).on('click', '.btl-click-minus', function () {
-		let productId = $(this).data('product-id');
-		let input = $(`#quantity-${productId}`);
-		let cartId = $(this).data('product-cartid');
-		let quantity = parseInt(input.val());
+		let productvariantId = $(this).data('productvariant-id');
+		let input = $(`#quantity-${productvariantId}`);
+		let cartId = $(this).data('productvariant-cartid');
+		let quantity = parseInt(input.val()) - 1;
 
 		// Lấy số hiện tại trong #cart-count
 		var $cartCount = $('#cart-count');
@@ -35,7 +35,7 @@
 
 		// Nếu số lượng sau khi giảm <= 0, xóa sản phẩm khỏi giỏ hàng
 		if (quantity < 1) {
-			deleteCartItem(productId, cartId, $cartCount);
+			deleteCartItem(productvariantId, cartId, $cartCount);
 
 			//// Giảm badge giỏ hàng
 			//$cartCount.text(newCount);
@@ -50,7 +50,7 @@
 			input.val(newQuantity);
 
 			// Cập nhật giỏ hàng
-			updateCart(productId, quantity, input, cartId);
+			updateCart(productvariantId, quantity, input, cartId);
 
 			// Giảm badge giỏ hàng
 			$cartCount.text(newCount);
@@ -63,31 +63,31 @@
 	});
 	// Xử lý khi người dùng thay đổi trực tiếp giá trị trong input
 	$(document).on('change', '.quantity-input', function () {
-		let productId = $(this).data('product-id');
+		let productvariantId = $(this).data('productvariant-id');
 		let input = $(`#quantity-${productId}`);
-		let cartId = $(this).data('product-cartid');
+		let cartId = $(this).data('productvariant-cartid');
 		let quantity = parseInt($(this).val());
 
 		if (isNaN(quantity) || quantity < 1) {
 			quantity = 1; // Đặt về giá trị tối thiểu là 1 nếu nhập sai
 		}
 
-		updateCart(productId, quantity, input, cartId);
+		updateCart(productvariantId, quantity, input, cartId);
 	});
 
 
 	// Hàm cập nhật giỏ hàng
-	function updateCart(productId, quantity, input, cartId) {
+	function updateCart(productvariantId, quantity, input, cartId) {
 		abp.ui.setBusy();
 		_cartItemService.updateItem({
-			productId: productId,
+			productvariantId: productvariantId,
 			cartId: cartId, // Thêm CartId
 			quantity: quantity
 		}).done(function () {
 			input.val(quantity);
-			const price = parseFloat($('#product-price-' + productId).text());
+			const price = parseFloat($('#productvariant-price-' + productvariantId).text());
 			const newTotal = price * quantity;
-			$('#product-total-' + productId).text(newTotal.toLocaleString('vi-VN') + ' VND');
+			$('#productvariant-total-' + productvariantId).text(newTotal.toLocaleString('vi-VN') + ' VND');
 			abp.notify.info('Cập nhật thành công!');
 		}).fail(function (error) {
 			abp.notify.error('Cập nhật thất bại!');
@@ -98,19 +98,20 @@
 	}
 
 	$(document).on('click', '.btl-click-delete', function () {
-		let productId = $(this).data('product-id');
-		let cartId = $(this).data('product-cartid');
-		deleteCartItem(productId, cartId);
+		let productvariantId = $(this).data('productvariant-id');
+		let cartId = $(this).data('productvariant-cartid');
+		deleteCartItem(productvariantId, cartId);
 	});
 
-	function deleteCartItem(productId, cartId) {
+	function deleteCartItem(productvariantId, cartId) {
 		abp.message.confirm(
-			'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
-			'Xác nhận xóa',
+			abp.utils.formatString(
+				'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?'),
+			null,
 			function (isConfirmed) {
 				if (isConfirmed) {
 					abp.ui.setBusy();
-					_cartItemService.deleteItem(productId, cartId)
+					_cartItemService.deleteItem(productvariantId, cartId)
 						.done(function () {
 							abp.notify.info('Xóa thành công!');
 							location.reload();
@@ -130,7 +131,7 @@
 							abp.ui.clearBusy();
 						});
 				} else {
-					document.getElementById(`quantity-${productId}`).value = 1;
+					document.getElementById(`quantity-${productvariantId}`).value = 1;
 				}
 			}
 		);
