@@ -1,8 +1,10 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.UI;
+using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Products.Dtos;
 using Acme.SimpleTaskApp.UploadFile;
@@ -14,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Products
 {
-	//[AbpAuthorize]
+	[AbpAuthorize]
 	public class ProductAppService : ApplicationService, IProductAppService
 	{
 		private readonly IRepository<CartItem, int> _cartItemRepository;
@@ -43,6 +45,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 
 		#region tạo mới
+		[AbpAuthorize(PermissionNames.Pages_products_create)]
 		public Product CreateProducts(CreateProductDto input)
 		{
 			// Tạo mới sản phẩm
@@ -135,11 +138,25 @@ namespace Acme.SimpleTaskApp.Products
 			}
 		}
 		#endregion
+
+		[AbpAuthorize(PermissionNames.Pages_products_view)]
 		public async Task<PagedResultDto<Product>> GetAllProduct(SearchProductDto input)
 		{
 			var query = _productRepository.GetAll()
-							.WhereIf(!string.IsNullOrWhiteSpace(input.Name), p => p.Name.Contains(input.Name))
-							.WhereIf(!string.IsNullOrWhiteSpace(input.Description), p => p.Description.Contains(input.Description));
+					.WhereIf(!string.IsNullOrWhiteSpace(input.SearchTerm), p =>
+							p.Name.Contains(input.SearchTerm))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.SKU), p => p.SKU.Contains(input.SKU))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.Name), p => p.Name.Contains(input.Name))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.Description), p => p.Description.Contains(input.Description))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.Screen), p => p.Screen.Contains(input.Screen))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.Processor), p => p.Processor.Contains(input.Processor))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.CameraSystem), p => p.CameraSystem.Contains(input.CameraSystem))
+					.WhereIf(!string.IsNullOrWhiteSpace(input.Battery), p => p.Battery.Contains(input.Battery))
+					.WhereIf(input.CategoryId.HasValue, p => p.CategoryId == input.CategoryId)
+					.WhereIf(input.StockQuantityFrom.HasValue, p => p.StockQuantity >= input.StockQuantityFrom.Value)
+					.WhereIf(input.StockQuantityTo.HasValue, p => p.StockQuantity <= input.StockQuantityTo.Value)
+					.WhereIf(input.StartTime.HasValue, p => p.CreationTime >= input.StartTime.Value)
+					.WhereIf(input.EndTime.HasValue, p => p.CreationTime <= input.EndTime.Value);
 
 			var totalCount = await query.CountAsync();
 
@@ -160,14 +177,16 @@ namespace Acme.SimpleTaskApp.Products
 					.GroupBy(pi => pi.ProductId)
 					.ToDictionary(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
 
-			// Set the default image for each product
+			// Set the default image and category name for each product
 			foreach (var product in products)
 			{
 				product.ImageUrl = defaultImages.ContainsKey(product.Id) ? defaultImages[product.Id] : null;
 			}
+
 			return new PagedResultDto<Product>(totalCount, products);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_products_view)]
 		public async Task<Product> GetProductById(int id)
 		{
 			if (id <= 0)
@@ -176,6 +195,8 @@ namespace Acme.SimpleTaskApp.Products
 			item.ImageUrls = _productImageRepository.GetAll().Where(x => x.ProductId == item.Id).Select(ig => ig.ImageUrl).ToList(); // lấy tất cả đường dẫn ảnh để hiển thị
 			return item;
 		}
+
+		[AbpAuthorize(PermissionNames.Pages_products_update)]
 		public async Task<Product> EditProduct(Product input)
 		{
 			var product = _productRepository.FirstOrDefault(input.Id);
@@ -228,6 +249,7 @@ namespace Acme.SimpleTaskApp.Products
 			return product;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_products_delete)]
 		public async Task<Product> DeleteProduct(int id)
 		{
 			var item = await _productRepository.GetAsync(id);

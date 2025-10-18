@@ -5,12 +5,14 @@ using Acme.SimpleTaskApp.Roles.Dto;
 
 namespace Acme.SimpleTaskApp.Roles
 {
-    public interface IRoleAppService : IAsyncCrudAppService<RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>
-    {
-        Task<ListResultDto<PermissionDto>> GetAllPermissions();
+	public interface IRoleAppService : IAsyncCrudAppService<RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>
+	{
+		Task<ListResultDto<PermissionDto>> GetAllPermissions();
 
-        Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
+		Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
 
-        Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
-    }
+		Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
+		Task<ListResultDto<TreePermissionDto>> GetAllTreePermissions();
+
+	}
 }

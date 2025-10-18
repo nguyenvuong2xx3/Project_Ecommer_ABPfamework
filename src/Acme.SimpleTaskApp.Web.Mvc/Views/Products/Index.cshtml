@@ -1,89 +1,211 @@
-﻿@using Acme.SimpleTaskApp.Web.Startup
+﻿﻿@using Acme.SimpleTaskApp.Web.Startup
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
 @model ProductViewModel
 
 @{
-	ViewBag.Title = L("Products");
-	ViewBag.CurrentPageName = PageNames.Products;
+  ViewBag.Title = L("Products");
+  ViewBag.CurrentPageName = PageNames.Products;
 }
 
 @section scripts
 {
-	<environment names="Development">
-		<script src="~/view-resources/Views/Products/Index.js" asp-append-version="true"></script>
-	</environment>
+  <environment names="Development">
+    <script src="~/view-resources/Views/Products/Index.js" asp-append-version="true"></script>
+  </environment>
 }
-<!-- Header -->
+
 <section class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-sm-6">
-				<h1>@L("Products")</h1>
-			</div>
-			<div class="col-sm-6">
-				<div class="btn-group float-sm-right">
-					<button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
-						<i class="fa fa-file-excel"></i> Excel
-					</button>
-					<div class="dropdown-menu">
-						<a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
-						<a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal	">Nhập Excel</a>
-					</div>
-				</div>
-				@* <a href="Products/Create" style="margin-right: 5px;" class="btn bg-blue float-sm-right">
-					<i class="fa fa-plus-square"></i> @L("Create")
-				</a> *@
-				<button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
-					<i class="fa fa-plus-square"></i>
-					@L("Create")
-				</button>
-			</div>
-		</div>
-	</div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1>@L("Products")</h1>
+      </div>
+      <div class="col-sm-6">
+        <div class="btn-group float-sm-right">
+          <button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-file-excel"></i> Excel
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
+            <a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal">Nhập Excel</a>
+          </div>
+        </div>
+        <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
+          <i class="fa fa-plus-square"></i>
+          @L("Create")
+        </button>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- Main Content -->
 <section class="content">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12">
-				<div class="card">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <form id="ProductSearchForm" class="form-horizontal">
+              <!-- Tìm kiếm cơ bản -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <input type="text" name="SearchTerm" id="SearchTerm" class="form-control txt-search" placeholder="@L("SearchWithThreeDot")" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-primary btn-search">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-					<!-- Card Header -->
-					<div class="card-header">
-						<div class="row">
-							@* <div class="col-md-6 "> *@
-							@* 	@await Html.PartialAsync("~/Views/Products/CategoryList.cshtml") *@
-							@* </div> *@
-							<div class="col-md-6">
-								@* @await Html.PartialAsync("~/Views/Products/Index.AdvancedSearch.cshtml") *@
-							</div>
-						</div>
-					</div>
+              <!-- Bộ lọc nâng cao -->
+              <div id="AdvacedAuditFiltersArea" style="display: none" class="row">
+                <!-- SKU -->
+                @* <div class="col-md-3">
+                  <label for="SKUFilter" class="form-label">@L("SKU")</label>
+                  <input type="text" id="SKUFilter" name="SKU" class="form-control" placeholder="Mã sản phẩm" />
+                </div> *@
 
-					<!-- Card Body -->
-					<div class="card-body">
-						<div class="table-responsive">
-							<table id="ProductsTable" class="table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th>@L("Name")</th>
-										<th style="width: 300px">@L("Description")</th>
-										@* <th>@L("Price")</th> *@
-										@* <th style="width: 100px">@L("Screen")</th> *@
-										<th style="width: 100px">@L("ImageUrl")</th>
-										<th>@L("CreationTime")</th>
-										<th style="width: 210px">@L("Actions")</th>
-									</tr>
-								</thead>
-								<tbody></tbody>
-							</table>
-						</div>
-					</div>
-				</div> <!-- End Card -->
-			</div>
-		</div>
-	</div>
+                <!-- Tên sản phẩm -->
+                <div class="col-md-3">
+                  <label for="NameFilter" class="form-label">@L("Name")</label>
+                  <input type="text" id="NameFilter" name="Name" class="form-control" placeholder="Tên sản phẩm" />
+                </div>
+
+                <!-- Danh mục -->
+                <div class="col-md-3">
+                  <label for="CategoryFilter" class="form-label">@L("Category")</label>
+                  <select id="CategoryFilter" name="CategoryId" class="form-control p-0 ps-2">
+                    <option value="">Tất cả danh mục</option>
+                    @if (Model.Categories != null)
+                    {
+                      foreach (var category in Model.Categories)
+                      {
+                        <option value="@category.Id">@category.Name</option>
+                      }
+                    }
+                  </select>
+                </div>
+
+                <!-- Màn hình -->
+                <div class="col-md-3 mt-2">
+                  <label for="ScreenFilter" class="form-label">@L("Screen")</label>
+                  <input type="text" id="ScreenFilter" name="Screen" class="form-control" placeholder="Thông số màn hình" />
+                </div>
+
+                <!-- Processor -->
+                <div class="col-md-3 mt-2">
+                  <label for="ProcessorFilter" class="form-label">@L("Processor")</label>
+                  <input type="text" id="ProcessorFilter" name="Processor" class="form-control" placeholder="Bộ vi xử lý" />
+                </div>
+
+                <!-- Camera -->
+                <div class="col-md-3 mt-2">
+                  <label for="CameraFilter" class="form-label">@L("CameraSystem")</label>
+                  <input type="text" id="CameraFilter" name="CameraSystem" class="form-control" placeholder="Hệ thống camera" />
+                </div>
+
+                <!-- Pin -->
+                <div class="col-md-3 mt-2">
+                  <label for="BatteryFilter" class="form-label">@L("Battery")</label>
+                  <input type="text" id="BatteryFilter" name="Battery" class="form-control" placeholder="Thông tin pin" />
+                </div>
+
+                <!-- Ngày tạo -->
+                <div class="col-md-3 mt-2">
+                  <label for="StartEndRange" class="form-label">@L("CreationTime")</label>
+                  <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="CreationTimeRange" />
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="col-md-12 mt-3">
+                  <button type="button" class="btn btn-primary btn-search">
+                    <i class="fa fa-search"></i> @L("Search")
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="ResetFilters">
+                    <i class="fa fa-refresh"></i> @L("Reset")
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hiển thị/Ẩn bộ lọc nâng cao -->
+              <div class="row mt-2">
+                <div class="col-12">
+                  <span id="ShowAdvancedFiltersSpan" class="text-muted clickable-item">
+                    <i class="fa fa-angle-down"></i> @L("ShowAdvancedFilter")
+                  </span>
+                  <span id="HideAdvancedFiltersSpan" class="text-muted clickable-item" style="display: none">
+                    <i class="fa fa-angle-up"></i> @L("HideAdvancedFilter")
+                  </span>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table id="ProductsTable" class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>@L("Name")</th>
+                     <th style="width: 100px">@L("Screen")</th>
+                    <th style="width: 100px">@L("Battery")</th>
+                    <th style="width: 100px">@L("CameraSystem")</th>
+                    <th style="width: 100px">@L("Processor")</th>
+                    <th style="width: 100px">@L("ImageUrl")</th>
+                    <th>@L("CreationTime")</th>
+                    <th style="width: 210px">@L("Actions")</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Modal chi tiết -->
+@* <div class="modal fade" id="ProductDetailModal" tabindex="-1" role="dialog" aria-labelledby="ProductDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <!-- Nội dung sẽ được load bằng AJAX -->
+    </div>
+  </div>
+</div> *@
+
+<!-- Modal import Excel -->
+@* <div class="modal fade" id="ImportExcelModal" tabindex="-1" role="dialog" aria-labelledby="ImportExcelModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ImportExcelModalLabel">Nhập dữ liệu từ Excel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="ImportExcelForm">
+          <div class="form-group">
+            <label for="excelFile">Chọn file Excel</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="excelFile" accept=".xlsx,.xls">
+              <label class="custom-file-label" for="excelFile">Chưa chọn file</label>
+            </div>
+          </div>
+          <div id="importError" class="alert alert-danger" style="display: none;"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary" id="btnImportExcel">Nhập dữ liệu</button>
+      </div>
+    </div>
+  </div>
+</div> *@

@@ -1,401 +1,544 @@
 ﻿(function ($) {
-	var _productService = abp.services.app.product,
-		l = abp.localization.getSource('SimpleTaskApp'),
-		_$modal = $('#ProductCreateModal'),
-		_$form = _$modal.find('form'),
-		_$table = $('#ProductsTable');
+  var _productService = abp.services.app.product,
+    l = abp.localization.getSource('SimpleTaskApp'),
+    _$modal = $('#ProductCreateModal'),
+    _$form = _$modal.find('form'),
+    _$table = $('#ProductsTable');
+
+  
+
+  var _createModal = new app.ModalManager({
+    viewUrl: abp.appPath + 'Products/CreateModal',
+    scriptUrl: abp.appPath + 'view-resources/Views/Products/_CreateModal.js',
+    modalClass: 'ProductCreateModal',
+    modalSize: 'modal-lg'
+  });
+
+  $('#CreateNewButton').click(function () {
+    _createModal.open();
+  });
+
+  var _editModal = new app.ModalManager({
+    viewUrl: abp.appPath + 'Products/EditModal',
+    scriptUrl: abp.appPath + 'view-resources/Views/Products/_EditModal.js',
+    modalClass: 'ProductEditModal',
+    modalSize: 'modal-lg'
+  });
+
+  $(document).on('click', '.edit-product', function () {
+    var productId = $(this).attr("data-product-id");
+    _editModal.open({ productId: productId });
+  });
 
 
-	var _createModal = new app.ModalManager({
-		viewUrl: abp.appPath + 'Products/CreateModal',
-		scriptUrl: abp.appPath + 'view-resources/Views/Products/_CreateModal.js',
-		modalClass: 'ProductCreateModal',
-		modalSize: 'modal-lg'
-	});
+  // Sửa lại toàn bộ phần Date Range Picker
+  var _selectedDateRange = {
+    StartTime: null,
+    EndTime: null
+  };
 
-	$('#CreateNewButton').click(function () {
-		_createModal.open();
-	});
+  // Date Range Picker - SỬA LẠI HOÀN TOÀN
+  $('#StartEndRange').daterangepicker({
+    autoUpdateInput: false,
+    opens: 'left',
+    locale: {
+      format: 'DD/MM/YYYY',
+      applyLabel: 'Áp dụng',
+      cancelLabel: 'Hủy bỏ',
+      fromLabel: 'Từ',
+      toLabel: 'Đến',
+      customRangeLabel: 'Phạm vi tùy chỉnh',
+      firstDay: 1
+    }
+  });
 
-	var _editModal = new app.ModalManager({
-		viewUrl: abp.appPath + 'Products/EditModal',
-		scriptUrl: abp.appPath + 'view-resources/Views/Products/_EditModal.js',
-		modalClass: 'ProductEditModal',
-		modalSize: 'modal-lg'
-	});
+  // Sự kiện apply - QUAN TRỌNG: phải dùng 'apply.daterangepicker'
+  $('#StartEndRange').on('apply.daterangepicker', function (ev, picker) {
+    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
 
-	$(document).on('click', '.edit-product', function () {
-		var productId = $(this).attr("data-product-id");
-		_editModal.open({ productId: productId });
-	});
+    // CẬP NHẬT _selectedDateRange - SỬA ĐỊNH DẠNG
+    _selectedDateRange.StartTime = picker.startDate.startOf('day').format('YYYY-MM-DDTHH:mm:ss');
+    _selectedDateRange.EndTime = picker.endDate.endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  });
 
-	var _$productsTable = _$table.DataTable({
-		paging: true,
-		serverSide: true,
-		listAction: {
-			ajaxFunction: _productService.getAllProduct,
-			inputFilter: function () {
-				return $('#ProductSearchForm').serializeFormToObject(true);
-			}
-		},
-		buttons: [
-			{
-				name: 'refresh',
-				text: '<i class="fas fa-redo-alt"></i>',
-				action: () => _$productsTable.draw(false),
-			}
-		],
-		responsive: {
-			details: {
-				type: 'column'
-			}
-		},
-		columnDefs: [
-			{
-				targets: 0,
-				data: 'name',
-				sortable: false
-			},
-			{
-				targets: 1,
-				data: 'description',
-				sortable: false
-			},
-			{
-				targets: 2,
-				data: 'imageUrl',
-				sortable: false,
-				render: function (data, type, row) {
-					if (data) {
-						return `<img src="${data}" alt="Ảnh sản phẩm" class="img-thumbnail d-block mx-auto" width="80" height="80" style="object-fit: cover;">`;
-					}
-					return '<span class="text-muted">Không có ảnh</span>';
-				}
-			},
-			{
-				targets: 3,
-				data: 'creationTime',
-				sortable: false,
-				render: function (data, type, row) {
-					if (data) {
-						return `<span class="badge bg-info">${data}</span>`;
-					}
-					return '<span class="text-muted">Không có số lượng</span>';
-				}
-
-			},
-			{
-				targets: 4,
-				data: null,
-				sortable: false,
-				autoWidth: true,
-				defaultContent: '',
-				render: (data, type, row, meta) => {
-					return [
-						`   <button type="button" class="btn btn-sm bg-secondary edit-product" data-product-id="${row.id}" data-toggle="modal" data-target="#ProductEditModal">`,
-						`       <i class="fas fa-pencil-alt"></i> ${l('Edit')}`,
-						'   </button>',
-						`   <button type="button" class="btn btn-sm bg-danger delete-product" data-product-id="${row.id}" data-product-name="${row.name}">`,
-						`       <i class="fas fa-trash"></i> ${l('Delete')}`,
-						'   </button>',
-						`   <button type="button" class="btn btn-sm bg-info detail-product" style="margin-top: 5px;" data-product-id="${row.id}" data-toggle="modal" >`,
-						`       <i class="fas fa-eye"></i> ${l('Details')}`,
-						'   </button>'
-
-					].join('');
-				}
-			}
-		]
-	});
+  $('#StartEndRange').on('cancel.daterangepicker', function (ev, picker) {
+    $(this).val('');
+    _selectedDateRange.StartTime = null;
+    _selectedDateRange.EndTime = null;
+  });
 
 
+  // Hiển thị/Ẩn bộ lọc nâng cao
+  $('#ShowAdvancedFiltersSpan').click(function () {
+    $('#ShowAdvancedFiltersSpan').hide();
+    $('#HideAdvancedFiltersSpan').show();
+    $('#AdvacedAuditFiltersArea').slideDown();
+  });
 
-	// refresh
-	$(document).on('click', '.buttons-refresh', function () {
-		_$productsTable.ajax.reload();
-	});
+  $('#HideAdvancedFiltersSpan').click(function () {
+    $('#HideAdvancedFiltersSpan').hide();
+    $('#ShowAdvancedFiltersSpan').show();
+    $('#AdvacedAuditFiltersArea').slideUp();
+  });
 
-	// lưu sản phẩm
-	_$form.find('.save-button').on('click', (e) => {
-		e.preventDefault();
+  // Reset bộ lọc
+  $('#ResetFilters').click(function () {
+    $('#ProductSearchForm')[0].reset();
+    _selectedDateRange.StartTime = null;
+    _selectedDateRange.EndTime = null;
+    $('#StartEndRange').val('');
+    _$productsTable.ajax.reload();
+  });
 
-		if (!_$form.valid()) {
-			return;
-		}
+  // DataTable
+  var _$productsTable = _$table.DataTable({
+    paging: true,
+    serverSide: true,
+    processing: true,
+    listAction: {
+      ajaxFunction: _productService.getAllProduct,
+      inputFilter: function () {
+        var formData = $('#ProductSearchForm').serializeFormToObject(true);
+        if (_selectedDateRange.StartTime) {
+          formData.startTime = moment(_selectedDateRange.StartTime).format('YYYY-MM-DDT00:00:00');
+        }
+        if (_selectedDateRange.EndTime) {
+          formData.endTime = moment(_selectedDateRange.EndTime).format('YYYY-MM-DDT23:59:59');
+        }
+        return formData;
+      }
+    },
+    buttons: [
+      {
+        name: 'refresh',
+        text: '<i class="fas fa-redo-alt"></i>',
+        action: () => _$productsTable.draw(false),
+      }
+    ],
+    responsive: {
+      details: {
+        type: 'column'
+      }
+    },
+    columnDefs: [
+      {
+        targets: 0,
+        data: 'name',
+        sortable: false
+      },
+      {
+        targets: 1,
+        data: 'screen',
+        sortable: false
+      },
+      {
+        targets: 2,
+        data: 'battery',
+        sortable: false
+      },
+      {
+        targets: 3,
+        data: 'cameraSystem',
+        sortable: false
+      },
+      {
+        targets: 4,
+        data: 'processor',
+        sortable: false
+      },
+      {
+        targets: 5,
+        data: 'imageUrl',
+        sortable: false,
+        render: function (data, type, row) {
+          if (data) {
+            return `<img src="${data}" alt="Ảnh sản phẩm" class="img-thumbnail d-block mx-auto" width="80" height="80" style="object-fit: cover;">`;
+          }
+          return '<span class="text-muted">Không có ảnh</span>';
+        }
+      },
+      {
+        targets: 6,
+        data: 'creationTime',
+        sortable: false,
+        render: function (data, type, row) {
+          if (data) {
+            return `<span class="badge bg-info">${moment(data).format('DD-MM-YYYY HH:MM')}</span>`;
+          }
+          return '<span class="text-muted">Không có số lượng</span>';
+        }
+      },
+      {
+        targets: 7,
+        data: null,
+        sortable: false,
+        autoWidth: true,
+        defaultContent: '',
+        render: (data, type, row, meta) => {
+          return [
+            `   <button type="button" class="btn btn-sm bg-secondary edit-product" data-product-id="${row.id}" data-toggle="modal" data-target="#ProductEditModal">`,
+            `       <i class="fas fa-pencil-alt"></i> ${l('Edit')}`,
+            '   </button>',
+            `   <button type="button" class="btn btn-sm bg-danger delete-product" data-product-id="${row.id}" data-product-name="${row.name}">`,
+            `       <i class="fas fa-trash"></i> ${l('Delete')}`,
+            '   </button>',
+            `   <button type="button" class="btn btn-sm bg-info detail-product" style="margin-top: 5px;" data-product-id="${row.id}" data-toggle="modal" >`,
+            `       <i class="fas fa-eye"></i> ${l('Details')}`,
+            '   </button>'
 
-		var product = _$form.serializeFormToObject(); // Lấy dữ liệu từ form
-		var formData = new FormData(_$form[0]);
-		abp.ui.setBusy(_$modal);
-		$.ajax({
+          ].join('');
+        }
+      }
+    ],
+    language: {
+      emptyTable: "Không có dữ liệu",
+      info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+      infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
+      infoFiltered: "(lọc từ _MAX_ tổng số bản ghi)",
+      lengthMenu: "Hiển thị _MENU_ bản ghi",
+      loadingRecords: "Đang tải...",
+      processing: "Đang xử lý...",
+      search: "Tìm kiếm:",
+      zeroRecords: "Không tìm thấy kết quả phù hợp",
+      paginate: {
+        first: "Đầu",
+        last: "Cuối",
+        next: "Tiếp",
+        previous: "Trước"
+      }
+    }
+  });
 
-			url: abp.appPath + 'Products/Create', // Đường dẫn đến phương thức trong controller
-			type: 'POST',
-			processData: false, // Important! Không xử lý dữ liệu
-			contentType: false, // Important!  Không đặt kiểu dữ liệu
-			data: formData,
-			error: function (xhr, textStatus, errorThrown) {
-				var errorMessage;
-				if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
-					errorMessage = xhr.responseJSON.errors.join("<br/>");
-				}
-				else {
-					errorMessage = "Có lỗi xảy ra khi tạo mới sản phẩm (Có thể do upload ảnh không đúng định dạng (.jpg, .jpeg, .png, .gif)";
-				}
-				$("#error-message").html(errorMessage).show();
-			}
-		}).done(function () {
-			/*resetDefaultImage();*/
-			resetDefaultImage();
-			_$modal.modal('hide');
-			_$form[0].reset();
-			abp.notify.info(l('Lưu thành công'));
-			_$productsTable.ajax.reload();
+  // Refresh table
+  $(document).on('click', '.buttons-refresh', function () {
+    _$productsTable.ajax.reload();
+  });
 
-		}).always(function () {
+  // Tìm kiếm
+  $('.btn-search').on('click', (e) => {
+    updateDateRangeFromPicker();
+    _$productsTable.ajax.reload();
+  });
 
-			abp.ui.clearBusy(_$modal);
+  $('.txt-search').on('keypress', (e) => {
+    if (e.which == 13) {
+      updateDateRangeFromPicker();
+      _$productsTable.ajax.reload();
+      return false;
+    }
+  });
+  function updateDateRangeFromPicker() {
+    var currentValue = $('#StartEndRange').val();
+    if (currentValue) {
+      var dates = currentValue.split(' - ');
+      if (dates.length === 2) {
+        var startDate = moment(dates[0], 'DD/MM/YYYY').startOf('day');
+        var endDate = moment(dates[1], 'DD/MM/YYYY').endOf('day');
 
-		});
-	});
+        _selectedDateRange.StartTime = startDate.format('YYYY-MM-DDTHH:mm:ss');
+        _selectedDateRange.EndTime = endDate.format('YYYY-MM-DDTHH:mm:ss');
+      }
+    }
+  }
+  // Lưu sản phẩm
+  //_$form.find('.save-button').on('click', (e) => {
+  //  e.preventDefault();
 
+  //  if (!_$form.valid()) {
+  //    return;
+  //  }
 
-	/// xóa sản phẩm
-	$(document).on('click', '.delete-product', function () {
-		var productId = $(this).attr("data-product-id");
-		var productName = $(this).attr('data-product-name');
+  //  var formData = new FormData(_$form[0]);
+  //  abp.ui.setBusy(_$modal);
 
-		deleteProduct(productId, productName);
-	});
-	function deleteProduct(productId, productName) {
-		abp.message.confirm(
-			abp.utils.formatString(
-				l('Bạn có muốn xóa'),
-				productName),
-			null,
-			(isConfirmed) => {
-				if (isConfirmed) {
-					$.ajax({
-						url: '/Products/Delete',
-						type: 'POST',
-						data: { id: productId }
-					}).done(() => {
-						abp.notify.info(l('Xoá thành công'));
-						_$productsTable.ajax.reload();
-					}).fail((xhr) => {
-						let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá sản phẩm có thể là do sản phẩm đã được người dùng thêm vào giỏ hàng';
-						abp.notify.error(errorMsg);
-					});
-				}
-			}
-		);
-	}
+  //  $.ajax({
+  //    url: abp.appPath + 'Products/Create',
+  //    type: 'POST',
+  //    processData: false,
+  //    contentType: false,
+  //    data: formData,
+  //    error: function (xhr, textStatus, errorThrown) {
+  //      var errorMessage;
+  //      if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+  //        errorMessage = xhr.responseJSON.errors.join("<br/>");
+  //      } else {
+  //        errorMessage = "Có lỗi xảy ra khi tạo mới sản phẩm (Có thể do upload ảnh không đúng định dạng (.jpg, .jpeg, .png, .gif)";
+  //      }
+  //      $("#error-message").html(errorMessage).show();
+  //    }
+  //  }).done(function () {
+  //    resetDefaultImage();
+  //    _$modal.modal('hide');
+  //    _$form[0].reset();
+  //    abp.notify.info(l('Lưu thành công'));
+  //    _$productsTable.ajax.reload();
+  //  }).always(function () {
+  //    abp.ui.clearBusy(_$modal);
+  //  });
+  //});
 
+  // Xóa sản phẩm
+  $(document).on('click', '.delete-product', function () {
+    var productId = $(this).attr("data-product-id");
+    var productName = $(this).attr('data-product-name');
+    deleteProduct(productId, productName);
+  });
 
-	$('#ExportExcelBtn').click(function () {
-		var input = {
-			filter: $('#ProductsTableFilter').val(),
-		};
+  function deleteProduct(productId, productName) {
+    abp.message.confirm(
+      abp.utils.formatString(l('Bạn có muốn xóa sản phẩm "{0}"?'), productName),
+      null,
+      (isConfirmed) => {
+        if (isConfirmed) {
+          $.ajax({
+            url: '/Products/Delete',
+            type: 'POST',
+            data: { id: productId }
+          }).done(() => {
+            abp.notify.info(l('Xoá thành công'));
+            _$productsTable.ajax.reload();
+          }).fail((xhr) => {
+            let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá sản phẩm có thể là do sản phẩm đã được người dùng thêm vào giỏ hàng';
+            abp.notify.error(errorMsg);
+          });
+        }
+      }
+    );
+  }
 
-		// Hiển thị loading
-		abp.ui.setBusy();
+  // Export Excel
+  //$('#ExportExcelBtn').click(function () {
+  //  var input = $('#ProductSearchForm').serializeFormToObject(true);
 
-		// Gọi API export
-		$.ajax({
-			url: abp.appPath + 'Products/ExportToExcel',
-			type: 'POST',
-			data: JSON.stringify(input),
-			contentType: 'application/json',
-			headers: {
-				'RequestVerificationToken': abp.security.antiForgery.getToken()
-			},
-			xhrFields: {
-				responseType: 'blob' // QUAN TRỌNG: để nhận dữ liệu kiểu file
-			},
-			success: function (blob) {
-				var url = window.URL.createObjectURL(blob);
-				var a = document.createElement('a');
-				a.href = url;
-				a.download = 'Danh_sach_san_pham.xlsx';
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
+  //  // Thêm phạm vi ngày vào input export
+  //  if (_selectedDateRange.StartTime) {
+  //    input.CreationTimeStart = _selectedDateRange.StartTime;
+  //  }
+  //  if (_selectedDateRange.EndTime) {
+  //    input.CreationTimeEnd = _selectedDateRange.EndTime;
+  //  }
 
-				abp.notify.success('Xuất Excel thành công');
-			},
-			error: function (xhr) {
-				abp.notify.error('Xuất Excel thất bại: ' + xhr.statusText);
-			},
-			complete: function () {
-				abp.ui.clearBusy();
-			}
-		});
+  //  abp.ui.setBusy();
 
-	});
+  //  $.ajax({
+  //    url: abp.appPath + 'Products/ExportToExcel',
+  //    type: 'POST',
+  //    data: JSON.stringify(input),
+  //    contentType: 'application/json',
+  //    headers: {
+  //      'RequestVerificationToken': abp.security.antiForgery.getToken()
+  //    },
+  //    xhrFields: {
+  //      responseType: 'blob'
+  //    },
+  //    success: function (blob) {
+  //      var url = window.URL.createObjectURL(blob);
+  //      var a = document.createElement('a');
+  //      a.href = url;
+  //      a.download = 'Danh_sach_san_pham.xlsx';
+  //      document.body.appendChild(a);
+  //      a.click();
+  //      window.URL.revokeObjectURL(url);
+  //      document.body.removeChild(a);
+  //      abp.notify.success('Xuất Excel thành công');
+  //    },
+  //    error: function (xhr) {
+  //      abp.notify.error('Xuất Excel thất bại: ' + xhr.statusText);
+  //    },
+  //    complete: function () {
+  //      abp.ui.clearBusy();
+  //    }
+  //  });
+  //});
 
-	// xem chi tiết sản phẩm
-	$(document).on('click', '.detail-product', function () {
-		var productId = $(this).data("product-id");
-		abp.ajax({
-			url: abp.appPath + 'Products/DetailModal?productId=' + productId,
-			type: 'GET',
-			dataType: 'html',
-			success: function (content) {
-				// Chèn nội dung vào modal-content
-				$('#ProductDetailModal .modal-content').html(content);
-				// Hiển thị modal
-				$('#ProductDetailModal').modal('show');
-			},
-			error: function (e) {
-				abp.notify.error('Could not load detail form');
-			}
-		});
-	});
+  // Xem chi tiết sản phẩm
+  $(document).on('click', '.detail-product', function () {
+    var productId = $(this).data("product-id");
+    abp.ajax({
+      url: abp.appPath + 'Products/DetailModal?productId=' + productId,
+      type: 'GET',
+      dataType: 'html',
+      success: function (content) {
+        $('#ProductDetailModal .modal-content').html(content);
+        $('#ProductDetailModal').modal('show');
+      },
+      error: function (e) {
+        abp.notify.error('Không thể tải form chi tiết');
+      }
+    });
+  });
 
+  // Import Excel
+  //$(document).ready(function () {
+  //  $('#excelFile').on('change', function () {
+  //    var fileName = $(this).val().split('\\').pop();
+  //    $(this).next('.custom-file-label').html(fileName || 'Chưa chọn file');
+  //    $('#importError').hide();
+  //  });
 
+  //  $('#btnImportExcel').click(function () {
+  //    var fileInput = $('#excelFile')[0];
+  //    if (!fileInput.files || fileInput.files.length === 0) {
+  //      $('#importError').text('Vui lòng chọn file Excel').show();
+  //      return;
+  //    }
 
-	abp.event.on('product.edited', (data) => {
-		_$productsTable.ajax.reload();
-	});
+  //    var formData = new FormData();
+  //    formData.append('file', fileInput.files[0]);
 
-	_$modal.on('shown.bs.modal', () => {
-		_$modal.find('input:not([type=hidden]):first').focus();
-	}).on('hidden.bs.modal', () => {
-		_$form.clearForm();
-	});
+  //    abp.ui.setBusy($('#ImportExcelModal'));
+  //    $.ajax({
+  //      url: abp.appPath + 'Products/ImportFromExcel',
+  //      type: 'POST',
+  //      data: formData,
+  //      processData: false,
+  //      contentType: false,
+  //      success: function (response) {
+  //        abp.notify.success('Nhập dữ liệu thành công!');
+  //        $('#ImportExcelModal').modal('hide');
+  //        _$productsTable.ajax.reload();
+  //      },
+  //      error: function (xhr) {
+  //        var errorMessage = xhr.responseJSON?.message || 'Lỗi khi nhập dữ liệu';
+  //        $('#importError').html(errorMessage).show();
+  //      },
+  //      complete: function () {
+  //        abp.ui.clearBusy($('#ImportExcelModal'));
+  //      }
+  //    });
+  //  });
 
-	$('.btn-search').on('click', (e) => {
-		_$productsTable.ajax.reload();
-	});
+  //  $('#ImportExcelModal').on('hidden.bs.modal', function () {
+  //    $('#ImportExcelForm')[0].reset();
+  //    $('.custom-file-label').html('Chưa chọn file');
+  //    $('#importError').hide();
+  //  });
+  //});
 
-	$('.txt-search').on('keypress', (e) => {
-		if (e.which == 13) {
-			_$productsTable.ajax.reload();
-			return false;
-		}
-	});
-	function resetDefaultImage() {
-		const input = document.getElementById('productImage');
-		const preview = document.getElementById('productImagePreview');
-		const deleteBtn = document.getElementById('deleteProductImageBtn');
-		if (input) input.value = '';
-		if (preview) {
-			preview.src = '';
-			preview.style.display = 'none';
-		}
-		if (deleteBtn) deleteBtn.style.display = 'none';
-	}
-	// Khi modal đóng, reset cả form & ảnh:
-	$('#ProductCreateModal').on('hidden.bs.modal', function () {
-		$('#ProductCreateModal form')[0].reset(); // hoặc _$form[0].reset();
-		resetDefaultImage();
-		$("#error-message").hide(); // reset lỗi nếu có
-	});
+  // Reset ảnh mặc định
+  function resetDefaultImage() {
+    const input = document.getElementById('productImage');
+    const preview = document.getElementById('productImagePreview');
+    const deleteBtn = document.getElementById('deleteProductImageBtn');
+    if (input) input.value = '';
+    if (preview) {
+      preview.src = '';
+      preview.style.display = 'none';
+    }
+    if (deleteBtn) deleteBtn.style.display = 'none';
+  }
 
+  // Reset form khi đóng modal
+  $('#ProductCreateModal').on('hidden.bs.modal', function () {
+    $('#ProductCreateModal form')[0].reset();
+    resetDefaultImage();
+    $("#error-message").hide();
+  });
 
-	// ===== Xử lý Import Excel =====
-	$(document).ready(function () {
-		// Hiển thị tên file khi chọn
-		$('#excelFile').on('change', function () {
-			var fileName = $(this).val().split('\\').pop();
-			$(this).next('.custom-file-label').html(fileName || 'Chưa chọn file');
-			$('#importError').hide();
-		});
+  // Validation form
+  $(document).ready(function () {
+    $("form[name='productCreateForm']").validate({
+      rules: {
+        Name: {
+          required: true,
+          minlength: 5,
+          maxlength: 128
+        },
+        Description: {
+          required: true,
+          minlength: 10,
+          maxlength: 256
+        },
+        SKU: {
+          required: true,
+          minlength: 3,
+          maxlength: 50
+        },
+        Screen: {
+          required: true,
+          minlength: 5,
+          maxlength: 100
+        },
+        Processor: {
+          required: true,
+          minlength: 3,
+          maxlength: 100
+        },
+        CameraSystem: {
+          required: true,
+          minlength: 5,
+          maxlength: 200
+        },
+        Battery: {
+          required: true,
+          minlength: 5,
+          maxlength: 100
+        },
+        CategoryId: {
+          required: true
+        },
+        StockQuantity: {
+          required: true,
+          min: 0,
+          number: true
+        }
+      },
+      messages: {
+        Name: {
+          required: "Tên sản phẩm không được để trống",
+          minlength: "Tên sản phẩm phải có ít nhất 5 ký tự",
+          maxlength: "Tên sản phẩm tối đa 128 ký tự"
+        },
+        Description: {
+          required: "Mô tả không được để trống",
+          minlength: "Mô tả phải có ít nhất 10 ký tự",
+          maxlength: "Mô tả tối đa 256 ký tự"
+        },
+        SKU: {
+          required: "Mã SKU không được để trống",
+          minlength: "Mã SKU phải có ít nhất 3 ký tự",
+          maxlength: "Mã SKU tối đa 50 ký tự"
+        },
+        Screen: {
+          required: "Thông số màn hình không được để trống",
+          minlength: "Thông số màn hình phải có ít nhất 5 ký tự"
+        },
+        Processor: {
+          required: "Bộ vi xử lý không được để trống",
+          minlength: "Thông tin bộ vi xử lý phải có ít nhất 3 ký tự"
+        },
+        CameraSystem: {
+          required: "Thông tin camera không được để trống",
+          minlength: "Thông tin camera phải có ít nhất 5 ký tự"
+        },
+        Battery: {
+          required: "Thông tin pin không được để trống",
+          minlength: "Thông tin pin phải có ít nhất 5 ký tự"
+        },
+        CategoryId: {
+          required: "Vui lòng chọn danh mục sản phẩm"
+        },
+        StockQuantity: {
+          required: "Số lượng tồn kho không được để trống",
+          min: "Số lượng tồn kho không được âm",
+          number: "Số lượng tồn kho phải là số"
+        }
+      },
+      errorElement: "div",
+      errorClass: "text-danger"
+    });
+  });
 
-		// Gửi file Excel lên server
-		$('#btnImportExcel').click(function () {
-			var fileInput = $('#excelFile')[0];
-			if (!fileInput.files || fileInput.files.length === 0) {
-				$('#importError').text('Vui lòng chọn file Excel').show();
-				return;
-			}
+  // Event khi product được edit
+  abp.event.on('product.edited', (data) => {
+    _$productsTable.ajax.reload();
+  });
 
-			var formData = new FormData();
-			formData.append('file', fileInput.files[0]);
-
-			abp.ui.setBusy($('#ImportExcelModal'));
-			$.ajax({
-				url: abp.appPath + 'Products/ImportFromExcel',
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					abp.notify.success('Nhập dữ liệu thành công!');
-					$('#ImportExcelModal').modal('hide');
-					_$productsTable.ajax.reload(); // Reload bảng sản phẩm
-				},
-				error: function (xhr) {
-					var errorMessage = xhr.responseJSON?.message || 'Lỗi khi nhập dữ liệu';
-					$('#importError').html(errorMessage).show();
-				},
-				complete: function () {
-					abp.ui.clearBusy($('#ImportExcelModal'));
-				}
-			});
-		});
-
-		// Reset form khi đóng modal
-		$('#ImportExcelModal').on('hidden.bs.modal', function () {
-			$('#ImportExcelForm')[0].reset();
-			$('.custom-file-label').html('Chưa chọn file');
-			$('#importError').hide();
-		});
-	});
-	//validate
-	$(document).ready(function () {
-		$("form[name='productCreateForm']").validate({
-			rules: {
-				Name: {
-					required: true,
-					minlength: 5,
-					maxlength: 128
-				},
-				Description: {
-					required: true,
-					minlength: 10,
-					maxlength: 256
-				},
-				Price: {
-					required: true,
-					number: true,
-					min: 1000
-				},
-				ImageFile: {
-					required: false,
-					//accept: "jpg|jpeg|png|gif"
-				},
-				State: {
-					required: true
-				},
-				CategoryId: {
-					required: true
-				}
-			},
-			messages: {
-				Name: {
-					required: "Tên sản phẩm không được để trống",
-					minlength: "Tên sản phẩm phải có ít nhất 5 ký tự",
-					maxlength: "Tên sản phẩm tối đa 128 ký tự"
-				},
-				Description: {
-					required: "Mô tả không được để trống",
-					minlength: "Mô tả phải có ít nhất 10 ký tự",
-					maxlength: "Mô tả tối đa 256 ký tự"
-				},
-				Price: {
-					required: "Giá sản phẩm không được để trống",
-					min: "Giá phải lớn hơn 1000",
-					number: "Giá phải là một số hợp lệ"
-				},
-				ImageFile: {
-					extension: "Ảnh phải có định dạng .jpg, .jpeg, .png, .gif"
-				},
-			},
-			errorElement: "div",
-			errorClass: "text-danger"
-		});
-	});
-
+  // Focus khi modal hiển thị
+  _$modal.on('shown.bs.modal', () => {
+    _$modal.find('input:not([type=hidden]):first').focus();
+  }).on('hidden.bs.modal', () => {
+    _$form.clearForm();
+  });
 
 })(jQuery);

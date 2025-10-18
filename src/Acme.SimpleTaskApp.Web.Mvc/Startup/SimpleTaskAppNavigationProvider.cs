@@ -72,7 +72,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									L("Products"),
 									url: "Products",
 									icon: "fa fa-cart-plus",
-									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products_view)
 							)
 					).AddItem(
 							new MenuItemDefinition(

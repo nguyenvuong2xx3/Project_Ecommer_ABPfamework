@@ -259,5 +259,77 @@
     "inputFiles": [
       "wwwroot/themes/trezo/assets/css/sidebar-menu.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-daterangepicker/daterangepicker.min.css",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-daterangepicker/daterangepicker.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-daterangepicker/daterangepicker.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-daterangepicker/daterangepicker.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-daterangepicker/moment.min.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-daterangepicker/moment.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-daterangepicker/package.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-daterangepicker/package.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-timepicker/bootstrap-timepicker.min.css",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-timepicker/bootstrap-timepicker.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bs-timepicker/bootstrap-timepicker.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bs-timepicker/bootstrap-timepicker.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/App/Roles/PermissionsTree.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/App/Roles/PermissionsTree.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/App/Roles/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/App/Roles/_CreateModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/libs/abp-web-resources/abp/framework/scripts/libs/common-scripts.min.min.js",
+    "inputFiles": [
+      "wwwroot/libs/abp-web-resources/abp/framework/scripts/libs/common-scripts.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/App/Roles/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/App/Roles/Index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Roles/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Roles/_CreateModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Roles/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Roles/_EditModal.js"
+    ]
   }
 ]

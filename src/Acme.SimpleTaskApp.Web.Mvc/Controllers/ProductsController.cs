@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Abp.AspNetCore.Mvc.Authorization;
 using System.Collections.Generic;
 using Abp.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Acme.SimpleTaskApp.Authorization;
+using Abp.Authorization;
 
 
 namespace Acme.SimpleTaskApp.Web.Controllers
@@ -39,10 +42,18 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_categoryAppService = categoryAppService;
 			this.webHostEnvironment = webHostEnvironment;
 		}
+		[AbpAuthorize(PermissionNames.Pages_products_view)]
 		public async Task<ActionResult> Index()
 		{
-			return View();
+			var query = _categoryRepository.GetAll();
+			var model = new ProductViewModel()
+			{
+				Categories = query.ToList()
+			};
+			return View(model);
 		}
+
+		[AbpAuthorize(PermissionNames.Pages_products_create)]
 		public async Task<PartialViewResult> CreateModal()
 		{
 			var categories = await _categoryRepository.GetAllListAsync();
@@ -55,6 +66,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_CreateProductModal", model);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_products_create)]
 		public IActionResult CreateProduct(CreateProductDto model)
 		{
 			if (ModelState.IsValid)
@@ -69,6 +81,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			}
 			return View("Create");
 		}
+
+		[AbpAuthorize(PermissionNames.Pages_products_update)]
 		public async Task<PartialViewResult> EditModal(int productId)
 		{
 			var categories = await _categoryRepository.GetAllAsync();
@@ -81,10 +95,12 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return PartialView("_EditProductModal", model);
 		}
+		[AbpAuthorize(PermissionNames.Pages_products_update)]
 		public async Task EditProduct(Product model)
 		{
 			var product = await _productAppService.EditProduct(model);
 		}
+		[AbpAuthorize(PermissionNames.Pages_products_delete)]
 		public async Task Delete(int id)
 		{
 			await _productAppService.DeleteProduct(id);

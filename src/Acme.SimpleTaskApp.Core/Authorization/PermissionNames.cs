@@ -14,6 +14,7 @@
 		public const string Pages_products_update = "Pages.product.update";
 		public const string Pages_products_delete = "Pages.product.delete";
 		public const string Pages_products_search = "Pages.product.search";
+		public const string Pages_products_view = "Pages.product.view";
 
 		public const string Pages_categories = "Pages.category";
 		public const string Pages_category_update = "Pages.category.update";

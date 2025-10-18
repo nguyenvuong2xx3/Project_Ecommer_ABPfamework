@@ -10,18 +10,18 @@ namespace Acme.SimpleTaskApp.Products.Dtos
 {
 	public class SearchProductDto : PagedAndSortedResultRequestDto
 	{
+		public string SearchTerm { get; set; }
+		public string SKU { get; set; }
 		public string Name { get; set; }
-
 		public string Description { get; set; }
-
-		public decimal Price { get; set; }
-
-		public DateTime CreationTime { get; set; }
-
-		//public ProductState State { get; set; }
-
-		public string Keyword { get; set; }
-
-		public string Image { get; set; }  // Lưu đường dẫn ảnh
+		public string Screen { get; set; }
+		public string Processor { get; set; }
+		public string CameraSystem { get; set; }
+		public string Battery { get; set; }
+		public int? CategoryId { get; set; }
+		public int? StockQuantityFrom { get; set; }
+		public int? StockQuantityTo { get; set; }
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
 	}
 }

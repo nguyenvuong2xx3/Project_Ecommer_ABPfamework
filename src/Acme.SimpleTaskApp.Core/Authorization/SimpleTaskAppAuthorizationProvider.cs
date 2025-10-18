@@ -18,6 +18,7 @@ namespace Acme.SimpleTaskApp.Authorization
 			product.CreateChildPermission(PermissionNames.Pages_products_update, L("UpdateProduct"));
 			product.CreateChildPermission(PermissionNames.Pages_products_delete, L("DeleteProduct"));
 			product.CreateChildPermission(PermissionNames.Pages_products_search, L("SearchProduct"));
+			product.CreateChildPermission(PermissionNames.Pages_products_view, L("ViewProduct"));
 
 
 			var category = context.CreatePermission(PermissionNames.Pages_categories, L("Categories"));
