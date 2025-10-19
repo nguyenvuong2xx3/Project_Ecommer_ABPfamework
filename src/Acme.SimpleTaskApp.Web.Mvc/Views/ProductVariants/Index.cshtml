@@ -1,91 +1,189 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.ProductVariants
 ﻿@using Acme.SimpleTaskApp.Web.Startup
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
-@model ProductViewModel
+@model ProductVariantViewModel
 
 @{
-	ViewBag.Title = L("ProductVariants");
-	ViewBag.CurrentPageName = PageNames.ProductVariants;
+  ViewBag.Title = L("ProductVariants");
+  ViewBag.CurrentPageName = PageNames.ProductVariants;
 }
 
 @section scripts
 {
-	<environment names="Development">
-		<script src="~/view-resources/Views/ProductVariants/index.js" asp-append-version="true"></script>
-	</environment>
+  <environment names="Development">
+    <script src="~/view-resources/Views/ProductVariants/index.js" asp-append-version="true"></script>
+  </environment>
 }
+
 <!-- Header -->
-<section class="content-header p-0">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-sm-6">
-				<h1>@L("ProductVariants")</h1>
-			</div>
-			<div class="col-sm-6">
-				<div class="btn-group float-sm-right">
-					<button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
-						<i class="fa fa-file-excel"></i> Excel
-					</button>
-					<div class="dropdown-menu">
-						<a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
-						<a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal	">Nhập Excel</a>
-					</div>
-				</div>
-				@* <a href="Products/Create" style="margin-right: 5px;" class="btn bg-blue float-sm-right">
-					<i class="fa fa-plus-square"></i> @L("Create")
-				</a> *@
-				<button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
-					<i class="fa fa-plus-square"></i>
-					@L("Create")
-				</button>
-			</div>
-		</div>
-	</div>
+<section class="content-header pb-3">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1>@L("ProductVariants")</h1>
+      </div>
+      <div class="col-sm-6">
+        <div class="btn-group float-sm-right">
+          <button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-file-excel"></i> Excel
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
+            <a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal">Nhập Excel</a>
+          </div>
+        </div>
+        <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
+          <i class="fa fa-plus-square"></i>
+          @L("Create")
+        </button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- Main Content -->
 <section class="content">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12">
-				<div class="card">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- Card Header -->
+          <div class="card-header">
+            <form id="ProductVariantSearchForm" class="form-horizontal">
+              <!-- Tìm kiếm cơ bản -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <input type="text" name="SearchTerm" id="SearchTerm" class="form-control txt-search" placeholder="@L("SearchWithThreeDot")" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-primary btn-search">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-					<!-- Card Header -->
-					<div class="card-header">
-						<div class="row">
-							@* <div class="col-md-6 "> *@
-							@* 	@await Html.PartialAsync("~/Views/Products/CategoryList.cshtml") *@
-							@* </div> *@
-							<div class="col-md-6">
-								@* @await Html.PartialAsync("~/Views/Products/Index.AdvancedSearch.cshtml") *@
-							</div>
-						</div>
-					</div>
+              <!-- Bộ lọc nâng cao -->
+              <div id="AdvacedAuditFiltersArea" style="display: none" class="row">
+                <!-- Tên sản phẩm -->
+                <div class="col-md-3">
+                  <label for="ProductNameFilter" class="form-label">@L("ProductName")</label>
+                  <input type="text" id="ProductNameFilter" name="ProductName" class="form-control" placeholder="Tên sản phẩm" />
+                </div>
 
-					<!-- Card Body -->
-					<div class="card-body">
-						<div class="table-responsive">
-							<table id="ProductVariantsTable" class="table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th>@L("ProductName")</th>
-										<th>@L("ImageUrl")</th>
-										<th>@L("Ram")</th>
-										<th>@L("Storage")</th>
-										<th>@L("Color")</th>
-										<th>@L("StockQuantity")</th>
-										<th>@L("Price")</th>
-										<th>@L("CreationTime")</th>
-										<th>@L("Action")</th>
-									</tr>
-								</thead>
-								<tbody></tbody>
-							</table>
-						</div>
-					</div>
-				</div> <!-- End Card -->
-			</div>
-		</div>
-	</div>
+                <div class="col-md-3">
+                  <label for="ProductFilter" class="form-label">@L("Category")</label>
+                  <select id="ProductFilter" name="ProductId" class="form-control p-0 ps-2">
+                    <option value="">Tất cả sản phẩm</option>
+                    @if (Model.Products != null)
+                    {
+                      foreach (var product in Model.Products)
+                      {
+                        <option value="@product.Id">@product.Name</option>
+                      }
+                    }
+                  </select>
+                </div>
+                <!-- RAM -->
+                <div class="col-md-3">
+                  <label for="RamFilter" class="form-label">@L("Ram")</label>
+                  <input type="text" id="RamFilter" name="Ram" class="form-control" placeholder="Dung lượng RAM" />
+                </div>
+
+                <!-- Storage -->
+                <div class="col-md-3">
+                  <label for="StorageFilter" class="form-label">@L("Storage")</label>
+                  <input type="text" id="StorageFilter" name="Storage" class="form-control" placeholder="Bộ nhớ trong" />
+                </div>
+
+                <!-- Color -->
+                <div class="col-md-3">
+                  <label for="ColorFilter" class="form-label">@L("Color")</label>
+                  <input type="text" id="ColorFilter" name="Color" class="form-control" placeholder="Màu sắc" />
+                </div>
+
+                <!-- SKU -->
+                <div class="col-md-3 mt-2">
+                  <label for="SKUFilter" class="form-label">@L("SKU")</label>
+                  <input type="text" id="SKUFilter" name="SKU" class="form-control" placeholder="Mã SKU" />
+                </div>
+
+                <!-- Khoảng giá -->
+                <div class="col-md-3 mt-2">
+                  <label for="PriceRangeFilter" class="form-label">@L("PriceRange")</label>
+                  <div class="row">
+                    <div class="col-6">
+                      <input type="number" id="MinPriceFilter" name="MinPrice" class="form-control" placeholder="Giá thấp nhất" min="0" />
+                    </div>
+                    <div class="col-6">
+                      <input type="number" id="MaxPriceFilter" name="MaxPrice" class="form-control" placeholder="Giá cao nhất" min="0" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Số lượng tồn kho -->
+                <div class="col-md-3 mt-2">
+                  <label for="StockQuantityFilter" class="form-label">@L("StockQuantity")</label>
+                  <input type="number" id="StockQuantityFilter" name="StockQuantity" class="form-control" placeholder="Số lượng tồn kho" min="0" />
+                </div>
+
+                <!-- Ngày tạo -->
+                <div class="col-md-3 mt-2">
+                  <label for="StartEndRange" class="form-label">@L("CreationTime")</label>
+                  <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="CreationTimeRange" />
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="col-md-12 mt-3">
+                  <button type="button" class="btn btn-primary btn-search">
+                    <i class="fa fa-search"></i> @L("Search")
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="ResetFilters">
+                    <i class="fa fa-refresh"></i> @L("Reset")
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hiển thị/Ẩn bộ lọc nâng cao -->
+              <div class="row mt-2">
+                <div class="col-12">
+                  <span id="ShowAdvancedFiltersSpan" class="text-muted clickable-item">
+                    <i class="fa fa-angle-down"></i> @L("ShowAdvancedFilter")
+                  </span>
+                  <span id="HideAdvancedFiltersSpan" class="text-muted clickable-item" style="display: none">
+                    <i class="fa fa-angle-up"></i> @L("HideAdvancedFilter")
+                  </span>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="table-responsive">
+              <table id="ProductVariantsTable" class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>@L("ProductName")</th>
+                    <th>@L("ImageUrl")</th>
+                    <th>@L("Ram")</th>
+                    <th>@L("Storage")</th>
+                    <th>@L("Color")</th>
+                    <th>@L("StockQuantity")</th>
+                    <th>@L("Price")</th>
+                    <th>@L("CreationTime")</th>
+                    <th>@L("Action")</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div> <!-- End Card -->
+      </div>
+    </div>
+  </div>
 </section>

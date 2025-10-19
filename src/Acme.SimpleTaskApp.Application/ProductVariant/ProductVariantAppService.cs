@@ -166,40 +166,116 @@ namespace Acme.SimpleTaskApp.ProductVariants
 		public async Task<PagedResultDto<ProductVariant>> GetAllProductVariant(GetProductVariantsInput input)
 		{
 			var query = _productVariantRepository.GetAll();
+
+			// Lọc theo ProductId (nếu có)
 			if (input.ProductId.HasValue)
 			{
 				query = query.Where(v => v.ProductId == input.ProductId.Value);
 			}
 
+			// Lọc theo tên sản phẩm (tìm trong bảng Product)
+			if (!string.IsNullOrWhiteSpace(input.ProductName))
+			{
+				var productQuery = _productRepository.GetAll()
+						.Where(p => p.Name.Contains(input.ProductName))
+						.Select(p => p.Id);
+
+				query = query.Where(v => productQuery.Contains(v.ProductId));
+			}
+
+			// Lọc theo RAM
+			if (!string.IsNullOrWhiteSpace(input.Ram))
+			{
+				query = query.Where(v => v.Ram.Contains(input.Ram));
+			}
+
+			// Lọc theo Storage
+			if (!string.IsNullOrWhiteSpace(input.Storage))
+			{
+				query = query.Where(v => v.Storage.Contains(input.Storage));
+			}
+
+			// Lọc theo Color
+			if (!string.IsNullOrWhiteSpace(input.Color))
+			{
+				query = query.Where(v => v.Color.Contains(input.Color));
+			}
+
+			// Lọc theo SKU
+			if (!string.IsNullOrWhiteSpace(input.SKU))
+			{
+				query = query.Where(v => v.SKU.Contains(input.SKU));
+			}
+
+			// Lọc theo khoảng giá
+			if (input.MinPrice.HasValue)
+			{
+				query = query.Where(v => v.Price >= input.MinPrice.Value);
+			}
+			if (input.MaxPrice.HasValue)
+			{
+				query = query.Where(v => v.Price <= input.MaxPrice.Value);
+			}
+
+			// Lọc theo số lượng tồn kho
+			if (input.StockQuantity.HasValue)
+			{
+				query = query.Where(v => v.StockQuantity == input.StockQuantity.Value);
+			}
+
+			// Lọc theo khoảng thời gian tạo
+			if (input.StartTime.HasValue)
+			{
+				query = query.Where(v => v.CreationTime >= input.StartTime.Value);
+			}
+			if (input.EndTime.HasValue)
+			{
+				query = query.Where(v => v.CreationTime <= input.EndTime.Value);
+			}
+
+			// Tìm kiếm tổng hợp (SearchTerm) - tìm trong nhiều trường
+			if (!string.IsNullOrWhiteSpace(input.SearchTerm))
+			{
+				var searchTerm = input.SearchTerm.Trim().ToLower();
+
+				// Tìm trong bảng Product cho tên sản phẩm
+				var productSearchQuery = _productRepository.GetAll()
+						.Where(p => p.Name.ToLower().Contains(searchTerm))
+						.Select(p => p.Id);
+
+				query = query.Where(v =>
+						v.Ram.ToLower().Contains(searchTerm) ||
+						v.Storage.ToLower().Contains(searchTerm) ||
+						v.Color.ToLower().Contains(searchTerm) ||
+						v.SKU.ToLower().Contains(searchTerm) ||
+						productSearchQuery.Contains(v.ProductId)
+				);
+			}
+
 			var totalCount = await query.CountAsync();
 
 			var items = await query.OrderByDescending(p => p.CreationTime)
-					.PageBy(input)
-					.ToListAsync();
+							.PageBy(input)
+							.ToListAsync();
 
 			// Get product images
-			var productVariantIds = query.Select(p => p.Id).ToList();
+			var productVariantIds = items.Select(p => p.Id).ToList();
 			var productImages = await _productImageRepository.GetAll()
-					.Where(pi => productVariantIds.Contains(pi.ProductVariantId.Value))
-					.OrderBy(pi => pi.SortOrder)
-					.ToListAsync();
+							.Where(pi => productVariantIds.Contains(pi.ProductVariantId.Value))
+							.OrderBy(pi => pi.SortOrder)
+							.ToListAsync();
 
 			// Group images by product and take the first one for each product
 			var defaultImages = productImages
-					.GroupBy(pi => pi.ProductVariantId)
-					.ToDictionary(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
+							.GroupBy(pi => pi.ProductVariantId)
+							.ToDictionary(g => g.Key.Value, g => g.FirstOrDefault()?.ImageUrl);
 
 			// Fetch product names
 			var productIds = items.Select(i => i.ProductId).Distinct().ToList();
 			var products = await _productRepository.GetAll()
-					.Where(p => productIds.Contains(p.Id))
-					.ToDictionaryAsync(p => p.Id, p => p.Name);
+							.Where(p => productIds.Contains(p.Id))
+							.ToDictionaryAsync(p => p.Id, p => p.Name);
 
-			// Set the default image for each product
-			foreach (var item in items)
-			{
-				item.ImageUrl = defaultImages.ContainsKey(item.Id) ? defaultImages[item.Id] : null;
-			}
 			var resultItems = items.Select(item =>
 			{
 				var productName = products.ContainsKey(item.ProductId) ? products[item.ProductId] : null;
@@ -214,11 +290,15 @@ namespace Acme.SimpleTaskApp.ProductVariants
 					Price = item.Price,
 					StockQuantity = item.StockQuantity,
 					SKU = item.SKU,
-					ImageUrl = defaultImages.ContainsKey(item.Id) ? defaultImages[item.Id] : null
+					ImageUrl = defaultImages.ContainsKey(item.Id) ? defaultImages[item.Id] : null,
+					CreationTime = item.CreationTime // Đảm bảo có CreationTime
 				};
 			}).ToList();
+
 			return new PagedResultDto<ProductVariant>(totalCount, resultItems);
 		}
+
+
 		public async Task<ProductVariant> GetById(int id)
 		{
 			if (id <= 0)

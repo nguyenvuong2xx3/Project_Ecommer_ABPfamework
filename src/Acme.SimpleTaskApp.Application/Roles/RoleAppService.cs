@@ -232,6 +232,21 @@ namespace Acme.SimpleTaskApp.Roles
 
 			return permissionTree;
 		}
+
+		public async Task<PagedResultDto<RoleListDto>> GetPagedRolesAsync(PagedRoleResultRequestDto input)
+		{
+			var query = _roleManager.Roles.AsQueryable();
+			query = query.WhereIf(!input.Keyword.IsNullOrWhiteSpace(), r => r.Name.Contains(input.Keyword) || r.DisplayName.Contains(input.Keyword));
+			var totalCount = await query.CountAsync();
+			var roles = await ApplySorting(query, input)
+					.PageBy(input)
+					.ToListAsync();
+			var roleListDtos = ObjectMapper.Map<List<RoleListDto>>(roles);
+			return new PagedResultDto<RoleListDto>(
+					totalCount,
+					roleListDtos
+			);
+		}
 	}
 }
 

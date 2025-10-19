@@ -21,7 +21,12 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 		public IActionResult Index()
 		{
-			return View();
+			var getallProduct = _productRepository.GetAll().ToList();
+			var model = new ProductVariantViewModel()
+			{
+				Products = getallProduct
+			};
+			return View(model);
 		}
 		public ActionResult CreateModal()
 		{

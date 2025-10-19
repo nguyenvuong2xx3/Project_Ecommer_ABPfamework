@@ -1,49 +1,154 @@
 ﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
-@model Acme.SimpleTaskApp.Web.Models.Roles.RoleListViewModel
+@using Acme.SimpleTaskApp.Web.Models.Roles
+@model RoleListViewModel
 @{
-    Layout = null;
+  Layout = null;
 }
-<div class="modal fade" id="RoleCreateModal" tabindex="-1" role="dialog" aria-labelledby="RoleCreateModalLabel" data-backdrop="static">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            @await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("CreateNewRole")))
-            <form name="roleCreateForm" role="form" class="form-horizontal">
-                <div class="modal-body">
-                    <div class="form-group row required">
-                        <label class="col-md-3 col-form-label" for="rolename">@L("RoleName")</label>
-                        <div class="col-md-9">
-                            <input id="rolename" type="text" name="Name" class="form-control" required maxlength="32" minlength="2">
-                        </div>
-                    </div>
-                    <div class="form-group row required">
-                        <label class="col-md-3 col-form-label" for="displayname">@L("DisplayName")</label>
-                        <div class="col-md-9">
-                            <input id="displayname" type="text" name="DisplayName" class="form-control" required maxlength="32" minlength="2">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="role-description">@L("RoleDescription")</label>
-                        <div class="col-md-9">
-                            <textarea id="role-description" name="Description" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label">@L("Permissions")</label>
-                        <div class="col-md-9">
-                            <div class="row">
-                                @foreach (var permission in Model.Permissions)
-                                {
-                                    <div class="col-md-6">
-                                        <input type="checkbox" name="permission" value="@permission.Name" id="permission-@permission.Name" checked="checked" />
-                                        <label for="permission-@permission.Name">@permission.DisplayName</label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
-            </form>
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("CreateNewRole")))
+
+<form name="roleCreateForm" role="form" class="form-horizontal">
+  <div class="modal-body">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="roleTabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="info-tab" data-toggle="tab" href="#tab-info" role="tab">@L("RoleInfo")</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="permissions-tab" data-toggle="tab" href="#tab-permissions" role="tab">@L("Permissions")</a>
+      </li>
+    </ul>
+
+    <div class="tab-content p-3 border border-top-0">
+      <!-- Thông tin vai trò -->
+      <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label fw-bold">@L("RoleName") <span class="text-danger">*</span></label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" name="Name" required maxlength="32" minlength="2" placeholder="Ví dụ: Admin, Manager" />
+          </div>
         </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label fw-bold">@L("DisplayName") <span class="text-danger">*</span></label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" name="DisplayName" required maxlength="32" minlength="2" placeholder="Ví dụ: Quản trị viên, Quản lý" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label fw-bold">@L("RoleDescription")</label>
+          <div class="col-md-9">
+            <textarea class="form-control" name="Description" rows="3" maxlength="500" placeholder="Mô tả chi tiết về vai trò và quyền hạn..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chọn quyền -->
+      <div class="tab-pane fade" id="tab-permissions" role="tabpanel">
+        <div class="row mb-3">
+          <div class="col-12">
+            <h6 class="fw-bold border-bottom pb-2">@L("SelectPermissions")</h6>
+
+            <!-- Search permissions -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-search"></i></span>
+                  <input type="text" id="permissionSearch" class="form-control" placeholder="@L("SearchPermissions")..." />
+                </div>
+              </div>
+              <div class="col-md-6 text-end">
+                <button type="button" id="selectAllPermissions" class="btn btn-outline-primary btn-sm me-2">
+                  <i class="fas fa-check-double"></i> @L("SelectAll")
+                </button>
+                <button type="button" id="deselectAllPermissions" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-times"></i> @L("DeselectAll")
+                </button>
+              </div>
+            </div>
+
+            <!-- Permission tree container -->
+            <div class="permission-tree-container border rounded p-3">
+              <!-- Loading indicator -->
+              <div class="permission-tree-loading text-center py-3">
+                <i class="fas fa-spinner fa-spin fa-2x text-muted mb-2"></i>
+                <p class="text-muted">@L("Loading")...</p>
+              </div>
+
+              <!-- Tree will be rendered here -->
+              <div id="permissionTree" class="permission-tree" style="max-height: 400px; overflow-y: auto; display: none;"></div>
+            </div>
+
+            <!-- Selected permissions summary -->
+            <div class="selected-permissions-summary mt-3">
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span id="selectedPermissionsCount">0</span> @L("PermissionsSelected")
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<style>
+  .permission-tree {
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  /* Ẩn highlight khi click */
+  .jstree-clicked {
+    background: none !important;
+    color: inherit !important;
+    font-weight: normal !important;
+  }
+
+  /* Ẩn highlight khi hover */
+  .jstree-anchor:hover {
+    background: none !important;
+    color: inherit !important;
+  }
+
+  /* Chỉ hiển thị dấu tick cho checkbox */
+  .jstree-checked > .jstree-anchor {
+    background: none !important;
+    color: inherit !important;
+    font-weight: normal !important;
+  }
+
+
+
+  /* Styling cho checkbox tick */
+  .jstree-checkbox {
+    margin-right: 8px;
+  }
+
+  /* Khi được chọn, chỉ thay đổi màu icon (tuỳ chọn) */
+  .jstree-checked .jstree-leaf .jstree-icon:before {
+    color: #28a745 !important; /* Green khi được chọn */
+  }
+
+  .jstree-anchor {
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: none !important; /* Bỏ transition */
+  }
+
+  /* Search highlight vẫn giữ nguyên */
+  .jstree-search {
+    color: #d32f2f !important;
+    font-weight: 600;
+    background-color: #ffebee !important;
+  }
+
+  /* Đảm bảo text không bị thay đổi khi chọn */
+  .jstree-checked > .jstree-anchor .jstree-anchor {
+    color: inherit !important;
+    background: none !important;
+  }
+</style>
