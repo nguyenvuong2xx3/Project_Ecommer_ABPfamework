@@ -457,22 +457,18 @@
         Screen: {
           required: true,
           minlength: 5,
-          maxlength: 100
         },
         Processor: {
           required: true,
           minlength: 3,
-          maxlength: 100
         },
         CameraSystem: {
           required: true,
           minlength: 5,
-          maxlength: 200
         },
         Battery: {
           required: true,
           minlength: 5,
-          maxlength: 100
         },
         CategoryId: {
           required: true

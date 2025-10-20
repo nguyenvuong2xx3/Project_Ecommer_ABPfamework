@@ -1,4 +1,5 @@
-﻿using Acme.SimpleTaskApp.Carts;
+﻿using Abp.Domain.Repositories;
+using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.HomeCustomers;
@@ -21,6 +22,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 	{
 		public class HomeCustomerController : SimpleTaskAppControllerBase
 		{
+			private readonly IRepository<Category> _categoryRepository;
 			private readonly IProductAppService _productAppService;
 			private readonly ICategoryAppService _categoryAppService;
 			private readonly ICartAppService _cartAppService;
@@ -32,7 +34,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 
 			public HomeCustomerController(IProductAppService productAppService,
-																IHomeCustomerAppService homeCustomerAppService,
+				IRepository<Category> categoryRepository,
+			IHomeCustomerAppService homeCustomerAppService,
 																SignInManager signInManager,
 																ICategoryAppService categoryAppService,
 																ICartAppService cartAppService
@@ -40,6 +43,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 																)
 			{
 				_homeCustomerAppService = homeCustomerAppService;
+				_categoryRepository = categoryRepository;
 				//_cartItemAppService = cartItemAppService;
 				_cartAppService = cartAppService;
 				_signInManager = signInManager;
@@ -79,19 +83,19 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			public async Task<ActionResult> SearchProductCustomer(SearchHomeCustomerDto input)
 			{
 				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
-
+				var cattegory =  _categoryRepository.GetAll();
 				var model = new HomeCustomerViewModel()
 				{
 					ProductsInfo = output.Items.ToList(),
 					Filter = input.Filter,
-					//CategoryName = input.
+					Categories = cattegory.ToList()
 				};
 
 				return View(model);
 			}
 			public async Task<PartialViewResult> FilterAdvancedModal()
 			{
-				
+
 				return PartialView("_FilterAdvancedModal");
 			}
 
@@ -111,7 +115,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
 					return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
 				}
-				
+
 				// Gọi service lấy thông tin giỏ hàng
 				var cart = await _cartAppService.GetCart();
 

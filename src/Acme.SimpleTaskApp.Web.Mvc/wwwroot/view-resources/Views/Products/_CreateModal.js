@@ -35,16 +35,16 @@
 							required: true
 						},
 						Screen: {
-							maxlength: 200
+							maxlength: 1000
 						},
 						Processor: {
-							maxlength: 200
+							maxlength: 1000
 						},
 						CameraSystem: {
-							maxlength: 200
+							maxlength: 1000
 						},
 						Battery: {
-							maxlength: 200
+							maxlength: 1000
 						},
 						Description: {
 							maxlength: 500

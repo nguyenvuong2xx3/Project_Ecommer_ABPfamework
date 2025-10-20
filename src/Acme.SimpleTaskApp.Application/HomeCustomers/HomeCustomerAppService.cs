@@ -46,9 +46,9 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		}
 
 		// Lọc theo danh mục
-		if (input.CategoryId.HasValue)
+		if (input.CategoryIds != null && input.CategoryIds.Count() > 0)
 		{
-			prodQuery = prodQuery.Where(p => p.CategoryId == input.CategoryId.Value);
+			prodQuery = prodQuery.Where(p => input.CategoryIds.Contains(p.CategoryId.Value));
 		}
 
 		// lọc theo giá
@@ -147,7 +147,21 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
 		return result;
 	}
-
+	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers1(SearchHomeCustomerDto input)
+	{
+		var getallVariant = _productVariantRepository.GetAll().ToList();
+		var getImgage = _productImageRepository.GetAll().ToList();
+		// lấy ảnh biến thể 
+		foreach (var variant in getallVariant)
+		{
+			variant.ImageUrls = getImgage
+				.Where(x => x.ProductVariantId == variant.Id)
+				.Select(ig => ig.ImageUrl)
+				.ToList();
+		}
+		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
+		return result;
+	}
 	public async Task<Product> GetProductById(int id)
 	{
 		if (id <= 0)

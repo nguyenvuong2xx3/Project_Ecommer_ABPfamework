@@ -32,13 +32,21 @@
     <h1 class="mb-0 me-3">Tìm kiếm</h1>
     <span class="results-count text-muted">@Model.ProductsInfo.Count() kết quả</span>
   </div>
-
+  <div class="active-filters-container" style="display: none;">
+    <div class="active-filters-header">
+      <span class="filter-label">Bộ lọc:</span>
+      <button class="clear-all-filters">Xóa tất cả</button>
+    </div>
+    <div class="filter-tags" id="filter-tags">
+      <!-- Các tag filter sẽ được thêm vào đây bằng JavaScript -->
+    </div>
+  </div>
   <div class="search-header">
     <div class="search-results-info">
       <div class="sort-options">
         <div class="sort-bar">
           <span class="sort-label">Sắp xếp theo</span>
-          <button class="sort-btn active" data-sort="relevant">Liên quan</button>
+          @* <button class="sort-btn active" data-sort="relevant">Liên quan</button> *@
           <button class="sort-btn" data-sort="newest">Mới nhất</button>
           <button class="sort-btn" data-sort="bestseller">Bán chạy</button>
           <div class="sort-dropdown">
@@ -55,34 +63,25 @@
       </div>
     </div>
   </div>
-
+  <!-- Thêm vào sau search header, trước search content -->
+  
   <div class="search-content">
     <!-- Sidebar Filters -->
     <div class="filters-sidebar">
-      <!-- Thương hiệu -->
       <div class="filter-section">
-        <h3 class="filter-title">Thương hiệu</h3>
+        <h3 class="filter-title">Danh mục</h3>
         <div class="brand-list">
-          <label class="brand-item">
-            <input type="checkbox" name="brand" value="samsung">
-            <span class="checkmark"></span>
-            SAMSUNG
-          </label>
-          <label class="brand-item">
-            <input type="checkbox" name="brand" value="apple">
-            <span class="checkmark"></span>
-            APPLE
-          </label>
-          <label class="brand-item">
-            <input type="checkbox" name="brand" value="xiaomi">
-            <span class="checkmark"></span>
-            XIAOMI
-          </label>
-          <label class="brand-item">
-            <input type="checkbox" name="brand" value="oppo">
-            <span class="checkmark"></span>
-            OPPO
-          </label>
+          @if(Model.Categories != null)
+          {
+            @foreach(var category in Model.Categories)
+            {
+              <label class="brand-item">
+                <input type="checkbox" name="category" value="@category.Id">
+                <span class="checkmark"></span>
+                @category.Name.ToUpper()
+              </label>
+            }
+          }
         </div>
       </div>
 
@@ -724,4 +723,93 @@
   .sort-dropdown:hover .dropdown-menu {
     display: block;
   }
+
+  /* Active Filters Styles */
+  .active-filters-container {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+  }
+
+  .active-filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .filter-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+  }
+
+  .clear-all-filters {
+    background: none;
+    border: none;
+    color: #288ad6;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+    .clear-all-filters:hover {
+      color: #1a7bc8;
+    }
+
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    background: #e9ecef;
+    color: #495057;
+    padding: 4px 8px 4px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    border: 1px solid #dee2e6;
+    gap: 6px;
+  }
+
+    .filter-tag .tag-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-tag .tag-name {
+      font-weight: 500;
+    }
+
+    .filter-tag .tag-value {
+      color: #6c757d;
+    }
+
+    .filter-tag .remove-filter {
+      background: none;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      padding: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+      .filter-tag .remove-filter:hover {
+        background: #dc3545;
+        color: white;
+      }
 </style>

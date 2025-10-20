@@ -106,19 +106,19 @@ namespace Acme.SimpleTaskApp.ProductVariants
 				{
 					// ảnh cần xóa
 					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
-					_productImageRepository.Delete(existingImages.Id);
-					// tạo đường dẫn ảnh mặc định
-					var producImage = new ProductImage
-					{
-						ImageUrl = "/img/products/default.png",
-						SortOrder = 0,
-						AltText = "default",
-						ProductVariantId = input.Id,
-						ProductId = input.ProductId,
-					};
-					await _productImageRepository.InsertAsync(producImage);
 					if (existingImages != null)
 					{
+						_productImageRepository.Delete(existingImages.Id);
+						// tạo đường dẫn ảnh mặc định
+						var producImage = new ProductImage
+						{
+							ImageUrl = "/img/products/default.png",
+							SortOrder = 0,
+							AltText = "default",
+							ProductVariantId = input.Id,
+							ProductId = input.ProductId,
+						};
+						await _productImageRepository.InsertAsync(producImage);
 						await _uploadFileAppService.RemoveImage(item);
 					}
 				}

@@ -1,4 +1,5 @@
-﻿using Acme.SimpleTaskApp.HomeCustomers.Dtos;
+﻿using Acme.SimpleTaskApp.Categories;
+using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Products;
 using System.Collections.Generic;
 
@@ -9,6 +10,8 @@ namespace Acme.SimpleTaskApp.Web.Models.HomeCustomers
 		public List<Product> ProductsInfo { get; set; }
 
 		public Product ProductInfo { get; set; }
+
+		public List<Category> Categories { get; set; }
 		/// <summary>
 		///  cho kết quả tìm kiếm
 		/// </summary>

@@ -18,7 +18,7 @@
     <script src="~/view-resources/Views/Roles/Index.min.js" asp-append-version="true"></script>
   </environment>
 }
-<section class="content-header">
+<section class="content-header pb-3">
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-6">
@@ -42,13 +42,12 @@
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header p-0">
+          <div class="card-header p-3">
             <div class="row">
               <div class="col-md-6">
-                <!--Use for bulk actions-->
+                @await Html.PartialAsync("~/Views/Roles/Index.AdvancedSearch.cshtml")
               </div>
               <div class="col-md-6">
-                @await Html.PartialAsync("~/Views/Roles/Index.AdvancedSearch.cshtml")
               </div>
             </div>
           </div>
