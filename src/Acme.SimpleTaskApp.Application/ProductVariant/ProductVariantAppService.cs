@@ -56,7 +56,7 @@ namespace Acme.SimpleTaskApp.ProductVariants
 				int sortOrder = 0;
 				foreach (var item in input.ImageFiles)
 				{
-					var imageUrl = _uploadFileAppService.UploadImageAsync(item, "products/variants");
+					var imageUrl = await _uploadFileAppService.UploadImageAsync(item, "products/variants");
 					var producImage = new ProductImage
 					{
 						ImageUrl = imageUrl,
@@ -105,20 +105,20 @@ namespace Acme.SimpleTaskApp.ProductVariants
 				foreach (var item in input.DeletedImageUrls)
 				{
 					// ảnh cần xóa
-					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductId == input.Id && x.ImageUrl == item);
+					var existingImages = _productImageRepository.FirstOrDefault(x => x.ProductVariantId == input.Id && x.ImageUrl == item);
 					if (existingImages != null)
 					{
 						_productImageRepository.Delete(existingImages.Id);
 						// tạo đường dẫn ảnh mặc định
-						var producImage = new ProductImage
-						{
-							ImageUrl = "/img/products/default.png",
-							SortOrder = 0,
-							AltText = "default",
-							ProductVariantId = input.Id,
-							ProductId = input.ProductId,
-						};
-						await _productImageRepository.InsertAsync(producImage);
+						//var producImage = new ProductImage
+						//{
+						//	ImageUrl = "/img/products/default.png",
+						//	SortOrder = 0,
+						//	AltText = "default",
+						//	ProductVariantId = input.Id,
+						//	ProductId = input.ProductId,
+						//};
+						//await _productImageRepository.InsertAsync(producImage);
 						await _uploadFileAppService.RemoveImage(item);
 					}
 				}
@@ -129,7 +129,7 @@ namespace Acme.SimpleTaskApp.ProductVariants
 
 				foreach (var imageInput in input.ImageFiles)
 				{
-					var imagePath = _uploadFileAppService.UploadImageAsync(imageInput, "products/general");
+					var imagePath = await _uploadFileAppService.UploadImageAsync(imageInput, "products/general");
 					var productImage = new ProductImage
 					{
 						ProductId = input.Id,

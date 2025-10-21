@@ -356,11 +356,11 @@
 
   function updateProductGrid(result, append) {
     const $productsGrid = $('.products-grid');
-    const $productCards = $productsGrid.find('.product-card');
+    const $productItems = $productsGrid.find('.product-item');
 
     if (!append) {
-      $productCards.remove();
-      $productsGrid.find('#btn-see-more').parent().parent().remove();
+      $productItems.remove();
+      $productsGrid.find('.load-more-container').remove();
     }
 
     if (result.items && result.items.length > 0) {
@@ -373,23 +373,21 @@
       }
 
       if (!append) {
-        $productsGrid.append(`
-                    <div>
-                        <div class="col-12 text-center mt-4">
-                            <button id="btn-see-more" class="btn btn-outline-primary px-4 py-2">
-                                Xem thêm
-                            </button>
-                        </div>
-                    </div>
-                `);
+        $productsGrid.after(`
+                <div class="load-more-container">
+                    <button id="btn-see-more" class="btn btn-outline-primary px-4 py-2">
+                        Xem thêm
+                    </button>
+                </div>
+            `);
         $('#btn-see-more').off('click').on('click', handleLoadMore);
       }
     } else if (!append) {
       $productsGrid.html(`
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp</p>
-                </div>
-            `);
+            <div class="no-products-message">
+                <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp</p>
+            </div>
+        `);
     }
   }
 
@@ -399,34 +397,32 @@
       if (product.productVariants && product.productVariants.length > 0) {
         product.productVariants.forEach(variant => {
           html += `
-                        <div class="product-card">
-                            <div class="product-image">
+                    <div class="product-item">
+                        <div class="product-card product-click-detail" data-id="${product.id}">
+                            <div class="image-container">
                                 ${variant.imageUrl ?
-              `<img src="${variant.imageUrl}" alt="${product.name}">` :
-              `<img src="/img/products/default.png" alt="${product.name}">`
+              `<img src="${variant.imageUrl}" class="product-image" alt="${product.name}">` :
+              `<img src="/img/products/default.png" class="product-image" alt="${product.name}">`
             }
                             </div>
                             <div class="product-info">
-                                <h3 class="product-name">${product.name} ${variant.ram || ''}/${variant.storage || ''}</h3>
+                                <div class="product-name">${product.name}</div>
+                                <div class="variant-info">
+                                    ${variant.ram ?
+              `${variant.ram}/${variant.storage}` :
+              `${variant.storage}/${variant.color || ''}`
+            }
+                                </div>
                                 <div class="price-section">
                                     <div class="current-price">${formatPrice(variant.price)}₫</div>
                                 </div>
-                                <div class="member-benefits">
-                                    <div class="member-points">
-                                        <span class="points-badge">Hùng Hà Member</span>
-                                    </div>
-                                </div>
-                                <div class="product-features">
-                                    <span>${product.screen || ''}</span>
-                                    <span>${product.battery || ''}</span>
-                                    <span>${product.cameraSystem || ''}</span>
-                                </div>
-                                <button class="view-detail-btn product-click-detail" data-id="${product.id}">
-                                    Xem chi tiết
-                                </button>
                             </div>
+                            <button class="view-detail-btn productvariant-click-detail" data-id="${variant.id}">
+                                Xem chi tiết
+                            </button>
                         </div>
-                    `;
+                    </div>
+                `;
         });
       }
     });

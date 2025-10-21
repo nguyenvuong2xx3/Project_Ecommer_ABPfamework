@@ -50,7 +50,7 @@ namespace Acme.SimpleTaskApp.UploadFile
 			}
 		}
 
-		public string UploadImageAsync(IFormFile file, string subFolder = "products")
+		public async Task<string> UploadImageAsync(IFormFile file, string subFolder = "products")
 		{
 			if (file == null || file.Length == 0)
 			{
@@ -91,7 +91,7 @@ namespace Acme.SimpleTaskApp.UploadFile
 			// Lưu file vào đĩa
 			using (var fileStream = new FileStream(filePath, FileMode.Create))
 			{
-				 file.CopyToAsync(fileStream);
+				await file.CopyToAsync(fileStream);
 			}
 
 			// Trả về đường dẫn tương đối (dùng cho web)

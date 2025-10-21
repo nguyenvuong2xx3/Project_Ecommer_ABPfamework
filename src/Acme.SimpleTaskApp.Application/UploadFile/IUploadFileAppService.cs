@@ -10,7 +10,7 @@ namespace Acme.SimpleTaskApp.UploadFile
 {
 	public interface IUploadFileAppService : IApplicationService
 	{
-		string UploadImageAsync(IFormFile file, string subFolder = "products");
+		Task<string> UploadImageAsync(IFormFile file, string subFolder = "products");
 		Task RemoveImage(string imageUrl);
 	}
 }

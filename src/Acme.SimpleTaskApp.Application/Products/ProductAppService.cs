@@ -113,8 +113,10 @@ namespace Acme.SimpleTaskApp.Products
 		//		}
 		//	}
 		//}
-		public void CreateGeneralProductImages(int productId, List<ProductImage> imageInputs, string productName)
+		public async Task CreateGeneralProductImages(int productId, List<ProductImage> imageInputs, string productName)
 		{
+			if (imageInputs == null || imageInputs.Count() < 0)
+				return;
 			int generalSortOrder = 0;
 
 			foreach (var imageInput in imageInputs)
@@ -123,7 +125,7 @@ namespace Acme.SimpleTaskApp.Products
 				{
 					foreach (var imageFile in imageInput.ImageFiles)
 					{
-						var imagePath = _uploadFileAppService.UploadImageAsync(imageFile, "products/general");
+						var imagePath = await _uploadFileAppService.UploadImageAsync(imageFile, "products/general");
 						var productImage = new ProductImage
 						{
 							ProductId = productId,
@@ -132,7 +134,7 @@ namespace Acme.SimpleTaskApp.Products
 							SortOrder = generalSortOrder++,
 							AltText = imageInput.AltText ?? productName
 						};
-						_productImageRepository.InsertAsync(productImage);
+						await _productImageRepository.InsertAsync(productImage);
 					}
 				}
 			}
@@ -234,7 +236,7 @@ namespace Acme.SimpleTaskApp.Products
 
 				foreach (var imageInput in input.Images)
 				{
-					var imagePath = _uploadFileAppService.UploadImageAsync(imageInput, "products/general");
+					var imagePath = await _uploadFileAppService.UploadImageAsync(imageInput, "products/general");
 					var productImage = new ProductImage
 					{
 						ProductId = input.Id,

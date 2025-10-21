@@ -1,4 +1,4 @@
-﻿﻿@using Acme.SimpleTaskApp.Products;
+﻿﻿﻿@using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.HomeCustomers
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
@@ -18,7 +18,8 @@
   </environment>
 }
 
-<div class="search-container">
+<!-- Main Container -->
+<div class="main-container">
   <!-- Breadcrumb -->
   <div class="breadcrumb">
     <a href="/">Trang chủ</a>
@@ -27,53 +28,51 @@
   </div>
 
   <!-- Header -->
-  <!-- Header -->
-  <div class="d-flex align-items-center mb-3">
-    <h1 class="mb-0 me-3">Tìm kiếm</h1>
-    <span class="results-count text-muted">@Model.ProductsInfo.Count() kết quả</span>
-  </div>
-  <div class="active-filters-container" style="display: none;">
-    <div class="active-filters-header">
-      <span class="filter-label">Bộ lọc:</span>
-      <button class="clear-all-filters">Xóa tất cả</button>
-    </div>
-    <div class="filter-tags" id="filter-tags">
-      <!-- Các tag filter sẽ được thêm vào đây bằng JavaScript -->
-    </div>
-  </div>
   <div class="search-header">
-    <div class="search-results-info">
-      <div class="sort-options">
-        <div class="sort-bar">
-          <span class="sort-label">Sắp xếp theo</span>
-          @* <button class="sort-btn active" data-sort="relevant">Liên quan</button> *@
-          <button class="sort-btn" data-sort="newest">Mới nhất</button>
-          <button class="sort-btn" data-sort="bestseller">Bán chạy</button>
-          <div class="sort-dropdown">
-            <button class="sort-btn dropdown-toggle" data-sort="price">
-              Giá tiền
-              <span class="arrow">▾</span>
-            </button>
-            <div class="dropdown-menu">
-              <button class="dropdown-item" data-direction="asc">Giá: Thấp đến cao</button>
-              <button class="dropdown-item" data-direction="desc">Giá: Cao đến thấp</button>
-            </div>
+    <div class="d-flex align-items-center mb-3">
+      <h1 class="mb-0 me-3">Tìm kiếm</h1>
+      <span class="results-count text-muted">@Model.ProductsInfo.Count() kết quả</span>
+    </div>
+
+    <div class="active-filters-container" style="display: none;">
+      <div class="active-filters-header">
+        <span class="filter-label">Bộ lọc:</span>
+        <button class="clear-all-filters">Xóa tất cả</button>
+      </div>
+      <div class="filter-tags" id="filter-tags">
+        <!-- Các tag filter sẽ được thêm vào đây bằng JavaScript -->
+      </div>
+    </div>
+
+    <div class="sort-options">
+      <div class="sort-bar">
+        <span class="sort-label">Sắp xếp theo</span>
+        @* <button class="sort-btn active" data-sort="relevant">Liên quan</button> *@
+        <button class="sort-btn" data-sort="newest">Mới nhất</button>
+        <button class="sort-btn" data-sort="bestseller">Bán chạy</button>
+        <div class="sort-dropdown">
+          <button class="sort-btn dropdown-toggle" data-sort="price">
+            Giá tiền
+            <span class="arrow">▾</span>
+          </button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" data-direction="asc">Giá: Thấp đến cao</button>
+            <button class="dropdown-item" data-direction="desc">Giá: Cao đến thấp</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- Thêm vào sau search header, trước search content -->
-  
+
   <div class="search-content">
     <!-- Sidebar Filters -->
     <div class="filters-sidebar">
       <div class="filter-section">
         <h3 class="filter-title">Danh mục</h3>
         <div class="brand-list">
-          @if(Model.Categories != null)
+          @if (Model.Categories != null)
           {
-            @foreach(var category in Model.Categories)
+            @foreach (var category in Model.Categories)
             {
               <label class="brand-item">
                 <input type="checkbox" name="category" value="@category.Id">
@@ -139,74 +138,82 @@
       </div>
     </div>
 
-    <div class="products-grid">
-      @foreach (var product in Model.ProductsInfo)
-      {
-        @foreach (var item in product.ProductVariants)
+    <!-- Products Grid -->
+    <div class="products-container">
+      <div class="products-grid">
+        @foreach (var product in Model.ProductsInfo)
         {
-          <div class="product-card">
-            <div class="product-image">
-              @if (!string.IsNullOrEmpty(item.ImageUrl))
-              {
-                <img src="@item.ImageUrl" alt="@product.Name">
-              }
-              else
-              {
-                <img src="~/img/products/default.png" alt="@product.Name">
-              }
-            </div>
-
-            <div class="product-info">
-              <h3 class="product-name">@product.Name @item.Ram/@item.Storage</h3>
-
-              <div class="price-section">
-                <div class="current-price">@item.Price.ToString("#,##0")₫</div>
-              </div>
-
-              <div class="member-benefits">
-                <div class="member-points">
-                  <span class="points-badge">Hùng Hà Member</span>
+          @foreach (var item in product.ProductVariants)
+          {
+            <div class="product-item">
+              <div class="product-card product-click-detail" data-id="@product.Id">
+                <div class="image-container">
+                  @if (!string.IsNullOrEmpty(item.ImageUrl))
+                  {
+                    <img src="@item.ImageUrl" class="product-image" alt="@product.Name">
+                  }
+                  else
+                  {
+                    <img src="~/img/products/default.png" class="product-image" alt="@product.Name">
+                  }
                 </div>
-                <div class="installment">
+
+                <div class="product-info">
+                  <div class="product-name">@product.Name</div>
+                  <div class="variant-info">
+                    @if (!string.IsNullOrEmpty(item.Ram))
+                    {
+                      <span>@item.Ram/@item.Storage</span>
+                    }
+                    else
+                    {
+                      <span>@item.Storage/@item.Color</span>
+                    }
+                  </div>
+
+                  <div class="price-section">
+                    <div class="current-price">@item.Price.ToString("#,##0")₫</div>
+                  </div>
+
+                  @* <div class="product-features">
+                    <span>@product.Screen</span>
+                    <span>@product.Battery</span>
+                    <span>@product.CameraSystem</span>
+                  </div> *@
                 </div>
-              </div>
 
-              <div class="product-features">
-                <span>@product.Screen</span>
-                <span>@product.Battery</span>
-                <span>@product.CameraSystem</span>
+                <button class="view-detail-btn productvariant-click-detail" data-id="@item.Id">
+                  Xem chi tiết
+                </button>
               </div>
-
-              <button class="view-detail-btn product-click-detail" data-id="@product.Id">
-                Xem chi tiết
-              </button>
             </div>
-          </div>
+          }
         }
-      }
-      <div>
-        <div>
-        </div>
-        <div class="col-12 text-center mt-4">
-          <button id="btn-see-more" class="btn btn-outline-primary px-4 py-2">
-            Xem thêm
-          </button>
-        </div>
       </div>
 
+      <div class="load-more-container">
+        <button id="btn-see-more" class="btn btn-outline-primary px-4 py-2">
+          Xem thêm
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <style>
-  /* ====== Layout tổng ====== */
-  .search-container {
-    max-width: 1200px;
+  /* ====== Main Container ====== */
+  .main-container {
+    width: 1200px;
+    min-height: 980px;
+    background-color: white;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Roboto', Arial, sans-serif;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 
+  /* ====== Breadcrumb ====== */
   .breadcrumb {
     font-size: 14px;
     color: #666;
@@ -222,422 +229,16 @@
         text-decoration: underline;
       }
 
-  /* ====== Header tìm kiếm ====== */
+  /* ====== Search Header ====== */
   .search-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
   }
 
-    .search-header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #333;
-      margin: 0;
-    }
-
-  .search-results-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .results-count {
-    font-size: 14px;
-    color: #666;
-  }
-
-  /* ====== Bộ lọc & sắp xếp ====== */
+  /* ====== Sort Options ====== */
   .sort-options {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-
-  .sort-label {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .sort-btn {
-    padding: 8px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background: #fff;
-    color: #666;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-
-    .sort-btn:hover {
-      border-color: #288ad6;
-      color: #288ad6;
-    }
-
-    .sort-btn.active {
-      background: #288ad6;
-      color: #fff;
-      border-color: #288ad6;
-    }
-
-  .sort-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-    .sort-group .sort-btn {
-      border: none;
-      border-right: 1px solid #e0e0e0;
-      border-radius: 0;
-    }
-
-    .sort-group.active {
-      border-color: #288ad6;
-    }
-
-      .sort-group.active .sort-btn {
-        background: #288ad6;
-        color: #fff;
-      }
-
-  .direction-btn {
-    padding: 8px 12px;
-    background: transparent;
-    color: #666;
-    border: none;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 40px;
-  }
-
-    .direction-btn:hover {
-      background: #f5f5f5;
-      color: #288ad6;
-    }
-
-    .direction-btn.active {
-      background: #288ad6;
-      color: #fff;
-    }
-
-  /* ====== Nội dung tìm kiếm ====== */
-  .search-content {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 30px;
-  }
-
-  /* ====== Sidebar lọc ====== */
-  .filters-sidebar {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    height: fit-content;
-  }
-
-  .filter-section {
-    margin-bottom: 30px;
-  }
-
-  .filter-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #333;
-  }
-
-  .brand-list,
-  .other-filters {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .brand-item,
-  .filter-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-    .brand-item input,
-    .filter-item input {
-      display: none;
-    }
-
-  .checkmark {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ddd;
-    border-radius: 3px;
-    position: relative;
-  }
-
-  input[type="checkbox"]:checked + .checkmark {
-    background: #288ad6;
-    border-color: #288ad6;
-  }
-
-    input[type="checkbox"]:checked + .checkmark::after {
-      content: '✓';
-      color: white;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 12px;
-    }
-
-  /* ====== Bộ lọc giá ====== */
-  .price-range {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .price-inputs {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-    .price-inputs input {
-      width: 80px;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      text-align: center;
-    }
-
-  .apply-price-btn {
-    background: #288ad6;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-
-    .apply-price-btn:hover {
-      background: #1a7bc8;
-    }
-
-  .price-presets {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .price-preset {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-    .price-preset input {
-      display: none;
-    }
-
-    .price-preset span {
-      padding: 5px 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      transition: all 0.3s;
-    }
-
-    .price-preset input:checked + span {
-      background: #288ad6;
-      color: #fff;
-      border-color: #288ad6;
-    }
-
-  /* ====== Lưới sản phẩm ====== */
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-
-  .product-card {
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-    transition: all 0.3s;
-  }
-
-    .product-card:hover {
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transform: translateY(-2px);
-    }
-
-  .product-image {
-    position: relative;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background: #f8f9fa;
-  }
-
-    .product-image img {
-      max-height: 100%;
-      max-width: 100%;
-      object-fit: contain;
-    }
-
-  .discount-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4444;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .product-info {
-    padding: 15px;
-  }
-
-  .product-name {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 10px;
-    line-height: 1.4;
-    height: 40px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .original-price {
-    font-size: 13px;
-    color: #888;
-    text-decoration: line-through;
-  }
-
-  .current-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: #d0021b;
-  }
-
-  .member-benefits {
-    background: #f8f9fa;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-
-  .member-points {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
-  }
-
-  .points-badge {
-    background: #ff6b00;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .points-text {
-    font-size: 12px;
-    color: #ff6b00;
-    font-weight: 500;
-  }
-
-  .installment-text {
-    font-size: 12px;
-    color: #288ad6;
-  }
-
-  .product-features {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 15px;
-  }
-
-    .product-features span {
-      font-size: 12px;
-      color: #666;
-    }
-
-  .view-detail-btn {
-    width: 100%;
-    background: #288ad6;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-    .view-detail-btn:hover {
-      background: #1a7bc8;
-    }
-
-  .search-header {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-    font-family: 'Roboto', sans-serif;
-  }
-
-    .search-header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #333;
-      margin: 0;
-    }
-
-  .search-results-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .results-count {
-    font-size: 14px;
-    color: #666;
-  }
-
-  .sort-options {
-    width: 100%;
+    margin-top: 15px;
   }
 
   .sort-bar {
@@ -719,12 +320,282 @@
       background: #f2f2f2;
     }
 
-  /* Hover để mở dropdown */
   .sort-dropdown:hover .dropdown-menu {
     display: block;
   }
 
-  /* Active Filters Styles */
+  /* ====== Search Content ====== */
+  .search-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+  }
+
+  /* ====== Sidebar Filters ====== */
+  .filters-sidebar {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+  }
+
+  .filter-section {
+    margin-bottom: 30px;
+  }
+
+  .filter-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .brand-list,
+  .other-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .brand-item,
+  .filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+    .brand-item input,
+    .filter-item input {
+      display: none;
+    }
+
+  .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+    position: relative;
+  }
+
+  input[type="checkbox"]:checked + .checkmark {
+    background: #288ad6;
+    border-color: #288ad6;
+  }
+
+    input[type="checkbox"]:checked + .checkmark::after {
+      content: '✓';
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+    }
+
+  /* ====== Price Filter ====== */
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+    .price-inputs input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+  .apply-price-btn {
+    background: #288ad6;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+    .apply-price-btn:hover {
+      background: #1a7bc8;
+    }
+
+  .price-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .price-preset {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+    .price-preset input {
+      display: none;
+    }
+
+    .price-preset span {
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .price-preset input:checked + span {
+      background: #288ad6;
+      color: #fff;
+      border-color: #288ad6;
+    }
+
+  /* ====== Products Container ====== */
+  .products-container {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .product-item {
+    width: 100%;
+  }
+
+  .product-card {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+
+    .product-card:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+      border-color: #288ad6;
+    }
+
+  /* Image Container */
+  .image-container {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: white;
+    border-bottom: 1px solid #f3f3f3;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .product-image {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+  }
+
+  /* Product Info */
+  .product-info {
+    padding: 15px;
+    flex-grow: 1;
+    background-color: white;
+    box-sizing: border-box;
+  }
+
+  .product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .variant-info {
+    font-size: 13px;
+    color: #666;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  /* Price Styling */
+  .price-section {
+    margin-bottom: 10px;
+  }
+
+  .current-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #d0021b;
+    margin-bottom: 5px;
+  }
+
+  /* Product Features */
+  .product-features {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+    .product-features span {
+      font-size: 12px;
+      color: #666;
+    }
+
+  /* Button Styling */
+  .view-detail-btn {
+    background: white;
+    color: #288ad6;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-top: 1px solid #e1e1e1;
+    margin-top: auto;
+  }
+
+    .view-detail-btn:hover {
+      background: #f8f9fa;
+      color: #1a7bc8;
+    }
+
+  /* Load More */
+  .load-more-container {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  /* Active Filters */
   .active-filters-container {
     background: #f8f9fa;
     padding: 12px 16px;
@@ -788,6 +659,13 @@
       font-weight: 500;
     }
 
+  .no-products-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 16px;
+  }
     .filter-tag .tag-value {
       color: #6c757d;
     }
@@ -812,4 +690,46 @@
         background: #dc3545;
         color: white;
       }
+
+  /* Responsive */
+  @@media (max-width: 1250px) {
+    .main-container {
+      width: 95%;
+      margin: 0 auto;
+    }
+  }
+
+  @@media (max-width: 992px) {
+    .search-content {
+      grid-template-columns: 1fr;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .filters-sidebar {
+      order: 2;
+    }
+
+    .products-container {
+      order: 1;
+    }
+  }
+
+  @@media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @@media (max-width: 480px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .main-container {
+      padding: 10px;
+    }
+  }
 </style>

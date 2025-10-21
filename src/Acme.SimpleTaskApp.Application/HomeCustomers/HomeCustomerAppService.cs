@@ -2,6 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.UI;
+using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Carts.Dtos;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
@@ -49,6 +51,10 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		if (input.CategoryIds != null && input.CategoryIds.Count() > 0)
 		{
 			prodQuery = prodQuery.Where(p => input.CategoryIds.Contains(p.CategoryId.Value));
+		}
+		if (input.CategoryId != null)
+		{
+			prodQuery = prodQuery.Where(p => input.CategoryId == p.CategoryId.Value);
 		}
 
 		// lọc theo giá
@@ -103,13 +109,15 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 
 		var productIds = prodQuery.Select(p => p.Id).ToList();
 
-		// Fetch variants and images for those products in bulk
+		// lấy biến thể
 		var variants = await _productVariantRepository.GetAll()
-			.Where(v => productIds.Contains(v.ProductId))
-			.ToListAsync();
+			.Where(v => productIds.Contains(v.ProductId)).ToListAsync();
 
+		var variantIds = variants.Select(pv => pv.Id).ToList();
+
+		// ảnh biến thể
 		var images = await _productImageRepository.GetAll()
-			.Where(i => productIds.Contains(i.ProductId))
+			.Where(i => variantIds.Contains(i.ProductVariantId.Value))
 			.ToListAsync();
 
 		// Attach variants and images to products
@@ -147,10 +155,36 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
 		return result;
 	}
-	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers1(SearchHomeCustomerDto input)
+	public async Task<PagedResultDto<object>> GetAllProductHomeCustomers1(SearchHomeCustomerDto input)
 	{
+		var getallProduct = _productRepository.GetAll().ToList();
 		var getallVariant = _productVariantRepository.GetAll().ToList();
 		var getImgage = _productImageRepository.GetAll().ToList();
+
+		//var productItems = (from product in _productRepository.GetAll()
+		//										join productVariant in _productVariantRepository.GetAll() on product.Id equals productVariant.ProductId
+		//										join productImage in _productImageRepository.GetAll() on productVariant.Id equals productImage.ProductVariantId
+		//										where productImage.First() == true
+		//								 // Lấy ảnh đầu tiên cho mỗi ProductVariant
+		//								);.ToList();
+		// lấy sản phẩm + biến thể + ảnh đầu tiên
+		var productItems = (from product in _productRepository.GetAll()
+												join productVariant in _productVariantRepository.GetAll() on product.Id equals productVariant.ProductId
+												select new
+												{
+													ProductId = product.Id,
+													ProductName = product.Name,
+													ProductDescription = product.Description,
+													VariantId = productVariant.Id,
+													productVariant.Color,
+													productVariant.Price,
+													productVariant.StockQuantity,
+													ImageUrl = (_productImageRepository.GetAll()
+																	.Where(pi => pi.ProductVariantId == productVariant.Id)
+																	.OrderBy(pi => pi.SortOrder)
+																	.Select(pi => pi.ImageUrl)
+																	.FirstOrDefault())
+												}).ToList();
 		// lấy ảnh biến thể 
 		foreach (var variant in getallVariant)
 		{
@@ -159,9 +193,13 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 				.Select(ig => ig.ImageUrl)
 				.ToList();
 		}
-		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
+		// tổng sản phẩm
+		var totalCount = getallVariant.Count();
+		var result = new PagedResultDto<object>(totalCount, productItems);
 		return result;
 	}
+
+
 	public async Task<Product> GetProductById(int id)
 	{
 		if (id <= 0)

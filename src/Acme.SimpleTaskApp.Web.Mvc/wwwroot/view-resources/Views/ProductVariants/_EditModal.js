@@ -78,12 +78,104 @@
 				errorPlacement: (error, element) => error.addClass('text-danger').insertAfter(element)
 			});
 
+			// Setup price formatter - THÊM VÀO ĐÂY
+			setupPriceFormatter($modal);
+
 			// Setup uploader
 			setupImageUploader($modal);
 
 			// Focus
 			setTimeout(() => _$form.find('input[name=SKU]').first().focus(), 250);
 		};
+
+		// Format giá với dấu chấm phân cách hàng nghìn - THÊM HÀM NÀY
+		function formatPrice(value) {
+			// Loại bỏ tất cả ký tự không phải số
+			const numberValue = value.replace(/[^\d]/g, '');
+
+			if (!numberValue) return '';
+
+			// Thêm dấu chấm phân cách hàng nghìn
+			return numberValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+		}
+
+		// Loại bỏ format để lấy số thuần - THÊM HÀM NÀY
+		function unformatPrice(value) {
+			return value.replace(/\./g, '');
+		}
+
+		// Setup price input formatter - THÊM HÀM NÀY
+		function setupPriceFormatter($modal) {
+			const $priceInput = $modal.find('input[name=Price]');
+
+			// Format giá trị hiện tại khi load modal (nếu có)
+			const currentPrice = $priceInput.val();
+			if (currentPrice) {
+				$priceInput.val(formatPrice(currentPrice.toString()));
+			}
+
+			// Format khi người dùng nhập
+			$priceInput.on('input', function () {
+				const cursorPosition = this.selectionStart;
+				const oldValue = $(this).val();
+				const oldLength = oldValue.length;
+
+				// Format giá trị
+				const formattedValue = formatPrice(oldValue);
+				$(this).val(formattedValue);
+
+				// Tính toán lại vị trí con trỏ sau khi format
+				const newLength = formattedValue.length;
+				const lengthDiff = newLength - oldLength;
+				const newCursorPosition = cursorPosition + lengthDiff;
+
+				// Đặt lại vị trí con trỏ
+				this.setSelectionRange(newCursorPosition, newCursorPosition);
+
+				// Trigger validation sau khi format
+				$(this).valid();
+			});
+
+			// Format khi focus out
+			$priceInput.on('blur', function () {
+				const value = $(this).val();
+				if (value) {
+					$(this).val(formatPrice(value));
+				}
+				// Validate lại
+				$(this).valid();
+			});
+
+			// Cho phép paste
+			$priceInput.on('paste', function (e) {
+				setTimeout(() => {
+					const value = $(this).val();
+					$(this).val(formatPrice(value));
+					$(this).valid();
+				}, 0);
+			});
+
+			// Ngăn không cho nhập ký tự không phải số (trừ dấu chấm)
+			$priceInput.on('keypress', function (e) {
+				// Cho phép: backspace, delete, tab, escape, enter
+				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+					// Cho phép: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+					(e.keyCode === 65 && e.ctrlKey === true) ||
+					(e.keyCode === 67 && e.ctrlKey === true) ||
+					(e.keyCode === 86 && e.ctrlKey === true) ||
+					(e.keyCode === 88 && e.ctrlKey === true) ||
+					// Cho phép: home, end, left, right
+					(e.keyCode >= 35 && e.keyCode <= 39)) {
+					return;
+				}
+				// Chỉ cho phép số (0-9) và dấu chấm
+				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+					(e.keyCode < 96 || e.keyCode > 105) &&
+					e.keyCode !== 190 && e.keyCode !== 110) {
+					e.preventDefault();
+				}
+			});
+		}
 
 		function setupImageUploader($modal) {
 			const $imageUploader = $modal.find('.image-uploader');
@@ -231,11 +323,13 @@
 			// Thêm các field thông thường (trừ ImageFiles)
 			_$form.serializeArray().forEach(item => {
 				if (item.name !== 'ImageFiles') {
-					// Convert các trường số
+					// Convert các trường số - SỬA LẠI PHẦN NÀY ĐỂ XỬ LÝ FORMAT GIÁ
 					if (item.name === 'Price') {
-						// Convert sang decimal/float
-						const price = parseFloat(item.value) || 0;
+						// Loại bỏ dấu chấm và convert sang decimal/float
+						const priceValue = unformatPrice(item.value);
+						const price = parseFloat(priceValue) || 0;
 						formData.append(item.name, price);
+						console.log('Price:', item.value, '->', price);
 					}
 					else if (item.name === 'StockQuantity') {
 						// Convert sang integer
