@@ -1,7 +1,10 @@
 ﻿using Abp.Application.Services;
+using Abp.BackgroundJobs;
 using Abp.Domain.Services;
 using Abp.Net.Mail;
+using Abp.Runtime.Session;
 using Acme.SimpleTaskApp.Authorization.Users;
+using Acme.SimpleTaskApp.Email.Dtos;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
@@ -13,15 +16,17 @@ namespace Acme.SimpleTaskApp.Email
 {
 	public class SendMailAppService : ApplicationService, IDomainService
 	{
+		private readonly IBackgroundJobManager _backgroundJobManager;
 		private readonly IEmailSender _emailSender;
 		private readonly UserManager _userManager;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public SendMailAppService(IEmailSender emailSender, UserManager userManager, IWebHostEnvironment webHostEnvironment)
+		public SendMailAppService(IEmailSender emailSender, UserManager userManager, IWebHostEnvironment webHostEnvironment, IBackgroundJobManager backgroundJobManager)
 		{
 			_webHostEnvironment = webHostEnvironment;
 			_emailSender = emailSender;
 			_userManager = userManager;
+			_backgroundJobManager = backgroundJobManager;
 		}
 
 		public async Task SendMailOrderAsync()
@@ -43,23 +48,14 @@ namespace Acme.SimpleTaskApp.Email
 					.Replace("{{UserName}}", currentUserId.Name)
 					.Replace("{{OrderTime}}", formattedTime);
 
-			var smtpClient = new SmtpClient("smtp.gmail.com", 587)
-			{
-				Credentials = new NetworkCredential("vuongmot2k3@gmail.com", "pxky aeqn qclp cauy"),
-				EnableSsl = true
-			};
-
-			var mailMessage = new MailMessage
-			{
-				From = new MailAddress("vuongmot2k3@gmail.com", "Quản trị viên"),
-				Subject = "Hệ thống bán hàng HUMG",
-				Body = htmlBody,
-				IsBodyHtml = true,
-			};
-
-			mailMessage.To.Add(currentUserId.EmailAddress);
-
-			await smtpClient.SendMailAsync(mailMessage);
+			await _backgroundJobManager.EnqueueAsync<SenMailBackGroudJobAppService, SendEmailJobArgs>(
+							new SendEmailJobArgs
+							{
+								Subject = "Hệ thống bán hàng HUMG",
+								Body = htmlBody,
+								SenderUserId = AbpSession.GetUserId(),
+								TargetUserId = currentUserId.Id
+							});
 		}
 	}
 }

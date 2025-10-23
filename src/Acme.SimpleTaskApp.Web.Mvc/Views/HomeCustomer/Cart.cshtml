@@ -1,140 +1,141 @@
 ﻿@model Acme.SimpleTaskApp.Web.Models.Carts.CartViewModel
 
 @{
-	ViewData["Title"] = "Cart";
-	Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+  ViewData["Title"] = "Cart";
+  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 
 @section scripts
 {
-	<environment names="Development">
-		<script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
-	</environment>
+  <environment names="Development">
+    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+  </environment>
 }
 
 @{
-	decimal total = 0;
+  decimal total = 0;
 }
 
 <div class="container-fluid py-5">
-	<div class="container py-5" style="padding-top: 100px !important;">
+  <div class="container py-5" style="padding-top: 100px !important;">
 
-		@* Trường hợp chưa đăng nhập *@
-		@if (Model == null)
-		{
-			<h2 class="text-center text-muted">@ViewBag.Message</h2>
-		}
-		else if (Model.CartItems == null || !Model.CartItems.Any())
-		{
-			@* Trường hợp giỏ hàng rỗng *@
-			<h2 class="text-center text-muted">Chưa có sản phẩm trong giỏ hàng</h2>
-		}
-		else
-		{
-			@* Trường hợp có sản phẩm *@
-			<div class="table-responsive">
-				<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">Products</th>
-							<th scope="col">Name</th>
-							<th scope="col">Price</th>
-							<th scope="col">Quantity</th>
-							<th scope="col">Total</th>
-							<th scope="col">Handle</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var product in Model.CartItems)
-						{
-							<tr>
-								<th scope="row">
-									<div class="d-flex align-items-center">
-										<img src="@product.ImageUrl" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="">
-									</div>
-								</th>
-								<td>
-									<p class="mb-0 mt-4">@product.Name</p>
-								</td>
-								<td>
-									<p class="mb-0 mt-4" id="productvariant-price-@product.IdProductVariant">@product.Price.ToString("N0")đ</p>
-								</td>
-								<td>
-									<div class="input-group quantity mt-4" style="width: 100px;">
-										<div class="input-group-btn">
-											<button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
-															data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
-												<i class="fa fa-minus"></i>
-											</button>
-										</div>
+    @* Trường hợp chưa đăng nhập *@
+    @if (Model == null)
+    {
+      <h2 class="text-center text-muted">@ViewBag.Message</h2>
+    }
+    else if (Model.CartItems == null || !Model.CartItems.Any())
+    {
+      @* Trường hợp giỏ hàng rỗng *@
+      <h2 class="text-center text-muted">Chưa có sản phẩm trong giỏ hàng</h2>
+    }
+    else
+    {
+      @* Trường hợp có sản phẩm *@
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Products</th>
+              <th scope="col">Name</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Total</th>
+              <th scope="col">Handle</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var product in Model.CartItems)
+            {
+              <tr>
+                <th scope="row">
+                  <div class="d-flex align-items-center">
+                    <img src="@product.ImageUrl" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="">
+                  </div>
+                </th>
+                <td>
+                  <p class="mb-0 mt-4">@product.Name</p>
+                </td>
+                <td>
+                  <p class="mb-0 mt-4" id="productvariant-price-@product.IdProductVariant">@product.Price.ToString("N0")đ</p>
+                </td>
+                <td>
+                  <div class="input-group quantity mt-4" style="width: 100px;">
+                    <div class="input-group-btn">
+                      <button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
+                              data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                    </div>
 
-										<input type="text" class="form-control form-control-sm text-center border-0"
-													 value="@product.Quantity" id="quantity-@product.IdProductVariant">
+                    <input type="text" class="form-control form-control-sm text-center border-0"
+                           value="@product.Quantity" id="quantity-@product.IdProductVariant">
 
-										<div class="input-group-btn">
-											<button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
-															data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
-												<i class="fa fa-plus"></i>
-											</button>
-										</div>
-									</div>
-								</td>
-								<td>
-									<p id="productvariant-total-@product.IdProductVariant" class="mb-0 mt-4">
-										@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}đ", product.Price * product.Quantity)
-									</p>
-								</td>
-								<td>
-									<button class="btn btn-md rounded-circle bg-light border mt-4 btl-click-delete"
-													data-product-id="@product.IdProductVariant" data-product-cartid="@product.IdCart">
-										<i class="fa fa-times text-danger"></i>
-									</button>
-								</td>
-							</tr>
-							total += product.Price * product.Quantity;
-						}
-					</tbody>
-				</table>
-			</div>
+                    <div class="input-group-btn">
+                      <button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
+                              data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <p id="productvariant-total-@product.IdProductVariant" class="mb-0 mt-4">
+                    @string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}đ", product.Price * product.Quantity)
+                  </p>
+                </td>
+                <td>
+                  <button class="btn btn-md rounded-circle bg-light border mt-4 btl-click-delete"
+                          data-product-id="@product.IdProductVariant" data-product-cartid="@product.IdCart">
+                    <i class="fa fa-times text-danger"></i>
+                  </button>
+                </td>
+              </tr>
+              total += product.Price * product.Quantity;
+            }
+          </tbody>
+        </table>
+      </div>
 
-			<div class="row g-4 justify-content-end">
-				<div class="col-8"></div>
-				<div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
-					<div class="bg-light rounded">
-						<form asp-controller="Orders" asp-action="CreateOrder" method="post">
-							<div class="p-4">
-								<h1 class="display-6 mb-4">Tổng đơn hàng</h1>
-							</div>
-							<div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between align-items-center">
-								<h5 class="mb-0 ps-4 me-4">Tổng giá tiền</h5>
-								<p class="mb-0 pe-4">@total.ToString("N0")đ</p>
-							</div>
-							<div class="px-4 py-2">
-								<div class="d-flex flex-row align-items-center gap-3 mb-3 justify-content-center">
-									<div class="form-check mb-0 me-3">
-										<input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="0" checked>
-										<label class="form-check-label" for="paymentCOD">
-											Thanh toán khi nhận hàng (COD)
-										</label>
-									</div>
-									<div class="form-check mb-0">
-										<input class="form-check-input" type="radio" name="PaymentMethod" id="paymentBank" value="1">
-										<label class="form-check-label" for="paymentBank">
-											Chuyển khoản ngân hàng
-										</label>
-									</div>
-								</div>
-								<!-- Nút đặt hàng căn giữa và nổi bật -->
-								<div class="d-flex justify-content-center mt-3">
-									<button type="submit" id="Btn_addOrder" class="btn btn-primary btn-lg fw-bold shadow">
+      <div class="row g-4 justify-content-end">
+        <div class="col-8"></div>
+        <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+          <div class="bg-light rounded">
+            <div class="p-4">
+              <h1 class="display-6 mb-4">Tổng đơn hàng</h1>
+            </div>
+            <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between align-items-center">
+              <h5 class="mb-0 ps-4 me-4">Tổng giá tiền</h5>
+              <p class="mb-0 pe-4">@total.ToString("N0")đ</p>
+            </div>
+            <div class="px-4 py-2">
+              <div class="d-flex flex-row align-items-center gap-3 mb-3 justify-content-center">
+                <div class="form-check mb-0 me-3">
+                  <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="0" checked>
+                  <label class="form-check-label" for="paymentCOD">
+                    Thanh toán khi nhận hàng (COD)
+                  </label>
+                </div>
+                <div class="form-check mb-0">
+                  <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentBank" value="1">
+                  <label class="form-check-label" for="paymentBank">
+                    Chuyển khoản ngân hàng
+                  </label>
+                </div>
+              </div>
+              <!-- Nút đặt hàng căn giữa và nổi bật -->
+              <div class="d-flex justify-content-center mt-3">
+                @* <button id="OrderInfoButton" class="btn btn-primary btn-lg fw-bold shadow">
 										<i class="fa fa-credit-card me-2"></i>Đặt hàng
-									</button>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		}
-	</div>
+									</button> *@
+              </div>
+              <button id="OrderInfoButton">
+                mở modal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
 </div>

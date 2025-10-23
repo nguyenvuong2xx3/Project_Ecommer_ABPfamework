@@ -16,10 +16,13 @@ namespace Acme.SimpleTaskApp.OrderItems
 
 		[ForeignKey("OrderId")]
 		public Order Order { get; set; }
-		public int ProductId { get; set; }
+		
+		// Sử dụng ProductVariantId thay vì ProductId để tracking chính xác variant nào được đặt
+		public int ProductVariantId { get; set; }
 
-		[ForeignKey("ProductId")]
-		public Product Product { get; set; }
+		[ForeignKey("ProductVariantId")]
+		public ProductVariant ProductVariant { get; set; }
+		
 		public int Quantity { get; set; }
 		public decimal NewPrice { get; set; } // Price at the time of order
 	}
