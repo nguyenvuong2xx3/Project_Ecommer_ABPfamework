@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.BackgroundJobs;
+using Abp.Configuration;
 using Abp.Domain.Services;
 using Abp.Net.Mail;
 using Abp.Runtime.Session;

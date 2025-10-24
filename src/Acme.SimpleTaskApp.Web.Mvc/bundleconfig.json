@@ -331,5 +331,35 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Roles/_EditModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Orders/index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Orders/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Orders/IndexForCustomer.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Orders/IndexForCustomer.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Carts/ComfirmOrder.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Carts/ComfirmOrder.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Carts/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Carts/Index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/appUserNotificationHelper.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/appUserNotificationHelper.js"
+    ]
   }
 ]

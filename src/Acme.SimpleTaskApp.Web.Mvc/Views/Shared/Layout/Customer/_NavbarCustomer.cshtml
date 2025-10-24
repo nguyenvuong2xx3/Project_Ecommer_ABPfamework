@@ -1,4 +1,5 @@
-﻿<div class="container-fluid fixed-top shadow bg-white">
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.AppTrezoRecentNotifications
+<div class="container-fluid fixed-top shadow bg-white">
   <nav class="navbar navbar-light navbar-expand-xl w-100">
     <!-- Logo -->
     <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
@@ -33,7 +34,10 @@
         </div>
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
-
+      @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
+            {
+        cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
+            })
       <!-- Giỏ hàng và Đăng nhập -->
       <div class="d-flex align-items-center cart-login">
         <!-- Giỏ hàng -->

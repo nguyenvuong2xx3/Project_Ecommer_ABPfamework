@@ -50,6 +50,7 @@
   <ItemGroup>
     <Folder Include="Acme\SimpleTaskApp\Web\Models\Products\" />
     <Folder Include="Models\App\" />
+    <Folder Include="Models\Layout\" />
     <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />
