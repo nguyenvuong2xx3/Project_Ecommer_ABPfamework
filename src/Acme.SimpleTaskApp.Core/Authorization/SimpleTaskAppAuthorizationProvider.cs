@@ -11,6 +11,7 @@ namespace Acme.SimpleTaskApp.Authorization
 			context.CreatePermission(PermissionNames.Pages_Users, L("Users"));
 			context.CreatePermission(PermissionNames.Pages_Users_Activation, L("UsersActivation"));
 			context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
+			context.CreatePermission(PermissionNames.Pages_Settings, L("Settings"));
 			context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
 
 			var product = context.CreatePermission(PermissionNames.Pages_products, L("Products"));

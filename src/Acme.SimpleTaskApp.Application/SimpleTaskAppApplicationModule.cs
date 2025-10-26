@@ -1,32 +1,36 @@
 ﻿using Abp.AutoMapper;
+using Abp.Configuration;
 using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Acme.SimpleTaskApp.Authorization;
+using Acme.SimpleTaskApp.Configuration;
 
 namespace Acme.SimpleTaskApp
 {
-    [DependsOn(
-        typeof(SimpleTaskAppCoreModule), 
-        typeof(AbpAutoMapperModule), typeof(AbpMailKitModule))
-    ]
-    public class SimpleTaskAppApplicationModule : AbpModule
-    {
-        public override void PreInitialize()
-        {
-            Configuration.Authorization.Providers.Add<SimpleTaskAppAuthorizationProvider>();
-        }
+	[DependsOn(
+			typeof(SimpleTaskAppCoreModule),
+			typeof(AbpAutoMapperModule), typeof(AbpMailKitModule))
+	]
+	public class SimpleTaskAppApplicationModule : AbpModule
+	{
+		public override void PreInitialize()
+		{
+			Configuration.Authorization.Providers.Add<SimpleTaskAppAuthorizationProvider>();
 
-        public override void Initialize()
-        {
-            var thisAssembly = typeof(SimpleTaskAppApplicationModule).GetAssembly();
+			Configuration.Settings.Providers.Add<AppSettingProvider>();
+		}
 
-            IocManager.RegisterAssemblyByConvention(thisAssembly);
+		public override void Initialize()
+		{
+			var thisAssembly = typeof(SimpleTaskAppApplicationModule).GetAssembly();
 
-            Configuration.Modules.AbpAutoMapper().Configurators.Add(
-                // Scan the assembly for classes which inherit from AutoMapper.Profile
-                cfg => cfg.AddMaps(thisAssembly)
-            );
-        }
-    }
+			IocManager.RegisterAssemblyByConvention(thisAssembly);
+
+			Configuration.Modules.AbpAutoMapper().Configurators.Add(
+					// Scan the assembly for classes which inherit from AutoMapper.Profile
+					cfg => cfg.AddMaps(thisAssembly)
+			);
+		}
+	}
 }

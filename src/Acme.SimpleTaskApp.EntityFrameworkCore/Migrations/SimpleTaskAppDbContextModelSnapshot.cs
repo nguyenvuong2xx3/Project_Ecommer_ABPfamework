@@ -1551,9 +1551,15 @@ namespace Acme.SimpleTaskApp.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<string>("PhuongXa")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("SoDienThoai")
+                        .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -1562,6 +1568,9 @@ namespace Acme.SimpleTaskApp.Migrations
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TinhThanh")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()

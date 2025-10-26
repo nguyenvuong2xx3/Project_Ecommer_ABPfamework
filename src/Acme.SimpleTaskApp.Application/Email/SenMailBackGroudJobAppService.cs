@@ -5,6 +5,7 @@ using Abp.Domain.Uow;
 using Abp.Net.Mail;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Email.Dtos;
+using Acme.SimpleTaskApp.Settings;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
@@ -15,16 +16,16 @@ namespace Acme.SimpleTaskApp.Email
 	{
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IEmailSender _emailSender;
-		private readonly IConfiguration _configuration;
+		private readonly ISettingAppService _settingAppService;
 
 		public SenMailBackGroudJobAppService(
 				IRepository<User, long> userRepository,
 				IEmailSender emailSender,
-				IConfiguration configuration)
+				ISettingAppService settingAppService)
 		{
+			_settingAppService = settingAppService;
 			_userRepository = userRepository;
 			_emailSender = emailSender;
-			_configuration = configuration;
 		}
 
 		[UnitOfWork]
@@ -33,21 +34,16 @@ namespace Acme.SimpleTaskApp.Email
 			var senderUser = _userRepository.Get(args.SenderUserId);
 			var targetUser = _userRepository.Get(args.TargetUserId);
 
-			var smtpHost = _configuration["EmailSettings:SmtpHost"];
-			var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
-			var smtpUser = _configuration["EmailSettings:SmtpUser"];
-			var smtpPassword = _configuration["EmailSettings:SmtpPassword"];
-			var smtpEnableSsl = bool.Parse(_configuration["EmailSettings:EnableSsl"]);
-
-			var smtpClient = new SmtpClient(smtpHost, smtpPort)
+			var getAll = _settingAppService.MailSettings();
+			var smtpClient = new SmtpClient(getAll.Result.Server, getAll.Result.SmtpPort)
 			{
-				Credentials = new NetworkCredential(smtpUser, smtpPassword),
-				EnableSsl = smtpEnableSsl
+				Credentials = new NetworkCredential(getAll.Result.UserName, getAll.Result.Password),
+				EnableSsl = getAll.Result.EnableSsl
 			};
 
 			var mailMessage = new MailMessage
 			{
-				From = new MailAddress(smtpUser, "Quản trị viên"),
+				From = new MailAddress(getAll.Result.UserName, getAll.Result.SenderName),
 				Subject = args.Subject,
 				Body = args.Body,
 				IsBodyHtml = true,

@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services;
+﻿using Abp;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
@@ -7,6 +8,7 @@ using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders.Dtos;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.Notifications;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,7 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly IRepository<ProductVariant> _productVariantRepository;
 		private readonly IRepository<OrderDetails, int> _orderDetailsRepository;
 		private readonly OrderQueueService _orderQueueService;
+		private readonly INotificationAppService _notificationAppService;
 
 		public OrdersAppService(
 			IRepository<Order, int> orderRepository,
@@ -31,7 +34,8 @@ namespace Acme.SimpleTaskApp.Orders
 			IRepository<Product> productRepository,
 			IRepository<ProductVariant> productVariantRepository,
 			IRepository<User, long> userRepository,
-			OrderQueueService orderQueueService)
+			OrderQueueService orderQueueService,
+			INotificationAppService notificationAppService)
 		{
 			_userRepository = userRepository;
 			_ordersRepository = orderRepository;
@@ -39,6 +43,7 @@ namespace Acme.SimpleTaskApp.Orders
 			_productVariantRepository = productVariantRepository;
 			_orderDetailsRepository = orderDetailsRepository;
 			_orderQueueService = orderQueueService;
+			_notificationAppService = notificationAppService;
 		}
 
 		public async Task<int> CreateOrder(CreateOrderInput input)
@@ -149,6 +154,17 @@ namespace Acme.SimpleTaskApp.Orders
 			{
 				throw exceptions.First();
 			}
+
+			// Gửi notification cho admin về đơn hàng mới
+			var user = await _userRepository.GetAsync(input.UserId);
+			await _notificationAppService.PublishNewOrderNotification(
+				orderId,
+				user.Name ?? user.UserName,
+				totalPrice
+			);
+
+			// Kiểm tra tồn kho thấp và gửi cảnh báo
+			await CheckAndNotifyLowStock(orderDetailsList);
 
 			return orderId;
 		}
@@ -353,8 +369,17 @@ namespace Acme.SimpleTaskApp.Orders
 			{
 				throw new UserFriendlyException("Order not found.");
 			}
+			
 			order.Status = 1;
 			await _ordersRepository.UpdateAsync(order);
+
+			// Gửi notification cho khách hàng
+			var userId = new UserIdentifier(AbpSession.TenantId, order.UserId);
+			await _notificationAppService.PublishOrderStatusChangedNotification(
+				orderId,
+				"Đang giao hàng",
+				userId
+			);
 		}
 
 		public async Task RejectOrder(int orderId)
@@ -370,6 +395,14 @@ namespace Acme.SimpleTaskApp.Orders
 
 			order.Status = 3;
 			await _ordersRepository.UpdateAsync(order);
+
+			// Gửi notification cho khách hàng
+			var userId = new UserIdentifier(AbpSession.TenantId, order.UserId);
+			await _notificationAppService.PublishOrderStatusChangedNotification(
+				orderId,
+				"Đã từ chối",
+				userId
+			);
 		}
 
 		public async Task CancelOrder(int orderId)
@@ -385,6 +418,14 @@ namespace Acme.SimpleTaskApp.Orders
 
 			order.Status = 4;
 			await _ordersRepository.UpdateAsync(order);
+
+			// Gửi notification cho khách hàng
+			var userId = new UserIdentifier(AbpSession.TenantId, order.UserId);
+			await _notificationAppService.PublishOrderStatusChangedNotification(
+				orderId,
+				"Đã hủy",
+				userId
+			);
 		}
 
 		public async Task ReorderOrder(int orderId)
@@ -429,8 +470,17 @@ namespace Acme.SimpleTaskApp.Orders
 			{
 				throw new UserFriendlyException("Order not found.");
 			}
+			
 			order.Status = 2;
 			await _ordersRepository.UpdateAsync(order);
+
+			// Gửi notification cho khách hàng
+			var userId = new UserIdentifier(AbpSession.TenantId, order.UserId);
+			await _notificationAppService.PublishOrderStatusChangedNotification(
+				orderId,
+				"Hoàn thành",
+				userId
+			);
 		}
 
 		public async Task<OrdersDto> GetOrderByUserId()
@@ -570,6 +620,30 @@ namespace Acme.SimpleTaskApp.Orders
 					.Where(pv => pv.ProductId == product.Id)
 					.SumAsync(pv => pv.StockQuantity);
 				await _productRepository.UpdateAsync(product);
+			}
+		}
+
+		/// <summary>
+		/// Kiểm tra và gửi cảnh báo tồn kho thấp
+		/// </summary>
+		private async Task CheckAndNotifyLowStock(List<OrderDetails> orderDetails)
+		{
+			const int LOW_STOCK_THRESHOLD = 10; // Ngưỡng cảnh báo tồn kho thấp
+
+			foreach (var detail in orderDetails)
+			{
+				var productVariant = await _productVariantRepository.GetAsync(detail.ProductVariantId);
+				
+				if (productVariant.StockQuantity <= LOW_STOCK_THRESHOLD)
+				{
+					var product = await _productRepository.GetAsync(productVariant.ProductId);
+					var productName = $"{product.Name} - {productVariant.Color} {productVariant.Storage}";
+					
+					await _notificationAppService.PublishLowStockNotification(
+						productName,
+						productVariant.StockQuantity
+					);
+				}
 			}
 		}
 

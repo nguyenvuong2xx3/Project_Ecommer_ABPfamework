@@ -1,85 +1,183 @@
 ﻿@using Abp.Authorization.Users
 @model Acme.SimpleTaskApp.Web.Models.Account.RegisterViewModel
 @{
-    ViewBag.Title = L("Register");
+  ViewBag.Title = L("Register");
 }
 @section scripts
 {
-    <environment names="Development">
-        <script src="~/view-resources/Views/Account/Register.js" asp-append-version="true"></script>
-    </environment>
+  <environment names="Development">
+    <script src="~/view-resources/Views/Account/Register.js" asp-append-version="true"></script>
+  </environment>
 
-    <environment names="Staging,Production">
-        <script src="~/view-resources/Views/Account/Register.min.js" asp-append-version="true"></script>
-    </environment>
+  <environment names="Staging,Production">
+    <script src="~/view-resources/Views/Account/Register.min.js" asp-append-version="true"></script>
+  </environment>
 }
-<h4 class="text-center">@L("Register")</h4>
-<form id="RegisterForm" asp-action="Register" method="post">
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">
-            <i class="fas fa-warning"></i> @ViewBag.ErrorMessage
-        </div>
+
+<style>
+  body, html {
+    height: 100%;
+  }
+
+  .bg-register {
+    background-color: #f4f7fc;
+  }
+
+  .register-container {
+    min-height: 100vh;
+  }
+
+  .register-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .register-image-side {
+    background: url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9e?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+    background-size: cover;
+  }
+
+  .btn-google {
+    color: #545454;
+    background-color: #ffffff;
+    border: 1px solid #d4d4d4;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  }
+
+    .btn-google:hover {
+      color: #000;
+      background-color: #f8f9fa;
     }
-    <input type="hidden" name="IsExternalLogin" value="@Model.IsExternalLogin.ToString()" />
-    <input type="hidden" name="ExternalLoginAuthSchema" value="@Model.ExternalLoginAuthSchema" />
-    <div class="input-group mb-3">
-        <input type="text" name="Name" class="form-control" placeholder="@L("Name")" value="@Model.Name" required maxlength="@AbpUserBase.MaxNameLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-arrow-left"></span>
-            </div>
-        </div>
+
+  .divider-text {
+    position: relative;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+    .divider-text span {
+      padding: 7px;
+      font-size: 12px;
+      position: relative;
+      z-index: 2;
+      background-color: #fff;
+      color: #6c757d;
+    }
+
+    .divider-text:after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background-color: #d4d4d4;
+      left: 0;
+      top: 50%;
+      z-index: 1;
+    }
+
+  .password-toggle-icon {
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+  }
+
+  .form-control-password {
+    padding-right: 40px;
+  }
+</style>
+<h4 class="card-title text-center mb-4 fw-bold">Đăng Ký</h4>
+
+<!-- Đăng nhập nhanh bằng Google -->
+<div class="text-center">
+  <form asp-controller="Account" asp-action="ExternalLogin" method="post">
+    <input type="hidden" name="provider" value="Google" />
+    <input type="hidden" name="returnUrl" value="/" />
+    <button type="submit" class="btn btn-google w-100 d-flex align-items-center justify-content-center">
+      <img width="20px" style="margin-bottom:3px; margin-right:10px;" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" />
+      Đăng nhập với Google
+    </button>
+  </form>
+</div>
+<!-- Dải phân cách "hoặc" -->
+<p class="divider-text"><span>Hoặc Đăng Ký Bằng Email</span></p>
+
+<form id="RegisterForm" asp-action="Register" method="post">
+  @if (ViewBag.ErrorMessage != null)
+  {
+    <div class="alert alert-danger">
+      <i class="fas fa-warning"></i> @ViewBag.ErrorMessage
     </div>
-    <div class="input-group mb-3">
-        <input type="text" name="Surname" class="form-control" placeholder="@L("Surname")" value="@Model.Surname" required maxlength="@AbpUserBase.MaxSurnameLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-arrow-left"></span>
-            </div>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="email" name="EmailAddress" class="form-control" placeholder="@L("EmailAddress")" value="@Model.EmailAddress" required maxlength="@AbpUserBase.MaxEmailAddressLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-envelope"></span>
-            </div>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="text" name="UserName" class="form-control" placeholder="@L("UserName")" value="@Model.UserName" required maxlength="@AbpUserBase.MaxUserNameLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-user"></span>
-            </div>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="password" name="Password" class="form-control" placeholder="@L("Password")" required maxlength="@AbpUserBase.MaxPlainPasswordLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-lock"></span>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <a asp-action="Login" class="btn btn-default btn-flat"><i class="fa fa-arrow-circle-left"></i> @L("Back")</a>
-        </div>
-        <div class="col-4">
-            <button type="submit" id="RegisterButton" class="btn btn-primary btn-flat float-right">@L("Register")</button>
-        </div>
-    </div>
+  }
+  <input type="hidden" name="IsExternalLogin" value="@Model.IsExternalLogin.ToString()" />
+  <input type="hidden" name="ExternalLoginAuthSchema" value="@Model.ExternalLoginAuthSchema" />
+
+  <div class="mb-3">
+    <label for="Name" class="form-label">Tên</label>
+    <input type="text" name="Name" class="form-control" placeholder="Tên" value="@Model.Name" required maxlength="@AbpUserBase.MaxNameLength">
+  </div>
+  <div class="mb-3">
+    <label for="Surname" class="form-label">Họ</label>
+    <input type="text" name="Surname" class="form-control" placeholder="Họ" value="@Model.Surname" required maxlength="@AbpUserBase.MaxSurnameLength">
+  </div>
+  <div class="mb-3">
+    <label for="EmailAddress" class="form-label">Địa Chỉ Email</label>
+    <input type="email" name="EmailAddress" class="form-control" placeholder="Địa Chỉ Email" value="@Model.EmailAddress" required maxlength="@AbpUserBase.MaxEmailAddressLength">
+  </div>
+  <div class="mb-3">
+    <label for="UserName" class="form-label">Tên Người Dùng</label>
+    <input type="text" name="UserName" class="form-control" placeholder="Tên Người Dùng" value="@Model.UserName" required maxlength="@AbpUserBase.MaxUserNameLength">
+  </div>
+  <div class="mb-3 position-relative">
+    <label for="Password" class="form-label">Mật Khẩu</label>
+    <input type="password" name="Password" class="form-control form-control-password" placeholder="Mật Khẩu" required maxlength="@AbpUserBase.MaxPlainPasswordLength">
+    <i class="fas fa-eye password-toggle-icon" id="togglePassword"></i>
+  </div>
+
+  <div class="form-check d-flex justify-content-center mb-4">
+    <input class="form-check-input me-2" type="checkbox" value="" id="agreeTerms" required />
+    <label class="form-check-label" for="agreeTerms">
+      Tôi Đồng Ý Với <a href="/dieu-khoan" class="text-decoration-none">Điều Khoản Dịch Vụ</a> & <a href="/chinh-sach-bao-mat" class="text-decoration-none">Chính Sách Bảo Mật</a>
+    </label>
+  </div>
+
+  <div class="d-grid mb-2">
+    <button type="submit" id="RegisterButton" class="btn btn-primary btn-lg fw-bold">Đăng Ký</button>
+  </div>
+  <a class="d-block text-center mt-3 small" asp-action="Login">Đã Có Tài Khoản?</a>
 </form>
-@*<div class="social-auth-links text-center">
-        <p>- OR -</p>
-        <a href="javascript:;" class="btn btn-block btn-primary">
-            <i class="fab fa-facebook mr-2"></i>
-            Sign up using Facebook
-        </a>
-        <a href="javascript:;" class="btn btn-block btn-danger">
-            <i class="fab fa-google-plus mr-2"></i>
-            Sign up using Google+
-        </a>
-    </div>*@
+@* </div> *@
+<!-- Phần Hình Ảnh (Ẩn trên màn hình nhỏ) -->
+<div class="card-img-left d-none d-md-flex register-image-side">
+  <!-- Ảnh nền được set bằng CSS -->
+</div>
+@*       </div>
+    </div>
+  </div>
+</div> *@
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      function setupPasswordToggle(toggleId, passwordId) {
+          const togglePassword = document.getElementById(toggleId);
+          const password = document.getElementById(passwordId);
+
+          if (togglePassword && password) {
+              togglePassword.addEventListener('click', function (e) {
+                  // chuyển đổi type của input
+                  const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                  password.setAttribute('type', type);
+                  // thay đổi icon
+                  this.classList.toggle('fa-eye-slash');
+              });
+          }
+      }
+
+      setupPasswordToggle('togglePassword', 'Password');
+  });
+</script>

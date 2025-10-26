@@ -361,5 +361,29 @@
     "inputFiles": [
       "wwwroot/Common/Scripts/appUserNotificationHelper.js"
     ]
+  },
+  {
+    "outputFileName": "Views/Shared/Components/NotificationBell/Index.min.js",
+    "inputFiles": [
+      "Views/Shared/Components/NotificationBell/Index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Layout/_Header.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Layout/_Header.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/UserProfiles/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/UserProfiles/Index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/AccountForCustomers/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/AccountForCustomers/Index.js"
+    ]
   }
 ]

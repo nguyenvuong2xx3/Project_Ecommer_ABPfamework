@@ -34,18 +34,18 @@
             <a href="/"><b>SimpleTaskApp</b></a>
         </div>
         <div class="card">
-            @if (showTenantChange)
+            @* @if (showTenantChange)
             {
                 <div class="card-header p-0">
                     <vc:tenant-change></vc:tenant-change>
                 </div>
-            }
+            } *@
             <div class="card-body login-card-body">
                 @RenderBody()
             </div>
-            <div class="card-footer">
+           @*  <div class="card-footer">
                 <vc:account-languages></vc:account-languages>
-            </div>
+            </div> *@
         </div>
         <div class="row">
             <div class="col-md-12 text-center">

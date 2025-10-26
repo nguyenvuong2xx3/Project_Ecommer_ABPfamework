@@ -18,87 +18,89 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
 using Acme.SimpleTaskApp.Categories;
+using Acme.SimpleTaskApp.Web.Realtime;
 
 namespace Acme.SimpleTaskApp.Web.Startup
 {
-    public class Startup
-    {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-        private readonly IConfigurationRoot _appConfiguration;
+	public class Startup
+	{
+		private readonly IWebHostEnvironment _hostingEnvironment;
+		private readonly IConfigurationRoot _appConfiguration;
 
-        public Startup(IWebHostEnvironment env)
-        {
-            _hostingEnvironment = env;
-            _appConfiguration = env.GetAppConfiguration();
-        }
+		public Startup(IWebHostEnvironment env)
+		{
+			_hostingEnvironment = env;
+			_appConfiguration = env.GetAppConfiguration();
+		}
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // MVC
-            services.AddControllersWithViews(
-                    options =>
-                    {
-                        options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-                        options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute());
-                    }
-                );
+		public void ConfigureServices(IServiceCollection services)
+		{
+			// MVC
+			services.AddControllersWithViews(
+							options =>
+							{
+								options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+								options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute());
+							}
+					);
 
-            IdentityRegistrar.Register(services);
-            AuthConfigurer.Configure(services, _appConfiguration);
+			IdentityRegistrar.Register(services);
+			AuthConfigurer.Configure(services, _appConfiguration);
+			services.Configure<WebEncoderOptions>(options =>
+						{
+							options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+						});
 
-            services.Configure<WebEncoderOptions>(options =>
-            {
-                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
-            });
+			services.AddScoped<IWebResourceManager, WebResourceManager>();
 
-            services.AddScoped<IWebResourceManager, WebResourceManager>();
+			services.AddSignalR();
 
-			      //services.AddScoped<ICategoryAppService, CategoryAppService>();
+			// Configure Abp and Dependency Injection
+			services.AddAbpWithoutCreatingServiceProvider<SimpleTaskAppWebMvcModule>(
+					// Configure Log4Net logging
+					options => options.IocManager.IocContainer.AddFacility<LoggingFacility>(
+							f => f.UseAbpLog4Net().WithConfig(
+									_hostingEnvironment.IsDevelopment()
+											? "log4net.config"
+											: "log4net.Production.config"
+									)
+					)
+			);
+		}
 
-			      services.AddSignalR();
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+		{
+			app.UseAbp(); // Initializes ABP framework.
 
-            // Configure Abp and Dependency Injection
-            services.AddAbpWithoutCreatingServiceProvider<SimpleTaskAppWebMvcModule>(
-                // Configure Log4Net logging
-                options => options.IocManager.IocContainer.AddFacility<LoggingFacility>(
-                    f => f.UseAbpLog4Net().WithConfig(
-                        _hostingEnvironment.IsDevelopment()
-                            ? "log4net.config"
-                            : "log4net.Production.config"
-                        )
-                )
-            );
-        }
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Error");
+			}
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
-        {
-            app.UseAbp(); // Initializes ABP framework.
+			app.UseStaticFiles();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
+			app.UseRouting();
 
-            app.UseStaticFiles();
+			app.UseCookiePolicy();
 
-            app.UseRouting();
+			app.UseAuthentication();
+			app.UseAbpRequestLocalization();
 
-            app.UseAuthentication();
+			app.UseJwtTokenMiddleware();
 
-            app.UseJwtTokenMiddleware();
+			app.UseAuthorization();
 
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<AbpCommonHub>("/signalr");
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=HomeCustomer}/{action=Index}/{id?}");
-            });
-        }
-    }
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapHub<AbpCommonHub>("/signalr");
+				endpoints.MapHub<NotificationHub>("/signalr-notification"); // Thêm NotificationHub
+				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=HomeCustomer}/{action=Index}/{id?}");
+			});
+		}
+	}
 }

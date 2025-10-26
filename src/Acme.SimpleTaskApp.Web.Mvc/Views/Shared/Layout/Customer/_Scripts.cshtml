@@ -41,6 +41,8 @@
   @* <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/common-scripts.min.js" asp-append-version="true"></script>  *@
   <script src="~/Common/Scripts/ResourceLoader.js" asp-append-version="true"></script>
   <script src="~/Common/Scripts/appUserNotificationHelper.js" asp-append-version="true"></script>
+  <script src="~/Common/Scripts/bs-timepicker/bootstrap-timepicker.js" asp-append-version="true"></script>
+  <script src="~/Common/Scripts/bs-daterangepicker/daterangepicker.js" asp-append-version="true"></script>
   @*abp scripts end*@
 
   @* 	<script src="/themes/trezo/assets/js/sidebar-menu.js"></script>
@@ -137,7 +139,7 @@ else
   </script>
 </environment>
 
-@if (CultureInfo.CurrentUICulture.Name != "en")
+@* @if (CultureInfo.CurrentUICulture.Name != "en")
 {
   var normalizedCurrentUICultureName = CultureInfo.CurrentUICulture.Name.Replace("-", "_");
   var localizationFileNameWithExtension = "messages_";
@@ -155,7 +157,7 @@ else
   }
   localizationFileNameWithExtension += ".min.js";
   <script src="~/libs/jquery-validate/localization/@localizationFileNameWithExtension" asp-append-version="true"></script>
-}
+} *@
 
 <script type="text/javascript">
   // Localizing momentjs

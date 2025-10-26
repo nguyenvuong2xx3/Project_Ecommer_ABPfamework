@@ -30,6 +30,7 @@ using Acme.SimpleTaskApp.MultiTenancy;
 using Acme.SimpleTaskApp.Sessions;
 using Acme.SimpleTaskApp.Web.Models.Account;
 using Acme.SimpleTaskApp.Web.Views.Shared.Components.TenantChange;
+using Acme.SimpleTaskApp.Authentication.External;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
@@ -46,6 +47,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		private readonly ISessionAppService _sessionAppService;
 		private readonly ITenantCache _tenantCache;
 		private readonly INotificationPublisher _notificationPublisher;
+		private readonly ExternalLoginInfoManagerFactory _externalLoginInfoManagerFactory;
+
 
 		public AccountController(
 				UserManager userManager,
@@ -57,9 +60,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				SignInManager signInManager,
 				UserRegistrationManager userRegistrationManager,
 				ISessionAppService sessionAppService,
+				ExternalLoginInfoManagerFactory externalLoginInfoManagerFactory,
 				ITenantCache tenantCache,
 				INotificationPublisher notificationPublisher)
 		{
+			_externalLoginInfoManagerFactory = externalLoginInfoManagerFactory;
 			_userManager = userManager;
 			_multiTenancyConfig = multiTenancyConfig;
 			_tenantManager = tenantManager;
@@ -185,8 +190,13 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					{
 						throw new Exception("Can not external login!");
 					}
-
-					model.UserName = model.EmailAddress;
+					using (var providerManager =
+							 _externalLoginInfoManagerFactory.GetExternalLoginInfoManager(externalLoginInfo
+									 .LoginProvider))
+					{
+						model.UserName =
+								providerManager.Object.GetUserNameFromClaims(externalLoginInfo.Principal.Claims.ToList());
+					}
 					model.Password = Authorization.Users.User.CreateRandomPassword();
 				}
 				else
@@ -230,8 +240,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				}
 
 				await _unitOfWorkManager.Current.SaveChangesAsync();
-
-				Debug.Assert(user.TenantId != null);
 
 				var tenant = await _tenantManager.GetByIdAsync(user.TenantId.Value);
 
@@ -282,25 +290,21 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult ExternalLogin(string provider, string returnUrl)
+		public ActionResult ExternalLogin(string provider, string returnUrl, string ss = "")
 		{
 			var redirectUrl = Url.Action(
 					"ExternalLoginCallback",
 					"Account",
 					new
 					{
-						ReturnUrl = returnUrl
+						ReturnUrl = returnUrl,
+						authSchema = provider,
+						ss = ss
 					});
 
-			return Challenge(
-					// TODO: ...?
-					// new Microsoft.AspNetCore.Http.Authentication.AuthenticationProperties
-					// {
-					//     Items = { { "LoginProvider", provider } },
-					//     RedirectUri = redirectUrl
-					// },
-					provider
-			);
+			var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+			return Challenge(properties, provider);
 		}
 
 		[UnitOfWork]
@@ -393,6 +397,36 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		#endregion
+
+		#region Email activation / confirmation
+
+		//public ActionResult EmailActivation()
+		//{
+		//	return View();
+		//}
+
+		//[HttpPost]
+		//public virtual async Task<JsonResult> SendEmailActivationLink(SendEmailActivationLinkInput model)
+		//{
+		//	await _accountAppService.SendEmailActivationLink(model);
+		//	return Json(new AjaxResponse());
+		//}
+
+		//public virtual async Task<ActionResult> EmailConfirmation(EmailConfirmationViewModel input)
+		//{
+		//	await SwitchToTenantIfNeeded(input.TenantId);
+		//	await _accountAppService.ActivateEmail(input);
+		//	return RedirectToAction(
+		//			"Login",
+		//			new
+		//			{
+		//				successMessage = L("YourEmailIsConfirmedMessage"),
+		//				userNameOrEmailAddress = (await _userManager.GetUserByIdAsync(input.UserId)).UserName
+		//			});
+		//}
+
+		#endregion
+
 
 		#region Helpers
 

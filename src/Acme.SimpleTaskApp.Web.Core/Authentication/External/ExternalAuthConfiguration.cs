@@ -3,13 +3,15 @@ using Abp.Dependency;
 
 namespace Acme.SimpleTaskApp.Authentication.External
 {
-    public class ExternalAuthConfiguration : IExternalAuthConfiguration, ISingletonDependency
-    {
-        public List<ExternalLoginProviderInfo> Providers { get; }
+	public class ExternalAuthConfiguration : IExternalAuthConfiguration, ISingletonDependency
+	{
+		public List<ExternalLoginProviderInfo> Providers { get; }
 
-        public ExternalAuthConfiguration()
-        {
-            Providers = new List<ExternalLoginProviderInfo>();
-        }
-    }
+		public List<IExternalLoginInfoProvider> ExternalLoginInfoProviders { get; }
+		public ExternalAuthConfiguration()
+		{
+			Providers = new List<ExternalLoginProviderInfo>();
+			ExternalLoginInfoProviders = new List<IExternalLoginInfoProvider>();
+		}
+	}
 }

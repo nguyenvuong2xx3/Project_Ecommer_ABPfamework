@@ -12,6 +12,8 @@
 		    public const string Categories = "Categories";
         public const string HomeCustomer = "HomeCustomer";
         public const string Orders = "Orders";
+        public const string SmtpSettings = "SmtpSettings";
+        public const string Settings = "Settings";
 
 
 	}

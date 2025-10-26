@@ -15,6 +15,16 @@
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Models\App\**" />
+    <Compile Remove="Models\Layout\**" />
+    <Content Remove="Models\App\**" />
+    <Content Remove="Models\Layout\**" />
+    <EmbeddedResource Remove="Models\App\**" />
+    <EmbeddedResource Remove="Models\Layout\**" />
+    <None Remove="Models\App\**" />
+    <None Remove="Models\Layout\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Dockerfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -34,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.21" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.21" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
@@ -49,8 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Acme\SimpleTaskApp\Web\Models\Products\" />
-    <Folder Include="Models\App\" />
-    <Folder Include="Models\Layout\" />
     <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />

@@ -8,6 +8,7 @@
 		public const string Pages_Users_Activation = "Pages.Users.Activation";
 
 		public const string Pages_Roles = "Pages.Roles";
+		public const string Pages_Settings = "Pages.Settings";
 
 		public const string Pages_products = "Pages.product";
 		public const string Pages_products_create = "Pages.product.create";
@@ -23,9 +24,6 @@
 
 		public const string Pages_homeCustomer = "Pages.homeCustomer";
 		public const string Pages_orders = "Pages.orders";
-
-
-
 
 
 	}
