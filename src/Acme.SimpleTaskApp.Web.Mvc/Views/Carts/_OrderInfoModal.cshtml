@@ -1,4 +1,6 @@
-﻿<style>
+﻿@using Acme.SimpleTaskApp.Web.Models.Orders
+@model OrderInfoModalViewModel
+<style>
   .modal-content {
     border-radius: 12px;
     border: none;
@@ -326,11 +328,9 @@
       <i class="fas fa-info-circle me-2"></i>
       <div>Vui lòng nhập đầy đủ thông tin để tiếp tục bước tiếp theo</div>
     </div>
-
     <div class="divider"></div>
 
     <form id="deliveryForm">
-      <!-- Thông tin người đặt -->
       <div class="mb-4">
         <h6 class="section-title">
           <i class="fas fa-user"></i>Thông tin người đặt
@@ -360,24 +360,13 @@
           <input type="tel" class="form-control" id="phone" placeholder="Nhập số điện thoại">
         </div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Đăng nhập nhanh -->
-      <div class="login-section">
-        <i class="fas fa-user-circle"></i>
-        <span>Hoặc đăng nhập để lấy nhanh thông tin giao hàng</span>
-        <button type="button" class="btn btn-outline-primary ms-3">
-          <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
-        </button>
-      </div>
 
       <!-- Hình thức giao hàng -->
       <div class="mb-4">
         <h6 class="section-title">
           <i class="fas fa-truck"></i>Chọn hình thức giao hàng
         </h6>
-
         <div class="row">
           <div class="col-md-6 mb-3">
             <div class="delivery-option active" id="homeDelivery">
@@ -410,16 +399,6 @@
           <i class="fas fa-map-marker-alt"></i>Địa chỉ giao hàng
         </h6>
 
-        <div class="address-selected">
-          <i class="fas fa-check-circle text-success me-2"></i>
-          Địa chỉ đang chọn: Thành Phố Hồ Chí Minh
-        </div>
-
-        <div class="mb-3">
-          <label for="changeAddress" class="form-label">Thay đổi địa chỉ khác</label>
-          <input type="text" class="form-control" id="changeAddress" placeholder="Nhập địa chỉ mới">
-        </div>
-
         <div class="mb-3">
           <label for="addressDetail" class="form-label">Nhập địa chỉ chi tiết</label>
           <input type="text" class="form-control" id="addressDetail" placeholder="Tòa nhà, Số nhà, Tên đường,...">
@@ -430,35 +409,13 @@
             <label for="province" class="form-label">Tỉnh/Thành phố</label>
             <select class="form-select" id="province">
               <option selected>Chọn Tỉnh/Thành phố</option>
-              <option>Hồ Chí Minh</option>
-              <option>Hà Nội</option>
-              <option>Đà Nẵng</option>
             </select>
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="district" class="form-label">Quận/Huyện</label>
-            <select class="form-select" id="district">
-              <option selected>Chọn Quận/Huyện</option>
-              <option>Quận 1</option>
-              <option>Quận 2</option>
-              <option>Quận 3</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row">
           <div class="col-md-6 mb-3">
             <label for="ward" class="form-label">Phường/Xã</label>
             <select class="form-select" id="ward">
               <option selected>Chọn Phường/Xã</option>
-              <option>Phường Bến Nghé</option>
-              <option>Phường Bến Thành</option>
-              <option>Phường Nguyễn Thái Bình</option>
             </select>
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="zipcode" class="form-label">Mã bưu điện</label>
-            <input type="text" class="form-control" id="zipcode" placeholder="Nhập mã bưu điện">
           </div>
         </div>
 

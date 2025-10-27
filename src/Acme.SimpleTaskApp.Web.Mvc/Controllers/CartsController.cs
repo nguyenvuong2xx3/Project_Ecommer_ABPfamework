@@ -1,7 +1,12 @@
-﻿using Acme.SimpleTaskApp.Carts;
+﻿using Acme.SimpleTaskApp.Authorization.Users;
+using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Controllers;
+using Acme.SimpleTaskApp.Web.Models.Orders;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
@@ -9,9 +14,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 	public class CartsController : SimpleTaskAppControllerBase
 	{
 		private readonly ICartAppService _cartAppService;
-		public CartsController(ICartAppService cartAppService)
+		private readonly UserManager<User> _userManager;
+		public CartsController(ICartAppService cartAppService, UserManager<User> userManager)
 		{
 			_cartAppService = cartAppService;
+			_userManager = userManager;
 		}
 
 		[Authorize]
@@ -22,7 +29,15 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 		public async Task<ActionResult> OrderInfoModal()
 		{
-			return PartialView("_OrderInfoModal");
+			var user = await _userManager.FindByIdAsync(AbpSession.UserId.ToString());
+			//var tinhThanhs = await _locationService.GetAllTinhThanhAsync();
+			var model = new OrderInfoModalViewModel
+			{
+				//SoDienThoai = user.SoDienThoai,
+				//TinhThanh = tinhThanhs,
+				User = user
+			};
+			return PartialView("_OrderInfoModal", model);
 		}
 	}
 }

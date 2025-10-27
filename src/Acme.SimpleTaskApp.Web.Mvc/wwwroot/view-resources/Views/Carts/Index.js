@@ -4,8 +4,8 @@
 
 	var _OrderInfoModal = new app.ModalManager({
 		viewUrl: abp.appPath + 'Carts/OrderInfoModal',
-		scriptUrl: abp.appPath + 'view-resources/Views/Carts/ComfirmOrder.js',
-		modalClass: 'ComfirmOrderModal',
+		scriptUrl: abp.appPath + 'view-resources/Views/Carts/_OrderInfoModal.js',
+		modalClass: 'OrderInfoModal',
 		modalSize: 'modal-lg'
 	});
 
