@@ -14,6 +14,15 @@
     </environment>
 }
 <h4 class="text-center">@L("LogIn")</h4>
+<form asp-controller="Account" asp-action="ExternalLogin" method="post">
+  <input type="hidden" name="provider" value="Google" />
+  <input type="hidden" name="returnUrl" value="/" />
+  <button type="submit" class="btn btn-google w-100 d-flex align-items-center justify-content-center">
+    <img width="20px" style="margin-bottom:3px; margin-right:10px;" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" />
+    Đăng nhập với Google
+  </button>
+</form>
+<p class="divider-text"><span>Hoặc Đăng Nhập Bằng Email</span></p>
 <form id="LoginForm" asp-action="Login" method="post">
     <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
     <input type="hidden" name="returnUrlHash" />

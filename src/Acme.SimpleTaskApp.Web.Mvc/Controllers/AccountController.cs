@@ -124,7 +124,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 			await _signInManager.SignInAsync(loginResult.Identity, loginModel.RememberMe);
 			await UnitOfWorkManager.Current.SaveChangesAsync();
-			
+
 
 			return Json(new AjaxResponse { TargetUrl = returnUrl });
 		}
@@ -241,6 +241,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 				await _unitOfWorkManager.Current.SaveChangesAsync();
 
+				Debug.Assert(user.TenantId != null);
+
 				var tenant = await _tenantManager.GetByIdAsync(user.TenantId.Value);
 
 				// Directly login if possible
@@ -249,20 +251,28 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					AbpLoginResult<Tenant, User> loginResult;
 					if (externalLoginInfo != null)
 					{
-						loginResult = await _logInManager.LoginAsync(externalLoginInfo, tenant.TenancyName);
+						// SỬA: Dùng ASP.NET Core Identity thuần thay vì ABP
+						await _signInManager.SignOutAsync();
+
+						// Thêm external login info vào user
+						var addLoginResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(
+								externalLoginInfo.LoginProvider,
+								externalLoginInfo.ProviderKey,
+								externalLoginInfo.ProviderDisplayName));
+						await _signInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
+						return Redirect(GetAppHomeUrl());
 					}
 					else
 					{
+						// Với normal login, vẫn dùng ABP
 						loginResult = await GetLoginResultAsync(user.UserName, model.Password, tenant.TenancyName);
+						if (loginResult.Result == AbpLoginResultType.Success)
+						{
+							await _signInManager.SignInAsync(loginResult.Identity, false);
+							return Redirect(GetAppHomeUrl());
+						}
+						Logger.Warn("New registered user could not be login. login result: " + loginResult.Result);
 					}
-
-					if (loginResult.Result == AbpLoginResultType.Success)
-					{
-						await _signInManager.SignInAsync(loginResult.Identity, false);
-						return Redirect(GetAppHomeUrl());
-					}
-
-					Logger.Warn("New registered user could not be login. This should not be normally. login result: " + loginResult.Result);
 				}
 
 				return View("RegisterResult", new RegisterResultViewModel
@@ -303,6 +313,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					});
 
 			var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+			properties.Items["loginCallback"] = "true"; // Thêm flag này
 
 			return Challenge(properties, provider);
 		}
@@ -330,7 +341,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			var tenancyName = GetTenancyNameOrNull();
 
 			var loginResult = await _logInManager.LoginAsync(externalLoginInfo, tenancyName);
-
+			returnUrl = GetAppHomeUrl();
 			switch (loginResult.Result)
 			{
 				case AbpLoginResultType.Success:
@@ -437,7 +448,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 		public string GetAppHomeUrl()
 		{
-			return Url.Action("Index, about");
+			return Url.Action("Index", "HomeCustomer");
 		}
 
 		#endregion

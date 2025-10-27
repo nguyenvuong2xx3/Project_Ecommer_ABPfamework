@@ -15,12 +15,16 @@
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Acme\**" />
     <Compile Remove="Models\App\**" />
     <Compile Remove="Models\Layout\**" />
+    <Content Remove="Acme\**" />
     <Content Remove="Models\App\**" />
     <Content Remove="Models\Layout\**" />
+    <EmbeddedResource Remove="Acme\**" />
     <EmbeddedResource Remove="Models\App\**" />
     <EmbeddedResource Remove="Models\Layout\**" />
+    <None Remove="Acme\**" />
     <None Remove="Models\App\**" />
     <None Remove="Models\Layout\**" />
   </ItemGroup>
@@ -60,7 +64,6 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Acme\SimpleTaskApp\Web\Models\Products\" />
     <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />

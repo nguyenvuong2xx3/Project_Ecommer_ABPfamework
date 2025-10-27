@@ -34,12 +34,12 @@ namespace Acme.SimpleTaskApp
             return user;
         }
 
-        protected virtual Task<Tenant> GetCurrentTenantAsync()
-        {
-            return TenantManager.GetByIdAsync(AbpSession.GetTenantId());
-        }
+    protected virtual Task<Tenant> GetCurrentTenantAsync()
+    {
+      return TenantManager.GetByIdAsync(AbpSession.GetTenantId());
+    }
 
-        protected virtual void CheckErrors(IdentityResult identityResult)
+    protected virtual void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
         }

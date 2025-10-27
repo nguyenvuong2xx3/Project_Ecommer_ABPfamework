@@ -1,6 +1,7 @@
 ﻿using Acme.SimpleTaskApp.Authentication.External;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +45,19 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
 					options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
 					options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
+
+					options.Scope.Add("profile");
+					options.Scope.Add("email");
+					//options.Events = new OAuthEvents
+					//{
+					//	OnTicketReceived = context =>
+					//	{
+					//		// Redirect đến trang Register sau khi đăng nhập thành công
+					//		context.ReturnUri = "/HomeCustomer";
+					//		return Task.CompletedTask;
+					//	}
+					//};
 				});
 			}
 
