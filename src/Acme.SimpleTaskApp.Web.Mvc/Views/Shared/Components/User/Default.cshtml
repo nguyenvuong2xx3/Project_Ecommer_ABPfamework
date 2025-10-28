@@ -4,7 +4,7 @@
 @if (Model.LoginInformations.User == null)
 {
   <div class="d-flex">
-    <a class="nav-link" href="/Account/Register">
+    <a class="nav-link" href="/Account/Register" style="padding-right: 15px;">
       <i class="fas fa-user-plus "></i> Đăng ký
     </a>
 
@@ -17,7 +17,7 @@
 else
 {
   <div class="d-flex align-items-center dropdown" id="userDropdownContainer">
-    <img src="~/libs/admin-lte/dist/img/avatar5.png" style="width: 35px; height:35px" class="img-circle elevation-2 me-2" alt="User Image">
+    <img src="~/img/Avatar/avatar5.png" style="width: 35px; height:35px" class="img-circle elevation-2 me-2" alt="User Image">
     <a class="text-black dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
       @Html.Raw(Model.GetShownLoginName())
     </a>

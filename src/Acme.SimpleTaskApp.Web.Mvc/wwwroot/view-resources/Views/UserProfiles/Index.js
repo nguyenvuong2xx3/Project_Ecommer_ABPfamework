@@ -18,49 +18,69 @@
   });
 
   function initializeProfileForms() {
-    // Xử lý form cập nhật thông tin cá nhân
-    $('#updateProfileForm').on('submit', function (e) {
+    // Xử lý nút Lưu - SỬA LẠI
+    $('#saveProfile').on('click', function (e) {
       e.preventDefault();
+      console.log('Nút Lưu được click');
       updateUserProfile();
     });
 
-    // Xử lý form cập nhật địa chỉ
-    //$('#updateAddressForm').on('submit', function (e) {
-    //  e.preventDefault();
-    //  updateUserAddress();
-    //});
-
     // Xử lý nút hủy
     $('#cancelProfileEdit').on('click', function () {
+      console.log('Nút Hủy được click');
       resetProfileForm();
     });
   }
 
   function updateUserProfile() {
-    var formData = {
-      Id: $('#UserId').val(),
-      FullName: $('#FullName').val(),
-      PhoneNumber: $('#PhoneNumber').val(),
-      Gender: $('input[name="Gender"]:checked').val(),
-      TinhThanh: $('#TinhThanh').val(),
-      PhuongXa: $('#PhuongXa').val(),
-      DiaChiChiTiet: $('#DiaChiChiTiet').val(),
-      IsDefault: $('#IsDefault').is(':checked'),
-    };
+    try {
+      var fullName = $('#FullName').val().trim();
+      if (!fullName) {
+        abp.notify.warn('Vui lòng nhập họ và tên!');
+        return;
+      }
 
-    abp.ui.setBusy($('#updateProfileForm'), true);
+      // Xử lý tên
+      var parts = fullName.split(' ');
+      var name = parts.length > 0 ? parts.pop() : '';
+      var surname = parts.length > 0 ? parts.join(' ') : '';
 
-    _userService.updateForCustomer(formData)
-      .then(function () {
+      var formData = {
+        Id: $('#UserId').val(),
+        Name: name,
+        Surname: surname,
+        PhoneNumber: $('#PhoneNumber').val(),
+        GioiTinh: $('input[name="GioiTinh"]:checked').val(),
+        TinhThanh: $('#TinhThanh').val(),
+        PhuongXa: $('#PhuongXa').val(),
+        DiaChiChiTiet: $('#DiaChiChiTiet').val(),
+        IsDiaChiMacDinh: $('#IsDiaChiMacDinh').is(':checked') ? 1 : 0,
+      };
+
+      console.log('Dữ liệu gửi đi:', formData);
+
+      // Set busy
+      var $formArea = $('#updateProfileForm').closest('.info-card');
+      abp.ui.setBusy($formArea);
+
+      // Gọi API - SỬA LẠI PHẦN NÀY
+      _userService.updateForCustomer(formData).done(function (result) {
+        console.log('API thành công:', result);
         abp.notify.success('Cập nhật thông tin thành công!');
-        abp.ui.setBusy($('#updateProfileForm'), false);
-      })
-      .catch(function (error) {
-        console.error('Lỗi khi cập nhật thông tin:', error);
-        abp.notify.error('Cập nhật thông tin thất bại!');
-        abp.ui.setBusy($('#updateProfileForm'), false);
+        abp.ui.clearBusy($formArea); // Clear busy khi thành công
+      }).fail(function (error) {
+        console.error('API lỗi:', error);
+        abp.notify.error('Cập nhật thông tin thất bại: ' + (error.message || ''));
+        abp.ui.clearBusy($formArea); // Clear busy khi lỗi
       });
+
+    } catch (error) {
+      console.error('Lỗi trong updateUserProfile:', error);
+      abp.notify.error('Có lỗi xảy ra: ' + error.message);
+      abp.ui.clearBusy();
+    }
   }
+
 
   //function updateUserAddress() {
   //  var formData = {

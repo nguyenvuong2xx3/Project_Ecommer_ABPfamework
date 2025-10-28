@@ -83,16 +83,16 @@
 
               <div class="mb-3">
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="1" @(Model.User.GioiTinh == 1 ? "checked" : "")>
+                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderMale" value="1" @(Model.User.GioiTinh == 1 ? "checked" : "")>
                   <label class="form-check-label" for="genderMale">Anh</label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="0" @(Model.User.GioiTinh == 0 ? "checked" : "")>
+                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderFemale" value="0" @(Model.User.GioiTinh == 0 ? "checked" : "")>
                   <label class="form-check-label" for="genderFemale">Chị</label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="2" @(Model.User.GioiTinh != 1 || Model.User.GioiTinh != 2 ? "checked" : "")>
-                  <label class="form-check-label" for="genderFemale">Khác</label>
+                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderOther" value="2" @(Model.User.GioiTinh == 2 ? "checked" : "")>
+                  <label class="form-check-label" for="genderOther">Khác</label>
                 </div>
               </div>
 
@@ -112,7 +112,7 @@
                     <option value="">Chọn Tỉnh/Thành phố</option>
                     @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
                     {
-                      <option value="@Model.User.TinhThanh" selected>@Model.User.TinhThanh</option>
+                      <option value="@Model.User.TinhThanh" selected>@Model.TenTinhThanh</option>
                     }
                   </select>
                 </div>
@@ -121,7 +121,7 @@
                     <option value="">Chọn Phường/Xã</option>
                     @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
                     {
-                      <option value="@Model.User.PhuongXa" selected>@Model.User.PhuongXa</option>
+                      <option value="@Model.User.PhuongXa" selected>@Model.TenPhuongXa</option>
                     }
                   </select>
                 </div>
@@ -130,55 +130,15 @@
                 </div>
                 <div class="col-md-12 mb-6 text-end cancel-save-links">
                   <button type="button" id="cancelProfileEdit" class="btn btn-link text-decoration-none p-0">Hủy</button>
-                  <button type="submit" id="saveProfile" class="btn btn-link text-decoration-none p-0">Lưu</button>
+                  <button type="button" id="saveProfile" class="btn btn-link text-decoration-none p-0">Lưu</button>
                 </div>
               </div>
-              @* <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
-                <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
-              </div> *@
-            </form>
-          </div>
-
-          <!-- Form cập nhật địa chỉ -->
-          @* <div class="info-card">
-            <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
-            <form id="updateAddressForm"> *@
-              @* @Html.AntiForgeryToken() *@
-              @* <input type="hidden" id="AddressId" name="AddressId" value="@(Model.User.DiaChiCuThe?.Id ?? 0)" /> *@
-
-             @*  <div class="row">
-                <div class="col-md-6 mb-3">
-                  <select class="form-select" id="TinhThanh" name="TinhThanh">
-                    <option value="">Chọn Tỉnh/Thành phố</option>
-                    @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
-                    {
-                      <option value="@Model.User.TinhThanh" selected>@Model.User.TinhThanh</option>
-                    }
-                  </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <select class="form-select" id="PhuongXa" name="PhuongXa">
-                    <option value="">Chọn Phường/Xã</option>
-                    @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
-                    {
-                      <option value="@Model.User.PhuongXa" selected>@Model.User.PhuongXa</option>
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
-              </div>
-
               <div class="form-check mb-4">
                 <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
                 <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
               </div>
-              <button type="submit" class="btn update-btn">CẬP NHẬT</button>
             </form>
-          </div> *@
+          </div>
         </div>
       </div>
     </div>
@@ -253,7 +213,7 @@
       font-weight: bold;
     }
 
-  /* ----- CSS cho Tab Thông tin ----- */
+  /* ----- CSS cho Tab Thông tin ----- */   
   .info-card {
     background-color: #fff;
     padding: 24px;
@@ -282,5 +242,13 @@
 
   .form-select {
     color: #f57224;
+  }
+
+  #saveProfile {
+    color: #198754; /* Màu xanh cho nút Lưu */
+  }
+
+  #cancelProfileEdit {
+    color: #6c757d; /* Màu xám cho nút Hủy */
   }
 </style>

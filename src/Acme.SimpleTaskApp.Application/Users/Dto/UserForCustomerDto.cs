@@ -14,6 +14,7 @@ namespace Acme.SimpleTaskApp.Users.Dto
 		public string? TinhThanh { get; set; }
 		public string? PhuongXa { get; set; }
 		public string? DiaChiChiTiet { get; set; }
+		public int? IsDiaChiMacDinh { get; set; }
 		public int? GioiTinh { get; set; }
 	}
 }

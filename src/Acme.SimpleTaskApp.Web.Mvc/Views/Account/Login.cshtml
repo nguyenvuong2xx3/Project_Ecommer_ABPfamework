@@ -22,7 +22,7 @@
     Đăng nhập với Google
   </button>
 </form>
-<p class="divider-text"><span>Hoặc Đăng Nhập Bằng Email</span></p>
+<p class="divider-text" style="text-align: center; margin: 10px 0"><span>Hoặc Đăng Nhập Bằng Email</span></p>
 <form id="LoginForm" asp-action="Login" method="post">
     <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
     <input type="hidden" name="returnUrlHash" />
@@ -75,3 +75,15 @@
         </div>
     }
 </p>
+<style>
+  .btn-google {
+    background: #fff;
+    color: #757575;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+</style>

@@ -6,7 +6,6 @@ namespace Acme.SimpleTaskApp.Web.Models.Orders
 {
 	public class OrderInfoModalViewModel
 	{
-		public List<TinhThanhDto> TinhThanh { get; set; }
 		public User User { get; set; }
 	}
 }

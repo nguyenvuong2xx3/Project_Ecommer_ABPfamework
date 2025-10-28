@@ -28,23 +28,16 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			private readonly ICartAppService _cartAppService;
 			private readonly IHomeCustomerAppService _homeCustomerAppService;
 			private readonly SignInManager _signInManager;
-
-
-			//private readonly ICartItemAppService _cartItemAppService;
-
-
 			public HomeCustomerController(IProductAppService productAppService,
 				IRepository<Category> categoryRepository,
 			IHomeCustomerAppService homeCustomerAppService,
 																SignInManager signInManager,
 																ICategoryAppService categoryAppService,
 																ICartAppService cartAppService
-																//ICartItemAppService cartItemAppService
 																)
 			{
 				_homeCustomerAppService = homeCustomerAppService;
 				_categoryRepository = categoryRepository;
-				//_cartItemAppService = cartItemAppService;
 				_cartAppService = cartAppService;
 				_signInManager = signInManager;
 				_productAppService = productAppService;

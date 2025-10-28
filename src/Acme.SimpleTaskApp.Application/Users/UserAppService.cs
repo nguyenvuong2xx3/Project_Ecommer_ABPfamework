@@ -102,8 +102,9 @@ namespace Acme.SimpleTaskApp.Users
 			user.TinhThanh = input.TinhThanh;
 			user.PhuongXa = input.PhuongXa;
 			user.DiaChiChiTiet = input.DiaChiChiTiet;
+			user.IsDiaChiMacDinh = input.IsDiaChiMacDinh;
 			user.GioiTinh = input.GioiTinh;
-			CheckErrors(await _userManager.UpdateAsync(user));
+			await _userManager.UpdateAsync(user);
 		}
 
 		public override async Task DeleteAsync(EntityDto<long> input)
