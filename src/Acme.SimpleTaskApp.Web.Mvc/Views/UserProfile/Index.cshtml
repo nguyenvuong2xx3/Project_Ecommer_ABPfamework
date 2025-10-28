@@ -1,4 +1,4 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.UserProfiles
+﻿﻿@using Acme.SimpleTaskApp.Web.Models.UserProfiles
 @model UserProfileViewModel
 @{
   ViewData["Title"] = "Index";
@@ -11,6 +11,179 @@
     <script src="~/view-resources/Views/UserProfiles/Index.js" asp-append-version="true"></script>
   </environment>
 }
+
+<div class="container">
+  <div class="row  pt-3">
+    <div class="col-md-3">
+      <div class="account-sidebar">
+        <h4>@Model.User.FullName</h4>
+        <ul class="nav flex-column" id="accountTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-tab-pane" role="tab" aria-controls="orders-tab-pane" aria-selected="true">
+              <i class="fas fa-box"></i>
+              Đơn hàng đã mua
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" role="tab" aria-controls="info-tab-pane" aria-selected="false">
+              <i class="fas fa-map-marker-alt"></i>
+              Thông tin và số địa chỉ
+            </a>
+          </li>
+        </ul>
+        <hr />
+        <button class="btn logout-btn">Đăng Xuất</button>
+      </div>
+    </div>
+
+    <!-- Cột bên phải (Nội dung các Tab) -->
+    <div class="col-md-9">
+      <div class="tab-content" id="accountTabContent">
+
+        <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
+        <div class="tab-pane fade show active" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Đơn hàng đã mua</h4>
+            <div>
+              <div class="d-flex">
+                <label for="StartEndRange" class="form-label" style="width: 200px">Thời gian đặt hàng</label>
+                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="Thời gian đặt hàng" />
+              </div>
+            </div>
+          </div>
+          <ul class="nav nav-pills mb-4 order-status-filters">
+            <li class="nav-item"><a href="#" class="nav-link">Tất cả</a></li>
+            <li class="nav-item"><a href="#" class="nav-link active">Thành công</a></li>
+            @* ... các bộ lọc khác ... *@
+          </ul>
+          <div class="empty-orders-container">
+            <div class="icon"><i class="fas fa-shopping-bag"></i></div>
+            <h4>Rất tiếc, không tìm thấy đơn hàng nào phù hợp</h4>
+            <p class="text-muted">Vẫn còn rất nhiều sản phẩm đang chờ anh</p>
+            <div>
+              <a href="#" class="btn btn-outline-primary">Điện thoại</a>
+              <a href="#" class="btn btn-outline-primary">Laptop</a>
+            </div>
+            <div class="mt-4">
+              <a href="/"><i class="fas fa-chevron-left"></i> Về trang chủ</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Nội dung cho Tab "Thông tin và số địa chỉ" -->
+        <div class="tab-pane fade" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab">
+          <h3 class="mb-4 fw-bold">Thông tin tài khoản</h3>
+
+          <!-- Form cập nhật thông tin cá nhân -->
+          <div class="info-card">
+            <h5 class="info-card-header">Thông tin cá nhân</h5>
+            <form id="updateProfileForm">
+              @Html.AntiForgeryToken()
+              <input type="hidden" id="UserId" name="UserId" value="@Model.User.Id" />
+
+              <div class="mb-3">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="1" @(Model.User.GioiTinh == 1 ? "checked" : "")>
+                  <label class="form-check-label" for="genderMale">Anh</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="0" @(Model.User.GioiTinh == 0 ? "checked" : "")>
+                  <label class="form-check-label" for="genderFemale">Chị</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="2" @(Model.User.GioiTinh != 1 || Model.User.GioiTinh != 2 ? "checked" : "")>
+                  <label class="form-check-label" for="genderFemale">Khác</label>
+                </div>
+              </div>
+
+              <div class="row align-items-end">
+                <div class="col-md-6 mb-3">
+                  <label for="FullName" class="form-label">Họ & Tên:</label>
+                  <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.User.FullName" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="PhoneNumber" class="form-label">Số điện thoại:</label>
+                  <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" value="@Model.User.PhoneNumber">
+                </div>
+                <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
+
+                <div class="col-md-6 mb-3">
+                  <select class="form-select" id="TinhThanh" name="TinhThanh">
+                    <option value="">Chọn Tỉnh/Thành phố</option>
+                    @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
+                    {
+                      <option value="@Model.User.TinhThanh" selected>@Model.User.TinhThanh</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select class="form-select" id="PhuongXa" name="PhuongXa">
+                    <option value="">Chọn Phường/Xã</option>
+                    @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
+                    {
+                      <option value="@Model.User.PhuongXa" selected>@Model.User.PhuongXa</option>
+                    }
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
+                </div>
+                <div class="col-md-12 mb-6 text-end cancel-save-links">
+                  <button type="button" id="cancelProfileEdit" class="btn btn-link text-decoration-none p-0">Hủy</button>
+                  <button type="submit" id="saveProfile" class="btn btn-link text-decoration-none p-0">Lưu</button>
+                </div>
+              </div>
+              @* <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
+                <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
+              </div> *@
+            </form>
+          </div>
+
+          <!-- Form cập nhật địa chỉ -->
+          @* <div class="info-card">
+            <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
+            <form id="updateAddressForm"> *@
+              @* @Html.AntiForgeryToken() *@
+              @* <input type="hidden" id="AddressId" name="AddressId" value="@(Model.User.DiaChiCuThe?.Id ?? 0)" /> *@
+
+             @*  <div class="row">
+                <div class="col-md-6 mb-3">
+                  <select class="form-select" id="TinhThanh" name="TinhThanh">
+                    <option value="">Chọn Tỉnh/Thành phố</option>
+                    @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
+                    {
+                      <option value="@Model.User.TinhThanh" selected>@Model.User.TinhThanh</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select class="form-select" id="PhuongXa" name="PhuongXa">
+                    <option value="">Chọn Phường/Xã</option>
+                    @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
+                    {
+                      <option value="@Model.User.PhuongXa" selected>@Model.User.PhuongXa</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
+              </div>
+
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
+                <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
+              </div>
+              <button type="submit" class="btn update-btn">CẬP NHẬT</button>
+            </form>
+          </div> *@
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
   /* ----- CSS chung cho cả 2 tab ----- */
@@ -111,127 +284,3 @@
     color: #f57224;
   }
 </style>
-
-<div class="container">
-  <div class="row  pt-3">
-    <div class="col-md-3">
-      <div class="account-sidebar">
-        <h4>Tên người dùng</h4>
-        <ul class="nav flex-column" id="accountTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-tab-pane" role="tab" aria-controls="orders-tab-pane" aria-selected="true">
-              <i class="fas fa-box"></i>
-              Đơn hàng đã mua
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" role="tab" aria-controls="info-tab-pane" aria-selected="false">
-              <i class="fas fa-map-marker-alt"></i>
-              Thông tin và số địa chỉ
-            </a>
-          </li>
-        </ul>
-        <hr />
-        <button class="btn logout-btn">Đăng Xuất</button>
-      </div>
-    </div>
-
-    <!-- Cột bên phải (Nội dung các Tab) -->
-    <div class="col-md-9">
-      <!-- Thêm class "tab-content" để chứa các pane -->
-      <div class="tab-content" id="accountTabContent">
-
-        <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
-        <!-- Thêm class "show active" để pane này hiển thị mặc định -->
-        <div class="tab-pane fade show active" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Đơn hàng đã mua</h4>
-            <div>
-              <div class="d-flex">
-                <label for="StartEndRange" class="form-label" style="width: 200px">Thời gian đặt hàng</label>
-                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="Thời gian đặt hàng" />
-              </div>
-            </div>
-          </div>
-          <ul class="nav nav-pills mb-4 order-status-filters">
-            <li class="nav-item"><a href="#" class="nav-link">Tất cả</a></li>
-            <li class="nav-item"><a href="#" class="nav-link active">Thành công</a></li>
-            @* ... các bộ lọc khác ... *@
-          </ul>
-          <div class="empty-orders-container">
-            <div class="icon"><i class="fas fa-shopping-bag"></i></div>
-            <h4>Rất tiếc, không tìm thấy đơn hàng nào phù hợp</h4>
-            <p class="text-muted">Vẫn còn rất nhiều sản phẩm đang chờ anh</p>
-            <div>
-              <a href="#" class="btn btn-outline-primary">Điện thoại</a>
-              <a href="#" class="btn btn-outline-primary">Laptop</a>
-            </div>
-            <div class="mt-4">
-              <a href="/"><i class="fas fa-chevron-left"></i> Về trang chủ</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Nội dung cho Tab "Thông tin và số địa chỉ" -->
-        <div class="tab-pane fade" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab">
-          <h3 class="mb-4 fw-bold">Thông tin tài khoản</h3>
-          <div class="info-card">
-            <h5 class="info-card-header">Thông tin cá nhân</h5>
-            <p>@Model.User.FullName</p>
-            <form>
-              <div class="mb-3">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="gender" id="genderMale" checked>
-                  <label class="form-check-label" for="genderMale">Anh</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="gender" id="genderFemale">
-                  <label class="form-check-label" for="genderFemale">Chị</label>
-                </div>
-              </div>
-              <div class="row align-items-end">
-                <div class="col-md-5 mb-3">
-                  <label for="fullName" class="form-label">Họ & Tên:</label>
-                  <input type="text" class="form-control" id="fullName" value="@Model.User.FullName">
-                </div>
-                <div class="col-md-5 mb-3">
-                  <label for="phoneNumber" class="form-label">Số điện thoại:</label>
-                  <input type="text" class="form-control" id="phoneNumber" value="@Model.User.PhoneNumber">
-                </div>
-                <div class="col-md-2 mb-3 text-end cancel-save-links">
-                  <a href="#" class="text-decoration-none">Hủy</a>
-                  <a href="#" class="text-decoration-none">Lưu</a>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="info-card">
-            <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
-            <form>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <select class="form-select" id="province">
-                    <option selected>Chọn Tỉnh/Thành phố</option>
-                  </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <select class="form-select" id="ward">
-                    <option selected>Chọn Phường/Xã</option>
-                  </select>
-                </div>
-              </div>
-              <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Số Nhà, Tên Đường*">
-              </div>
-              <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="defaultAddressCheck">
-                <label class="form-check-label" for="defaultAddressCheck">Đặt làm địa chỉ mặc định</label>
-              </div>
-              <button type="submit" class="btn update-btn">CẬP NHẬT</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

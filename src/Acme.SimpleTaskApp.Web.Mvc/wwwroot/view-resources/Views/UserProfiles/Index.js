@@ -1,21 +1,111 @@
 ﻿(function () {
   var _orderService = abp.services.app.orders;
   var _locationService = abp.services.app.location;
+  var _userService = abp.services.app.user; // Thêm service user
   var l = abp.localization.getSource('SimpleTaskApp');
-  var _locations = []; // Thêm biến _locations bị thiếu
+  var _locations = [];
 
   var _selectedDateRange = {
     StartTime: null,
     EndTime: null
   };
 
-  // Khởi tạo khi document ready
   $(document).ready(function () {
     initializeDateRangePicker();
     bindEvents();
     initializeLocationOnClick();
+    initializeProfileForms();
   });
 
+  function initializeProfileForms() {
+    // Xử lý form cập nhật thông tin cá nhân
+    $('#updateProfileForm').on('submit', function (e) {
+      e.preventDefault();
+      updateUserProfile();
+    });
+
+    // Xử lý form cập nhật địa chỉ
+    //$('#updateAddressForm').on('submit', function (e) {
+    //  e.preventDefault();
+    //  updateUserAddress();
+    //});
+
+    // Xử lý nút hủy
+    $('#cancelProfileEdit').on('click', function () {
+      resetProfileForm();
+    });
+  }
+
+  function updateUserProfile() {
+    var formData = {
+      Id: $('#UserId').val(),
+      FullName: $('#FullName').val(),
+      PhoneNumber: $('#PhoneNumber').val(),
+      Gender: $('input[name="Gender"]:checked').val(),
+      TinhThanh: $('#TinhThanh').val(),
+      PhuongXa: $('#PhuongXa').val(),
+      DiaChiChiTiet: $('#DiaChiChiTiet').val(),
+      IsDefault: $('#IsDefault').is(':checked'),
+    };
+
+    abp.ui.setBusy($('#updateProfileForm'), true);
+
+    _userService.updateForCustomer(formData)
+      .then(function () {
+        abp.notify.success('Cập nhật thông tin thành công!');
+        abp.ui.setBusy($('#updateProfileForm'), false);
+      })
+      .catch(function (error) {
+        console.error('Lỗi khi cập nhật thông tin:', error);
+        abp.notify.error('Cập nhật thông tin thất bại!');
+        abp.ui.setBusy($('#updateProfileForm'), false);
+      });
+  }
+
+  //function updateUserAddress() {
+  //  var formData = {
+  //    Id: $('#AddressId').val() || 0,
+  //    TinhThanh: $('#TinhThanh').val(),
+  //    PhuongXa: $('#PhuongXa').val(),
+  //    DiaChiChiTiet: $('#DiaChiChiTiet').val(),
+  //    IsDefault: $('#IsDefault').is(':checked'),
+  //    UserId: $('#UserId').val()
+  //  };
+
+  //  // Validate dữ liệu
+  //  if (!formData.TinhThanh || !formData.PhuongXa || !formData.DiaChiChiTiet) {
+  //    abp.notify.warn('Vui lòng nhập đầy đủ thông tin địa chỉ!');
+  //    return;
+  //  }
+
+  //  abp.ui.setBusy($('#updateAddressForm'), true);
+
+  //  _userService.updateAddressAsync(formData)
+  //    .then(function () {
+  //      abp.notify.success('Cập nhật địa chỉ thành công!');
+  //      abp.ui.setBusy($('#updateAddressForm'), false);
+  //    })
+  //    .catch(function (error) {
+  //      console.error('Lỗi khi cập nhật địa chỉ:', error);
+  //      abp.notify.error('Cập nhật địa chỉ thất bại!');
+  //      abp.ui.setBusy($('#updateAddressForm'), false);
+  //    });
+  //}
+
+  function resetProfileForm() {
+    // Reset form về giá trị ban đầu (có thể load lại từ server nếu cần)
+    $('#FullName').val('@Model.User.FullName');
+    $('#PhoneNumber').val('@Model.User.PhoneNumber');
+
+    var gender = '@Model.User.Gender';
+    if (gender === 'Male') {
+      $('#genderMale').prop('checked', true);
+    } else if (gender === 'Female') {
+      $('#genderFemale').prop('checked', true);
+    }
+  }
+
+  // Các hàm hiện có giữ nguyên
   function initializeDateRangePicker() {
     $('#StartEndRange').daterangepicker({
       autoUpdateInput: false,
@@ -31,11 +121,8 @@
       }
     });
 
-    // Sự kiện apply - QUAN TRỌNG: phải dùng 'apply.daterangepicker'
     $('#StartEndRange').on('apply.daterangepicker', function (ev, picker) {
       $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-
-      // CẬP NHẬT _selectedDateRange - SỬA ĐỊNH DẠNG
       _selectedDateRange.StartTime = picker.startDate.startOf('day').format('YYYY-MM-DDTHH:mm:ss');
       _selectedDateRange.EndTime = picker.endDate.endOf('day').format('YYYY-MM-DDTHH:mm:ss');
     });
@@ -52,163 +139,89 @@
     _selectedDateRange.StartTime = null;
     _selectedDateRange.EndTime = null;
     $('#StartEndRange').val('');
-    // _$productsTable.ajax.reload(); // Comment lại nếu không cần
   });
 
   function initializeLocationData() {
     _locationService.getAllDonViHanhChinh().then(function (result) {
       _locations = result;
-      populateProvinces();
+      populateTinhThanh(); // Đổi từ populateProvinces sang populateTinhThanh
     }).catch(function (error) {
       console.error('Lỗi khi tải dữ liệu địa phương:', error);
       abp.notify.error('Không thể tải dữ liệu địa phương!');
     });
   }
 
-  function populateProvinces() {
-    var $province = $('#province');
-    $province.html('<option selected value="">Chọn Tỉnh/Thành phố</option>');
+  function populateTinhThanh() {
+    var $tinhThanh = $('#TinhThanh');
+    var currentValue = $tinhThanh.val();
+    $tinhThanh.html('<option value="">Chọn Tỉnh/Thành phố</option>');
 
-    $.each(_locations, function (index, province) {
-      $province.append($('<option>', {
-        value: province.matinhTMS,
-        text: province.tentinhmoi,
-        'data-matinhBNV': province.matinhBNV // Sửa từ 'data-phuongxa' thành 'data-matinhBNV'
+    $.each(_locations, function (index, tinhThanh) {
+      $tinhThanh.append($('<option>', {
+        value: tinhThanh.matinhTMS,
+        text: tinhThanh.tentinhmoi,
+        'data-matinhBNV': tinhThanh.matinhBNV
       }));
     });
+
+    // Khôi phục giá trị đã chọn
+    if (currentValue) {
+      $tinhThanh.val(currentValue);
+      populatePhuongXa(currentValue);
+    }
   }
 
-  function populateWards(provinceCode) {
-    var $ward = $('#ward');
-    $ward.html('<option selected value="">Chọn Phường/Xã</option>');
+  function populatePhuongXa(tinhThanhCode) {
+    var $phuongXa = $('#PhuongXa');
+    var currentValue = $phuongXa.val();
+    $phuongXa.html('<option value="">Chọn Phường/Xã</option>');
 
-    if (!provinceCode) {
-      $ward.prop('disabled', true);
+    if (!tinhThanhCode) {
+      $phuongXa.prop('disabled', true);
       return;
     }
 
-    var selectedProvince = _locations.find(function (p) {
-      return p.matinhTMS === provinceCode;
+    var selectedTinhThanh = _locations.find(function (p) {
+      return p.matinhTMS === tinhThanhCode;
     });
 
-    if (selectedProvince && selectedProvince.phuongxa && selectedProvince.phuongxa.length > 0) {
-      $.each(selectedProvince.phuongxa, function (index, ward) {
-        $ward.append($('<option>', {
-          value: ward.maphuongxa,
-          text: ward.tenphuongxa
+    if (selectedTinhThanh && selectedTinhThanh.phuongxa && selectedTinhThanh.phuongxa.length > 0) {
+      $.each(selectedTinhThanh.phuongxa, function (index, phuongXa) {
+        $phuongXa.append($('<option>', {
+          value: phuongXa.maphuongxa,
+          text: phuongXa.tenphuongxa
         }));
       });
-      $ward.prop('disabled', false);
+      $phuongXa.prop('disabled', false);
+
+      // Khôi phục giá trị đã chọn
+      if (currentValue) {
+        $phuongXa.val(currentValue);
+      }
     } else {
-      $ward.html('<option selected value="">Không có dữ liệu phường/xã</option>');
-      $ward.prop('disabled', true);
+      $phuongXa.html('<option value="">Không có dữ liệu phường/xã</option>');
+      $phuongXa.prop('disabled', true);
     }
   }
 
   function bindEvents() {
-    // Xử lý khi chọn tỉnh/thành phố
-    $('#province').on('change', function () {
+    $('#TinhThanh').on('change', function () {
       var selectedValue = $(this).val();
       if (selectedValue) {
-        populateWards(selectedValue);
-        updateSelectedAddress();
+        populatePhuongXa(selectedValue);
       } else {
-        $('#ward').html('<option selected value="">Chọn Phường/Xã</option>').prop('disabled', true);
-        updateSelectedAddress();
-      }
-    });
-
-    // Xử lý khi chọn phường/xã
-    $('#ward').on('change', updateSelectedAddress);
-
-    // Xử lý khi nhập địa chỉ chi tiết
-    $('#addressDetail').on('input', updateSelectedAddress);
-
-    // Xử lý khi thay đổi địa chỉ khác
-    $('#changeAddress').on('input', function () {
-      var newAddress = $(this).val();
-      if (newAddress) {
-        $('.address-selected').html(
-          '<i class="fas fa-check-circle text-success me-2"></i>Địa chỉ đang chọn: ' + newAddress
-        );
-      } else {
-        updateSelectedAddress();
+        $('#PhuongXa').html('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
       }
     });
   }
 
-  function updateSelectedAddress() {
-    var provinceText = $('#province option:selected').text();
-    var wardText = $('#ward option:selected').text();
-    var addressDetail = $('#addressDetail').val();
-
-    // Nếu đang nhập địa chỉ mới thì không cập nhật
-    if ($('#changeAddress').val()) {
-      return;
-    }
-
-    if (provinceText && provinceText !== 'Chọn Tỉnh/Thành phố') {
-      var addressParts = [];
-      if (addressDetail) addressParts.push(addressDetail);
-      if (wardText && wardText !== 'Chọn Phường/Xã' && wardText !== 'Không có dữ liệu phường/xã') {
-        addressParts.push(wardText);
-      }
-      addressParts.push(provinceText);
-
-      var fullAddress = addressParts.join(', ');
-      $('.address-selected').html(
-        '<i class="fas fa-check-circle text-success me-2"></i>Địa chỉ đang chọn: ' + fullAddress
-      );
-    } else {
-      $('.address-selected').html(
-        '<i class="fas fa-check-circle text-success me-2"></i>Địa chỉ đang chọn: Chưa chọn địa chỉ'
-      );
-    }
-  }
-
-  function getSelectedAddress() {
-    var $province = $('#province option:selected');
-    var $ward = $('#ward option:selected');
-
-    return {
-      province: {
-        code: $('#province').val(),
-        name: $province.text(),
-        matinhBNV: $province.data('matinhBNV')
-      },
-      ward: {
-        code: $('#ward').val(),
-        name: $ward.text()
-      },
-      addressDetail: $('#addressDetail').val(),
-      zipcode: $('#zipcode').val(),
-      otherReceiver: $('#otherReceiver').is(':checked'),
-      fullAddress: $('.address-selected').text().replace('Địa chỉ đang chọn: ', '')
-    };
-  }
 
   function initializeLocationOnClick() {
-    $("#province").on('click', function () {
+    $("#TinhThanh").on('click', function () {
       if (_locations.length === 0) {
         initializeLocationData();
       }
     });
   }
-
-  // Public functions để sử dụng bên ngoài
-  window.orderApp = {
-    getSelectedAddress: getSelectedAddress,
-    getSelectedDateRange: function () {
-      return _selectedDateRange;
-    },
-    resetForm: function () {
-      $('#province').val('').trigger('change');
-      $('#addressDetail').val('');
-      $('#zipcode').val('');
-      $('#otherReceiver').prop('checked', false);
-      $('#changeAddress').val('');
-      updateSelectedAddress();
-    }
-  };
 
 })();

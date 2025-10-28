@@ -18,15 +18,19 @@
     <Compile Remove="Acme\**" />
     <Compile Remove="Models\App\**" />
     <Compile Remove="Models\Layout\**" />
+    <Compile Remove="Views\Templates\**" />
     <Content Remove="Acme\**" />
     <Content Remove="Models\App\**" />
     <Content Remove="Models\Layout\**" />
+    <Content Remove="Views\Templates\**" />
     <EmbeddedResource Remove="Acme\**" />
     <EmbeddedResource Remove="Models\App\**" />
     <EmbeddedResource Remove="Models\Layout\**" />
+    <EmbeddedResource Remove="Views\Templates\**" />
     <None Remove="Acme\**" />
     <None Remove="Models\App\**" />
     <None Remove="Models\Layout\**" />
+    <None Remove="Views\Templates\**" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Dockerfile">
@@ -64,7 +68,6 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Templates\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />
   </ItemGroup>

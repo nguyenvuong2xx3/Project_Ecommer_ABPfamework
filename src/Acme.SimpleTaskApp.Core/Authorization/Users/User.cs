@@ -9,10 +9,11 @@ namespace Acme.SimpleTaskApp.Authorization.Users
 	{
 		public const string DefaultPassword = "123qwe";
 
-		public int SoDienThoai { get; set; }
-
-		public string TinhThanh { get; set; }
-		public string PhuongXa { get; set; }
+		public string? DiaChiChiTiet { get; set; }
+		public string? TinhThanh { get; set; }
+		public string? PhuongXa { get; set; }
+		public int? GioiTinh { get; set; } // 0: Nu, 1: Nam, 2: Khac
+		public int? IsDiaChiMacDinh { get; set; }
 
 		public static string CreateRandomPassword()
 		{
