@@ -32,105 +32,155 @@
     else
     {
       @* Trường hợp có sản phẩm *@
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Products</th>
-              <th scope="col">Name</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
-              <th scope="col">Handle</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach (var product in Model.CartItems)
-            {
-              <tr>
-                <th scope="row">
-                  <div class="d-flex align-items-center">
-                    <img src="@product.ImageUrl" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="">
+      <div class="row">
+        <div class="col-lg-8">
+          @foreach (var product in Model.CartItems)
+          {
+            <div class="card mb-4 border-0 shadow-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-2">
+                    <img src="@product.ImageUrl" class="img-fluid rounded" alt="@product.Name">
                   </div>
-                </th>
-                <td>
-                  <p class="mb-0 mt-4">@product.Name</p>
-                </td>
-                <td>
-                  <p class="mb-0 mt-4" id="productvariant-price-@product.IdProductVariant">@product.Price.ToString("N0")đ</p>
-                </td>
-                <td>
-                  <div class="input-group quantity mt-4" style="width: 100px;">
-                    <div class="input-group-btn">
-                      <button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
-                              data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
-                        <i class="fa fa-minus"></i>
-                      </button>
-                    </div>
-
-                    <input type="text" class="form-control form-control-sm text-center border-0"
-                           value="@product.Quantity" id="quantity-@product.IdProductVariant">
-
-                    <div class="input-group-btn">
-                      <button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
-                              data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
-                        <i class="fa fa-plus"></i>
+                  <div class="col-md-6">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="text-muted mb-1">Màu: Titan tự nhiên</p>
+                    <div class="d-flex align-items-center mt-3">
+                      <div class="input-group quantity" style="width: 130px;">
+                        <div class="input-group-btn">
+                          <button class="btn btn-sm btn-minus rounded-circle bg-light border btl-click-minus"
+                                  data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
+                            <i class="fa fa-minus"></i>
+                          </button>
+                        </div>
+                        <input type="text" class="form-control form-control-sm text-center border-0"
+                               value="@product.Quantity" id="quantity-@product.IdProductVariant">
+                        <div class="input-group-btn">
+                          <button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
+                                  data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
+                            <i class="fa fa-plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <button class="btn btn-link text-danger ms-3 btl-click-delete"
+                              data-product-id="@product.IdProductVariant" data-product-cartid="@product.IdCart">
+                        <i class="fa fa-trash me-1"></i>Xóa
                       </button>
                     </div>
                   </div>
-                </td>
-                <td>
-                  <p id="productvariant-total-@product.IdProductVariant" class="mb-0 mt-4">
-                    @string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}đ", product.Price * product.Quantity)
-                  </p>
-                </td>
-                <td>
-                  <button class="btn btn-md rounded-circle bg-light border mt-4 btl-click-delete"
-                          data-product-id="@product.IdProductVariant" data-product-cartid="@product.IdCart">
-                    <i class="fa fa-times text-danger"></i>
-                  </button>
-                </td>
-              </tr>
-              total += product.Price * product.Quantity;
-            }
-          </tbody>
-        </table>
-      </div>
+                  <div class="col-md-4 text-end">
+                    <div class="d-flex flex-column">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted text-decoration-line-through">45.990.000đ</span>
+                        <h4 class="text-primary mb-0">@product.Price.ToString("N0")đ</h4>
+                      </div>
+                      <div class="mb-3">
+                        <span class="badge bg-success">8 Khuyến mãi</span>
+                      </div>
+                      <div class="input-group input-group-sm mb-2">
+                        <input type="text" class="form-control" placeholder="Mã giảm giá">
+                        <button class="btn btn-outline-primary" type="button">Áp dụng</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            total += product.Price * product.Quantity;
+          }
 
-      <div class="row g-4 justify-content-end">
-        <div class="col-8"></div>
-        <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
-          <div class="bg-light rounded">
-            <div class="p-4">
-              <h1 class="display-6 mb-4">Tổng đơn hàng</h1>
+          @* Phần mua kèm giảm giá *@
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Mua kèm giảm đến 10%</h5>
+              <div class="d-flex align-items-center">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="addAccessory">
+                  <label class="form-check-label" for="addAccessory">
+                    Ốp lưng điện thoại
+                  </label>
+                </div>
+                <span class="ms-auto text-primary fw-bold">+ 250.000đ</span>
+              </div>
             </div>
-            <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 ps-4 me-4">Tổng giá tiền</h5>
-              <p class="mb-0 pe-4">@total.ToString("N0")đ</p>
+          </div>
+        </div>
+
+        @* Phần thông tin đơn hàng *@
+        <div class="col-lg-4">
+          @* Thông tin người nhận *@
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Thông tin nhận hàng</h5>
             </div>
-            <div class="px-4 py-2">
-              <div class="d-flex flex-row align-items-center gap-3 mb-3 justify-content-center">
-                <div class="form-check mb-0 me-3">
+            <div class="card-body">
+              <div class="d-flex align-items-start mb-3">
+                <i class="fa fa-user me-3 mt-1 text-primary"></i>
+                <div class="flex-grow-1">
+                  @if (Model.User.Name == null || Model.User.Surname == null || Model.User.TinhThanh == null || Model.User.PhuongXa == null)
+                  {
+                    <div class="alert alert-warning" role="alert">
+                      Vui lòng cập nhật đầy đủ thông tin nhận hàng để tiếp tục đặt hàng.
+                    </div>
+                  }
+                  else
+                  {
+                    <h6 class="mb-1" id="FullName">@($"{Model.User.Name} {Model.User.Surname}")</h6>
+                    <p class="text-muted small mb-2" id="PhoneNumber">@Model.User.PhoneNumber</p>
+                    <p class="text-muted small mb-0" id="DiaChi">@($"{Model.User.DiaChiChiTiet},{Model.PhuongXa}, {Model.TinhThanh}")</p>
+                  }
+                </div>
+              </div>
+              <button class="btn btn-outline-primary w-100" id="OrderInfoButton">
+                <i class="fa fa-edit me-2"></i>Thay đổi địa chỉ
+              </button>
+            </div>
+          </div>
+
+          @* Phần tổng đơn hàng *@
+          <div class="card border-0 shadow-sm sticky-top" style="top: 120px;">
+            <div class="card-header bg-light">
+              <h4 class="mb-0">Tổng đơn hàng</h4>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-3">
+                <span>Tạm tính (@Model.CartItems.Count sản phẩm)</span>
+                <span class="fw-bold">@total.ToString("N0")đ</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>Phí vận chuyển</span>
+                <span class="text-success">Miễn phí</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>Giảm giá</span>
+                <span class="text-success">- 0đ</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between mb-4">
+                <span class="fw-bold">Tổng cộng</span>
+                <span class="fw-bold text-primary fs-5">@total.ToString("N0")đ</span>
+              </div>
+
+              @* Phương thức thanh toán *@
+              <div class="mb-4">
+                <h6 class="mb-3">Phương thức thanh toán</h6>
+                <div class="form-check mb-2">
                   <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="0" checked>
                   <label class="form-check-label" for="paymentCOD">
                     Thanh toán khi nhận hàng (COD)
                   </label>
                 </div>
-                <div class="form-check mb-0">
+                <div class="form-check">
                   <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentBank" value="1">
                   <label class="form-check-label" for="paymentBank">
                     Chuyển khoản ngân hàng
                   </label>
                 </div>
               </div>
-              <!-- Nút đặt hàng căn giữa và nổi bật -->
-              <div class="d-flex justify-content-center mt-3">
-                @* <button id="OrderInfoButton" class="btn btn-primary btn-lg fw-bold shadow">
-										<i class="fa fa-credit-card me-2"></i>Đặt hàng
-									</button> *@
-              </div>
-              <button id="OrderInfoButton">
-                mở modal
+
+              @* Nút đặt hàng *@
+              <button id="OrderInfoButton" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                <i class="fa fa-credit-card me-2"></i>Đặt hàng
               </button>
             </div>
           </div>

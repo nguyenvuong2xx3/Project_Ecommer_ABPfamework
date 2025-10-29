@@ -10,8 +10,16 @@
 	});
 
 	$('#OrderInfoButton').click(function () {
-		_OrderInfoModal.open();
+		_OrderInfoModal.open({}, function (result) {
+			if (result) {
+			console.log(result)
+				$('#FullName').text(result.userInfo.surname + result.userInfo.name);
+				$('#PhoneNumber').text(result.userInfo.phoneNumber);
+				$('#DiaChi').text(result.address.diaChiChiTiet + result.address.phuongXa.name + result.address.tinhThanh.name);
+			}
+		});
 	});
+
 
 	// Xử lý khi nhấn nút tăng
 	$(document).on('click', '.btl-click-plus', function () {

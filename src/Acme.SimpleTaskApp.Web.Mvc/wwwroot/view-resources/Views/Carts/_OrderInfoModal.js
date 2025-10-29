@@ -1,8 +1,10 @@
 ﻿(function () {
   app.modals.OrderInfoModal = function () {
-    var _locationService = abp.services.app.location;
     var _modalManager;
+    var _locationService = abp.services.app.location;
     var _locations = [];
+    _$form = _$modal.find('form'),
+
 
     this.init = function (modalManager) {
       _modalManager = modalManager;
@@ -32,7 +34,6 @@
         }));
       });
 
-      // Khôi phục giá trị đã chọn nếu có
       var currentValue = $tinhThanh.data('current-value');
       if (currentValue) {
         $tinhThanh.val(currentValue);
@@ -62,7 +63,6 @@
         });
         $phuongXa.prop('disabled', false);
 
-        // Khôi phục giá trị đã chọn nếu có
         var currentValue = $phuongXa.data('current-value');
         if (currentValue) {
           $phuongXa.val(currentValue);
@@ -74,7 +74,6 @@
     }
 
     function bindEvents() {
-      // Xử lý khi chọn tỉnh/thành phố
       $('#TinhThanh').on('change', function () {
         var selectedValue = $(this).val();
         if (selectedValue) {
@@ -84,134 +83,92 @@
         }
       });
 
-      // Xử lý hình thức giao hàng
       $('.delivery-option').on('click', function () {
         $('.delivery-option').removeClass('active');
         $(this).addClass('active');
       });
 
-      // Xử lý nút xác nhận
-      $('.btn-primary').on('click', function () {
-        saveOrderInfo();
-      });
-
-      // Xử lý checkbox người khác nhận hàng
       $('#otherReceiver').on('change', function () {
         if ($(this).is(':checked')) {
-          // Có thể thêm logic hiển thị form nhập thông tin người nhận khác
           console.log('Người khác nhận hàng được chọn');
         }
       });
-
-      // Xử lý phương thức thanh toán
-      $('input[name="paymentMethod"]').on('change', function () {
-        console.log('Phương thức thanh toán được chọn:', $(this).val());
-      });
     }
 
-    function getFormData() {
+    this.save = function () {
       var fullName = $('#FullName').val().trim();
+      var phoneNumber = $('#PhoneNumber').val().trim();
+      var diaChiChiTiet = $('#addressDetail').val().trim();
+      var tinhThanhCode = $('#TinhThanh').val();
+      var phuongXaCode = $('#PhuongXa').val();
+      var gioiTinh = $('input[name="GioiTinh"]:checked').val();
+      var deliveryMethod = $('.delivery-option.active').attr('id');
+      var otherReceiver = $('#otherReceiver').is(':checked');
+
+      // Validate dữ liệu
+      if (!fullName) {
+        abp.notify.warn('Vui lòng nhập họ và tên!');
+        return;
+      }
+
+      if (!phoneNumber) {
+        abp.notify.warn('Vui lòng nhập số điện thoại!');
+        return;
+      }
+
+      if (!tinhThanhCode) {
+        abp.notify.warn('Vui lòng chọn Tỉnh/Thành phố!');
+        return;
+      }
+
+      if (!phuongXaCode) {
+        abp.notify.warn('Vui lòng chọn Phường/Xã!');
+        return;
+      }
+
+      if (!diaChiChiTiet) {
+        abp.notify.warn('Vui lòng nhập địa chỉ chi tiết!');
+        return;
+      }
+
+      // Lấy thông tin hiển thị
+      var tinhThanhName = $('#TinhThanh option:selected').text();
+      var phuongXaName = $('#PhuongXa option:selected').text();
+
+      // Tách họ và tên
       var parts = fullName.split(' ');
       var name = parts.length > 0 ? parts.pop() : '';
       var surname = parts.length > 0 ? parts.join(' ') : '';
 
-      return {
-        // Thông tin người đặt
+      // Trả về kết quả
+      _modalManager.setResult({
         userInfo: {
-          id: $('#UserId').val(),
-          gioiTinh: $('input[name="GioiTinh"]:checked').val(),
+          gioiTinh: gioiTinh,
           name: name,
           surname: surname,
           fullName: fullName,
-          phoneNumber: $('#PhoneNumber').val()
+          phoneNumber: phoneNumber
         },
-
-        // Hình thức giao hàng
-        deliveryMethod: $('.delivery-option.active').attr('id'), // 'homeDelivery' hoặc 'storePickup'
-
-        // Địa chỉ giao hàng
+        deliveryMethod: deliveryMethod,
         address: {
           tinhThanh: {
-            code: $('#TinhThanh').val(),
-            name: $('#TinhThanh option:selected').text()
+            code: tinhThanhCode,
+            name: tinhThanhName
           },
           phuongXa: {
-            code: $('#PhuongXa').val(),
-            name: $('#PhuongXa option:selected').text()
+            code: phuongXaCode,
+            name: phuongXaName
           },
-          diaChiChiTiet: $('#addressDetail').val(),
-          otherReceiver: $('#otherReceiver').is(':checked')
+          diaChiChiTiet: diaChiChiTiet,
+          otherReceiver: otherReceiver
         },
+        submittedAt: new Date().toISOString()
+      });
 
-        // Phương thức thanh toán
-        paymentMethod: $('input[name="paymentMethod"]:checked').val()
-      };
-    }
-
-    function validateFormData(formData) {
-      // Validate thông tin người đặt
-      if (!formData.userInfo.fullName) {
-        abp.notify.warn('Vui lòng nhập họ và tên!');
-        return false;
-      }
-
-      if (!formData.userInfo.phoneNumber) {
-        abp.notify.warn('Vui lòng nhập số điện thoại!');
-        return false;
-      }
-
-      // Validate địa chỉ giao hàng
-      if (!formData.address.tinhThanh.code) {
-        abp.notify.warn('Vui lòng chọn Tỉnh/Thành phố!');
-        return false;
-      }
-
-      if (!formData.address.phuongXa.code) {
-        abp.notify.warn('Vui lòng chọn Phường/Xã!');
-        return false;
-      }
-
-      if (!formData.address.diaChiChiTiet) {
-        abp.notify.warn('Vui lòng nhập địa chỉ chi tiết!');
-        return false;
-      }
-
-      return true;
-    }
-
-    function saveOrderInfo() {
-      var formData = getFormData();
-
-      if (!validateFormData(formData)) {
-        return;
-      }
-
-      // Hiển thị loading
-      var $submitBtn = $('.btn-primary');
-      var originalText = $submitBtn.html();
-      $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
-
-      // Gửi dữ liệu đi (cần tích hợp với service thực tế)
-      console.log('Dữ liệu đơn hàng:', formData);
-
-      // Giả lập xử lý
-      setTimeout(function () {
-        // Gửi dữ liệu về modal manager
-        _modalManager.setResult(formData);
-        _modalManager.close();
-
-        abp.notify.success('Đã lưu thông tin đơn hàng thành công!');
-
-        // Khôi phục trạng thái nút
-        $submitBtn.prop('disabled', false).html(originalText);
-      }, 1000);
-    }
-
-    this.save = function () {
-      saveOrderInfo();
+      _modalManager.close();
     };
 
-    // Hàm public để reset form nếu cần
+    // Hàm public để reset form
     this.resetForm = function () {
       $('#deliveryForm')[0].reset();
       $('#TinhThanh').val('').trigger('change');
@@ -219,7 +176,6 @@
       $('#otherReceiver').prop('checked', false);
       $('.delivery-option').removeClass('active');
       $('#homeDelivery').addClass('active');
-      $('input[name="paymentMethod"][value="cash"]').prop('checked', true);
     };
 
     // Hàm public để set dữ liệu mặc định

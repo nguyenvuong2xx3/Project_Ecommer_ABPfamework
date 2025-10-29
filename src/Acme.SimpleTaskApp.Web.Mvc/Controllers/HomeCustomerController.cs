@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Controllers;
@@ -9,8 +10,10 @@ using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Web.Models.Carts;
 using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
 using Acme.SimpleTaskApp.Web.Models.Products;
+using Acme.SimpleTaskApp.Web.Models.UserProfiles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq;
@@ -28,14 +31,21 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			private readonly ICartAppService _cartAppService;
 			private readonly IHomeCustomerAppService _homeCustomerAppService;
 			private readonly SignInManager _signInManager;
+			private readonly UserManager _userManager;
+			private readonly ILocationAppService _locationAppService;
+
 			public HomeCustomerController(IProductAppService productAppService,
 				IRepository<Category> categoryRepository,
 			IHomeCustomerAppService homeCustomerAppService,
 																SignInManager signInManager,
 																ICategoryAppService categoryAppService,
-																ICartAppService cartAppService
+																ICartAppService cartAppService,
+																UserManager userManager,
+																ILocationAppService locationAppService
 																)
 			{
+				_locationAppService = locationAppService;
+				_userManager = userManager;
 				_homeCustomerAppService = homeCustomerAppService;
 				_categoryRepository = categoryRepository;
 				_cartAppService = cartAppService;
@@ -76,7 +86,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			public async Task<ActionResult> SearchProductCustomer(SearchHomeCustomerDto input)
 			{
 				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
-				var cattegory =  _categoryRepository.GetAll();
+				var cattegory = _categoryRepository.GetAll();
 				var model = new HomeCustomerViewModel()
 				{
 					ProductsInfo = output.Items.ToList(),
@@ -108,19 +118,25 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
 					return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
 				}
-
-				// Gọi service lấy thông tin giỏ hàng
-				var cart = await _cartAppService.GetCart();
-
-				// Ánh xạ sang ViewModel
-				var viewModel = new CartViewModel
+				var viewModel = new CartViewModel { };
+				var user = _userManager.GetUserById(AbpSession.UserId.Value);
+				var getDiaChinh = await _locationAppService.GetAllDonViHanhChinh();
+				if (user.TinhThanh != null && user.PhuongXa != null)
 				{
-					CartItems = cart.CartItems
-				};
+					var tinhthanh = getDiaChinh.FirstOrDefault(x => x.MatinhTMS == user.TinhThanh);
+					var tenTinhThanh = tinhthanh.Tentinhmoi;
+					var tenPhuongXa = tinhthanh.Phuongxa.FirstOrDefault(x => x.Maphuongxa == user.PhuongXa).Tenphuongxa;
 
+					// Gọi service lấy thông tin giỏ hàng
+					var cart = await _cartAppService.GetCart();
+					// Ánh xạ sang ViewModel
+					viewModel.CartItems = cart.CartItems;
+					viewModel.User = user;
+					viewModel.TinhThanh = tenTinhThanh;
+					viewModel.PhuongXa = tenPhuongXa;
+				}
 				return View(viewModel);
 			}
-
 		}
 	}
 }
