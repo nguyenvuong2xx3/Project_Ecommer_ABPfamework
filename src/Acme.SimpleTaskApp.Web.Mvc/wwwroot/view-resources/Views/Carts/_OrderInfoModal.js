@@ -3,11 +3,13 @@
     var _modalManager;
     var _locationService = abp.services.app.location;
     var _locations = [];
-    _$form = _$modal.find('form'),
+     var _$form = null;
 
 
     this.init = function (modalManager) {
       _modalManager = modalManager;
+      var $modal = _modalManager.getModal();
+      _$form = $modal.find('form[name=InfoOrder]');
       initializeLocationData();
       bindEvents();
     };
@@ -17,13 +19,12 @@
         _locations = result;
         populateTinhThanh();
       }).catch(function (error) {
-        console.error('Lỗi khi tải dữ liệu địa phương:', error);
         abp.notify.error('Không thể tải dữ liệu địa phương!');
       });
     }
 
     function populateTinhThanh() {
-      var $tinhThanh = $('#TinhThanh');
+      var $tinhThanh = $('#tinhThanh');
       $tinhThanh.html('<option value="">Chọn Tỉnh/Thành phố</option>');
 
       $.each(_locations, function (index, tinhThanh) {
@@ -42,7 +43,7 @@
     }
 
     function populatePhuongXa(tinhThanhCode) {
-      var $phuongXa = $('#PhuongXa');
+      var $phuongXa = $('#phuongXa');
       $phuongXa.html('<option value="">Chọn Phường/Xã</option>');
 
       if (!tinhThanhCode) {
@@ -74,12 +75,12 @@
     }
 
     function bindEvents() {
-      $('#TinhThanh').on('change', function () {
+      $('#tinhThanh').on('change', function () {
         var selectedValue = $(this).val();
         if (selectedValue) {
           populatePhuongXa(selectedValue);
         } else {
-          $('#PhuongXa').html('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+          $('#phuongXa').html('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
         }
       });
 
@@ -96,44 +97,18 @@
     }
 
     this.save = function () {
-      var fullName = $('#FullName').val().trim();
-      var phoneNumber = $('#PhoneNumber').val().trim();
+      var fullName = $('#fullName').val().trim();
+      var phoneNumber = $('#phoneNumber').val().trim();
       var diaChiChiTiet = $('#addressDetail').val().trim();
-      var tinhThanhCode = $('#TinhThanh').val();
-      var phuongXaCode = $('#PhuongXa').val();
+      var tinhThanhCode = $('#tinhThanh').val();
+      var phuongXaCode = $('#phuongXa').val();
       var gioiTinh = $('input[name="GioiTinh"]:checked').val();
       var deliveryMethod = $('.delivery-option.active').attr('id');
       var otherReceiver = $('#otherReceiver').is(':checked');
 
-      // Validate dữ liệu
-      if (!fullName) {
-        abp.notify.warn('Vui lòng nhập họ và tên!');
-        return;
-      }
-
-      if (!phoneNumber) {
-        abp.notify.warn('Vui lòng nhập số điện thoại!');
-        return;
-      }
-
-      if (!tinhThanhCode) {
-        abp.notify.warn('Vui lòng chọn Tỉnh/Thành phố!');
-        return;
-      }
-
-      if (!phuongXaCode) {
-        abp.notify.warn('Vui lòng chọn Phường/Xã!');
-        return;
-      }
-
-      if (!diaChiChiTiet) {
-        abp.notify.warn('Vui lòng nhập địa chỉ chi tiết!');
-        return;
-      }
-
       // Lấy thông tin hiển thị
-      var tinhThanhName = $('#TinhThanh option:selected').text();
-      var phuongXaName = $('#PhuongXa option:selected').text();
+      var tinhThanhName = $('#tinhThanh option:selected').text();
+      var phuongXaName = $('#phuongXa option:selected').text();
 
       // Tách họ và tên
       var parts = fullName.split(' ');

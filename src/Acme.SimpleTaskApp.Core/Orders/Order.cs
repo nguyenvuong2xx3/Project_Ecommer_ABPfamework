@@ -11,17 +11,15 @@ namespace Acme.SimpleTaskApp.Orders
 {
 	public class Order : FullAuditedEntity<int>
 	{
-		//public int CartId { get; set; }
-
-		//[ForeignKey("CartId")]
-		//public Cart Cart { get; set; }
-		public int PaymentMethod { get; set; }
 		public long UserId { get; set; }
-		//public decimal TotalAmount { get; set; }
+		public int PaymentMethod { get; set; }
+		public string FullName { get; set; }
+		public int GioiTinh { get; set; }
 		public int Status { get; set; } // 0: Pending, 1: Completed, 2: Cancelled
-
+		public string TinhThanh { get; set; }
+		public string PhuongXa { get; set; }
+		public string DiaChiChiTiet { get; set; }
 		public decimal TotalPrice { get; set; }
-		public virtual ICollection<OrderDetails> OrderDetails { get; set; }
-
+		//public List<OrderDetails> OrderDetails { get; set; }
 	}
 }
