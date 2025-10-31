@@ -1,7 +1,7 @@
 ﻿(function ($) {
 	var _cartItemService = abp.services.app.cartItem;
 	var _cartService = abp.services.app.cart
-	var _orderService = abp.services.app.order; // Thêm service order
+	var _orderService = abp.services.app.orders; // Thêm service order
 
 	// Biến lưu thông tin từ modal (nếu có)
 	var _latestUserInfo = null;
@@ -195,32 +195,31 @@
 	}
 
 	function processOrder(userInfo) {
-		// Thu thập thông tin đơn hàng
 		const orderData = collectOrderData(userInfo);
-
-		// Gọi API đặt hàng
 		submitOrder(orderData);
 	}
 
-	// Hàm thu thập dữ liệu đơn hàng
+	// Hàm thu thập dữ liệu đơn hàng - ĐÃ SỬA ĐỂ PHÙ HỢP VỚI DTO
 	function collectOrderData(userInfo) {
-		const orderItems = [];
+		const orderDetails = [];
 		let totalAmount = 0;
 
-		// Thu thập thông tin từng sản phẩm trong giỏ hàng
-		$('.card.mb-4.border-0.shadow-sm').each(function () {
-			const productVariantId = $(this).find('.btl-click-plus').data('productvariant-id');
-			const quantityInput = $(this).find('input[type="text"].form-control');
+		// Thu thập thông tin từng sản phẩm trong giỏ hàng cho OrderDetails
+		// CHỈ lấy các card có class cart-item
+		$('.cart-item').each(function () {
+			const $card = $(this);
+			const $plusButton = $card.find('.btl-click-plus');
+			const productVariantId = $plusButton.data('productvariant-id');
+			const quantityInput = $card.find('input[type="text"].form-control');
 			const quantity = parseInt(quantityInput.val()) || 1;
-			const priceText = $(this).find('.text-primary.mb-0').first().text().replace(/[^\d]/g, '');
+			const priceText = $card.find('.text-primary.mb-0').first().text().replace(/[^\d]/g, '');
 			const price = parseFloat(priceText) || 0;
 			const total = price * quantity;
 
-			orderItems.push({
+			orderDetails.push({
 				productVariantId: productVariantId,
 				quantity: quantity,
-				price: price,
-				total: total
+				newPrice: price
 			});
 
 			totalAmount += total;
@@ -229,30 +228,48 @@
 		// Lấy phương thức thanh toán
 		const paymentMethod = $('input[name="PaymentMethod"]:checked').val();
 
-		return {
-			orderItems: orderItems,
-			totalAmount: totalAmount,
+		// Tạo object Order
+		const order = {
+			userId: abp.session.userId || null,
 			paymentMethod: parseInt(paymentMethod),
-			userInfo: userInfo ? userInfo.userInfo : null, // Có thể null
-			address: userInfo ? userInfo.address : null,   // Có thể null
-			note: ''
+			status: 0, // 0: Pending
+			totalPrice: totalAmount
+		};
+
+		// Thêm thông tin người dùng nếu có
+		if (userInfo && userInfo.userInfo) {
+			order.fullName = `${userInfo.userInfo.surname} ${userInfo.userInfo.name}`.trim();
+			order.gioiTinh = userInfo.userInfo.gioiTinh || null;
+		}
+
+		// Thêm thông tin địa chỉ nếu có
+		if (userInfo && userInfo.address) {
+			order.tinhThanh = userInfo.address.tinhThanh?.name || null;
+			order.phuongXa = userInfo.address.phuongXa?.name || null;
+			order.diaChiChiTiet = userInfo.address.diaChiChiTiet || null;
+		}
+
+		return {
+			order: order,
+			orderDetails: orderDetails
 		};
 	}
 
 	function submitOrder(orderData) {
 		abp.ui.setBusy();
-		console.log(orderData);
+		console.log('Order data:', orderData);
+
 		_orderService.createOrder(orderData)
 			.done(function (response) {
 				abp.notify.success('Đặt hàng thành công!');
 
-				// Chuyển hướng đến trang xác nhận đơn hàng hoặc trang chủ
+				// Chuyển hướng đến trang xác nhận đơn hàng
 				setTimeout(function () {
 					window.location.href = abp.appPath + 'Orders/OrderConfirmation?orderId=' + response.orderId;
 				}, 2000);
 			})
 			.fail(function (error) {
-				abp.notify.error('Đặt hàng thất bại: ' + error.message);
+				abp.notify.error('Đặt hàng thất bại: ' + (error.message || 'Vui lòng thử lại'));
 				console.error('Order error:', error);
 			})
 			.always(function () {

@@ -1,210 +1,179 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Abp.Dependency;
+using Acme.SimpleTaskApp.Products;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Abp.Domain.Repositories;
+using System.Threading;
+using Acme.SimpleTaskApp.Orders.Dtos;
 
 namespace Acme.SimpleTaskApp.Orders
 {
-	/// <summary>
-	/// Service quản lý Queue FIFO cho việc đặt hàng
-	/// Đảm bảo người vào trước được xử lý trước (First In First Out)
-	/// </summary>
-	public class OrderQueueService : ISingletonDependency
-	{
-		// Dictionary lưu Queue cho mỗi ProductVariant
-		// Key: ProductVariantId, Value: Queue các order request
-		private readonly ConcurrentDictionary<int, ConcurrentQueue<OrderRequest>> _productQueues;
-		
-		// Dictionary lưu trạng thái xử lý cho mỗi ProductVariant
-		// Key: ProductVariantId, Value: true nếu đang xử lý
-		private readonly ConcurrentDictionary<int, bool> _processingStatus;
-		
-		// Lock object cho mỗi ProductVariant
-		private readonly ConcurrentDictionary<int, SemaphoreSlim> _productLocks;
+    public class OrderQueueService : IOrderQueueService, ISingletonDependency
+    {
+        private readonly ConcurrentDictionary<int, SemaphoreSlim> _productLocks = new();
+        private readonly ConcurrentQueue<QueuedOrder> _orderQueue = new();
+        private readonly IRepository<ProductVariant> _productVariantRepository;
+        private readonly SemaphoreSlim _queueSemaphore = new SemaphoreSlim(1, 1);
+        private bool _isProcessing;
 
-		public OrderQueueService()
-		{
-			_productQueues = new ConcurrentDictionary<int, ConcurrentQueue<OrderRequest>>();
-			_processingStatus = new ConcurrentDictionary<int, bool>();
-			_productLocks = new ConcurrentDictionary<int, SemaphoreSlim>();
-		}
+        public OrderQueueService(IRepository<ProductVariant> productVariantRepository)
+        {
+            _productVariantRepository = productVariantRepository;
+            _isProcessing = false;
+        }
 
-		/// <summary>
-		/// Thêm order request vào queue
-		/// </summary>
-		public async Task<OrderQueueTicket> EnqueueOrderRequest(int productVariantId, int quantity, Func<Task> processAction)
-		{
-			// Tạo ticket cho request này
-			var ticket = new OrderQueueTicket
-			{
-				TicketId = Guid.NewGuid().ToString(),
-				ProductVariantId = productVariantId,
-				Quantity = quantity,
-				EnqueueTime = DateTime.UtcNow,
-				Status = OrderQueueStatus.Waiting
-			};
+        private class QueuedOrder
+        {
+            public CreateOrderInput OrderInput { get; set; }
+            public TaskCompletionSource<bool> CompletionSource { get; set; }
+        }
 
-			var request = new OrderRequest
-			{
-				Ticket = ticket,
-				ProcessAction = processAction
-			};
+        public async Task<bool> TryLockProductsAsync(CreateOrderInput orderInput)
+        {
+            var queuedOrder = new QueuedOrder
+            {
+                OrderInput = orderInput,
+                CompletionSource = new TaskCompletionSource<bool>()
+            };
 
-			// Lấy hoặc tạo queue cho ProductVariant
-			var queue = _productQueues.GetOrAdd(productVariantId, _ => new ConcurrentQueue<OrderRequest>());
-			
-			// Thêm vào queue
-			queue.Enqueue(request);
-			ticket.Position = queue.Count;
+            // Thêm đơn hàng vào hàng đợi
+            _orderQueue.Enqueue(queuedOrder);
 
-			// Bắt đầu xử lý queue nếu chưa có ai xử lý
-			_ = Task.Run(() => ProcessQueueAsync(productVariantId));
+            // Bắt đầu xử lý queue nếu chưa có process nào đang chạy
+            await StartProcessingQueueAsync();
 
-			return ticket;
-		}
+            // Đợi kết quả xử lý của đơn hàng này
+            return await queuedOrder.CompletionSource.Task;
+        }
 
-		/// <summary>
-		/// Xử lý queue cho một ProductVariant
-		/// </summary>
-		private async Task ProcessQueueAsync(int productVariantId)
-		{
-			// Kiểm tra xem có ai đang xử lý queue này không
-			if (!_processingStatus.TryAdd(productVariantId, true))
-			{
-				// Đã có ai đang xử lý rồi
-				return;
-			}
+        private async Task StartProcessingQueueAsync()
+        {
+            // Đảm bảo chỉ một process được chạy tại một thời điểm
+            if (await _queueSemaphore.WaitAsync(0))
+            {
+                try
+                {
+                    if (_isProcessing)
+                        return;
 
-			try
-			{
-				var queue = _productQueues.GetOrAdd(productVariantId, _ => new ConcurrentQueue<OrderRequest>());
+                    _isProcessing = true;
+                    await ProcessQueueAsync();
+                }
+                finally
+                {
+                    _isProcessing = false;
+                    _queueSemaphore.Release();
+                }
+            }
+        }
 
-				while (queue.TryDequeue(out var request))
-				{
-					try
-					{
-						// Cập nhật trạng thái
-						request.Ticket.Status = OrderQueueStatus.Processing;
-						request.Ticket.ProcessStartTime = DateTime.UtcNow;
+        private async Task ProcessQueueAsync()
+        {
+            while (_orderQueue.TryDequeue(out var queuedOrder))
+            {
+                try
+                {
+                    // Kiểm tra và khóa sản phẩm
+                    var success = await LockAndVerifyStockAsync(queuedOrder.OrderInput);
+                    if (success)
+                    {
+                        await ProcessOrderAsync(queuedOrder.OrderInput);
+                        queuedOrder.CompletionSource.SetResult(true);
+                    }
+                    else
+                    {
+                        queuedOrder.CompletionSource.SetResult(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    queuedOrder.CompletionSource.SetException(ex);
+                }
+            }
+        }
 
-						// Thực hiện action (tạo order, trừ stock, v.v.)
-						await request.ProcessAction();
+        private async Task<bool> LockAndVerifyStockAsync(CreateOrderInput orderInput)
+        {
+            var semaphores = orderInput.OrderDetails
+                .Select(od => GetOrCreateLock(od.ProductVariantId))
+                .ToList();
 
-						// Thành công
-						request.Ticket.Status = OrderQueueStatus.Completed;
-						request.Ticket.ProcessEndTime = DateTime.UtcNow;
-					}
-					catch (Exception ex)
-					{
-						// Thất bại
-						request.Ticket.Status = OrderQueueStatus.Failed;
-						request.Ticket.ErrorMessage = ex.Message;
-						request.Ticket.ProcessEndTime = DateTime.UtcNow;
-						
-						// Nếu muốn, có thể throw lại exception để caller biết
-						throw;
-					}
-				}
-			}
-			finally
-			{
-				// Đánh dấu là đã xử lý xong
-				_processingStatus.TryRemove(productVariantId, out _);
-			}
-		}
+            try
+            {
+                // Cố gắng khóa tất cả sản phẩm trong 10 giây
+                var tasks = semaphores.Select(s => s.WaitAsync(TimeSpan.FromSeconds(10)));
+                await Task.WhenAll(tasks);
 
-		/// <summary>
-		/// Lấy vị trí hiện tại trong queue
-		/// </summary>
-		public int GetQueuePosition(int productVariantId, string ticketId)
-		{
-			if (!_productQueues.TryGetValue(productVariantId, out var queue))
-			{
-				return 0;
-			}
+                // Kiểm tra tồn kho
+                foreach (var orderDetail in orderInput.OrderDetails)
+                {
+                    var productVariant = await _productVariantRepository.GetAll()
+                        .Where(pv => pv.Id == orderDetail.ProductVariantId)
+                        .FirstOrDefaultAsync();
 
-			var requests = queue.ToArray();
-			for (int i = 0; i < requests.Length; i++)
-			{
-				if (requests[i].Ticket.TicketId == ticketId)
-				{
-					return i + 1; // Position is 1-based
-				}
-			}
+                    if (productVariant == null || productVariant.StockQuantity < orderDetail.Quantity)
+                    {
+                        await ReleaseProductLocksAsync(orderInput);
+                        return false;
+                    }
+                }
 
-			return 0;
-		}
+                return true;
+            }
+            catch (Exception)
+            {
+                await ReleaseProductLocksAsync(orderInput);
+                return false;
+            }
+        }
 
-		/// <summary>
-		/// Lấy thông tin ticket
-		/// </summary>
-		public OrderQueueTicket GetTicketInfo(string ticketId)
-		{
-			foreach (var queue in _productQueues.Values)
-			{
-				var request = queue.FirstOrDefault(r => r.Ticket.TicketId == ticketId);
-				if (request != null)
-				{
-					return request.Ticket;
-				}
-			}
-			return null;
-		}
+        public async Task ReleaseProductLocksAsync(CreateOrderInput orderInput)
+        {
+            foreach (var orderDetail in orderInput.OrderDetails)
+            {
+                if (_productLocks.TryGetValue(orderDetail.ProductVariantId, out var semaphore))
+                {
+                    try
+                    {
+                        semaphore.Release();
+                    }
+                    catch (Exception)
+                    {
+                        // Xử lý trường hợp semaphore đã được giải phóng
+                    }
+                }
+            }
+        }
 
-		/// <summary>
-		/// Lấy số lượng người đang chờ trong queue
-		/// </summary>
-		public int GetQueueLength(int productVariantId)
-		{
-			if (!_productQueues.TryGetValue(productVariantId, out var queue))
-			{
-				return 0;
-			}
-			return queue.Count;
-		}
-	}
+        public async Task ProcessOrderAsync(CreateOrderInput orderInput)
+        {
+            try
+            {
+                foreach (var orderDetail in orderInput.OrderDetails)
+                {
+                    var productVariant = await _productVariantRepository.GetAll()
+                        .Where(pv => pv.Id == orderDetail.ProductVariantId)
+                        .FirstOrDefaultAsync();
 
-	/// <summary>
-	/// Request trong queue
-	/// </summary>
-	public class OrderRequest
-	{
-		public OrderQueueTicket Ticket { get; set; }
-		public Func<Task> ProcessAction { get; set; }
-	}
+                    if (productVariant != null)
+                    {
+                        productVariant.StockQuantity -= orderDetail.Quantity;
+                        await _productVariantRepository.UpdateAsync(productVariant);
+                    }
+                }
+            }
+            finally
+            {
+                await ReleaseProductLocksAsync(orderInput);
+            }
+        }
 
-	/// <summary>
-	/// Ticket theo dõi trạng thái của order request
-	/// </summary>
-	public class OrderQueueTicket
-	{
-		public string TicketId { get; set; }
-		public int ProductVariantId { get; set; }
-		public int Quantity { get; set; }
-		public int Position { get; set; }
-		public DateTime EnqueueTime { get; set; }
-		public DateTime? ProcessStartTime { get; set; }
-		public DateTime? ProcessEndTime { get; set; }
-		public OrderQueueStatus Status { get; set; }
-		public string ErrorMessage { get; set; }
-
-		/// <summary>
-		/// Thời gian chờ ước tính (giây)
-		/// </summary>
-		public int EstimatedWaitTimeSeconds => Position * 2; // Giả sử mỗi order mất 2 giây
-	}
-
-	/// <summary>
-	/// Trạng thái của order trong queue
-	/// </summary>
-	public enum OrderQueueStatus
-	{
-		Waiting = 0,      // Đang chờ
-		Processing = 1,   // Đang xử lý
-		Completed = 2,    // Hoàn thành
-		Failed = 3        // Thất bại
-	}
+        private SemaphoreSlim GetOrCreateLock(int productVariantId)
+        {
+            return _productLocks.GetOrAdd(productVariantId, _ => new SemaphoreSlim(1, 1));
+        }
+    }
 }

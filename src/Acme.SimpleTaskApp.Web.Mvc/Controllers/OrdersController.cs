@@ -95,32 +95,32 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		//	}
 		//}
 
-		public async Task<IActionResult> DetailOrder(int orderId)
-		{
-			var viewModel = await _ordersAppService.GetOrder(orderId);
+		//public async Task<IActionResult> DetailOrder(int orderId)
+		//{
+		//	var viewModel = await _ordersAppService.GetOrder(orderId);
 
-			var model = new OrderViewModel()
-			{
-				Status = viewModel.Status,
-				UserName = viewModel.UserName,
-				EmailAddress = viewModel.EmailAddress,
-				OrderDetails  = viewModel.OrderDetails
-			};
-			return PartialView("_DetailOrderModal", model);
-		}
+		//	var model = new OrderViewModel()
+		//	{
+		//		Status = viewModel.Status,
+		//		UserName = viewModel.UserName,
+		//		EmailAddress = viewModel.EmailAddress,
+		//		OrderDetails  = viewModel.OrderDetails
+		//	};
+		//	return PartialView("_DetailOrderModal", model);
+		//}
 		
-		public async Task<IActionResult> DetailOrderForUser()
-		{
-			var viewModel = await _ordersAppService.GetOrderByUserId();
+		//public async Task<IActionResult> DetailOrderForUser()
+		//{
+		//	var viewModel = await _ordersAppService.GetOrderByUserId();
 
-			var model = new OrderViewModel()
-			{
-				Status = viewModel.Status,
-				UserName = viewModel.UserName,
-				EmailAddress = viewModel.EmailAddress,
-				OrderDetails = viewModel.OrderDetails
-			};
-			return PartialView("DetailOrderUserModal", model);
-		}
+		//	var model = new OrderViewModel()
+		//	{
+		//		Status = viewModel.Status,
+		//		UserName = viewModel.UserName,
+		//		EmailAddress = viewModel.EmailAddress,
+		//		OrderDetails = viewModel.OrderDetails
+		//	};
+		//	return PartialView("DetailOrderUserModal", model);
+		//}
 	}
 }
