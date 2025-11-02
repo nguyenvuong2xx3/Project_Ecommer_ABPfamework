@@ -62,7 +62,7 @@ namespace Acme.SimpleTaskApp.Orders
 			var orderDetailsList = new List<OrderDetails>();
 			var currentUser = _userRepository.Get(AbpSession.UserId.Value);
 
-			// Cố gắng khóa tất cả sản phẩm trong đơn hàng
+			// Cố gắng khóa tất cả sản phẩm trong đơn hàng và validate stock
 			if (!await _orderQueueService.TryLockProductsAsync(input))
 			{
 				throw new UserFriendlyException("Một số sản phẩm trong đơn hàng không còn đủ số lượng. Vui lòng thử lại.");
@@ -70,24 +70,9 @@ namespace Acme.SimpleTaskApp.Orders
 
 			try
 			{
-				// Validate và tính tổng giá
+				// Tính tổng giá - không cần validate stock nữa vì đã validate trong TryLockProductsAsync
 				foreach (var item in input.OrderDetails)
 				{
-					var productVariant = await _productVariantRepository.GetAll()
-							.Where(pv => pv.Id == item.ProductVariantId)
-							.FirstOrDefaultAsync();
-
-					if (productVariant == null)
-					{
-						throw new UserFriendlyException($"Sản phẩm với ID {item.ProductVariantId} không tồn tại.");
-					}
-
-					if (productVariant.StockQuantity < item.Quantity)
-					{
-						throw new UserFriendlyException(
-								$"Sản phẩm '{productVariant.Color} {productVariant.Storage}' chỉ còn {productVariant.StockQuantity} sản phẩm.");
-					}
-
 					totalPrice += item.Quantity * item.NewPrice;
 
 					orderDetailsList.Add(new OrderDetails
@@ -108,27 +93,33 @@ namespace Acme.SimpleTaskApp.Orders
 					Status = 0,
 					TotalPrice = totalPrice,
 					FullName = string.IsNullOrWhiteSpace(input.Order.FullName) ? user.Name : input.Order.FullName,
-					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh > 0 ? user.GioiTinh : input.Order.GioiTinh,
+					// Fix: Logic bị ngược - nếu input có giá trị thì dùng input, ngược lại dùng user
+					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh >= 0 ? input.Order.GioiTinh : user.GioiTinh,
 					TinhThanh = string.IsNullOrWhiteSpace(input.Order.TinhThanh) ? user.TinhThanh : input.Order.TinhThanh,
 					PhuongXa = string.IsNullOrWhiteSpace(input.Order.PhuongXa) ? user.PhuongXa : input.Order.PhuongXa,
 					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet
 				};
 
-
 				int orderId = await _ordersRepository.InsertAndGetIdAsync(order);
 
-				// Xử lý đơn hàng thông qua queue service
+				// Thêm order details
 				foreach (var orderDetail in orderDetailsList)
 				{
 					orderDetail.OrderId = orderId;
 					await _orderDetailsRepository.InsertAsync(orderDetail);
 				}
 
+				// Xử lý trừ stock và release locks - CHỈ GỌI 1 LẦN
 				await _orderQueueService.ProcessOrderAsync(input);
-				// xóa hết cart và cartItem của user
+
+				// Xóa cart và cartItem của user
 				var getCart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == AbpSession.UserId);
-				await _cartRepository.DeleteAsync(getCart);
-				await _cartItemRepository.DeleteAsync(x => x.CartId == getCart.Id);
+				if (getCart != null)
+				{
+					await _cartItemRepository.DeleteAsync(x => x.CartId == getCart.Id);
+					await _cartRepository.DeleteAsync(getCart);
+				}
+
 				await CurrentUnitOfWork.SaveChangesAsync();
 				return orderId;
 			}

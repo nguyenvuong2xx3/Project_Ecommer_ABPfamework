@@ -118,8 +118,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					ViewBag.Message = "Vui lòng đăng nhập để xem giỏ hàng.";
 					return View("Cart"); // hoặc View("Cart") nếu bạn muốn hiển thị chung
 				}
-				var viewModel = new CartViewModel { };
 				var user = _userManager.GetUserById(AbpSession.UserId.Value);
+				var cart = await _cartAppService.GetCart();
+				var viewModel = new CartViewModel {
+					CartItems = cart.CartItems,
+					User = user,
+					TinhThanh = null,
+					PhuongXa = null,
+				}; 
 				var getDiaChinh = await _locationAppService.GetAllDonViHanhChinh();
 				if (user.TinhThanh != null && user.PhuongXa != null)
 				{
@@ -128,10 +134,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					var tenPhuongXa = tinhthanh.Phuongxa.FirstOrDefault(x => x.Maphuongxa == user.PhuongXa).Tenphuongxa;
 
 					// Gọi service lấy thông tin giỏ hàng
-					var cart = await _cartAppService.GetCart();
 					// Ánh xạ sang ViewModel
-					viewModel.CartItems = cart.CartItems;
-					viewModel.User = user;
 					viewModel.TinhThanh = tenTinhThanh;
 					viewModel.PhuongXa = tenPhuongXa;
 				}

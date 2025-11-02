@@ -76,11 +76,11 @@ namespace Acme.SimpleTaskApp.Orders
             {
                 try
                 {
-                    // Kiểm tra và khóa sản phẩm
+                    // Chỉ kiểm tra và khóa sản phẩm - KHÔNG trừ stock ở đây
                     var success = await LockAndVerifyStockAsync(queuedOrder.OrderInput);
                     if (success)
                     {
-                        await ProcessOrderAsync(queuedOrder.OrderInput);
+                        // Không gọi ProcessOrderAsync ở đây nữa - sẽ được gọi từ CreateOrder
                         queuedOrder.CompletionSource.SetResult(true);
                     }
                     else
