@@ -30,7 +30,7 @@
     };
 
     abp.ui.setBusy($('#orders-tab-pane'));
-
+		console.log('Tải đơn hàng với bộ lọc:', input);
     _orderService.getOrderByCurrentUser(input)
       .done(function (result) {
         console.log('Danh sách đơn hàng:', result);
@@ -87,86 +87,81 @@
       }
     }
 
+    // Lấy thông tin người nhận và địa chỉ
+    var recipientName = order.fullName || 'Không có thông tin';
+    var address = getFullAddress(order);
+
     return `
-    <div class="order-card card mb-3" data-order-id="${order.id}">
-      <div class="card-body p-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <!-- Thông tin bên trái -->
-          <div class="flex-grow-1">
-            <div class="d-flex align-items-center mb-1">
-              <span class="fw-bold me-2">#${order.code || order.id}</span>
-              <span class="badge ${statusClass}">${statusText}</span>
-            </div>
-            <div class="text-muted small">
-              ${firstProductName} • ${creationTime}
-            </div>
+  <div class="order-card card mb-3" data-order-id="${order.id}">
+    <div class="card-body p-3">
+      <div class="d-flex justify-content-between align-items-start">
+        <!-- Thông tin bên trái -->
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center mb-1">
+            <span class="fw-bold me-2">#${order.code || order.id}</span>
+            <span class="badge ${statusClass}">${statusText}</span>
           </div>
-          
-          <!-- Thông tin bên phải -->
-          <div class="text-end">
-            <div class="fw-bold text-primary mb-1">${totalAmount}</div>
-            <div>
-              <button class="btn btn-outline-primary btn-sm view-order-detail" data-order-id="${order.id}">
-                Chi tiết
-              </button>
-            </div>
+          <div class="text-muted small mb-1">
+            ${firstProductName} • ${creationTime}
+          </div>
+          <div class="small">
+            <strong>Người nhận:</strong> ${recipientName}
+          </div>
+          <div class="small text-muted">
+            <strong>Địa chỉ:</strong> ${address}
           </div>
         </div>
         
-        <!-- Chi tiết đơn hàng (ẩn ban đầu) -->
-        <div class="order-detail-content mt-3" id="order-detail-${order.id}" style="display: none;">
-          ${renderOrderDetails(order)}
+        <!-- Thông tin bên phải -->
+        <div class="text-end">
+          <div class="fw-bold text-primary mb-2">${totalAmount}</div>
+          <div>
+            <button class="btn btn-outline-primary btn-sm view-order-detail" data-order-id="${order.id}">
+              Chi tiết
+            </button>
+          </div>
         </div>
       </div>
+      
+      <!-- Chi tiết đơn hàng (ẩn ban đầu) -->
+      <div class="order-detail-content mt-3" id="order-detail-${order.id}" style="display: none;">
+        ${renderOrderDetails(order)}
+      </div>
     </div>
-  `;
+  </div>
+`;
   }
 
-  // Hàm render chi tiết đơn hàng
+  // Hàm render chi tiết đơn hàng - chỉ hiển thị sản phẩm
   function renderOrderDetails(order) {
     if (!order.orderDetails || order.orderDetails.length === 0) {
       return '<div class="text-muted">Không có chi tiết đơn hàng</div>';
     }
 
     var html = `
-      <div class="border-top pt-3">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <div class="text-muted small">Người nhận</div>
-            <div class="fw-bold">${order.fullName || 'Không có thông tin'}</div>
-          </div>
-          <div class="col-md-6">
-            <div class="text-muted small">Phương thức thanh toán</div>
-            <div>${getPaymentMethodText(order.paymentMethod)}</div>
-          </div>
-        </div>
-        
-        <div class="mb-3">
-          <div class="text-muted small">Địa chỉ giao hàng</div>
-          <div>${getFullAddress(order)}</div>
-        </div>
-        
-        <h6 class="mb-2">Sản phẩm:</h6>
-    `;
+    <div class="border-top pt-3">
+      <h6 class="mb-3">Chi tiết sản phẩm:</h6>
+  `;
 
-    order.orderDetails.forEach(function (detail) {
+    order.orderDetails.forEach(function (detail, index) {
       var productName = detail.productVariant ? detail.productVariant.productName : 'Sản phẩm';
       var quantity = detail.quantity || 1;
       var price = formatCurrency(detail.price || detail.newPrice || 0);
       var totalPrice = formatCurrency((detail.price || detail.newPrice || 0) * quantity);
 
       html += `
-        <div class="order-detail-item d-flex align-items-center mb-2 p-2 border-bottom">
-          <div class="flex-grow-1">
-            <div class="fw-bold">${productName}</div>
-            <div class="text-muted small">Số lượng: ${quantity}</div>
-          </div>
-          <div class="text-end">
-            <div class="fw-bold">${price}</div>
-            <div class="text-muted small">Thành tiền: ${totalPrice}</div>
-          </div>
+      <div class="order-detail-item d-flex align-items-center mb-2 p-2 border-bottom">
+        <div class="me-3 text-muted small">${index + 1}.</div>
+        <div class="flex-grow-1">
+          <div class="fw-bold">${productName}</div>
+          <div class="text-muted small">Số lượng: ${quantity}</div>
         </div>
-      `;
+        <div class="text-end">
+          <div class="fw-bold">${price}</div>
+          <div class="text-muted small">Thành tiền: ${totalPrice}</div>
+        </div>
+      </div>
+    `;
     });
 
     html += `</div>`;

@@ -385,5 +385,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Carts/_OrderInfoModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Settings/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Settings/Index.js"
+    ]
   }
 ]

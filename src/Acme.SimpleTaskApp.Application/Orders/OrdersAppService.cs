@@ -12,6 +12,7 @@ using Acme.SimpleTaskApp.Notifications;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders.Dtos;
 using Acme.SimpleTaskApp.Products;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -138,7 +139,8 @@ namespace Acme.SimpleTaskApp.Orders
 				throw;
 			}
 		}
-	
+
+		[HttpPost]
 		public async Task<List<Order>> GetOrderByCurrentUser(GetAllOrderInput input)
 		{
 			var currentUserId = AbpSession.UserId;
@@ -149,7 +151,7 @@ namespace Acme.SimpleTaskApp.Orders
 					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
 					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
 
-			query = query.OrderBy(input.Sorting);
+			query = query.OrderBy(input.Sorting).PageBy(input);
 
 			var orders = await query.ToListAsync();
 
@@ -209,6 +211,15 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 
 			return orders;
+		}
+
+		public async Task<List<Order>> GetAllOrder(GetAllOrderInput input)
+		{
+			var query = _ordersRepository.GetAll()
+					.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
+					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
+					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
+
 		}
 	}
 }
