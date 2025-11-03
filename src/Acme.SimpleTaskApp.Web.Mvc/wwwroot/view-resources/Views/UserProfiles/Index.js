@@ -82,35 +82,7 @@
   }
 
 
-  //function updateUserAddress() {
-  //  var formData = {
-  //    Id: $('#AddressId').val() || 0,
-  //    TinhThanh: $('#TinhThanh').val(),
-  //    PhuongXa: $('#PhuongXa').val(),
-  //    DiaChiChiTiet: $('#DiaChiChiTiet').val(),
-  //    IsDefault: $('#IsDefault').is(':checked'),
-  //    UserId: $('#UserId').val()
-  //  };
-
-  //  // Validate dữ liệu
-  //  if (!formData.TinhThanh || !formData.PhuongXa || !formData.DiaChiChiTiet) {
-  //    abp.notify.warn('Vui lòng nhập đầy đủ thông tin địa chỉ!');
-  //    return;
-  //  }
-
-  //  abp.ui.setBusy($('#updateAddressForm'), true);
-
-  //  _userService.updateAddressAsync(formData)
-  //    .then(function () {
-  //      abp.notify.success('Cập nhật địa chỉ thành công!');
-  //      abp.ui.setBusy($('#updateAddressForm'), false);
-  //    })
-  //    .catch(function (error) {
-  //      console.error('Lỗi khi cập nhật địa chỉ:', error);
-  //      abp.notify.error('Cập nhật địa chỉ thất bại!');
-  //      abp.ui.setBusy($('#updateAddressForm'), false);
-  //    });
-  //}
+  
 
   function resetProfileForm() {
     // Reset form về giá trị ban đầu (có thể load lại từ server nếu cần)

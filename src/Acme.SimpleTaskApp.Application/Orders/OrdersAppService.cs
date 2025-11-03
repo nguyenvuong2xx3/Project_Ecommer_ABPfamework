@@ -1,6 +1,7 @@
 ﻿using Abp;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
@@ -61,6 +62,12 @@ namespace Acme.SimpleTaskApp.Orders
 			decimal totalPrice = 0;
 			var orderDetailsList = new List<OrderDetails>();
 			var currentUser = _userRepository.Get(AbpSession.UserId.Value);
+			var user = await _userRepository.GetAsync(currentUser.Id);
+			if (string.IsNullOrEmpty(user.TinhThanh) && string.IsNullOrEmpty(user.PhuongXa) &&
+				string.IsNullOrEmpty(input.Order.TinhThanh) && string.IsNullOrEmpty(input.Order.PhuongXa))
+			{
+				throw new UserFriendlyException("Vui lòng cung cấp địa chỉ giao hàng (Tỉnh/Thành và Phường/Xã) trước khi đặt hàng.");
+			}
 
 			// Cố gắng khóa tất cả sản phẩm trong đơn hàng và validate stock
 			if (!await _orderQueueService.TryLockProductsAsync(input))
@@ -84,7 +91,6 @@ namespace Acme.SimpleTaskApp.Orders
 				}
 
 				// Tạo Order
-				var user = await _userRepository.GetAsync(currentUser.Id);
 
 				Order order = new Order
 				{
@@ -93,21 +99,22 @@ namespace Acme.SimpleTaskApp.Orders
 					Status = 0,
 					TotalPrice = totalPrice,
 					FullName = string.IsNullOrWhiteSpace(input.Order.FullName) ? user.Name : input.Order.FullName,
+					OrderDetails = orderDetailsList,
 					// Fix: Logic bị ngược - nếu input có giá trị thì dùng input, ngược lại dùng user
 					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh >= 0 ? input.Order.GioiTinh : user.GioiTinh,
 					TinhThanh = string.IsNullOrWhiteSpace(input.Order.TinhThanh) ? user.TinhThanh : input.Order.TinhThanh,
 					PhuongXa = string.IsNullOrWhiteSpace(input.Order.PhuongXa) ? user.PhuongXa : input.Order.PhuongXa,
 					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet
 				};
-
-				int orderId = await _ordersRepository.InsertAndGetIdAsync(order);
+				order.Serialize();
+				var orderId = await _ordersRepository.InsertAndGetIdAsync(order);
 
 				// Thêm order details
-				foreach (var orderDetail in orderDetailsList)
-				{
-					orderDetail.OrderId = orderId;
-					await _orderDetailsRepository.InsertAsync(orderDetail);
-				}
+				//foreach (var orderDetail in orderDetailsList)
+				//{
+				//	orderDetail.OrderId = orderId;
+				//	await _orderDetailsRepository.InsertAsync(orderDetail);
+				//}
 
 				// Xử lý trừ stock và release locks - CHỈ GỌI 1 LẦN
 				await _orderQueueService.ProcessOrderAsync(input);
@@ -129,6 +136,77 @@ namespace Acme.SimpleTaskApp.Orders
 				await _orderQueueService.ReleaseProductLocksAsync(input);
 				throw;
 			}
+		}
+
+		public async Task<List<Order>> GetOrderByCurrentUser(GetAllOrderInput input)
+		{
+			var currentUserId = AbpSession.UserId;
+
+			var query = _ordersRepository.GetAll()
+					.Where(x => x.UserId == currentUserId)
+					.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
+					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod);
+
+			query = query.OrderBy(input.Sorting);
+
+			var orders = await query.ToListAsync();
+
+			foreach (var order in orders)
+			{
+				order.Deserialize();
+			}
+
+			// Lấy ID tất cả ProductVariant từ TẤT CẢ các đơn hàng
+			var allVariantIds = orders
+					.Where(o => o.OrderDetails != null) // Đảm bảo OrderDetails không null
+					.SelectMany(o => o.OrderDetails)
+					.Select(d => d.ProductVariantId)
+					.Distinct()
+					.ToList();
+
+			if (!allVariantIds.Any())
+			{
+				return orders; // Không có chi tiết nào, trả về luôn
+			}
+
+			var variantsMap = await _productVariantRepository.GetAll()
+					.Where(pv => allVariantIds.Contains(pv.Id))
+					.ToDictionaryAsync(pv => pv.Id);
+
+			var allProductIds = variantsMap.Values
+					.Select(pv => pv.ProductId)
+					.Distinct()
+					.ToList();
+
+			var productsMap = await _productRepository.GetAll()
+					.Where(p => allProductIds.Contains(p.Id))
+					.ToDictionaryAsync(p => p.Id);
+
+			// Gán ProductName vào các variant (trong bộ nhớ)
+			foreach (var variant in variantsMap.Values)
+			{
+				if (productsMap.TryGetValue(variant.ProductId, out var product))
+				{
+					variant.ProductName = product.Name;
+				}
+			}
+
+			foreach (var order in orders)
+			{
+				if (order.OrderDetails != null)
+				{
+					foreach (var detail in order.OrderDetails)
+					{
+						// Lấy ProductVariant đã có sẵn từ Dictionary
+						if (variantsMap.TryGetValue(detail.ProductVariantId, out var variant))
+						{
+							detail.ProductVariant = variant;
+						}
+					}
+				}
+			}
+
+			return orders;
 		}
 	}
 }
