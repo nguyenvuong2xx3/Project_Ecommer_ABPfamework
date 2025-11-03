@@ -1,9 +1,11 @@
 ﻿(function () {
   var _orderService = abp.services.app.orders;
   var _locationService = abp.services.app.location;
-  var _userService = abp.services.app.user; // Thêm service user
+  var _userService = abp.services.app.user;
   var l = abp.localization.getSource('SimpleTaskApp');
   var _locations = [];
+  var _currentStatus = null;
+  var _currentPaymentMethod = null;
 
   var _selectedDateRange = {
     StartTime: null,
@@ -15,17 +17,290 @@
     bindEvents();
     initializeLocationOnClick();
     initializeProfileForms();
+    loadOrders();
   });
 
+  function loadOrders() {
+    var input = {
+      Status: _currentStatus,
+      PaymentMethod: _currentPaymentMethod,
+      StartTime: _selectedDateRange.StartTime,
+      EndTime: _selectedDateRange.EndTime,
+      Sorting: "CreationTime DESC"
+    };
+
+    abp.ui.setBusy($('#orders-tab-pane'));
+
+    _orderService.getOrderByCurrentUser(input)
+      .done(function (result) {
+        console.log('Danh sách đơn hàng:', result);
+        renderOrders(result);
+        abp.ui.clearBusy($('#orders-tab-pane'));
+      })
+      .fail(function (error) {
+        console.error('Lỗi khi tải đơn hàng:', error);
+        abp.notify.error('Không thể tải danh sách đơn hàng!');
+        abp.ui.clearBusy($('#orders-tab-pane'));
+      });
+  }
+
+  function renderOrders(orders) {
+    var $container = $('#orders-tab-pane');
+    var $emptyContainer = $container.find('.empty-orders-container');
+    var $ordersList = $container.find('.orders-list-container');
+
+    if ($ordersList.length === 0) {
+      $emptyContainer.after('<div class="orders-list-container"></div>');
+      $ordersList = $container.find('.orders-list-container');
+    }
+
+    if (!orders || orders.length === 0) {
+      $emptyContainer.show();
+      $ordersList.hide().empty();
+      return;
+    }
+
+    $emptyContainer.hide();
+
+    var html = '';
+    orders.forEach(function (order) {
+      html += createOrderCard(order);
+    });
+
+    $ordersList.html(html).show();
+  }
+
+  function createOrderCard(order) {
+    var statusText = getStatusText(order.status);
+    var statusClass = getStatusClass(order.status);
+    var totalAmount = formatCurrency(order.totalAmount || order.totalPrice);
+    var creationTime = formatDate(order.creationTime);
+
+    // Lấy số lượng sản phẩm và tên sản phẩm đầu tiên
+    var productCount = order.orderDetails ? order.orderDetails.length : 0;
+    var firstProductName = 'Sản phẩm';
+    if (order.orderDetails && order.orderDetails.length > 0) {
+      var firstDetail = order.orderDetails[0];
+      firstProductName = firstDetail.productVariant ? firstDetail.productVariant.productName : 'Sản phẩm';
+      if (productCount > 1) {
+        firstProductName += ` và ${productCount - 1} sản phẩm khác`;
+      }
+    }
+
+    return `
+    <div class="order-card card mb-3" data-order-id="${order.id}">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Thông tin bên trái -->
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center mb-1">
+              <span class="fw-bold me-2">#${order.code || order.id}</span>
+              <span class="badge ${statusClass}">${statusText}</span>
+            </div>
+            <div class="text-muted small">
+              ${firstProductName} • ${creationTime}
+            </div>
+          </div>
+          
+          <!-- Thông tin bên phải -->
+          <div class="text-end">
+            <div class="fw-bold text-primary mb-1">${totalAmount}</div>
+            <div>
+              <button class="btn btn-outline-primary btn-sm view-order-detail" data-order-id="${order.id}">
+                Chi tiết
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chi tiết đơn hàng (ẩn ban đầu) -->
+        <div class="order-detail-content mt-3" id="order-detail-${order.id}" style="display: none;">
+          ${renderOrderDetails(order)}
+        </div>
+      </div>
+    </div>
+  `;
+  }
+
+  // Hàm render chi tiết đơn hàng
+  function renderOrderDetails(order) {
+    if (!order.orderDetails || order.orderDetails.length === 0) {
+      return '<div class="text-muted">Không có chi tiết đơn hàng</div>';
+    }
+
+    var html = `
+      <div class="border-top pt-3">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="text-muted small">Người nhận</div>
+            <div class="fw-bold">${order.fullName || 'Không có thông tin'}</div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Phương thức thanh toán</div>
+            <div>${getPaymentMethodText(order.paymentMethod)}</div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <div class="text-muted small">Địa chỉ giao hàng</div>
+          <div>${getFullAddress(order)}</div>
+        </div>
+        
+        <h6 class="mb-2">Sản phẩm:</h6>
+    `;
+
+    order.orderDetails.forEach(function (detail) {
+      var productName = detail.productVariant ? detail.productVariant.productName : 'Sản phẩm';
+      var quantity = detail.quantity || 1;
+      var price = formatCurrency(detail.price || detail.newPrice || 0);
+      var totalPrice = formatCurrency((detail.price || detail.newPrice || 0) * quantity);
+
+      html += `
+        <div class="order-detail-item d-flex align-items-center mb-2 p-2 border-bottom">
+          <div class="flex-grow-1">
+            <div class="fw-bold">${productName}</div>
+            <div class="text-muted small">Số lượng: ${quantity}</div>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold">${price}</div>
+            <div class="text-muted small">Thành tiền: ${totalPrice}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  // Hàm lấy địa chỉ đầy đủ
+  function getFullAddress(order) {
+    var addressParts = [];
+    if (order.diaChiChiTiet) addressParts.push(order.diaChiChiTiet);
+    if (order.phuongXa) addressParts.push(order.phuongXa);
+    if (order.tinhThanh) addressParts.push(order.tinhThanh);
+
+    return addressParts.length > 0 ? addressParts.join(', ') : 'Không có địa chỉ';
+  }
+
+  // Hàm lấy text phương thức thanh toán
+  function getPaymentMethodText(paymentMethod) {
+    var paymentMethods = {
+      0: 'Thanh toán khi nhận hàng (COD)',
+      1: 'Chuyển khoản ngân hàng',
+      2: 'Ví điện tử',
+      3: 'Thẻ tín dụng'
+    };
+    return paymentMethods[paymentMethod] || 'Không xác định';
+  }
+
+  // Xử lý sự kiện xem chi tiết đơn hàng
+  function initializeOrderDetailEvents() {
+    $(document).on('click', '.view-order-detail', function () {
+      var orderId = $(this).data('order-id');
+      var $detailContent = $('#order-detail-' + orderId);
+      var $button = $(this);
+
+      if ($detailContent.is(':visible')) {
+        $detailContent.hide();
+        $button.text('Chi tiết');
+      } else {
+        $detailContent.show();
+        $button.text('Ẩn chi tiết');
+      }
+    });
+  }
+
+  function getStatusText(status) {
+    var statusMap = {
+      0: 'Chờ xác nhận',
+      1: 'Đang xử lý',
+      2: 'Đang giao hàng',
+      3: 'Thành công',
+      4: 'Đã hủy',
+      5: 'Hoàn trả'
+    };
+    return statusMap[status] || 'Không xác định';
+  }
+
+  function getStatusClass(status) {
+    var classMap = {
+      0: 'bg-warning text-dark',
+      1: 'bg-info text-white',
+      2: 'bg-primary text-white',
+      3: 'bg-success text-white',
+      4: 'bg-danger text-white',
+      5: 'bg-secondary text-white'
+    };
+    return classMap[status] || 'bg-light text-dark';
+  }
+
+  function formatCurrency(amount) {
+    if (!amount) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    var date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Xử lý bộ lọc trạng thái
+  function initializeOrderFilters() {
+    $('.order-status-filters .nav-link').on('click', function (e) {
+      e.preventDefault();
+
+      $('.order-status-filters .nav-link').removeClass('active');
+      $(this).addClass('active');
+
+      var statusValue = $(this).data('status');
+      _currentStatus = statusValue === 'all' ? null : parseInt(statusValue);
+
+      loadOrders();
+    });
+  }
+
+  // Xử lý bộ lọc phương thức thanh toán
+  function initializePaymentMethodFilter() {
+    $('#PaymentMethod').on('change', function () {
+      var paymentMethodValue = $(this).val();
+      _currentPaymentMethod = paymentMethodValue === '' ? null : parseInt(paymentMethodValue);
+      loadOrders();
+    });
+  }
+
+  // Reset bộ lọc
+  function initializeResetFilter() {
+    $('#ResetFilters').click(function () {
+      _selectedDateRange.StartTime = null;
+      _selectedDateRange.EndTime = null;
+      _currentPaymentMethod = null;
+      $('#StartEndRange').val('');
+      $('#PaymentMethod').val('');
+      $('.order-status-filters .nav-link').removeClass('active');
+      $('.order-status-filters .nav-link[data-status="all"]').addClass('active');
+      _currentStatus = null;
+      loadOrders();
+    });
+  }
+
   function initializeProfileForms() {
-    // Xử lý nút Lưu - SỬA LẠI
     $('#saveProfile').on('click', function (e) {
       e.preventDefault();
       console.log('Nút Lưu được click');
       updateUserProfile();
     });
 
-    // Xử lý nút hủy
     $('#cancelProfileEdit').on('click', function () {
       console.log('Nút Hủy được click');
       resetProfileForm();
@@ -40,7 +315,6 @@
         return;
       }
 
-      // Xử lý tên
       var parts = fullName.split(' ');
       var name = parts.length > 0 ? parts.pop() : '';
       var surname = parts.length > 0 ? parts.join(' ') : '';
@@ -59,19 +333,17 @@
 
       console.log('Dữ liệu gửi đi:', formData);
 
-      // Set busy
       var $formArea = $('#updateProfileForm').closest('.info-card');
       abp.ui.setBusy($formArea);
 
-      // Gọi API - SỬA LẠI PHẦN NÀY
       _userService.updateForCustomer(formData).done(function (result) {
         console.log('API thành công:', result);
         abp.notify.success('Cập nhật thông tin thành công!');
-        abp.ui.clearBusy($formArea); // Clear busy khi thành công
+        abp.ui.clearBusy($formArea);
       }).fail(function (error) {
         console.error('API lỗi:', error);
         abp.notify.error('Cập nhật thông tin thất bại: ' + (error.message || ''));
-        abp.ui.clearBusy($formArea); // Clear busy khi lỗi
+        abp.ui.clearBusy($formArea);
       });
 
     } catch (error) {
@@ -81,11 +353,7 @@
     }
   }
 
-
-  
-
   function resetProfileForm() {
-    // Reset form về giá trị ban đầu (có thể load lại từ server nếu cần)
     $('#FullName').val('@Model.User.FullName');
     $('#PhoneNumber').val('@Model.User.PhoneNumber');
 
@@ -97,7 +365,6 @@
     }
   }
 
-  // Các hàm hiện có giữ nguyên
   function initializeDateRangePicker() {
     $('#StartEndRange').daterangepicker({
       autoUpdateInput: false,
@@ -117,26 +384,21 @@
       $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
       _selectedDateRange.StartTime = picker.startDate.startOf('day').format('YYYY-MM-DDTHH:mm:ss');
       _selectedDateRange.EndTime = picker.endDate.endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+      loadOrders();
     });
 
     $('#StartEndRange').on('cancel.daterangepicker', function (ev, picker) {
       $(this).val('');
       _selectedDateRange.StartTime = null;
       _selectedDateRange.EndTime = null;
+      loadOrders();
     });
   }
-
-  $('#ResetFilters').click(function () {
-    $('#ProductSearchForm')[0].reset();
-    _selectedDateRange.StartTime = null;
-    _selectedDateRange.EndTime = null;
-    $('#StartEndRange').val('');
-  });
 
   function initializeLocationData() {
     _locationService.getAllDonViHanhChinh().then(function (result) {
       _locations = result;
-      populateTinhThanh(); // Đổi từ populateProvinces sang populateTinhThanh
+      populateTinhThanh();
     }).catch(function (error) {
       console.error('Lỗi khi tải dữ liệu địa phương:', error);
       abp.notify.error('Không thể tải dữ liệu địa phương!');
@@ -156,7 +418,6 @@
       }));
     });
 
-    // Khôi phục giá trị đã chọn
     if (currentValue) {
       $tinhThanh.val(currentValue);
       populatePhuongXa(currentValue);
@@ -186,7 +447,6 @@
       });
       $phuongXa.prop('disabled', false);
 
-      // Khôi phục giá trị đã chọn
       if (currentValue) {
         $phuongXa.val(currentValue);
       }
@@ -205,8 +465,12 @@
         $('#PhuongXa').html('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
       }
     });
-  }
 
+    initializeOrderFilters();
+    initializeOrderDetailEvents();
+    initializePaymentMethodFilter();
+    initializeResetFilter();
+  }
 
   function initializeLocationOnClick() {
     $("#TinhThanh").on('click', function () {

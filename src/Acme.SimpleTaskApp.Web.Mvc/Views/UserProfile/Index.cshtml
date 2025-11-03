@@ -41,21 +41,48 @@
       <div class="tab-content" id="accountTabContent">
 
         <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
+        <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
+        <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
         <div class="tab-pane fade show active" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="mb-0">Đơn hàng đã mua</h4>
             <div>
-              <div class="d-flex">
-                <label for="StartEndRange" class="form-label" style="width: 200px">Thời gian đặt hàng</label>
-                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="Thời gian đặt hàng" />
+              <div class="d-flex align-items-center gap-2">
+                <label for="StartEndRange" class="form-label mb-0">Thời gian đặt hàng</label>
+                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="Thời gian đặt hàng" style="width: 200px" />
+
+                <label for="PaymentMethod" class="form-label mb-0">Hình thức thanh toán</label>
+                <select class="form-select" id="PaymentMethod" name="PaymentMethod" style="width: 200px">
+                  <option value="">Tất cả</option>
+                  <option value="0">Thanh toán khi nhận hàng</option>
+                  <option value="1">Chuyển khoản ngân hàng</option>
+                  <option value="2">Ví điện tử</option>
+                  <option value="3">Thẻ tín dụng</option>
+                </select>
+
+                <button id="ResetFilters" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-refresh"></i> Reset
+                </button>
               </div>
             </div>
           </div>
+
           <ul class="nav nav-pills mb-4 order-status-filters">
-            <li class="nav-item"><a href="#" class="nav-link">Tất cả</a></li>
-            <li class="nav-item"><a href="#" class="nav-link active">Thành công</a></li>
-            @* ... các bộ lọc khác ... *@
+            <li class="nav-item"><a href="#" class="nav-link active" data-status="all">Tất cả</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="0">Chờ xác nhận</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="1">Đang xử lý</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="2">Đang giao hàng</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="3">Thành công</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="4">Đã hủy</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-status="5">Hoàn trả</a></li>
           </ul>
+
+          <!-- Container cho danh sách đơn hàng -->
+          <div class="orders-list-container">
+            <!-- Nội dung đơn hàng sẽ được render bằng JavaScript -->
+          </div>
+
+          <!-- Container hiển thị khi không có đơn hàng -->
           <div class="empty-orders-container">
             <div class="icon"><i class="fas fa-shopping-bag"></i></div>
             <h4>Rất tiếc, không tìm thấy đơn hàng nào phù hợp</h4>
@@ -78,7 +105,6 @@
           <div class="info-card">
             <h5 class="info-card-header">Thông tin cá nhân</h5>
             <form id="updateProfileForm">
-              @Html.AntiForgeryToken()
               <input type="hidden" id="UserId" name="UserId" value="@Model.User.Id" />
 
               <div class="mb-3">
@@ -146,6 +172,61 @@
 </div>
 
 <style>
+
+  /* CSS cho đơn hàng dạng vắn tắt */
+  .order-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease;
+    margin-bottom: 12px;
+  }
+
+    .order-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .order-card .card-body {
+      padding: 12px 16px;
+    }
+
+  .badge {
+    font-size: 0.7em;
+    padding: 3px 6px;
+    border-radius: 4px;
+  }
+
+  .order-detail-content {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.9em;
+  }
+
+  .order-detail-item {
+    background-color: white;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+  }
+
+  .btn-sm {
+    padding: 2px 8px;
+    font-size: 0.8em;
+  }
+
+  /* Ẩn container mặc định */
+  .orders-list-container {
+    display: none;
+  }
+
+  .empty-orders-container {
+    display: none;
+  }
+
+  /* Layout cho bộ lọc */
+  .gap-2 {
+    gap: 0.5rem;
+  }
   /* ----- CSS chung cho cả 2 tab ----- */
   .account-sidebar .nav-link {
     color: #333;
@@ -213,7 +294,7 @@
       font-weight: bold;
     }
 
-  /* ----- CSS cho Tab Thông tin ----- */   
+  /* ----- CSS cho Tab Thông tin ----- */
   .info-card {
     background-color: #fff;
     padding: 24px;

@@ -94,6 +94,7 @@ namespace Acme.SimpleTaskApp.Orders
 
 				Order order = new Order
 				{
+					Code = currentUser.Id + DateTime.Now.ToString("yyyyMMdd:HHmm"),
 					PaymentMethod = input.Order.PaymentMethod,
 					UserId = input.Order.UserId ?? user.Id,
 					Status = 0,
@@ -137,7 +138,7 @@ namespace Acme.SimpleTaskApp.Orders
 				throw;
 			}
 		}
-
+	
 		public async Task<List<Order>> GetOrderByCurrentUser(GetAllOrderInput input)
 		{
 			var currentUserId = AbpSession.UserId;
@@ -145,7 +146,8 @@ namespace Acme.SimpleTaskApp.Orders
 			var query = _ordersRepository.GetAll()
 					.Where(x => x.UserId == currentUserId)
 					.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
-					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod);
+					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
+					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
 
 			query = query.OrderBy(input.Sorting);
 

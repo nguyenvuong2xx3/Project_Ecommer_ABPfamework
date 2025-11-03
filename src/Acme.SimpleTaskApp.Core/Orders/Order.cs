@@ -12,6 +12,7 @@ namespace Acme.SimpleTaskApp.Orders
 {
 	public class Order : FullAuditedEntity<int>
 	{
+		public string Code { get; set; }
 		public long? UserId { get; set; }
 		public int? PaymentMethod { get; set; }
 		public string? FullName { get; set; }

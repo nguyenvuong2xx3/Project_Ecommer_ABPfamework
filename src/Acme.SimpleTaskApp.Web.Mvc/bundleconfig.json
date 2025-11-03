@@ -357,12 +357,6 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/Common/Scripts/appUserNotificationHelper.min.js",
-    "inputFiles": [
-      "wwwroot/Common/Scripts/appUserNotificationHelper.js"
-    ]
-  },
-  {
     "outputFileName": "Views/Shared/Components/NotificationBell/Index.min.js",
     "inputFiles": [
       "Views/Shared/Components/NotificationBell/Index.js"

@@ -14,6 +14,8 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 	{
 		public int? Status { get; set; } // Order status filter
 		public int? PaymentMethod { get; set; }
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
 
 		public void Normalize()
 		{
