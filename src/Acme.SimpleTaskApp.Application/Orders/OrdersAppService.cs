@@ -213,13 +213,13 @@ namespace Acme.SimpleTaskApp.Orders
 			return orders;
 		}
 
-		public async Task<List<Order>> GetAllOrder(GetAllOrderInput input)
-		{
-			var query = _ordersRepository.GetAll()
-					.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
-					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
-					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
+		//public async Task<List<Order>> GetAllOrder(GetAllOrderInput input)
+		//{
+		//	var query = _ordersRepository.GetAll()
+		//			.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
+		//			.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
+		//			.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
 
-		}
+		//}
 	}
 }

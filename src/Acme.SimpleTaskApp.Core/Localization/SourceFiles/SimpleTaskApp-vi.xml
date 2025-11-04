@@ -123,5 +123,22 @@
 		<text name="UpdateProduct" value="Chỉnh sửa sản phẩm" />
 		<text name="RoleDescription" value="Mô tả vai trò" />
 		<text name="Permissions" value="Danh sách quyền" />
+		<text name="ConfirmPassword" value="Xác nhận mật khẩu" />
+		<text name="UserDetails" value="Chi tiết người dùng" />
+		<text name="UserRoles" value="Vai trò người dùng" />
+		<text name="EditUser" value="Chỉnh sửa người dùng" />
+		<text name="AreYouSureWantToDelete" value="Bạn có chắc chắn muốn xóa không?" />
+		<text name="RoleInfo" value="Thông tin vai trò" />
+		<text name="SelectPermissions" value="Chọn quyền" />
+		<text name="SearchPermissions" value="Tìm kiếm quyền" />
+		<text name="SelectAll" value="Chọn tất cả" />
+		<text name="DeselectAll" value="Bỏ chọn tất cả" />
+		<text name="Loading" value="Đang tải..." />
+		<text name="PermissionsSelected" value="Các quyền đã chọn" />
+		<text name="CommodityManagement" value="Quản lý hàng hóa" />
+		<text name="ProductVariants" value="Quản lý biến thể sản phẩm" />
+		<text name="OrderManagement" value="Quản lý đơn hàng" />
+		<text name="Administration" value="Quản lý hệ thống" />
+		<text name="AreYouSure" value="Bạn có chắc chắn muốn xóa không?" />
 	</texts>
 </localizationDictionary>

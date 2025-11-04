@@ -19,7 +19,7 @@ namespace Acme.SimpleTaskApp.EntityFrameworkCore
 		public DbSet<Cart> Carts { get; set; }
 		public DbSet<CartItem> CartItems { get; set; }
 		public DbSet<Order> Orders { get; set; }
-		public DbSet<OrderDetails> OrderDetails { get; set; }
+		//public DbSet<OrderDetails> OrderDetails { get; set; }
 
 		public SimpleTaskAppDbContext(DbContextOptions<SimpleTaskAppDbContext> options)
 						: base(options)
