@@ -12,6 +12,8 @@ using Acme.SimpleTaskApp.Notifications;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders.Dtos;
 using Acme.SimpleTaskApp.Products;
+using MailKit.Search;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,7 +30,7 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductVariant> _productVariantRepository;
-		private readonly IRepository<OrderDetails, int> _orderDetailsRepository;
+		private readonly IRepository<ProductImage> _productImageRepository;
 		private readonly INotificationAppService _notificationAppService;
 		private readonly IOrderQueueService _orderQueueService;
 		private readonly IRepository<Cart, int> _cartRepository;
@@ -36,8 +38,8 @@ namespace Acme.SimpleTaskApp.Orders
 
 
 		public OrdersAppService(
+			IRepository<ProductImage> productImageRepository,
 			IRepository<Order, int> orderRepository,
-			IRepository<OrderDetails, int> orderDetailsRepository,
 			IRepository<Product> productRepository,
 			IRepository<ProductVariant> productVariantRepository,
 			IRepository<User, long> userRepository,
@@ -46,6 +48,7 @@ namespace Acme.SimpleTaskApp.Orders
 		IRepository<Cart, int> cartRepository,
 		IOrderQueueService orderQueueService)
 		{
+			_productImageRepository = productImageRepository;
 			_cartRepository = cartRepository;
 			_cartItemRepository = cartItemRepository;
 			_ordersRepository = orderRepository;
@@ -53,7 +56,6 @@ namespace Acme.SimpleTaskApp.Orders
 			_ordersRepository = orderRepository;
 			_productRepository = productRepository;
 			_productVariantRepository = productVariantRepository;
-			_orderDetailsRepository = orderDetailsRepository;
 			_notificationAppService = notificationAppService;
 			_orderQueueService = orderQueueService;
 		}
@@ -106,7 +108,8 @@ namespace Acme.SimpleTaskApp.Orders
 					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh >= 0 ? input.Order.GioiTinh : user.GioiTinh,
 					TinhThanh = string.IsNullOrWhiteSpace(input.Order.TinhThanh) ? user.TinhThanh : input.Order.TinhThanh,
 					PhuongXa = string.IsNullOrWhiteSpace(input.Order.PhuongXa) ? user.PhuongXa : input.Order.PhuongXa,
-					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet
+					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet,
+					PhoneNumber = string.IsNullOrWhiteSpace(input.Order.PhoneNumber) ? input.Order.PhoneNumber : user.PhoneNumber,
 				};
 				order.Serialize();
 				var orderId = await _ordersRepository.InsertAndGetIdAsync(order);
@@ -213,13 +216,169 @@ namespace Acme.SimpleTaskApp.Orders
 			return orders;
 		}
 
-		//public async Task<List<Order>> GetAllOrder(GetAllOrderInput input)
-		//{
-		//	var query = _ordersRepository.GetAll()
-		//			.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
-		//			.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
-		//			.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
+		[HttpPost]
+		public async Task<PagedResultDto<Order>> GetAllOrder(GetAllOrderInput input)
+		{
+			var query = _ordersRepository.GetAll();
 
-		//}
+			// Filter theo NameUser (tên user)
+			if (!string.IsNullOrWhiteSpace(input.UserName))
+			{
+				// Lọc những order mà User liên quan có Name hoặc UserName chứa input.NameUser
+				query = query.Where(order =>
+						_userRepository.GetAll()
+								.Any(u => u.Id == order.UserId &&
+													(u.Name.Contains(input.UserName) || u.UserName.Contains(input.UserName))));
+			}
+
+			if (input.PaymentMethod.HasValue)
+			{
+				query = query.Where(order => order.PaymentMethod == input.PaymentMethod.Value);
+			}
+
+			if (input.Status.HasValue)
+			{
+				query = query.Where(order => order.Status == input.Status.Value);
+			}
+
+			var count = await query.CountAsync();
+
+			var orders = await query
+					.OrderByDescending(o => o.CreationTime)
+					.PageBy(input)
+					.ToListAsync();
+			foreach (var order in orders)
+			{
+				order.Deserialize();
+			}
+			// Lấy UserName cho từng order
+			var userIds = orders.Where(o => o.UserId.HasValue).Select(o => o.UserId.Value).Distinct().ToList();
+			var users = await _userRepository.GetAll()
+		.Where(u => userIds.Contains(u.Id))
+		.ToDictionaryAsync(u => u.Id, u => u);
+
+			foreach (var order in orders)
+			{
+				if (order.UserId.HasValue && users.TryGetValue(order.UserId.Value, out var user))
+				{
+					order.User = user;
+				}
+			}
+
+			return new PagedResultDto<Order>(count, orders);
+		}
+
+		public async Task<Order> GetOrder(int orderId)
+		{
+			var order = await _ordersRepository.FirstOrDefaultAsync(o => o.Id == orderId);
+			// người đặt
+			var user = await _userRepository.GetAsync(order.UserId.Value);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Deserialize();
+			order.User = user;
+			if (order.OrderDetails != null && order.OrderDetails.Any())
+			{
+				// Get all variant IDs in one go
+				var variantIds = order.OrderDetails.Select(x => x.ProductVariantId).Distinct().ToList();
+
+				// Load all variants in one query
+				var variants = await _productVariantRepository.GetAll()
+						.Where(x => variantIds.Contains(x.Id))
+						.ToDictionaryAsync(x => x.Id);
+
+				// Get all product IDs from variants
+				var productIds = variants.Values.Select(v => v.ProductId).Distinct().ToList();
+
+				// Load all products in one query
+				var products = await _productRepository.GetAll()
+						.Where(p => productIds.Contains(p.Id))
+						.ToDictionaryAsync(p => p.Id);
+
+				// Load all images in one query
+				var images = await _productImageRepository.GetAll()
+						.Where(x => variantIds.Contains(x.ProductVariantId.Value))
+						.GroupBy(x => x.ProductVariantId.Value)
+						.ToDictionaryAsync(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
+
+				// Assign variants and images to order details
+				foreach (var item in order.OrderDetails)
+				{
+					if (variants.TryGetValue(item.ProductVariantId, out var variant))
+					{
+						item.ProductVariant = variant;
+
+						if (images.TryGetValue(item.ProductVariantId, out var imageUrl))
+						{
+							item.ProductVariant.ImageUrl = imageUrl;
+						}
+						if (products.TryGetValue(variant.ProductId, out var product))
+						{
+							item.ProductVariant.ProductName = $"{product.Name} - {variant.Ram} - {variant.Storage} - {variant.Color}";
+						}
+					}
+				}
+			}
+			//foreach (var item in order.OrderDetails)
+			//{
+			//	item.ProductVariant = _productVariantRepository.FirstOrDefault(x => x.Id == item.ProductVariantId);
+			//	item.ProductVariant.ImageUrl = _productImageRepository.FirstOrDefault(x => x.ProductVariantId == item.ProductVariantId)?.ImageUrl;
+			//}
+			return order;
+		}
+
+		public async Task ApproveOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 1;
+			await _ordersRepository.UpdateAsync(order);
+		}
+		public async Task RejectOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 3;
+			await _ordersRepository.UpdateAsync(order);
+		}
+
+		public async Task CancelOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 4;
+			await _ordersRepository.UpdateAsync(order);
+		}
+		public async Task ReorderOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 0;
+			await _ordersRepository.UpdateAsync(order);
+		}
+		public async Task CompleteOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 2;
+			await _ordersRepository.UpdateAsync(order);
+		}
 	}
 }

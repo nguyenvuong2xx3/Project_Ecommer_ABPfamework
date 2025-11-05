@@ -1,35 +1,35 @@
-﻿<div class="abp-advanced-search p-3" style="width: 100%;">
-  <form id="OrderSearchForm" class="form-horizontal" style="max-width: 100%;">
-    <div style="display: flex; flex-wrap: wrap; gap: 15px; width: 100%;" class="align-items-center">
-      <!-- Dropdown phương tiện di chuyển -->
-      <div style="min-width: 200px;">
-        <label for="PaymentMethod" class="font-weight-bold">@L("PaymentMethod")</label>
-        <select class="form-control w-100" id="PaymentMethod" name="PaymentMethod">
-          <option value="">Tất cả</option>
-          <option value="0">@L("CashPayment")</option>
-          <option value="1">@L("TransferBank")</option>
-        </select>
-      </div>
+﻿<div class="abp-advanced-search p-3 w-100">
+  <form id="OrderSearchForm" class="row g-3">
 
-      <div style="min-width: 100px;">
-        <label for="OrderStatus" class="font-weight-bold">@L("OrderStatus")</label>
-        <select class="form-control w-100" id="OrderStatus" name="OrderStatus">
-          <option value="">Tất cả</option>
-          <option value="0">@L("Pending")</option>
-          <option value="1">@L("Delivery")</option>
-          <option value="2">@L("Success")</option>
-          <option value="3">@L("Reject")</option>
-          <option value="4">@L("Canceled")</option>
-        </select>
-      </div>
-
-      <!-- Nút tìm kiếm -->
-      <div style="min-width: 100px; text-align: right;">
-        <label class="d-block invisible">Tìm kiếm</label>
-        <button type="button" class="btn bg-blue btn-search px-4 w-100">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
+    <!-- Payment Method -->
+    <div class="col-md-3">
+      <label for="PaymentMethod" class="form-label">@L("PaymentMethod")</label>
+      <select id="PaymentMethod" name="PaymentMethod" class="form-control p-0 ps-2">
+        <option value="">Tất cả</option>
+        <option value="0">@L("CashPayment")</option>
+        <option value="1">@L("TransferBank")</option>
+      </select>
     </div>
+
+    <!-- Order Status -->
+    <div class="col-md-3">
+      <label for="OrderStatus" class="form-label">@L("OrderStatus")</label>
+      <select id="OrderStatus" name="OrderStatus" class="form-control p-0 ps-2">
+        <option value="">Tất cả</option>
+        <option value="0">@L("Pending")</option>
+        <option value="1">@L("Delivery")</option>
+        <option value="2">@L("Success")</option>
+        <option value="3">@L("Reject")</option>
+        <option value="4">@L("Canceled")</option>
+      </select>
+    </div>
+
+    <!-- Search Button -->
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="button" class="btn bg-blue btn-search w-100">
+        <i class="fas fa-search me-1"></i> @L("Search")
+      </button>
+    </div>
+
   </form>
 </div>

@@ -39,10 +39,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		//	try
 		//	{
 		//		var currentUserId = AbpSession.UserId ?? throw new UserFriendlyException("Vui lòng đăng nhập để đặt hàng");
-				
+
 		//		// Lấy giỏ hàng hiện tại
 		//		var getCart = await _cartAppService.GetCart();
-				
+
 		//		if (getCart.CartItems == null || getCart.CartItems.Count == 0)
 		//		{
 		//			throw new UserFriendlyException("Giỏ hàng của bạn đang trống");
@@ -95,20 +95,17 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		//	}
 		//}
 
-		//public async Task<IActionResult> DetailOrder(int orderId)
-		//{
-		//	var viewModel = await _ordersAppService.GetOrder(orderId);
+		public async Task<IActionResult> DetailModal(int orderId)
+		{
+			var order = await _ordersAppService.GetOrder(orderId);
 
-		//	var model = new OrderViewModel()
-		//	{
-		//		Status = viewModel.Status,
-		//		UserName = viewModel.UserName,
-		//		EmailAddress = viewModel.EmailAddress,
-		//		OrderDetails  = viewModel.OrderDetails
-		//	};
-		//	return PartialView("_DetailOrderModal", model);
-		//}
-		
+			var model = new OrderViewModel()
+			{
+				Order = order
+			};
+			return PartialView("_DetailOrderModal", model);
+		}
+
 		//public async Task<IActionResult> DetailOrderForUser()
 		//{
 		//	var viewModel = await _ordersAppService.GetOrderByUserId();

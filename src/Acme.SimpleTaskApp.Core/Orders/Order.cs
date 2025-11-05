@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.OrderItems;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace Acme.SimpleTaskApp.Orders
 	{
 		public string Code { get; set; }
 		public long? UserId { get; set; }
+		[NotMapped] public User User {get; set;} // response
 		public int? PaymentMethod { get; set; }
 		public string? FullName { get; set; }
 		public int? GioiTinh { get; set; }
 		public int? Status { get; set; } // 0: Pending, 1: Completed, 2: Cancelled
+		public string? PhoneNumber { get; set; }
 		public string? TinhThanh { get; set; }
 		public string? PhuongXa { get; set; }
 		public string? DiaChiChiTiet { get; set; }

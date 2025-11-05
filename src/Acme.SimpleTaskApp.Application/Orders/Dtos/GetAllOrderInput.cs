@@ -12,6 +12,7 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 
 	public class GetAllOrderInput : PagedAndSortedResultRequestDto, IShouldNormalize
 	{
+		public string? UserName { get; set; }
 		public int? Status { get; set; } // Order status filter
 		public int? PaymentMethod { get; set; }
 		public DateTime? StartTime { get; set; }

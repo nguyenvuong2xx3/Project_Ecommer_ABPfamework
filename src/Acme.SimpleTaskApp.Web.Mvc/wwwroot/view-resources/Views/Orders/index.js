@@ -3,7 +3,17 @@
     l = abp.localization.getSource('SimpleTaskApp'),
     _$table = $('#OrdersTable');
 
+  var _detailModal = new app.ModalManager({
+    viewUrl: abp.appPath + 'Orders/DetailModal',
+    scriptUrl: abp.appPath + 'view-resources/Views/Orders/_DetailModal.js',
+    modalClass: 'DetailOrderModal',
+    modalSize: 'modal-lg'
+  });
 
+  $(document).on('click', '.detail-order', function () {
+    var orderId = $(this).data('order-id');
+    _detailModal.open({ orderId: orderId });
+  });
 
   var getFilter = function () {
     let dataFilter = {};
@@ -42,21 +52,17 @@
     columnDefs: [
       {
         targets: 0,
-        data: 'userName'
+        data: 'fullName'
       },
       {
         targets: 1,
-        data: 'name'
-      },
-      {
-        targets: 2,
-        data: 'totalCount',
+        data: 'totalPrice',
         render: function (data) {
           return Number(data).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
         }
       },
       {
-        targets: 3,
+        targets: 2,
         data: 'paymentMethod',
         render: function (data) {
           if (data == 0) {
@@ -69,11 +75,11 @@
         }
       },
       {
-        targets: 4,
+        targets: 3,
         data: 'creationTime',
       },
       {
-        targets: 5,
+        targets: 4,
         data: 'status',
         render: function (data) {
           if (data == 0) {
@@ -92,7 +98,7 @@
         }
       },
       {
-        targets: 6,
+        targets: 5,
         data: null,
         orderable: false,
         render: function (data, type, row) {
@@ -130,21 +136,28 @@
   });
 
   // Xem chi tiết đơn hàng
-  $(document).on('click', '.detail-order', function () {
-    var orderId = $(this).data('order-id');
-    abp.ajax({
-      url: abp.appPath + 'Orders/DetailOrder?orderId=' + orderId,
-      type: 'GET',
-      dataType: 'html',
-      success: function (content) {
-        $('#OrderDetailModal .modal-content').html(content);
-        $('#OrderDetailModal').modal('show');
-      },
-      error: function (e) {
-        abp.notify.error('Could not load detail form');
-      }
-    });
-  });
+  //$(document).on('click', '.detail-order', function () {
+  //  var orderId = $(this).data('order-id');
+  //  _orderService.getOrder(orderId)
+  //    .done(function (result) { 
+  //      var detailHtml = buildOrderDetailHtml(result);
+  //      $('#OrderDetailModal .modal-body').html(detailHtml);
+  //      $('#OrderDetailModal').modal('show');
+  //    })
+  //    .fail(function () {
+  //      abp.notify.error('Could not load order detail');
+  //    });
+  //});
+
+  //function buildOrderDetailHtml(orderDetail) {
+  //  var html = '<div class="order-detail">';
+  //  html += '<h4>Order #' + orderDetail.id + '</h4>';
+  //  html += '<p><strong>Customer:</strong> ' + orderDetail.fullName + '</p>';
+  //  html += '<p><strong>Total Price:</strong> ' + Number(orderDetail.totalPrice).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + '</p>';
+  //  // Add more fields as needed
+  //  html += '</div>';
+  //  return html;
+  //}
 
   $(document).on('click', '.reject-order', function () {
     var orderId = $(this).data('order-id');

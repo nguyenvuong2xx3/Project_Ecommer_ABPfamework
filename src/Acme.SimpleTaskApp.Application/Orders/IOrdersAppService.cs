@@ -12,5 +12,6 @@ namespace Acme.SimpleTaskApp.Orders
 	public interface IOrdersAppService : IApplicationService
 	{
 		Task<int> CreateOrder(CreateOrderInput input);
+		Task<Order> GetOrder(int orderId);
 	}
 }

@@ -91,6 +91,16 @@
     var recipientName = order.fullName || 'Không có thông tin';
     var address = getFullAddress(order);
 
+    // Tạo nút hủy đơn hàng chỉ khi status = 0
+    var cancelButton = '';
+    if (order.status === 0) {
+      cancelButton = `
+            <button class="btn btn-outline-danger btn-sm cancel-order ms-2" data-order-id="${order.id}">
+                Hủy đơn
+            </button>
+        `;
+    }
+
     return `
   <div class="order-card card mb-3" data-order-id="${order.id}">
     <div class="card-body p-3">
@@ -119,6 +129,7 @@
             <button class="btn btn-outline-primary btn-sm view-order-detail" data-order-id="${order.id}">
               Chi tiết
             </button>
+            ${cancelButton}
           </div>
         </div>
       </div>
@@ -167,6 +178,32 @@
     html += `</div>`;
     return html;
   }
+
+  function cancelOrder(orderId) {
+    abp.message.confirm(
+      'Bạn có chắc chắn muốn hủy đơn hàng này?',
+      'Xác nhận hủy đơn hàng',
+      function (isConfirmed) {
+        if (isConfirmed) {
+          abp.ui.setBusy($('#orders-tab-pane'));
+
+          _orderService.cancelOrder(orderId)
+            .done(function (result) {
+              console.log('Hủy đơn hàng thành công:', result);
+              abp.notify.success('Hủy đơn hàng thành công!');
+              loadOrders(); // Tải lại danh sách đơn hàng
+              abp.ui.clearBusy($('#orders-tab-pane'));
+            })
+            .fail(function (error) {
+              console.error('Lỗi khi hủy đơn hàng:', error);
+              abp.notify.error('Hủy đơn hàng thất bại: ' + (error.message || ''));
+              abp.ui.clearBusy($('#orders-tab-pane'));
+            });
+        }
+      }
+    );
+  }
+
 
   // Hàm lấy địa chỉ đầy đủ
   function getFullAddress(order) {
@@ -465,8 +502,14 @@
     initializeOrderDetailEvents();
     initializePaymentMethodFilter();
     initializeResetFilter();
+    initializeCancelOrderEvents();
   }
-
+  function initializeCancelOrderEvents() {
+    $(document).on('click', '.cancel-order', function () {
+      var orderId = $(this).data('order-id');
+      cancelOrder(orderId);
+    });
+  }
   function initializeLocationOnClick() {
     $("#TinhThanh").on('click', function () {
       if (_locations.length === 0) {
