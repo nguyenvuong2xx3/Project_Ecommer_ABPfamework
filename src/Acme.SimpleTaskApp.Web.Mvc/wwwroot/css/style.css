@@ -29,3 +29,14 @@ html {
 .famfamfam-flags {
     display: inline-block;
 }
+.dataTables_length select.custom-select,
+.dataTables_length select.form-control {
+  height: 36px !important;
+  padding: 0;
+  text-align: center;
+  width: 50px;
+  background-size: 10px !important; /* nhỏ hơn: 8–12px */
+  background-position: right 8px center !important;
+  padding-right: 26px !important; /* chừa chỗ icon */
+}
+
