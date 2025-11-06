@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Carts;
@@ -31,7 +32,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		_categoryRepository = categoryRepository;
 		_productImageRepository = productImageRepository;
 	}
-
+	[UnitOfWork]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
 	{
 		if (input == null) input = new SearchHomeCustomerDto();

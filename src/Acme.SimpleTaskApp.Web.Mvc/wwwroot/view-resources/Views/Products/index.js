@@ -6,6 +6,16 @@
     _$table = $('#ProductsTable');
 
   
+  var _importExcelModal = new app.ModalManager({
+    viewUrl: abp.appPath + 'Products/ImportModal',
+    scriptUrl: abp.appPath + 'view-resources/Views/Products/_ImportProduct.js',
+    modalClass: 'ProductImportModal',
+    modalSize: 'modal-lg'
+  });
+
+  $('#ImportExcelBtn').click(function () {
+    _importExcelModal.open();
+  });
 
   var _createModal = new app.ModalManager({
     viewUrl: abp.appPath + 'Products/CreateModal',

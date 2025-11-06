@@ -10,6 +10,7 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 {
 	public class ProductListViewModel
 	{
-		public ListResultDto<ProductListDto> RelatedProducts { get; set; }
+		public List<Product> ProductsInfo { get; set; }
+
 	}
 }

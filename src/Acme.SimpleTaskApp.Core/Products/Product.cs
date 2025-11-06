@@ -12,7 +12,6 @@ namespace Acme.SimpleTaskApp.Products
 	[Table("AppProducts")]
 	public class Product : FullAuditedEntity<int>
 	{
-		public string SKU { get; set; }           // Mã sản phẩm
 		public string Name { get; set; }  // tên sản phẩm
 		public string? Description { get; set; } //mô tả
 		public string Screen { get; set; }      // Ví dụ: "6.1 inch, Super Retina XDR, ProMotion"

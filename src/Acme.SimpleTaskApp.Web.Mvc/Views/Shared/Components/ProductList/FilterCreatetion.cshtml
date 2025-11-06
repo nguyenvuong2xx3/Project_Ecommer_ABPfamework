@@ -1,25 +1,9 @@
-﻿﻿@using Acme.SimpleTaskApp.Products;
-@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
-@using Acme.SimpleTaskApp.Web.Models.Products;
-@model HomeCustomerViewModel
-@{
-  ViewData["Title"] = "Index";
-  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
-}
-
-@section scripts
-{
-  <environment names="Development">
-    <script src="~/view-resources/Views/HomeCustomer/MainCustomer.js" asp-append-version="true"></script>
-  </environment>
-}
-@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_SliderCustomer.cshtml")
-<iframe src="/" style="display:none; width:0; height:0;"></iframe>
-
-<!-- Main Container -->
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
+@using static Acme.SimpleTaskApp.Products.Product
+@model ProductListViewModel
 <div class="main-container mt-3">
   <div class="products-header">
-    <h3>Tất cả sản phẩm</h3>
+    <h3>Sản phẩm mới nhất</h3>
   </div>
   <div class="products-grid">
     @foreach (var product in Model.ProductsInfo)
@@ -51,16 +35,6 @@
                   @($"/{item.Storage}/{item.Color}")
                 }
               </div>
-              @* <div class="variant-info">
-                      @if (!string.IsNullOrEmpty(product.Battery))
-                      {
-                        <span>@product.Battery</span>
-                      }
-                      @if (!string.IsNullOrEmpty(product.CameraSystem))
-                      {
-                        <span>@product.CameraSystem</span>
-                      }
-                    </div> *@
               <div class="product-price">
                 <div class="current-price">@item.Price.ToString("#,##0")₫</div>
                 <span class="discount-text">Giảm giá ở đây</span>
@@ -75,10 +49,6 @@
     }
   </div>
 </div>
-
-@await Component.InvokeAsync("ProductList", new { viewName = "FilterPrice" })
-@await Component.InvokeAsync("ProductList", new { viewName = "FilterCreatetion" })
-
 
 <style>
   /* Main Container Styling */

@@ -77,6 +77,13 @@
       {
         targets: 3,
         data: 'creationTime',
+        sortable: false,
+        render: function (data, type, row) {
+          if (data) {
+            return `<span class="badge bg-info">${moment(data).format('DD-MM-YYYY HH:mm')}</span>`;
+          }
+          return '<span class="text-muted">N/A</span>';
+        }
       },
       {
         targets: 4,

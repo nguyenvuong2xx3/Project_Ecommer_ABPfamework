@@ -105,5 +105,10 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			await _productAppService.DeleteProduct(id);
 		}
+
+		public async Task<PartialViewResult> ImportModal()
+		{
+			return PartialView("_ImportProductModal");
+		}
 	}
 }

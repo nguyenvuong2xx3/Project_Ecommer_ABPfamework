@@ -54,7 +54,6 @@ namespace Acme.SimpleTaskApp.Products
 				Name = input.Name,
 				Description = input.Description,
 				CategoryId = input.CategoryId ?? 0,
-				SKU = input.SKU,
 				Screen = input.Screen,
 				Processor = input.Processor,
 				CameraSystem = input.CameraSystem,
@@ -147,7 +146,6 @@ namespace Acme.SimpleTaskApp.Products
 			var query = _productRepository.GetAll()
 					.WhereIf(!string.IsNullOrWhiteSpace(input.SearchTerm), p =>
 							p.Name.Contains(input.SearchTerm))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.SKU), p => p.SKU.Contains(input.SKU))
 					.WhereIf(!string.IsNullOrWhiteSpace(input.Name), p => p.Name.Contains(input.Name))
 					.WhereIf(!string.IsNullOrWhiteSpace(input.Description), p => p.Description.Contains(input.Description))
 					.WhereIf(!string.IsNullOrWhiteSpace(input.Screen), p => p.Screen.Contains(input.Screen))
@@ -209,7 +207,6 @@ namespace Acme.SimpleTaskApp.Products
 			product.Name = input.Name;
 			product.Description = input.Description;
 			product.CategoryId = input.CategoryId ?? product.CategoryId;
-			product.SKU = input.SKU;
 			product.Screen = input.Screen;
 			product.Processor = input.Processor;
 			product.CameraSystem = input.CameraSystem;

@@ -391,5 +391,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Settings/Index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Products/_ImportProduct.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Products/_ImportProduct.js"
+    ]
   }
 ]

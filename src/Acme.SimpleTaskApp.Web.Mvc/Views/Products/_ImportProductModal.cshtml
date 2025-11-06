@@ -1,0 +1,119 @@
+﻿﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@{
+  Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Nhập sản phẩm từ Excel"))
+
+<form name="ImportProductForm" role="form" class="form-horizontal">
+  <div class="modal-body">
+    <!-- Info Alert -->
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <h6 class="alert-heading">
+        <i class="fas fa-info-circle"></i> Hướng Dẫn
+      </h6>
+      <small>
+        <ul class="mb-0">
+          <li>File Excel phải có định dạng <code>.xlsx</code> hoặc <code>.xls</code></li>
+          <li>Hình ảnh phải được nhúng trực tiếp trong file Excel (trong thư mục xl/media/)</li>
+          <li>Bạn có thể nhúng nhiều hình ảnh cho mỗi sản phẩm và biến thể</li>
+          <li>Tải template dưới đây để xem định dạng chuẩn</li>
+        </ul>
+      </small>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Download Template -->
+    <div class="mb-3 text-center">
+      <button type="button" class="btn btn-outline-info btn-sm btn-download-template">
+        <i class="fas fa-download"></i> Tải Template Excel
+      </button>
+      <small class="d-block mt-2 text-muted">
+        Tải file template để xem cấu trúc và ví dụ
+      </small>
+    </div>
+
+    <hr />
+
+    <!-- File Input -->
+    <div class="mb-3">
+      <label for="excelFile" class="form-label">
+        <i class="fas fa-file-excel"></i> Chọn File Excel
+      </label>
+      <div class="drop-zone border border-2 border-dashed rounded p-4 text-center cursor-pointer"
+           style="background-color: #f8f9fa; transition: all 0.3s;">
+        <input type="file" id="excelFile" name="excelFile" class="d-none" accept=".xlsx,.xls" />
+
+        <div class="drop-zone-content">
+          <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3 d-block"></i>
+          <p class="mb-2 fw-bold">Kéo thả file Excel vào đây</p>
+          <small class="text-muted">hoặc</small><br />
+          <button type="button" class="btn btn-sm btn-primary mt-2"
+                  onclick="$('#excelFile').click()">
+            Chọn File
+          </button>
+        </div>
+      </div>
+
+      <!-- File Info -->
+      <div class="file-info mt-3 d-none">
+        <div class="alert alert-light border">
+          <small>
+            <i class="fas fa-file-excel text-success"></i>
+            File đã chọn: <strong class="file-name-display"></strong>
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress mb-3" style="height: 25px; display: none;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated"
+           role="progressbar"
+           style="width: 0%; font-weight: bold;">
+        0%
+      </div>
+    </div>
+
+    <!-- Import Result -->
+    <div class="import-result mt-3"></div>
+  </div>
+
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<style>
+  .drop-zone {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+  }
+
+    .drop-zone:hover {
+      background-color: #e7f3ff !important;
+      border-color: #0d6efd !important;
+    }
+
+    .drop-zone.drag-over {
+      background-color: #cce5ff !important;
+      border-color: #0d6efd !important;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.25);
+    }
+
+  .progress-bar {
+    font-size: 12px;
+    line-height: 25px;
+  }
+
+  .alert h5, .alert h6 {
+    margin-bottom: 0.5rem;
+  }
+
+  .alert ul {
+    margin-left: 1.5rem;
+  }
+
+  .alert li {
+    margin-bottom: 0.25rem;
+  }
+</style>
