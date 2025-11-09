@@ -211,12 +211,25 @@
         xhrFields: {
           responseType: 'blob'
         },
-        success: function (blob) {
+        success: function (blob, status, xhr) {
+          // Lấy tên file từ Content-Disposition header
+          let filename = 'ProductImportTemplate.xlsx'; // default fallback
+          
+          const disposition = xhr.getResponseHeader('Content-Disposition');
+          if (disposition) {
+            const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, '');
+              // Decode nếu có UTF-8 encoding
+              filename = decodeURIComponent(filename);
+            }
+          }
+
           // Tạo URL tạm thời
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'ProductImportTemplate.xlsx';
+          link.download = filename; // Sử dụng tên từ server
           document.body.appendChild(link);
           link.click();
 
