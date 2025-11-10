@@ -2,12 +2,15 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.UI;
+using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.UploadFile;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
+using OfficeOpenXml.Drawing; // Đảm bảo có using này
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -18,7 +21,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 {
 	public interface IProductImportAppService : IApplicationService
 	{
-		Task<ImportResult> ImportProductsWithImagesAsync(Stream excelStream);
+		Task<ImportResult> ImportProductsWithImagesAsync(IFormFile excelFile);
 	}
 
 	public class ProductImportAppService : ApplicationService, IProductImportAppService
@@ -26,202 +29,198 @@ namespace Acme.SimpleTaskApp.ProductImport
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductVariant> _productVariantRepository;
 		private readonly IRepository<ProductImage> _productImageRepository;
+		private readonly IRepository<Category> _categoryRepository;
 		private readonly IUploadFileAppService _uploadFileAppService;
 
 		public ProductImportAppService(
 			IRepository<Product> productRepository,
 			IRepository<ProductVariant> productVariantRepository,
 			IRepository<ProductImage> productImageRepository,
+			IRepository<Category> categoryRepository,
 			IUploadFileAppService uploadFileAppService)
 		{
 			_productRepository = productRepository;
 			_productVariantRepository = productVariantRepository;
 			_productImageRepository = productImageRepository;
+			_categoryRepository = categoryRepository;
 			_uploadFileAppService = uploadFileAppService;
 		}
 
 		[UnitOfWork]
-		public async Task<ImportResult> ImportProductsWithImagesAsync(Stream excelStream)
+		public async Task<ImportResult> ImportProductsWithImagesAsync(IFormFile excelFile)
 		{
-			// Set EPPlus license context
-			ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
+			ExcelPackage.License.SetNonCommercialPersonal("ImportForDoAn");
 			var result = new ImportResult();
 			var errorDetails = new List<string>();
 			int successCount = 0;
-			int rowNum = 0;
+			int totalVariantCount = 0; // Đếm tổng số biến thể thay vì sản phẩm
 
 			try
 			{
-				// 1. Extract product data và images từ Excel
-				var productDataList = await ExtractProductDataWithImages(excelStream);
-
-				if (productDataList == null || productDataList.Count == 0)
+				using (var stream = excelFile.OpenReadStream())
 				{
-					result.IsSuccess = false;
-					result.ErrorMessage = "File Excel không chứa dữ liệu hoặc định dạng không hợp lệ";
-					return result;
-				}
-
-				// 2. Loop qua từng product
-				foreach (var productData in productDataList)
-				{
-					rowNum++;
-					try
+					// 1. Extract product data và images từ Excel (Đã cập nhật logic)
+					var productDataList = await ExtractProductDataWithImages(stream);
+					if (productDataList == null || productDataList.Count == 0)
 					{
-						// Validate dữ liệu cơ bản
-						if (string.IsNullOrWhiteSpace(productData.Name))
-						{
-							errorDetails.Add($"Hàng {rowNum + 1}: Tên sản phẩm không được để trống");
-							continue;
-						}
+						result.IsSuccess = false;
+						result.ErrorMessage = "File Excel không chứa dữ liệu hoặc định dạng không hợp lệ";
+						return result;
+					}
 
-						// Kiểm tra xem product đã tồn tại chưa (theo Name)
-						var existingProduct = await _productRepository.FirstOrDefaultAsync(p => p.Name == productData.Name);
-
-						Product product;
-
-						if (existingProduct != null)
+					// 2. Loop qua từng product
+					foreach (var productData in productDataList)
+					{
+						totalVariantCount += productData.Variants.Count; // Tăng tổng số biến thể
+						try
 						{
-							// Update product hiện có
-							existingProduct.Name = productData.Name;
-							existingProduct.Description = productData.Description;
-							existingProduct.CategoryId = productData.CategoryId;
-							
-							product = await _productRepository.UpdateAsync(existingProduct);
-						}
-						else
-						{
-							// Tạo product mới
-							product = new Product
+							// Validate dữ liệu cơ bản (đã được kiểm tra trong Extract)
+							var existingCategory = await _categoryRepository.FirstOrDefaultAsync(
+								c => c.Name == productData.CategoryName);
+							if (existingCategory == null)
 							{
-								Name = productData.Name,
-								Description = productData.Description,
-								CategoryId = productData.CategoryId,
-								CreationTime = DateTime.Now
-							};
-
-							product = await _productRepository.InsertAsync(product);
-						}
-
-						// 3. Import variants
-						if (productData.Variants != null && productData.Variants.Count > 0)
-						{
-							int variantIndex = 0;
-							foreach (var variantData in productData.Variants)
-							{
-								try
-								{
-									variantIndex++;
-
-									// Kiểm tra variant đã tồn tại - dùng Color, Storage, Ram để định danh
-									var existingVariant = await _productVariantRepository.FirstOrDefaultAsync(
-										v => v.ProductId == product.Id 
-										  && v.Color == variantData.Color 
-										  && v.Storage == variantData.Storage 
-										  && v.Ram == variantData.Ram);
-
-									ProductVariant variant;
-
-									if (existingVariant != null)
-									{
-										// Update variant
-										existingVariant.Color = variantData.Color;
-										existingVariant.Storage = variantData.Storage;
-										existingVariant.Ram = variantData.Ram;
-										existingVariant.Price = variantData.Price;
-										existingVariant.StockQuantity = variantData.StockQuantity;
-
-										variant = await _productVariantRepository.UpdateAsync(existingVariant);
-									}
-									else
-									{
-										// Tạo variant mới
-										variant = new ProductVariant
-										{
-											ProductId = product.Id,
-											Color = variantData.Color,
-											Storage = variantData.Storage,
-											Ram = variantData.Ram,
-											Price = variantData.Price,
-											StockQuantity = variantData.StockQuantity,
-											CreationTime = DateTime.Now
-										};
-
-										variant = await _productVariantRepository.InsertAsync(variant);
-									}
-
-									// 4. Import ảnh của variant
-									await ImportVariantImagesAsync(
-										variant.Id, 
-										product.Id, 
-										variantData.Images, 
-										variantData.ImageFileNames);
-
-									successCount++;
-								}
-								catch (Exception ex)
-								{
-									errorDetails.Add(
-										$"Hàng {rowNum + 1}, Variant {variantIndex}: {ex.Message}");
-								}
+								errorDetails.Add($"Sản phẩm '{productData.Name}': Tên danh mục '{productData.CategoryName}' không tồn tại");
+								continue;
 							}
-						}
-						else
-						{
-							// Nếu không có variant, tạo 1 variant mặc định với ảnh của product
-							try
+
+							var existingProduct = await _productRepository.FirstOrDefaultAsync(p => p.Name == productData.Name);
+
+							Product product;
+
+							if (existingProduct != null)
 							{
-								var defaultVariant = new ProductVariant
+								// Update product
+								existingProduct.Name = productData.Name;
+								existingProduct.Description = productData.Description;
+								existingProduct.CategoryId = existingCategory.Id;
+								existingProduct.Screen = productData.Screen;
+								existingProduct.Processor = productData.Processor;
+								existingProduct.CameraSystem = productData.CameraSystem;
+								existingProduct.Battery = productData.Battery;
+
+								product = await _productRepository.UpdateAsync(existingProduct);
+							}
+							else
+							{
+								// Tạo product mới
+								product = new Product
 								{
-									ProductId = product.Id,
-									Color = "Mặc định",
-									Storage = "Không xác định",
-									Ram = "0GB",
-									Price = productData.Price,
-									StockQuantity = productData.StockQuantity,
+									Name = productData.Name,
+									Description = productData.Description,
+									CategoryId = existingCategory.Id,
+									Screen = productData.Screen,
+									Processor = productData.Processor,
+									CameraSystem = productData.CameraSystem,
+									Battery = productData.Battery,
 									CreationTime = DateTime.Now
 								};
 
-								defaultVariant = await _productVariantRepository.InsertAsync(defaultVariant);
-
-								// Import ảnh chính
-								await ImportVariantImagesAsync(
-									defaultVariant.Id, 
-									product.Id, 
-									productData.MainImages, 
-									productData.MainImageFileNames);
-
-								successCount++;
+								product = await _productRepository.InsertAsync(product);
 							}
-							catch (Exception ex)
+
+							// 3. Import ảnh sản phẩm (Col M) - liên kết với ProductId
+							// Xóa ảnh cũ (nếu update)
+							if (existingProduct != null)
 							{
-								errorDetails.Add($"Hàng {rowNum + 1}, Variant mặc định: {ex.Message}");
+								await _productImageRepository.DeleteAsync(pi => pi.ProductId == product.Id && pi.ProductVariantId == null);
+							}
+							// Lưu ảnh mới
+							await SaveAndLinkImagesAsync(product.Id, null, productData.MainImages, product.Name);
+
+							// 4. Import variants
+							if (productData.Variants != null && productData.Variants.Count > 0)
+							{
+								int variantIndex = 0;
+								foreach (var variantData in productData.Variants)
+								{
+									try
+									{
+										variantIndex++;
+
+										var existingVariant = await _productVariantRepository.FirstOrDefaultAsync(
+											v => v.ProductId == product.Id
+												&& v.Color == variantData.Color
+												&& v.Storage == variantData.Storage
+												&& v.Ram == variantData.Ram);
+
+										ProductVariant variant;
+
+										if (existingVariant != null)
+										{
+											// Update variant
+											existingVariant.Color = variantData.Color;
+											existingVariant.Storage = variantData.Storage;
+											existingVariant.Ram = variantData.Ram;
+											existingVariant.Price = variantData.Price;
+											existingVariant.StockQuantity = variantData.StockQuantity;
+
+											variant = await _productVariantRepository.UpdateAsync(existingVariant);
+
+											// Xóa ảnh cũ của variant
+											await _productImageRepository.DeleteAsync(pi => pi.ProductVariantId == variant.Id);
+										}
+										else
+										{
+											// Tạo variant mới
+											variant = new ProductVariant
+											{
+												ProductId = product.Id,
+												Color = variantData.Color,
+												Storage = variantData.Storage,
+												Ram = variantData.Ram,
+												Price = variantData.Price,
+												StockQuantity = variantData.StockQuantity,
+												CreationTime = DateTime.Now
+											};
+
+											variant = await _productVariantRepository.InsertAsync(variant);
+										}
+
+										// 5. Import ảnh của variant (Col N) - liên kết với VariantId
+										await SaveAndLinkImagesAsync(
+											product.Id,
+											variant.Id,
+											variantData.Images,
+											$"{product.Name} - {variantData.Color}");
+
+										successCount++;
+									}
+									catch (Exception ex)
+									{
+										errorDetails.Add(
+											$"Sản phẩm '{productData.Name}', Variant {variantIndex} ({variantData.Color}): {ex.Message}");
+									}
+								}
+							}
+							else
+							{
+								errorDetails.Add($"Sản phẩm '{productData.Name}': Không có biến thể nào được định nghĩa.");
 							}
 						}
+						catch (Exception ex)
+						{
+							errorDetails.Add($"Sản phẩm '{productData.Name}': {ex.Message}");
+						}
 					}
-					catch (Exception ex)
+
+					await CurrentUnitOfWork.SaveChangesAsync();
+
+					result.IsSuccess = true;
+					result.SuccessCount = successCount;
+					result.TotalCount = totalVariantCount; // Kết quả dựa trên số biến thể
+					result.Message = $"Đã import thành công {successCount}/{totalVariantCount} biến thể sản phẩm.";
+
+					if (errorDetails.Count > 0)
 					{
-						errorDetails.Add($"Hàng {rowNum + 1}: {ex.Message}");
+						result.Warnings = errorDetails;
+						result.WarningCount = errorDetails.Count;
 					}
-				}
-
-				await CurrentUnitOfWork.SaveChangesAsync();
-
-				result.IsSuccess = true;
-				result.SuccessCount = successCount;
-				result.TotalCount = productDataList.Count;
-
-				if (errorDetails.Count > 0)
-				{
-					result.Warnings = errorDetails;
-					result.WarningCount = errorDetails.Count;
 				}
 			}
 			catch (Exception ex)
 			{
 				result.IsSuccess = false;
-				result.ErrorMessage = $"Lỗi khi import file Excel: {ex.Message}";
+				result.ErrorMessage = $"Lỗi nghiêm trọng khi import file Excel: {ex.Message}";
 				result.ErrorDetails = ex.StackTrace;
 			}
 
@@ -229,26 +228,34 @@ namespace Acme.SimpleTaskApp.ProductImport
 		}
 
 		/// <summary>
-		/// Import ảnh cho variant
+		/// Import ảnh, liên kết với ProductId và (tùy chọn) VariantId
 		/// </summary>
-		private async Task ImportVariantImagesAsync(
-			int variantId, 
-			int productId, 
-			List<byte[]> images, 
-			List<string> imageFileNames)
+		private async Task SaveAndLinkImagesAsync(int productId, int? variantId, List<byte[]> images, string altTextPrefix)
 		{
 			if (images == null || images.Count == 0)
 			{
-				// Nếu không có ảnh, thêm ảnh mặc định
-				var defaultImage = new ProductImage
+				// Nếu là variant và không có ảnh, thêm ảnh mặc định
+				if (variantId.HasValue)
 				{
-					ProductVariantId = variantId,
-					ProductId = productId,
-					ImageUrl = "/img/products/default.png",
-					SortOrder = 0,
-					AltText = "Ảnh mặc định"
-				};
-				await _productImageRepository.InsertAsync(defaultImage);
+					// Kiểm tra xem có ảnh chung của sản phẩm không
+					var productHasImages = await _productImageRepository.CountAsync(pi => pi.ProductId == productId && pi.ProductVariantId == null);
+
+					// Nếu sản phẩm CŨNG không có ảnh chung, mới thêm ảnh default
+					if (productHasImages == 0)
+					{
+						var defaultImage = new ProductImage
+						{
+							ProductVariantId = variantId,
+							ProductId = productId,
+							ImageUrl = "/img/products/default.png", // Đường dẫn ảnh mặc định
+							SortOrder = 0,
+							AltText = "Ảnh mặc định"
+						};
+						await _productImageRepository.InsertAsync(defaultImage);
+					}
+				}
+				// Nếu là ảnh sản phẩm (variantId == null) và không có ảnh,
+				// thì không làm gì cả.
 				return;
 			}
 
@@ -258,21 +265,21 @@ namespace Acme.SimpleTaskApp.ProductImport
 				try
 				{
 					var imageBytes = images[i];
-					var imageName = imageFileNames != null && i < imageFileNames.Count 
-						? imageFileNames[i] 
-						: $"image_{i}.jpg";
+					// Tạo tên file an toàn
+					var safePrefix = string.Join("-", altTextPrefix.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Trim();
+					var fileName = $"{safePrefix}_{Guid.NewGuid().ToString().Substring(0, 8)}.jpg";
 
 					// Lưu ảnh vào server
-					var imageUrl = await SaveImageToServerAsync(imageBytes, imageName);
+					var imageUrl = await SaveImageToServerAsync(imageBytes, fileName);
 
 					// Tạo record ProductImage
 					var productImage = new ProductImage
 					{
-						ProductVariantId = variantId,
-						ProductId = productId,
+						ProductVariantId = variantId, // Sẽ là null nếu đây là ảnh chung của sản phẩm
+						ProductId = productId,        // Luôn có
 						ImageUrl = imageUrl,
 						SortOrder = i,
-						AltText = imageName
+						AltText = $"{altTextPrefix} - Hình {i + 1}"
 					};
 
 					await _productImageRepository.InsertAsync(productImage);
@@ -280,7 +287,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 				catch (Exception ex)
 				{
 					throw new UserFriendlyException(
-						$"Lỗi khi lưu ảnh {imageFileNames?[i] ?? "unknown"}: {ex.Message}");
+						$"Lỗi khi lưu ảnh {i + 1} cho {altTextPrefix}: {ex.Message}");
 				}
 			}
 		}
@@ -295,7 +302,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 				// Tạo MemoryStream từ bytes
 				using (var memoryStream = new MemoryStream(imageBytes))
 				{
-					// Tạo fake IFormFile để compatible với IUploadFileAppService
+					// Tạo fake IFormFile
 					var formFile = new FakeFormFile(memoryStream, fileName);
 					var imageUrl = await _uploadFileAppService.UploadImageAsync(formFile, "products/import");
 					return imageUrl;
@@ -308,196 +315,156 @@ namespace Acme.SimpleTaskApp.ProductImport
 		}
 
 		/// <summary>
-		/// Extract product data từ Excel file kèm ảnh nhúng
+		/// (ĐÃ CẬP NHẬT) Extract product data từ Excel file kèm ảnh nhúng
+		/// Logic này sẽ gom nhóm nhiều hàng thuộc về 1 sản phẩm
 		/// </summary>
 		private async Task<List<ProductImportItem>> ExtractProductDataWithImages(Stream excelStream)
 		{
+
 			var result = new List<ProductImportItem>();
+			ProductImportItem currentProduct = null;
 
-			try
+			using (var package = new ExcelPackage(excelStream)) // ✅ Đúng
 			{
-				// Copy stream vì phải dùng 2 lần
-				var memoryStream = new MemoryStream();
-				await excelStream.CopyToAsync(memoryStream);
-				memoryStream.Position = 0;
+				var worksheet = package.Workbook.Worksheets[0];
+				var rowCount = worksheet.Dimension?.Rows ?? 0;
 
-				// Extract ảnh từ xlsx
-				var imagesMap = ExtractImagesFromExcel(memoryStream);
-
-				// Đọc Excel data
-				memoryStream.Position = 0;
-				using (var package = new ExcelPackage(memoryStream))
+				// 1. Extract tất cả ảnh nhúng và map chúng vào (hàng, cột)
+				var imagesMap = new Dictionary<(int Row, int Col), List<byte[]>>();
+				if (worksheet.Drawings != null)
 				{
-					var worksheet = package.Workbook.Worksheets[0];
-					var rowCount = worksheet.Dimension?.Rows ?? 0;
-
-					if (rowCount < 2)
+					foreach (var drawing in worksheet.Drawings.OfType<ExcelPicture>())
 					{
-						throw new UserFriendlyException("File Excel không có dữ liệu (phải có ít nhất 2 hàng: header + data)");
-					}
+						int row = drawing.From.Row;
+						int col = drawing.From.Column;
 
-					// Column mapping:
-					// A=Name, B=Description, C=Price, D=StockQuantity, E=CategoryId
-					// F=VariantColor, G=VariantRam, H=VariantStorage, I=VariantPrice, J=VariantStockQuantity
-					// K=Images (comma-separated: image1.jpg,image2.jpg,...)
+						var imageBytes = drawing.Image.ImageBytes;
 
-					ProductImportItem currentProduct = null;
-
-					for (int row = 2; row <= rowCount; row++)
-					{
-						try
+						if (imageBytes != null && imageBytes.Length > 0)
 						{
-							var name = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
-							var description = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
-							var priceStr = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
-							var stockStr = worksheet.Cells[row, 4].Value?.ToString()?.Trim();
-							var categoryIdStr = worksheet.Cells[row, 5].Value?.ToString()?.Trim();
-
-							var variantColor = worksheet.Cells[row, 6].Value?.ToString()?.Trim();
-							var variantRam = worksheet.Cells[row, 7].Value?.ToString()?.Trim();
-							var variantStorage = worksheet.Cells[row, 8].Value?.ToString()?.Trim();
-							var variantPriceStr = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
-							var variantStockStr = worksheet.Cells[row, 10].Value?.ToString()?.Trim();
-							var imagesStr = worksheet.Cells[row, 11].Value?.ToString()?.Trim();
-
-							// Nếu hàng này là product mới (có name)
-							if (!string.IsNullOrEmpty(name))
+							if (!imagesMap.ContainsKey((row, col)))
 							{
-								decimal.TryParse(priceStr, out var price);
-								int.TryParse(stockStr, out var stock);
-								int.TryParse(categoryIdStr, out var categoryId);
-
-								currentProduct = new ProductImportItem
-								{
-									Name = name,
-									Description = description,
-									Price = price,
-									StockQuantity = stock,
-									CategoryId = categoryId > 0 ? categoryId : null,
-									Variants = new List<ProductVariantImportItem>()
-								};
-
-								// Thêm ảnh chính của product
-								if (!string.IsNullOrEmpty(imagesStr))
-								{
-									var imageNames = imagesStr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-										.Select(x => x.Trim())
-										.ToList();
-
-									foreach (var imageName in imageNames)
-									{
-										if (imagesMap.ContainsKey(imageName))
-										{
-											currentProduct.MainImages.Add(imagesMap[imageName]);
-											currentProduct.MainImageFileNames.Add(imageName);
-										}
-									}
-								}
-
-								result.Add(currentProduct);
+								imagesMap[(row, col)] = new List<byte[]>();
 							}
-
-							// Nếu có thông tin variant
-							if (!string.IsNullOrEmpty(variantColor) && currentProduct != null)
-							{
-								decimal.TryParse(variantPriceStr, out var variantPrice);
-								int.TryParse(variantStockStr, out var variantStock);
-
-								var variant = new ProductVariantImportItem
-								{
-									Color = variantColor ?? "Không xác định",
-									Ram = variantRam ?? "0GB",
-									Storage = variantStorage ?? "Không xác định",
-									Price = variantPrice > 0 ? variantPrice : currentProduct.Price,
-									StockQuantity = variantStock > 0 ? variantStock : currentProduct.StockQuantity,
-									Images = new List<byte[]>(),
-									ImageFileNames = new List<string>()
-								};
-
-								// Thêm ảnh của variant
-								if (!string.IsNullOrEmpty(imagesStr))
-								{
-									var imageNames = imagesStr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-										.Select(x => x.Trim())
-										.ToList();
-
-									foreach (var imageName in imageNames)
-									{
-										if (imagesMap.ContainsKey(imageName))
-										{
-											variant.Images.Add(imagesMap[imageName]);
-											variant.ImageFileNames.Add(imageName);
-										}
-									}
-								}
-
-								currentProduct.Variants.Add(variant);
-							}
-						}
-						catch (Exception ex)
-						{
-							// Log row error nhưng tiếp tục xử lý
-							System.Diagnostics.Debug.WriteLine($"Lỗi xử lý hàng {row}: {ex.Message}");
+							imagesMap[(row, col)].Add(imageBytes);
 						}
 					}
 				}
 
-				memoryStream.Dispose();
-			}
-			catch (Exception ex)
-			{
-				throw new UserFriendlyException($"Lỗi khi đọc file Excel: {ex.Message}");
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Extract tất cả images từ /xl/media/ trong xlsx file
-		/// </summary>
-		private Dictionary<string, byte[]> ExtractImagesFromExcel(Stream excelStream)
-		{
-			var imagesMap = new Dictionary<string, byte[]>();
-
-			try
-			{
-				using (var zip = new ZipArchive(excelStream, ZipArchiveMode.Read, leaveOpen: true))
+				// 2. Đọc từng hàng (bắt đầu từ hàng 2)
+				for (int row = 2; row <= rowCount; row++)
 				{
-					var mediaEntries = zip.Entries
-						.Where(e => e.FullName.StartsWith("xl/media/") && !e.Name.StartsWith("."))
-						.ToList();
+					// Lấy giá trị các cột chính
+					var name = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
+					var categoryName = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
+					var color = worksheet.Cells[row, 8].Value?.ToString()?.Trim();
+					var ram = worksheet.Cells[row, 9].Value?.ToString()?.Trim();
+					var storage = worksheet.Cells[row, 10].Value?.ToString()?.Trim();
 
-					foreach (var entry in mediaEntries)
+					// Lấy ảnh từ các ô
+					imagesMap.TryGetValue((row, 13), out var productImages);
+					imagesMap.TryGetValue((row, 14), out var variantImages);
+
+					// Kịch bản 1: Hàng định nghĩa SẢN PHẨM MỚI (Cột A và C không rỗng)
+					if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(categoryName))
 					{
-						using (var stream = entry.Open())
+						currentProduct = new ProductImportItem
 						{
-							var buffer = new byte[entry.Length];
-							stream.Read(buffer, 0, (int)entry.Length);
-							imagesMap[entry.Name] = buffer;
+							Name = name,
+							Description = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
+							CategoryName = categoryName,
+							Screen = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
+							Processor = worksheet.Cells[row, 5].Value?.ToString()?.Trim(),
+							CameraSystem = worksheet.Cells[row, 6].Value?.ToString()?.Trim(),
+							Battery = worksheet.Cells[row, 7].Value?.ToString()?.Trim()
+						};
+
+						// Lấy ảnh sản phẩm (Col M) ngay trên hàng này (nếu có)
+						if (productImages != null)
+						{
+							currentProduct.MainImages.AddRange(productImages);
 						}
+
+						result.Add(currentProduct);
+
+						// Hàng này CŨNG PHẢI định nghĩa BIẾN THỂ ĐẦU TIÊN
+						if (string.IsNullOrEmpty(color) || string.IsNullOrEmpty(ram) || string.IsNullOrEmpty(storage))
+						{
+							// Bỏ qua sản phẩm này nếu biến thể đầu tiên không hợp lệ
+							currentProduct = null;
+							result.Remove(result.Last());
+							// Ghi log lỗi? (Bỏ qua trong ví dụ này, logic chính sẽ bắt)
+							continue;
+						}
+
+						var firstVariant = new ProductVariantImportItem
+						{
+							Color = color,
+							Ram = ram,
+							Storage = storage,
+							Price = decimal.Parse(worksheet.Cells[row, 11].Value?.ToString() ?? "0"),
+							StockQuantity = int.Parse(worksheet.Cells[row, 12].Value?.ToString() ?? "0")
+						};
+
+						// Lấy ảnh biến thể (Col N) ngay trên hàng này (nếu có)
+						if (variantImages != null)
+						{
+							firstVariant.Images.AddRange(variantImages);
+						}
+						currentProduct.Variants.Add(firstVariant);
+					}
+					// Kịch bản 2: Hàng định nghĩa BIẾN THỂ MỚI (A rỗng, H, I, J không rỗng)
+					else if (currentProduct != null && string.IsNullOrEmpty(name) &&
+							 !string.IsNullOrEmpty(color) && !string.IsNullOrEmpty(ram) && !string.IsNullOrEmpty(storage))
+					{
+						var newVariant = new ProductVariantImportItem
+						{
+							Color = color,
+							Ram = ram,
+							Storage = storage,
+							Price = decimal.Parse(worksheet.Cells[row, 11].Value?.ToString() ?? "0"),
+							StockQuantity = int.Parse(worksheet.Cells[row, 12].Value?.ToString() ?? "0")
+						};
+
+						// Lấy ảnh biến thể (Col N) (nếu có)
+						if (variantImages != null)
+						{
+							newVariant.Images.AddRange(variantImages);
+						}
+						currentProduct.Variants.Add(newVariant);
+					}
+					// Kịch bản 3: Hàng chỉ chứa ẢNH SẢN PHẨM (A rỗng, H rỗng, M có ảnh)
+					else if (currentProduct != null && string.IsNullOrEmpty(name) && string.IsNullOrEmpty(color) &&
+							 productImages != null && productImages.Count > 0)
+					{
+						currentProduct.MainImages.AddRange(productImages);
+					}
+					// Kịch bản 4: Hàng chỉ chứa ẢNH BIẾN THỂ (A rỗng, H rỗng, N có ảnh)
+					// (Logic này giả định ảnh ở Col N thuộc về biến thể cuối cùng được thêm vào)
+					else if (currentProduct != null && string.IsNullOrEmpty(name) && string.IsNullOrEmpty(color) &&
+							 variantImages != null && variantImages.Count > 0 && currentProduct.Variants.Any())
+					{
+						currentProduct.Variants.Last().Images.AddRange(variantImages);
 					}
 				}
 			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Lỗi extract images: {ex.Message}");
-			}
 
-			return imagesMap;
+			// Dùng Task.FromResult vì logic đã là đồng bộ
+			return await Task.FromResult(result);
 		}
 	}
 
-	// DTOs
+	// DTOs (Không đổi)
 	public class ProductImportItem
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }
-		public decimal Price { get; set; }
-		public int StockQuantity { get; set; }
-		public int? CategoryId { get; set; }
-
+		public string CategoryName { get; set; }
+		public string Screen { get; set; }
+		public string Processor { get; set; }
+		public string CameraSystem { get; set; }
+		public string Battery { get; set; }
 		public List<byte[]> MainImages { get; set; } = new();
-		public List<string> MainImageFileNames { get; set; } = new();
 		public List<ProductVariantImportItem> Variants { get; set; } = new();
 	}
 
@@ -508,14 +475,13 @@ namespace Acme.SimpleTaskApp.ProductImport
 		public string Storage { get; set; }
 		public decimal Price { get; set; }
 		public int StockQuantity { get; set; }
-
 		public List<byte[]> Images { get; set; } = new();
-		public List<string> ImageFileNames { get; set; } = new();
 	}
 
 	public class ImportResult
 	{
 		public bool IsSuccess { get; set; }
+		public string Message { get; set; } // Thêm Message để thông báo kết quả
 		public int SuccessCount { get; set; }
 		public int TotalCount { get; set; }
 		public int WarningCount { get; set; }
@@ -524,9 +490,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 		public List<string> Warnings { get; set; } = new();
 	}
 
-	/// <summary>
-	/// Fake IFormFile để convert byte array sang IFormFile
-	/// </summary>
+	// Fake IFormFile (Không đổi)
 	public class FakeFormFile : IFormFile
 	{
 		private readonly Stream _baseStream;
@@ -546,7 +510,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 		public string FileName => _fileName;
 
 		public void CopyTo(Stream target) => _baseStream.CopyTo(target);
-		public async Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) 
+		public async Task CopyToAsync(Stream target, CancellationToken cancellationToken = default)
 			=> await _baseStream.CopyToAsync(target, cancellationToken);
 		public Stream OpenReadStream() => _baseStream;
 

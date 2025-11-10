@@ -1,4 +1,4 @@
-﻿﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
 @{
   Layout = null;
 }
@@ -37,21 +37,22 @@
 
     <!-- File Input -->
     <div class="mb-3">
-      <label for="excelFile" class="form-label">
+      <label for="excelFileInput" class="form-label">
         <i class="fas fa-file-excel"></i> Chọn File Excel
       </label>
       <div class="drop-zone border border-2 border-dashed rounded p-4 text-center cursor-pointer"
            style="background-color: #f8f9fa; transition: all 0.3s;">
-        <input type="file" id="excelFile" name="excelFile" class="d-none" accept=".xlsx,.xls" />
+        <!-- THAY ĐỔI: Sử dụng id thống nhất -->
+        <input type="file" id="excelFileInput" name="excelFile" class="d-none" accept=".xlsx,.xls" />
 
         <div class="drop-zone-content">
           <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3 d-block"></i>
           <p class="mb-2 fw-bold">Kéo thả file Excel vào đây</p>
           <small class="text-muted">hoặc</small><br />
-          <button type="button" class="btn btn-sm btn-primary mt-2"
-                  onclick="$('#excelFile').click()">
+          <!-- THAY ĐỔI: Sử dụng label thay vì onclick -->
+          <label for="excelFileInput" class="btn btn-sm btn-primary mt-2 cursor-pointer">
             Chọn File
-          </button>
+          </label>
         </div>
       </div>
 
@@ -115,5 +116,11 @@
 
   .alert li {
     margin-bottom: 0.25rem;
+  }
+
+  /* THÊM: Đảm bảo label có cursor pointer */
+  label[for="excelFileInput"] {
+    cursor: pointer;
+    margin-bottom: 0;
   }
 </style>
