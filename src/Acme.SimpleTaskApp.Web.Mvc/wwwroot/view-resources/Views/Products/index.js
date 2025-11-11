@@ -8,13 +8,24 @@
   
   var _importExcelModal = new app.ModalManager({
     viewUrl: abp.appPath + 'Products/ImportModal',
-    scriptUrl: abp.appPath + 'view-resources/Views/Products/_ImportProduct.js',
+    scriptUrl: abp.appPath + 'view-resources/Views/Products/_ImportDataModal.js',
     modalClass: 'ProductImportModal',
     modalSize: 'modal-lg'
   });
 
   $('#ImportExcelBtn').click(function () {
     _importExcelModal.open();
+  });
+
+  var _exportProductModal = new app.ModalManager({
+    viewUrl: abp.appPath + 'Products/ExportModal',
+    scriptUrl: abp.appPath + 'view-resources/Views/Products/_ExportProductModal.js',
+    modalClass: 'ProductExportModal',
+    modalSize: 'modal-lg'
+  });
+
+  $('#ExportExcelBtn').click(function () {
+    _exportProductModal.open();
   });
 
   var _createModal = new app.ModalManager({

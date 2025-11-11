@@ -1,0 +1,47 @@
+﻿﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Products
+@model ProductViewModel
+
+@{
+  Layout = null;
+}
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Xuất sản phẩm từ Excel"))
+
+
+<form name="ExportForm" role="form" class="form-horizontal">
+  <div class="card">
+    <div class="card-body">
+      <div class="row input-options">
+        <div class="col-md-6 mt-2 p-0 ps-2">
+          <label for="StartEndRangeExport" class="form-label">@L("CreationTime")</label>
+          <input id="StartEndRangeExport" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="@L("fromTo")" name="CreationTimeRange" />
+        </div>
+        <div class="col-md-6 mt-2">
+          <label for="CategoryFilter" class="form-label">@L("Category")</label>
+          <select id="CategoryFilter" name="CategoryId" class="form-control p-0 ps-2">
+            <option value="">Tất cả danh mục</option>
+            @if (Model.Categories != null)
+            {
+              foreach (var category in Model.Categories)
+              {
+                <option value="@category.Id">@category.Name</option>
+              }
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-group mt-4 border-top">
+        <label class="my-2" for="SelectFileFormat">Loại file xuất dữ liệu<span class="text-danger">*</span></label>
+        Xuất Excel
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-danger fw-bold close-button" data-bs-dismiss="modal">@L("Close")</button>
+  <button type="button" class="btn btn-success d-flex save-button">
+    <span class="material-symbols-outlined fs-20">download</span>
+    <span class="ms-1">@L("ExportData")</span>
+  </button>
+</div>

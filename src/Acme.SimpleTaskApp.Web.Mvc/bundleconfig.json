@@ -397,5 +397,17 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Products/_ImportProduct.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/App/Products/ImportProduct.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/App/Products/ImportProduct.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Common/Scripts/bootstrap-filestyle.min.js",
+    "inputFiles": [
+      "wwwroot/Common/Scripts/bootstrap-filestyle.js"
+    ]
   }
 ]

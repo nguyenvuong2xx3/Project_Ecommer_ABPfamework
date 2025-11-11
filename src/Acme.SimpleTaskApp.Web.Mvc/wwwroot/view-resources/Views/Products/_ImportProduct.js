@@ -39,7 +39,7 @@
       $progressContainer.show();
 
       $.ajax({
-        url: abp.appPath + 'ProductImport/ImportProducts',
+        url: abp.appPath + 'Products/ImportData',
         type: 'POST',
         data: formData,
         processData: false,

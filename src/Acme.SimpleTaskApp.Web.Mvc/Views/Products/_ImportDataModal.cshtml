@@ -1,0 +1,43 @@
+﻿@using Abp.Json
+@using Abp.UI.Inputs
+@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+
+<style>
+  .modal-dialog {
+    margin-top: 65px !important;
+  }
+</style>
+@section scripts
+{
+  <environment names="Development">
+    <script src="~/Common/Scripts/bootstrap-filestyle.js" asp-append-version="true"></script>
+  </environment>
+}
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Nhập dữ liệu dữ liệu"))
+
+
+<div class="modal-body" id="CreateLeaveRequestUnitForm">
+  <form name="ImportLeaveRequestUnitForm">
+    <div class="col-12 mb-3">
+      <div class="form-group ">
+        <label for="ImportData" class="form-label label text-secondary">@(new FixedLocalizableString("Tệp excel"))</label> <span class="text-danger">*</span>
+        <div id="ImportFileDataUploadArea" class="file-uploaded-area">
+        </div>
+        <div class="d-flex ms-sm-3 ms-md-0 fileinput-custom input-group">
+          <input id="ImportFileData" type="file" name="files" accept=".json, .xlsx, .xls" required>
+        </div>
+      </div>
+    </div>
+    <div id="ResultNotificationArea">
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-danger fw-bold close-button" data-bs-dismiss="modal">@(new FixedLocalizableString("Đóng"))</button>
+  <button type="button" class="btn btn-success d-flex align-items-center save-button">
+    <span class="material-symbols-outlined fs-20">download</span>
+    <span class="ms-1">@(new FixedLocalizableString("Nhập dữ liệu"))</span>
+  </button>
+</div>
+

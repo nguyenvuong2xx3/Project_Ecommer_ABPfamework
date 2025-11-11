@@ -1,0 +1,207 @@
+﻿(function () {
+	app.modals.ProductImportModal = function () {
+		var _modalManager;
+		var _$form = null;
+
+		var fileUploadedArea = {
+			generateFileHtml: function (fu) {
+				return `<div class="attachments-inline justify-content-between mb-3">
+							<a href="javascript:void(0);" class="btn fw-medium px-0 text-secondary my-1 mx-1">
+								<i class="ri-file-pdf-2-line fs-16 text-warning"></i> `+ fu.fileName + `
+							</a>
+							   <button type="button" class="btn btn-outline-danger d-flex align-items-center waves-themed my-1 mx-1 delete-attachment" data-attachmentid-value="`+ fu.fileName + `">
+                  <span class="d-block">
+                  <i class="ri-delete-bin-line"></i> Xóa
+                  </span>
+              </button>
+						</div>`;
+			},	
+		};
+
+		var resultNotificationArea = {
+			generateFileHtml: function (response) {
+				const { totalRecords, successfulImports, failedImports, errors } = response;
+				const hasErrors = errors && errors.length > 0;
+				const errorListHtml = hasErrors
+					? errors.map(error => `<li>${error}</li>`).join('')
+					: '<li>Không có lỗi nào được báo cáo.</li>';
+
+				return `
+      <div class="col-12 mb-3">
+       <div class="mb-2"><strong class="fs-18 text-danger">Báo cáo: </strong></div>
+        <span class="badge bg-primary fs-16 me-2">Tổng dữ liệu: <span id="totalData">${totalRecords}</span></span>
+        <span class="badge bg-success fs-16 me-2">Nhập thành công: <span id="totalSuccess">${successfulImports}</span></span>
+        <span class="badge bg-danger fs-16 me-2">Nhập thất bại: <span id="totalFailure">${failedImports}</span></span>
+      </div>
+      <div class="col-12 mb-3">
+        <div class="alert alert-danger ${hasErrors ? '' : 'd-none'}" role="alert" id="errorAlert" >
+          <ul style="max-height: 300px; overflow-x: auto">
+            ${errorListHtml}
+          </ul>
+        </div>
+      </div>`;
+			}
+		};
+
+		var _selectedDateRangeEntityChange;
+		var _selectedDateRange = (_selectedDateRangeEntityChange = {
+		});
+
+		this.init = function (modalManager) {
+			_modalManager = modalManager;
+
+			_$form = _modalManager.getModal().find('form[name=ImportLeaveRequestUnitForm]');
+			_$form.validate({
+				validClass: "valid",  // default
+				errorClass: "invalid-feedback", // default is "error"
+				highlight: function (element, errorClass, validClass) {
+					$(element).addClass('is-invalid').removeClass('is-valid');
+				},
+				unhighlight: function (element, errorClass, validClass) {
+					$(element).addClass('is-valid').removeClass('is-invalid');
+				},
+				rules: {
+					SelectFileFormat: {
+						required: true,
+					},
+					files: {
+						required: true,
+					}
+				},
+				messages: {
+					SelectFileFormat: {
+						required: 'Định dạng file phải được chọn',
+					},
+					files: {
+						required: "Vui lòng tải file để nhập dữ liệu",
+					}
+				},
+				errorPlacement: function (error, element) {
+					// Kiểm tra nếu element nằm trong Input Group
+					if (element.closest('.input-group').length) {
+						error.addClass('text-danger'); // Thêm class Bootstrap cho lỗi màu đỏ
+						error.insertAfter(element.closest('.input-group')); // Đặt lỗi sau nhóm input
+					} else {
+						error.insertAfter(element); // Mặc định cho các trường input khác
+					}
+				},
+				success: function (label, element) {
+					$(element).next('.invalid-feedback').remove(); // Xóa thông báo lỗi khi input hợp lệ
+				}
+			});
+			_$form.inputMaskForm
+			if ($('#alloption').is(':checked') == true) {
+				$('.input-options').find("input:checkbox:not(:checked)").prop("checked", true);
+			} else {
+				$('.input-options').find("input:checkbox").prop("checked", false);
+			}
+			$('#alloption').on('change', function () {
+				if ($(this).is(':checked') == true) {
+					$('.input-options').find("input:checkbox:not(:checked)").prop("checked", true);
+				} else {
+					$('.input-options').find("input:checkbox").prop("checked", false);
+				}
+			});
+			$('.input-options').find("input:checkbox").on('change', function () {
+				if ($('.input-options').find("input:checkbox:not(:checked)").length > 0) {
+					$('#alloption').prop("checked", false)
+				} else {
+					$('#alloption').prop("checked", true)
+				}
+			})
+
+			$('#ImportFileData').filestyle({
+				placeholder: 'Tải lên file', text: "Tải lên tệp dữ liệu",
+				'onChange': function (files) {
+					if (files && files[0]) {
+						var file = files[0];
+						if (file.name.split('.').pop().toLowerCase() === 'json' || file.name.split('.').pop().toLowerCase() === 'xlsx' || file.name.split('.').pop().toLowerCase() === 'xls') {
+							var fileName = files[0].name;
+
+							var token = app.guid();
+
+							var formData = new FormData();
+							formData.append('file', files[0]);
+							formData.append('FileToken', token);
+							formData.append('FileName', fileName);
+
+							$('#ImportFileDataUploadArea').html(fileUploadedArea.generateFileHtml({ fileName: fileName }));
+							deletefile();
+
+						}
+						else {
+							abp.notify.warn('Vui lòng chọn một file Excel, Json.');
+						}
+					}
+					else {
+						$('#ImportFileDataUploadArea').empty();
+					}
+				}
+			});
+
+			function deletefile() {
+				$('.delete-attachment').click(function () {
+
+					var token = $(this).attr('data-attachmentid-value');
+					if (token != '') {
+						var formData = new FormData();
+						formData.append('FileToken', token);
+						formData.append('FileName', token);
+
+						$('#ImportFileDataUploadArea').empty();
+						$('#ImportFileData').filestyle('clear');
+					}
+				});
+			}
+
+		};
+
+		this.save = function () {
+
+			if (!_$form.valid()) {
+				return;
+			}
+
+			var formData = new FormData();
+			var file = $('#ImportFileData')[0].files[0];
+
+			if (file == null) {
+				abp.message.error('Vui lòng upload file');
+				return;
+			}
+
+			formData.append('file', file);
+
+			_modalManager.setBusy(true);
+			$.ajax({
+				url: '/Products/ImportData',
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (response) {
+					if (response.success) {
+						abp.notify.info(response.message);
+						abp.event.trigger('app.updateLeaveRequestModalSaved');
+						$('#ImportFileDataUploadArea').empty();
+						$('#ImportFileData').filestyle('clear');
+						$('#ResultNotificationArea').html(resultNotificationArea.generateFileHtml(response));
+					}
+					else {
+						abp.notify.error(response.message);
+						$('#ResultNotificationArea').html(resultNotificationArea.generateFileHtml(response));
+					}
+				},
+				error: function (xhr) {
+					var errorResponse = JSON.parse(xhr.responseText);
+					abp.notify.error(errorResponse.message);
+				}
+			});
+			_modalManager.setBusy(false);
+
+		};
+	};
+})();
+
+
+

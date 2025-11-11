@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml.Drawing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,7 +51,7 @@ namespace Acme.SimpleTaskApp.UploadFile
 			}
 		}
 
-		public async Task<string> UploadImageAsync(IFormFile file, string subFolder = "products")
+		public async Task<string> UploadImageAsync( IFormFile file, string subFolder = "products")
 		{
 			if (file == null || file.Length == 0)
 			{
