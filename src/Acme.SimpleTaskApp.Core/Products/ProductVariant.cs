@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Acme.SimpleTaskApp.Products
 {
 	[Table("AppProductVariants")]
-	public class ProductVariant : FullAuditedEntity<int>
+	public class  ProductVariant : FullAuditedEntity<int>
 	{
 		public int ProductId { get; set; }
 		[NotMapped] public string ProductName { get; set; } // cho BE trả về

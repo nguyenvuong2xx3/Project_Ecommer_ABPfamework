@@ -20,7 +20,6 @@
 
 		var resultNotificationArea = {
 			generateFileHtml: function (response) {
-				debugger
 				const { totalRecords, successfulImports, failedImports, errors } = response.result;
 				const hasErrors = errors && errors.length > 0;
 				const errorListHtml = hasErrors

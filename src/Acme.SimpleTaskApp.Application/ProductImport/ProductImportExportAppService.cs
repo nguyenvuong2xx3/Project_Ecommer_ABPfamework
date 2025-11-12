@@ -254,7 +254,8 @@ namespace Acme.SimpleTaskApp.ProductImport
 						await imageStream.CopyToAsync(fileStream);
 					}
 
-					string relativePath = Path.Combine("img", "products", "general", uniqueFileName);
+					string relativePath = "/" + Path.Combine("img", "products", "general", uniqueFileName).Replace("\\", "/");
+
 					var productImage = new ProductImage
 					{
 						ProductId = product.Id,
@@ -368,7 +369,8 @@ namespace Acme.SimpleTaskApp.ProductImport
 						await imageStream.CopyToAsync(fileStream);
 					}
 
-					string relativePath = Path.Combine("img", "products", "variants", uniqueFileName);
+					string relativePath = "/" + Path.Combine("img", "products", "variants", uniqueFileName).Replace("\\", "/");
+
 					var productImage = new ProductImage
 					{
 						ProductId = productId,

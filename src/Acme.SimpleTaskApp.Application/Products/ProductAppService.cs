@@ -168,7 +168,7 @@ namespace Acme.SimpleTaskApp.Products
 			// Get product images
 			var productIds = products.Select(p => p.Id).ToList();
 			var productImages = await _productImageRepository.GetAll()
-					.Where(pi => productIds.Contains(pi.ProductId))
+					.Where(pi => productIds.Contains(pi.ProductId) && pi.ProductVariantId == null)
 					.OrderBy(pi => pi.SortOrder)
 					.ToListAsync();
 

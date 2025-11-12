@@ -132,7 +132,7 @@ namespace Acme.SimpleTaskApp.ProductVariants
 					var imagePath = await _uploadFileAppService.UploadImageAsync(imageInput, "products/general");
 					var productImage = new ProductImage
 					{
-						ProductId = input.Id,
+						ProductId = input.ProductId,
 						ProductVariantId = input.Id,
 						ImageUrl = imagePath,
 						SortOrder = generalSortOrder++,
