@@ -52,8 +52,124 @@ namespace Acme.SimpleTaskApp.ProductImport
 		/// <summary>
 		/// Xử lý dữ liệu từ các cột Sản phẩm (1-7) và Ảnh (13).
 		/// </summary>
+		//public async Task<ImportProductRowResult> ProcessProductRowAsync(ExcelWorksheet worksheet, int row)
+		//{
+		//	var result = new ImportProductRowResult();
+		//	var errors = new List<string>();
+		//	var productName = worksheet.Cells[row, 1].Text?.Trim();
+		//	var categoryName = worksheet.Cells[row, 3].Text?.Trim();
+
+		//	if (string.IsNullOrWhiteSpace(productName)) errors.Add("Tên Sản Phẩm (Name) là bắt buộc.");
+		//	if (string.IsNullOrWhiteSpace(categoryName)) errors.Add("Tên Danh Mục (CategoryName) là bắt buộc.");
+
+		//	var category = await _categoryRepository.FirstOrDefaultAsync(c => c.Name == categoryName);
+		//	if (category == null) errors.Add($"Không tìm thấy Danh Mục '{categoryName}'.");
+
+		//	if (errors.Any())
+		//	{
+		//		result.Errors = errors;
+		//		result.IsSuccess = false;
+		//		return result;
+		//	}
+
+		//	// Tìm check sản phẩm đã tồn tại
+		//	var product = await _productRepository.FirstOrDefaultAsync(p => p.Name == productName);
+
+		//	if (product == null)
+		//	{
+		//		product = new Product
+		//		{
+		//			Name = productName,
+		//			Description = worksheet.Cells[row, 2].Text?.Trim(),
+		//			CategoryId = category.Id,
+		//			Screen = worksheet.Cells[row, 4].Text?.Trim(),
+		//			Processor = worksheet.Cells[row, 5].Text?.Trim(),
+		//			CameraSystem = worksheet.Cells[row, 6].Text?.Trim(),
+		//			Battery = worksheet.Cells[row, 7].Text?.Trim()
+		//		};
+		//		product.Id = await _productRepository.InsertAndGetIdAsync(product);
+		//	}
+		//	else
+		//	{
+		//		product.Description = worksheet.Cells[row, 2].Text?.Trim();
+		//		product.CategoryId = category.Id;
+		//		product.Screen = worksheet.Cells[row, 4].Text?.Trim();
+		//		product.Processor = worksheet.Cells[row, 5].Text?.Trim();
+		//		product.CameraSystem = worksheet.Cells[row, 6].Text?.Trim();
+		//		product.Battery = worksheet.Cells[row, 7].Text?.Trim();
+		//		await _productRepository.UpdateAsync(product);
+		//	}
+		//	await _productImageRepository.DeleteAsync(x => x.ProductId == product.Id);
+
+		//	// Xử lý ảnh 
+		//	var imageUrls = new List<string>();
+
+		//	// Duyệt qua các cột từ 13 trở đi
+		//	int col = 13;
+		//	int imageIndex = 0;
+		//	while (col <= worksheet.Dimension.End.Column)
+		//	{
+		//		// Kiểm tra xem ô này có chứa ảnh không
+		//		var picture = worksheet.Drawings
+		//		.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
+
+		//		if (picture != null)
+		//		{
+		//			string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products", "general");
+		//			Directory.CreateDirectory(uploadsFolder); // Tạo thư mục nếu chưa có
+		//			string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+		//			string uniqueGuid = Guid.NewGuid().ToString("N").Substring(0, 12); // Lấy 8 ký tự đầu
+
+		//			if (picture is ExcelPicture excelPicture)
+		//			{
+		//				string extension = excelPicture.Image.Type.ToString().ToLower() switch
+		//				{
+		//					"jpeg" => ".jpg",
+		//					"png" => ".png",
+		//					"bmp" => ".bmp",
+		//					_ => ".jpg"
+		//				};
+		//				string uniqueFileName = $"{timestamp}_{uniqueGuid}{extension}";
+		//				string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+		//				using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
+		//				using (var fileStream = new FileStream(filePath, FileMode.Create))
+		//				{
+		//					await imageStream.CopyToAsync(fileStream);
+		//				}
+		//				string relativePath = Path.Combine("img", "products", "general", uniqueFileName);
+		//				var productImage = new ProductImage
+		//				{
+		//					ProductId = product.Id,
+		//					ProductVariantId = null,
+		//					ImageUrl = relativePath,
+		//					SortOrder = 0,
+		//					AltText = productName
+		//				};
+		//				await _productImageRepository.InsertAsync(productImage);
+		//				imageUrls.Add(filePath); // Use filePath instead of undefined imageUrl
+		//				imageIndex++;
+		//			}
+		//			//// Đảm bảo thư mục tồn tại
+		//			//var directory = Path.GetDirectoryName(uploadsFolder);
+		//			//if (!Directory.Exists(directory))
+		//			//{
+		//			//	Directory.CreateDirectory(directory);
+		//			//}
+		//		}
+		//		col++; // Increment column to avoid infinite loop
+		//	}
+		//	result.ProductId = (int?)product.Id;
+		//	result.ProductVariantId = null;
+		//	result.IsSuccess = true;
+		//	result.Errors = errors;
+
+		//	return result;
+		//}
+
 		public async Task<ImportProductRowResult> ProcessProductRowAsync(ExcelWorksheet worksheet, int row)
 		{
+			var result = new ImportProductRowResult();
 			var errors = new List<string>();
 			var productName = worksheet.Cells[row, 1].Text?.Trim();
 			var categoryName = worksheet.Cells[row, 3].Text?.Trim();
@@ -64,12 +180,20 @@ namespace Acme.SimpleTaskApp.ProductImport
 			var category = await _categoryRepository.FirstOrDefaultAsync(c => c.Name == categoryName);
 			if (category == null) errors.Add($"Không tìm thấy Danh Mục '{categoryName}'.");
 
-			if (errors.Any()) return new ImportProductRowResult();
+			if (errors.Any())
+			{
+				result.Errors = errors;
+				result.IsSuccess = false;
+				return result;
+			}
 
 			// Tìm check sản phẩm đã tồn tại
-			var product = await _productRepository.FirstOrDefaultAsync(p => p.Name == productName);
+			var existingProduct = await _productRepository.FirstOrDefaultAsync(p => p.Name == productName);
+			bool isNewProduct = existingProduct == null;
 
-			if (product == null)
+			Product product;
+
+			if (isNewProduct)
 			{
 				product = new Product
 				{
@@ -85,6 +209,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 			}
 			else
 			{
+				product = existingProduct;
 				product.Description = worksheet.Cells[row, 2].Text?.Trim();
 				product.CategoryId = category.Id;
 				product.Screen = worksheet.Cells[row, 4].Text?.Trim();
@@ -93,66 +218,67 @@ namespace Acme.SimpleTaskApp.ProductImport
 				product.Battery = worksheet.Cells[row, 7].Text?.Trim();
 				await _productRepository.UpdateAsync(product);
 			}
-			await _productImageRepository.DeleteAsync(x => x.ProductId == product.Id);
 
-			// Xử lý ảnh 
+			await _productImageRepository.DeleteAsync(x => x.ProductId == product.Id && x.ProductVariantId == null);
+
+			// Xử lý ảnh (giữ nguyên logic hiện tại)
 			var imageUrls = new List<string>();
-
-			// Duyệt qua các cột từ 13 trở đi
 			int col = 13;
 			int imageIndex = 0;
 			while (col <= worksheet.Dimension.End.Column)
 			{
-				// Kiểm tra xem ô này có chứa ảnh không
-				var picture = worksheet.Drawings
-				.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
+				var picture = worksheet.Drawings.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
 
-				if (picture != null)
+				if (picture != null && picture is ExcelPicture excelPicture)
 				{
-					string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products/general");
-					Directory.CreateDirectory(uploadsFolder); // Tạo thư mục nếu chưa có
+					// Logic xử lý ảnh giữ nguyên
+					string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products", "general");
+					Directory.CreateDirectory(uploadsFolder);
 					string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-					string uniqueGuid = Guid.NewGuid().ToString("N").Substring(0, 12); // Lấy 8 ký tự đầu
+					string uniqueGuid = Guid.NewGuid().ToString("N").Substring(0, 12);
 
-					string uniqueFileName = $"{timestamp}_{uniqueGuid}";
+					string extension = excelPicture.Image.Type.ToString().ToLower() switch
+					{
+						"jpeg" => ".jpg",
+						"png" => ".png",
+						"bmp" => ".bmp",
+						_ => ".jpg"
+					};
+
+					string uniqueFileName = $"{timestamp}_{uniqueGuid}{extension}";
 					string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-					if (picture is ExcelPicture excelPicture)
+					using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
+					using (var fileStream = new FileStream(filePath, FileMode.Create))
 					{
-						using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
-						using (var fileStream = new FileStream(filePath, FileMode.Create))
-						{
-							await imageStream.CopyToAsync(fileStream);
-						}
+						await imageStream.CopyToAsync(fileStream);
 					}
 
-					// Đảm bảo thư mục tồn tại
-					var directory = Path.GetDirectoryName(uploadsFolder);
-					if (!Directory.Exists(directory))
-					{
-						Directory.CreateDirectory(directory);
-					}
-
+					string relativePath = Path.Combine("img", "products", "general", uniqueFileName);
 					var productImage = new ProductImage
 					{
 						ProductId = product.Id,
 						ProductVariantId = null,
-						ImageUrl = filePath,
-						SortOrder = 0,
+						ImageUrl = relativePath,
+						SortOrder = imageIndex,
 						AltText = productName
 					};
 					await _productImageRepository.InsertAsync(productImage);
-					imageUrls.Add(filePath); // Use filePath instead of undefined imageUrl
 					imageIndex++;
 				}
-				col++; // Increment column to avoid infinite loop
+				col++;
 			}
 
-			return new ImportProductRowResult();
+			result.ProductId = product.Id;
+			result.IsSuccess = true;
+			result.Errors = errors;
+
+			return result;
 		}
 
 		public async Task<ImportProductRowResult> ProcessVariantRowAsync(ExcelWorksheet worksheet, int row, int productId)
 		{
+			var result = new ImportProductRowResult();
 			var errors = new List<string>();
 			var color = worksheet.Cells[row, 8].Text?.Trim();
 			var ram = worksheet.Cells[row, 9].Text?.Trim();
@@ -167,16 +293,25 @@ namespace Acme.SimpleTaskApp.ProductImport
 			if (!decimal.TryParse(worksheet.Cells[row, 11].Text?.Trim(), out decimal price)) errors.Add("Giá không hợp lệ.");
 			if (!int.TryParse(worksheet.Cells[row, 12].Text?.Trim(), out int stock)) errors.Add("Số lượng không hợp lệ.");
 
-			if (errors.Any()) return new ImportProductRowResult();
+			if (errors.Any())
+			{
+				result.Errors = errors;
+				result.IsSuccess = false;
+				return result;
+			}
 
 			// Tìm hoặc tạo mới Biến thể
-			var variant = await _productVariantRepository.FirstOrDefaultAsync(v =>
-							v.ProductId == productId &&
-							v.Color == color &&
-							v.Ram == ram &&
-							v.Storage == storage);
-			if (variant == null)
-			{ 
+			var existingVariant = await _productVariantRepository.FirstOrDefaultAsync(v =>
+											v.ProductId == productId &&
+											v.Color == color &&
+											v.Ram == ram &&
+											v.Storage == storage);
+
+			bool isNewVariant = existingVariant == null;
+			ProductVariant variant;
+
+			if (isNewVariant)
+			{
 				variant = new ProductVariant();
 				variant.ProductId = productId;
 				variant.Color = color;
@@ -188,6 +323,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 			}
 			else
 			{
+				variant = existingVariant;
 				variant.ProductId = productId;
 				variant.Color = color;
 				variant.Ram = ram;
@@ -199,54 +335,172 @@ namespace Acme.SimpleTaskApp.ProductImport
 
 			await _productImageRepository.DeleteAsync(x => x.ProductVariantId == variant.Id);
 
-			// Duyệt qua các cột từ 13 trở đi
+			// Xử lý ảnh variant (giữ nguyên logic hiện tại)
 			int col = 13;
 			int imageIndex = 0;
-
+			var imageUrls = new List<string>();
 			while (col <= worksheet.Dimension.End.Column)
 			{
-				// Kiểm tra xem ô này có chứa ảnh không
-				var picture = worksheet.Drawings
-						.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
+				var picture = worksheet.Drawings.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
 
-				if (picture != null)
+				if (picture != null && picture is ExcelPicture excelPicture)
 				{
-					string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products/variants");
-					Directory.CreateDirectory(uploadsFolder); // Tạo thư mục nếu chưa có
-
+					// Logic xử lý ảnh giữ nguyên
+					string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products", "variants");
+					Directory.CreateDirectory(uploadsFolder);
 					string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 					string uniqueGuid = Guid.NewGuid().ToString("N").Substring(0, 12);
-					string fileExtension = GetImageExtension(picture);
-					string uniqueFileName = $"{timestamp}_{uniqueGuid}{fileExtension}";
+
+					string extension = excelPicture.Image.Type.ToString().ToLower() switch
+					{
+						"jpeg" => ".jpg",
+						"png" => ".png",
+						"bmp" => ".bmp",
+						_ => ".jpg"
+					};
+
+					string uniqueFileName = $"{timestamp}_{uniqueGuid}{extension}";
 					string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-					// Lưu ảnh
-					if (picture is ExcelPicture excelPicture)
+					using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
+					using (var fileStream = new FileStream(filePath, FileMode.Create))
 					{
-						using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
-						using (var fileStream = new FileStream(filePath, FileMode.Create))
-						{
-							await imageStream.CopyToAsync(fileStream);
-						}
+						await imageStream.CopyToAsync(fileStream);
 					}
 
-					// Tạo bản ghi ProductImage cho biến thể
+					string relativePath = Path.Combine("img", "products", "variants", uniqueFileName);
 					var productImage = new ProductImage
 					{
 						ProductId = productId,
-						ProductVariantId = variant.Id, // Gán variantId để liên kết với biến thể
-						ImageUrl = filePath, // Đường dẫn URL
+						ProductVariantId = variant.Id,
+						ImageUrl = relativePath,
 						SortOrder = imageIndex,
 						AltText = $"{color} variant image {imageIndex + 1}"
 					};
-
 					await _productImageRepository.InsertAsync(productImage);
 					imageIndex++;
 				}
 				col++;
 			}
-			return new ImportProductRowResult();
+
+			result.ProductId = productId;
+			result.ProductVariantId = variant.Id;
+			result.IsSuccess = true;
+			result.Errors = errors;
+			return result;
 		}
+
+		//public async Task<ImportProductRowResult> ProcessVariantRowAsync(ExcelWorksheet worksheet, int row, int productId)
+		//{
+		//	var result = new ImportProductRowResult();
+		//	var errors = new List<string>();
+		//	var color = worksheet.Cells[row, 8].Text?.Trim();
+		//	var ram = worksheet.Cells[row, 9].Text?.Trim();
+		//	var storage = worksheet.Cells[row, 10].Text?.Trim();
+
+		//	// Nếu không có màu, nghĩa là dòng này không có dữ liệu biến thể
+		//	if (string.IsNullOrWhiteSpace(color)) return new ImportProductRowResult();
+
+		//	if (string.IsNullOrWhiteSpace(ram)) errors.Add("RAM là bắt buộc.");
+		//	if (string.IsNullOrWhiteSpace(storage)) errors.Add("Bộ Nhớ (Storage) là bắt buộc.");
+
+		//	if (!decimal.TryParse(worksheet.Cells[row, 11].Text?.Trim(), out decimal price)) errors.Add("Giá không hợp lệ.");
+		//	if (!int.TryParse(worksheet.Cells[row, 12].Text?.Trim(), out int stock)) errors.Add("Số lượng không hợp lệ.");
+
+		//	if (errors.Any())
+		//	{
+		//		result.Errors = errors;
+		//		result.IsSuccess = false;
+		//		return result;
+		//	}
+
+		//	// Tìm hoặc tạo mới Biến thể
+		//	var variant = await _productVariantRepository.FirstOrDefaultAsync(v =>
+		//					v.ProductId == productId &&
+		//					v.Color == color &&
+		//					v.Ram == ram &&
+		//					v.Storage == storage);
+		//	if (variant == null)
+		//	{
+		//		variant = new ProductVariant();
+		//		variant.ProductId = productId;
+		//		variant.Color = color;
+		//		variant.Ram = ram;
+		//		variant.Storage = storage;
+		//		variant.Price = price;
+		//		variant.StockQuantity = stock;
+		//		variant.Id = await _productVariantRepository.InsertAndGetIdAsync(variant);
+		//	}
+		//	else
+		//	{
+		//		variant.ProductId = productId;
+		//		variant.Color = color;
+		//		variant.Ram = ram;
+		//		variant.Storage = storage;
+		//		variant.Price = price;
+		//		variant.StockQuantity = stock;
+		//		await _productVariantRepository.UpdateAsync(variant);
+		//	}
+
+		//	await _productImageRepository.DeleteAsync(x => x.ProductVariantId == variant.Id);
+
+		//	// Duyệt qua các cột từ 13 trở đi
+		//	int col = 13;
+		//	int imageIndex = 0;
+		//	var imageUrls = new List<string>();
+		//	while (col <= worksheet.Dimension.End.Column)
+		//	{
+		//		// Kiểm tra xem ô này có chứa ảnh không
+		//		var picture = worksheet.Drawings
+		//				.FirstOrDefault(p => p.From.Row == row - 1 && p.From.Column == col - 1);
+
+		//		if (picture != null)
+		//		{
+		//			string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "products", "variants");
+		//			Directory.CreateDirectory(uploadsFolder); // Tạo thư mục nếu chưa có
+		//			string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+		//			string uniqueGuid = Guid.NewGuid().ToString("N").Substring(0, 12); // Lấy 8 ký tự đầu
+
+		//			if (picture is ExcelPicture excelPicture)
+		//			{
+		//				string extension = excelPicture.Image.Type.ToString().ToLower() switch
+		//				{
+		//					"jpeg" => ".jpg",
+		//					"png" => ".png",
+		//					"bmp" => ".bmp",
+		//					_ => ".jpg"
+		//				};
+		//				string uniqueFileName = $"{timestamp}_{uniqueGuid}{extension}";
+		//				string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+		//				using (var imageStream = new MemoryStream(excelPicture.Image.ImageBytes))
+		//				using (var fileStream = new FileStream(filePath, FileMode.Create))
+		//				{
+		//					await imageStream.CopyToAsync(fileStream);
+		//				}
+
+		//				string relativePath = Path.Combine("img", "products", "variants", uniqueFileName);
+		//				var productImage = new ProductImage
+		//				{
+		//					ProductId = productId,
+		//					ProductVariantId = variant.Id,
+		//					ImageUrl = relativePath,
+		//					SortOrder = 0,
+		//					AltText = $"{color} variant image {imageIndex + 1}"
+		//				};
+		//				await _productImageRepository.InsertAsync(productImage);
+		//				imageUrls.Add(filePath); // Use filePath instead of undefined imageUrl
+		//				imageIndex++;
+		//			}
+		//		}
+		//		col++;
+		//	}
+		//	result.ProductId = productId;
+		//	result.ProductVariantId = variant.Id;
+		//	result.IsSuccess = true;
+		//	result.Errors = errors;
+		//	return result;
+		//}
 
 		private string GetImageExtension(ExcelDrawing picture)
 		{

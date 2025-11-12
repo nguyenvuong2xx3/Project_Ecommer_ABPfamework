@@ -11,9 +11,10 @@ namespace Acme.SimpleTaskApp.ProductImport.Dtos
 	{
 		public bool IsSuccess { get; set; }
 		public string Message { get; set; }
-		public int TotalProducts { get; set; }
-		public int TotalVariants { get; set; }
-		public List<string> ErrorList { get; set; } = new List<string>();
+		public int TotalRecords { get; set; }
+		public int SuccessfulImports { get; set; }
+		public int FailedImports { get; set; }
+		public List<string> Errors { get; set; } = new List<string>();
 	}
 	public class ImportProductsInput
 	{

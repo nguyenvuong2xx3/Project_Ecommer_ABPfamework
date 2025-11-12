@@ -130,8 +130,9 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			ExcelPackage.License.SetNonCommercialPersonal("ImportForDoAn");
 
 			var result = new ImportResult();
-			int totalProducts = 0;
-			int totalVariants = 0;
+			int totalRecords = 0;
+			int successfulImports = 0;
+			int failedImports = 0;
 			int? currentProductId = null;
 
 			if (file == null || file.Length == 0)
@@ -163,17 +164,19 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 						if (!string.IsNullOrWhiteSpace(productName))
 						{
-							totalProducts++;
+							totalRecords++;
 							var productResult = await _productImportExportAppService.ProcessProductRowAsync(worksheet, row);
 
 							if (productResult.IsSuccess && productResult.ProductId.HasValue)
 							{
-								currentProductId = productResult.ProductId.Value; // Set context cho các dòng biến thể tiếp theo
+								successfulImports++;
+								currentProductId = productResult.ProductId.Value;
 							}
 							else
 							{
-								currentProductId = null; // Lỗi, reset context
-								result.ErrorList.AddRange(productResult.Errors.Select(e => $"Dòng {row} (sản phẩm): {e}"));
+								failedImports++;
+								currentProductId = null;
+								result.Errors.AddRange(productResult.Errors.Select(e => $"Dòng {row} (sản phẩm): {e}"));
 							}
 						}
 						// Kịch bản 2: Đây là DÒNG BIẾN THỂ (Cột 1 rỗng)
@@ -184,36 +187,37 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 							{
 								continue; // Đây là dòng trống, bỏ qua
 							}
+							totalRecords++;
 
 							if (currentProductId == null)
 							{
-								result.ErrorList.Add($"Dòng {row}: Biến thể '{variantColor}' không thuộc sản phẩm nào (thiếu dòng sản phẩm ở trên).");
+								failedImports++;
+								result.Errors.Add($"Dòng {row}: Biến thể '{variantColor}' không thuộc sản phẩm nào (thiếu dòng sản phẩm ở trên).");
 								continue;
 							}
-
 							// Xử lý như một dòng chỉ chứa biến thể (và ảnh của biến thể)
 							var varianttResult = await _productImportExportAppService.ProcessVariantRowAsync(worksheet, row, currentProductId.Value);
 							if (varianttResult.IsSuccess)
 							{
-								totalVariants++;
+								successfulImports++;
 							}
 							else
 							{
-								result.ErrorList.AddRange(varianttResult.Errors.Select(e => $"Dòng {row} (biến thể): {e}"));
+								failedImports++;
+								result.Errors.AddRange(varianttResult.Errors.Select(e => $"Dòng {row} (biến thể): {e}"));
 							}
 						}
-
 					}
 				}
 			}
 
-			result.TotalProducts = totalProducts;
-			result.TotalVariants = totalVariants;
-			result.IsSuccess = !result.ErrorList.Any();
+			result.TotalRecords = totalRecords;
+			result.SuccessfulImports = successfulImports;
+			result.FailedImports = failedImports;
+			result.IsSuccess = result.Errors.Count == 0;
 			result.Message = result.IsSuccess
-							? $"Import thành công {totalProducts} sản phẩm và {totalVariants} biến thể."
-							: $"Import thất bại. Có {result.ErrorList.Count} lỗi.";
-
+											? $"Import thành công {successfulImports} bản ghi."
+											: $"Import thất bại. Có {failedImports} bản ghi lỗi.";
 			return result;
 		}
 	}

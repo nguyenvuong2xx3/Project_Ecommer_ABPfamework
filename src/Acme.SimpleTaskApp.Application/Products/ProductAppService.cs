@@ -192,7 +192,7 @@ namespace Acme.SimpleTaskApp.Products
 			if (id <= 0)
 				throw new UserFriendlyException("Dữ liệu không được để trống");
 			var item = await _productRepository.GetAsync(id);
-			item.ImageUrls = _productImageRepository.GetAll().Where(x => x.ProductId == item.Id).Select(ig => ig.ImageUrl).ToList(); // lấy tất cả đường dẫn ảnh để hiển thị
+			item.ImageUrls = _productImageRepository.GetAll().Where(x => x.ProductId == item.Id && x.ProductVariantId == null).Select(ig => ig.ImageUrl).ToList(); // lấy tất cả đường dẫn ảnh để hiển thị
 			return item;
 		}
 

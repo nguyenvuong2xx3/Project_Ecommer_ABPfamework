@@ -20,7 +20,8 @@
 
 		var resultNotificationArea = {
 			generateFileHtml: function (response) {
-				const { totalRecords, successfulImports, failedImports, errors } = response;
+				debugger
+				const { totalRecords, successfulImports, failedImports, errors } = response.result;
 				const hasErrors = errors && errors.length > 0;
 				const errorListHtml = hasErrors
 					? errors.map(error => `<li>${error}</li>`).join('')
@@ -50,7 +51,7 @@
 		this.init = function (modalManager) {
 			_modalManager = modalManager;
 
-			_$form = _modalManager.getModal().find('form[name=ImportLeaveRequestUnitForm]');
+			_$form = _modalManager.getModal().find('form[name=ImportProductUnitForm]');
 			_$form.validate({
 				validClass: "valid",  // default
 				errorClass: "invalid-feedback", // default is "error"
@@ -118,7 +119,10 @@
 						if (file.name.split('.').pop().toLowerCase() === 'json' || file.name.split('.').pop().toLowerCase() === 'xlsx' || file.name.split('.').pop().toLowerCase() === 'xls') {
 							var fileName = files[0].name;
 
-							var token = app.guid();
+							var token = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+								var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+								return v.toString(16);
+							});
 
 							var formData = new FormData();
 							formData.append('file', files[0]);
@@ -182,7 +186,7 @@
 				success: function (response) {
 					if (response.success) {
 						abp.notify.info(response.message);
-						abp.event.trigger('app.updateLeaveRequestModalSaved');
+						abp.event.trigger();
 						$('#ImportFileDataUploadArea').empty();
 						$('#ImportFileData').filestyle('clear');
 						$('#ResultNotificationArea').html(resultNotificationArea.generateFileHtml(response));
@@ -202,6 +206,3 @@
 		};
 	};
 })();
-
-
-
