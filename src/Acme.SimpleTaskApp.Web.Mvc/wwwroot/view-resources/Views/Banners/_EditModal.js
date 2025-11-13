@@ -69,7 +69,14 @@
         }
 
         var formData = new FormData(_$form[0]);
-        
+
+        const sortOrderText = formData.get("SortOrder");
+        const sortOrderInt = parseInt(sortOrderText, 10);
+        formData.set("SortOrder", isNaN(sortOrderInt) ? 0 : sortOrderInt);
+
+        const isActive = $("#IsActive").is(":checked");
+        formData.set("IsActive", isActive);
+
         _modalManager.setBusy(true);
         $('#error-message').hide();
 

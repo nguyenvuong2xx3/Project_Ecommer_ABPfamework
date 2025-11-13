@@ -26,28 +26,44 @@ namespace Acme.SimpleTaskApp.Banners
 		}
 
 		// 🟢 Tạo mới Banner
-		public async Task<Banner> CreateBanner(Banner input)
+		public async Task<Banner> CreateBanner(CreateBannerDto input)
 		{
 			if (input == null)
 			{
-				 throw new UserFriendlyException("Dữ liệu không hợp lệ");
+				throw new UserFriendlyException("Dữ liệu không hợp lệ");
 			}
 
-			// Upload image
-			string imageUrl = null;
+			// Tạo đối tượng Banner
+			Banner banner = new Banner
+			{
+				Title = input.Title,
+				SortOrder = input.SortOrder,
+				IsActive = input.IsActive,
+				Position = input.Position,
+				CreationTime = DateTime.Now
+			};
+
+			// Upload image nếu có
 			if (input.BannerImage != null && input.BannerImage.Length > 0)
 			{
-				input.ImageUrl = await _uploadFileAppService.UploadImageAsync(input.BannerImage, "banners");
+				banner.ImageUrl = await _uploadFileAppService.UploadImageAsync(input.BannerImage, "banners");
 			}
-			return input;
+
+			// Insert vào database
+			var result = await _bannerRepository.InsertAsync(banner);
+			await CurrentUnitOfWork.SaveChangesAsync();
+
+			return result;
 		}
 
 		// 🟢 Cập nhật Banner
 		public async Task<Banner> UpdateBanner(Banner input)
 		{
-			if (input == null) {
+			if (input == null)
+			{
 				throw new UserFriendlyException("Dữ liệu không hợp lệ");
 			}
+
 			var banner = await _bannerRepository.FirstOrDefaultAsync(input.Id);
 			if (banner == null)
 				throw new UserFriendlyException($"Không tìm thấy Banner có Id = {input.Id}");
@@ -63,6 +79,7 @@ namespace Acme.SimpleTaskApp.Banners
 				// Upload new image
 				input.ImageUrl = await _uploadFileAppService.UploadImageAsync(input.BannerImage, "banners");
 			}
+
 			// Cập nhật các thuộc tính
 			banner.Title = input.Title;
 			banner.ImageUrl = input.ImageUrl;
@@ -116,12 +133,12 @@ namespace Acme.SimpleTaskApp.Banners
 
 		public Task<Banner> GetBannerById(int id)
 		{
-			if(id <= 0)
+			if (id <= 0)
 			{
 				throw new UserFriendlyException("Id không hợp lệ");
 			}
-			var result =  _bannerRepository.FirstOrDefaultAsync(id);
-			if(result == null)
+			var result = _bannerRepository.FirstOrDefaultAsync(id);
+			if (result == null)
 			{
 				throw new UserFriendlyException($"Không tìm thấy Banner có Id = {id}");
 			}

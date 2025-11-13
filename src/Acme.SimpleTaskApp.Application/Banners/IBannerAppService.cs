@@ -11,7 +11,7 @@ namespace Acme.SimpleTaskApp.Banners
 {
 	public interface IBannerAppService: IApplicationService
 	{
-		Task<Banner> CreateBanner(Banner input);
+		Task<Banner> CreateBanner(CreateBannerDto input);
 		Task<Banner> UpdateBanner(Banner input);
 		Task DeleteBanner(int id);
 		Task<PagedResultDto<Banner>> GetAllBanners(GetAllBannerDto input);

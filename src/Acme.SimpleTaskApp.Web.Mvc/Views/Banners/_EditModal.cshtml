@@ -35,7 +35,7 @@
           <label for="Position" class="control-label">
             Vị trí hiển thị <span class="text-danger">*</span>
           </label>
-          <select class="form-control" id="Position" name="Position" required>
+          <select class="form-control p-0 ps-2" id="Position" name="Position" required>
             <option value="">-- Chọn vị trí --</option>
             <option value="0" selected="@(Model.Banner.Position == BannerPosition.HomeTop ? "selected" : null)">Trên cùng trang chủ</option>
             <option value="1" selected="@(Model.Banner.Position == BannerPosition.HomeMiddle ? "selected" : null)">Giữa trang chủ</option>
@@ -55,7 +55,7 @@
           <label for="SortOrder" class="control-label">
             Thứ tự hiển thị <span class="text-danger">*</span>
           </label>
-          <input type="number" class="form-control" id="SortOrder" name="SortOrder" value="@Model.Banner.SortOrder" min="0" required />
+          <input type="text" class="form-control" id="SortOrder" name="SortOrder" value="@Model.Banner.SortOrder" min="0" required />
           <small class="form-text text-muted">Số thứ tự càng nhỏ càng hiển thị trước</small>
         </div>
       </div>

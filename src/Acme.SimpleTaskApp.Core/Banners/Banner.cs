@@ -11,13 +11,13 @@ namespace Acme.SimpleTaskApp.Banners
 {
 	public class Banner : Entity<int>
 	{
-		public string Title { get; set; }
-		public string ImageUrl { get; set; }
-		public int SortOrder { get; set; }
-		public bool IsActive { get; set; }
+		public string? Title { get; set; }
+		public string? ImageUrl { get; set; }
+		public int? SortOrder { get; set; }
+		public bool IsActive { get; set; } = true;
 		public DateTime CreationTime { get; set; } = DateTime.Now;
-		[NotMapped] public IFormFile BannerImage { get; set; }
-		public BannerPosition Position { get; set; } = BannerPosition.HomeTop;
+		[NotMapped] public IFormFile? BannerImage { get; set; }
+		public BannerPosition? Position { get; set; } = BannerPosition.HomeTop;
 	}
 	public enum BannerPosition
 	{
