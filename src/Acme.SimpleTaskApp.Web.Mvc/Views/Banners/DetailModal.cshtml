@@ -1,0 +1,130 @@
+﻿@using Acme.SimpleTaskApp.Banners
+@using Acme.SimpleTaskApp.Web.Models.Banners
+@model BannerViewModel
+
+
+<div class="modal-header bg-info text-white">
+  <h5 class="modal-title">
+    <i class="fas fa-info-circle"></i> Chi tiết Banner
+  </h5>
+  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+    <!-- Banner Image -->
+    <div class="col-md-12 mb-4">
+      <div class="text-center">
+        @if (!string.IsNullOrEmpty(Model.Banner.ImageUrl))
+        {
+          <img src="@Model.Banner.ImageUrl" alt="@Model.Banner.Title" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain;">
+        }
+        else
+        {
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> Không có ảnh
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Banner Info -->
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h6 class="mb-0"><i class="fas fa-info"></i> Thông tin Banner</h6>
+        </div>
+        <div class="card-body">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td class="font-weight-bold" style="width: 30%">
+                  <i class="fas fa-tag text-primary"></i> Tiêu đề:
+                </td>
+                <td>@Model.Banner.Title</td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">
+                  <i class="fas fa-map-marker-alt text-success"></i> Vị trí hiển thị:
+                </td>
+                <td>
+                  @{
+                    var positionText = Model.Banner.Position switch
+                    {
+                      BannerPosition.HomeTop => "Trên cùng trang chủ",
+                      BannerPosition.HomeMiddle => "Giữa trang chủ",
+                      BannerPosition.HomeBottom => "Cuối trang chủ",
+                      BannerPosition.Sidebar => "Thanh bên",
+                      BannerPosition.Header => "Phần đầu trang",
+                      BannerPosition.Footer => "Phần chân trang",
+                      BannerPosition.ProductPage => "Trang chi tiết sản phẩm",
+                      BannerPosition.CategoryPage => "Trang danh mục",
+                      _ => "Không xác định"
+                    };
+                  }
+                  <span class="badge badge-info">@positionText</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">
+                  <i class="fas fa-sort-numeric-up text-warning"></i> Thứ tự hiển thị:
+                </td>
+                <td>
+                  <span class="badge badge-secondary">@Model.Banner.SortOrder</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">
+                  <i class="fas fa-toggle-on text-info"></i> Trạng thái:
+                </td>
+                <td>
+                  @if (Model.Banner.IsActive)
+                  {
+                    <span class="badge badge-success">
+                      <i class="fas fa-check"></i> Đang hoạt động
+                    </span>
+                  }
+                  else
+                  {
+                    <span class="badge badge-danger">
+                      <i class="fas fa-times"></i> Tạm dừng
+                    </span>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">
+                  <i class="fas fa-calendar-plus text-primary"></i> Ngày tạo:
+                </td>
+                <td>
+                  <span class="badge badge-info">
+                    @Model.Banner.CreationTime.ToString("dd/MM/yyyy HH:mm:ss")
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-weight-bold">
+                  <i class="fas fa-link text-secondary"></i> URL ảnh:
+                </td>
+                <td>
+                  <small class="text-muted text-break">@Model.Banner.ImageUrl</small>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+    <i class="fas fa-times"></i> Đóng
+  </button>
+  <button type="button" class="btn btn-primary" data-banner-id="@Model.Banner.Id" id="EditBannerFromDetail">
+    <i class="fas fa-edit"></i> Chỉnh sửa
+  </button>
+</div>

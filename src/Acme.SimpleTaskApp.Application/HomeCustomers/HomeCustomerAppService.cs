@@ -35,6 +35,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	[UnitOfWork]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
 	{
+		input.MaxResultCount = 12;
 		if (input == null) input = new SearchHomeCustomerDto();
 
 		// lấy sản phẩm ra

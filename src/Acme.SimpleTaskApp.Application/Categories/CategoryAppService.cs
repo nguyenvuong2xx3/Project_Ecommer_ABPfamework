@@ -24,6 +24,11 @@ namespace Acme.SimpleTaskApp.Categories
 
 		public async Task<Category> CreateCategory(Category input)
 		{
+			var check = await _categoryRepository.FirstOrDefaultAsync(x => x.Name == input.Name);
+			if(check != null)
+			{
+				throw new UserFriendlyException("Tên danh mục đã tồn tại.");
+			}
 			var category = await _categoryRepository.InsertAsync(input);
 			return category;
 		}
@@ -111,7 +116,10 @@ namespace Acme.SimpleTaskApp.Categories
 			{
 				throw new UserFriendlyException("Could not find the category, maybe it's deleted.");
 			}
-
+			if (category.Name == input.Name)
+			{
+				throw new UserFriendlyException("Tên danh mục đã tồn tại.");
+			}
 			category.Name = input.Name;
 			category.Description = input.Description;
 			category.ParentId = input.ParentId;

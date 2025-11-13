@@ -1,0 +1,113 @@
+﻿@using Acme.SimpleTaskApp.Banners
+@using Acme.SimpleTaskApp.Web.Models.Banners
+@model BannerViewModel
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <i class="fas fa-plus-circle"></i> Tạo mới Banner
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form name="BannerCreateForm" role="form" novalidate class="form-validation">
+    <div class="modal-body">
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+        <div class="row">
+            <!-- Tiêu đề -->
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="Title" class="control-label">
+                        Tiêu đề <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="Title" name="Title" placeholder="Nhập tiêu đề banner..." required />
+                </div>
+            </div>
+
+            <!-- Vị trí hiển thị -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Position" class="control-label">
+                        Vị trí hiển thị <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-control" id="Position" name="Position" required>
+                        <option value="">-- Chọn vị trí --</option>
+                        <option value="0">Trên cùng trang chủ</option>
+                        <option value="1">Giữa trang chủ</option>
+                        <option value="2">Cuối trang chủ</option>
+                        <option value="3">Thanh bên</option>
+                        <option value="4">Phần đầu trang</option>
+                        <option value="5">Phần chân trang</option>
+                        <option value="6">Trang chi tiết sản phẩm</option>
+                        <option value="7">Trang danh mục</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Thứ tự hiển thị -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="SortOrder" class="control-label">
+                        Thứ tự hiển thị <span class="text-danger">*</span>
+                    </label>
+                    <input type="number" class="form-control" id="SortOrder" name="SortOrder" value="0" min="0" required />
+                    <small class="form-text text-muted">Số thứ tự càng nhỏ càng hiển thị trước</small>
+                </div>
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" checked>
+                        <label class="custom-control-label" for="IsActive">
+                            Kích hoạt hiển thị
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload ảnh Banner -->
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="BannerImage" class="control-label">
+                        Ảnh Banner <span class="text-danger">*</span>
+                    </label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="BannerImage" name="BannerImage" accept="image/*" required>
+                        <label class="custom-file-label" for="BannerImage">Chọn ảnh banner...</label>
+                    </div>
+                    <small class="form-text text-muted">
+                        Định dạng: JPG, PNG, GIF. Kích thước đề xuất: 1920x600px
+                    </small>
+                </div>
+            </div>
+
+            <!-- Preview ảnh -->
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div id="bannerImagePreviewContainer" style="display: none;">
+                        <label class="control-label">Xem trước:</label>
+                        <div class="position-relative d-inline-block">
+                            <img id="bannerImagePreview" src="" alt="Preview" class="img-thumbnail" style="max-width: 100%; max-height: 300px; display: block;">
+                            <button type="button" class="btn btn-danger btn-sm position-absolute" id="deleteBannerImageBtn" style="top: 5px; right: 5px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fas fa-times"></i> Hủy
+        </button>
+        <button type="submit" class="btn btn-primary save-button">
+            <i class="fas fa-save"></i> Lưu
+        </button>
+    </div>
+</form>

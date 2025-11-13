@@ -57,6 +57,15 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
 							)
 					)
+					.AddItem(
+							new MenuItemDefinition(
+									PageNames.Banners,
+									L("Banners"),
+									url: "Banners",
+									icon: "fas fa-theater-masks",
+									permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
+							)
+					)
 			);
 
 			// ===== QUẢN LÝ SẢN PHẨM (Menu cha có submenu) =====
