@@ -4,3 +4,15 @@ wwwroot/libs/
 # Ignore bundle files
 wwwroot/view-resources/Views/**/*.min.*
 wwwroot/view-resources/Views/Shared/Components/**/*.min.*
+
+# Ignore tất cả file ảnh trong project
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.svg
+*.ico
+*.webp
+*.tif
+*.tiff
