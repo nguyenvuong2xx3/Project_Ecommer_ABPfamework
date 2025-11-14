@@ -13,8 +13,7 @@
     <script src="~/view-resources/Views/HomeCustomer/MainCustomer.js" asp-append-version="true"></script>
   </environment>
 }
-@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_SliderCustomer.cshtml")
-<iframe src="/" style="display:none; width:0; height:0;"></iframe>
+@await Component.InvokeAsync("BannerHomeTop")
 
 <!-- Main Container -->
 <div class="main-container mt-3">

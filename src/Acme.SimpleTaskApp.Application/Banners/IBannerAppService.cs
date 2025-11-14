@@ -15,6 +15,7 @@ namespace Acme.SimpleTaskApp.Banners
 		Task<Banner> UpdateBanner(Banner input);
 		Task DeleteBanner(int id);
 		Task<PagedResultDto<Banner>> GetAllBanners(GetAllBannerDto input);
+		Task<List<Banner>> GetListBanners(GetAllBannerDto input);
 		Task<Banner> GetBannerById(int id);
 	}
 }

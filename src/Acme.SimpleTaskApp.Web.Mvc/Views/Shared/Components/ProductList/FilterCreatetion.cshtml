@@ -1,52 +1,109 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 @using static Acme.SimpleTaskApp.Products.Product
 @model ProductListViewModel
-<div class="main-container mt-3">
+<div class="main-container mt-3" style="height: 550px">
+
   <div class="products-header">
     <h3>Sản phẩm mới nhất</h3>
   </div>
-  <div class="products-grid">
-    @foreach (var product in Model.ProductsInfo)
-    {
-      var item = product.ProductVariants.FirstOrDefault();
-      if (item != null)
+
+  <div class="layout-container">
+
+    <div class="banner-container">
+      @if (Model.Banner != null)
       {
-        <div class="product-item">
-          <div class="product-card product-click-detail" data-id="@item.Id">
-            <div class="image-container">
-              @if (item.ImageUrl != null)
-              {
-                <img src="@item.ImageUrl" class="product-image" alt="@product.Name">
-              }
-              else
-              {
-                <img src="~/img/products/default.png" class="product-image" alt="@product.Name">
-              }
-            </div>
-            <div class="product-info">
-              <div class="product-name">
-                @product.Name
-                @if (!string.IsNullOrEmpty(item.Ram))
-                {
-                  @($"/{item.Ram}/{item.Storage}")
-                }
-                else
-                {
-                  @($"/{item.Storage}/{item.Color}")
-                }
-              </div>
-              <div class="product-price">
-                <div class="current-price">@item.Price.ToString("#,##0")₫</div>
-                <span class="discount-text">Giảm giá ở đây</span>
-              </div>
-            </div>
-            <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
-              Xem chi tiết
-            </button>
-          </div>
+        <div class="banner-image-slider">
+          <img src="@Model.Banner.ImageUrl" class="banner-image" alt="Banner" style="height: 410px; width: 370px;">
         </div>
       }
-    }
+      else
+      {
+        <div class="banner-placeholder banner-image-slider">
+          <h4>Banner Quảng Cáo</h4>
+          <p>Ưu đãi đặc biệt trong tháng này</p>
+        </div>
+      }
+    </div>
+
+    <div class="products-container">
+
+      <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+        <div class="carousel-inner">
+          @{
+            var validProducts = Model.ProductsInfo
+            .Select(p => new { Product = p, FirstVariant = p.ProductVariants.FirstOrDefault() })
+            .Where(p => p.FirstVariant != null)
+            .ToList();
+
+            int productsPerPage = 4;
+            int pageCount = (int)Math.Ceiling((double)validProducts.Count / productsPerPage);
+
+            for (int page = 0; page < pageCount; page++)
+            {
+              var productsOnThisPage = validProducts.Skip(page * productsPerPage).Take(productsPerPage);
+              var isActive = (page == 0) ? "active" : "";
+
+              <div class="carousel-item @isActive">
+                <div class="products-grid">
+                  @foreach (var p in productsOnThisPage)
+                  {
+                    var product = p.Product;
+                    var item = p.FirstVariant;
+
+                    <div class="product-item">
+                      <div class="product-card product-click-detail" data-id="@item.Id">
+                        <div class="image-container">
+                          @if (item.ImageUrl != null)
+                          {
+                            <img src="@item.ImageUrl" class="product-image" alt="@product.Name">
+                          }
+                          else
+                          {
+                            <img src="~/img/products/default.png" class="product-image" alt="@product.Name">
+                          }
+                        </div>
+                        <div class="product-info">
+                          <div class="product-name">
+                            @product.Name
+                            @if (!string.IsNullOrEmpty(item.Ram))
+                            {
+                              @($"/{item.Ram}/{item.Storage}")
+                            }
+                            else
+                            {
+                              @($"/{item.Storage}/{item.Color}")
+                            }
+                          </div>
+                          <div class="product-price">
+                            <div class="current-price">@item.Price.ToString("#,##0")₫</div>
+                            <span class="discount-text">Giảm giá ở đây</span>
+                          </div>
+                        </div>
+                        <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
+                          Xem chi tiết
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        @if (pageCount > 1)
+        {
+          <button class="carousel-control-prev product-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next product-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        }
+      </div>
+    </div>
   </div>
 </div>
 
@@ -54,7 +111,6 @@
   /* Main Container Styling */
   .main-container {
     width: 1200px;
-    height: 980px;
     background-color: white;
     margin: 0 auto;
     padding: 20px;
@@ -62,6 +118,19 @@
     border-radius: 15px;
   }
 
+  /* Layout container (VẪN GIỮ NGUYÊN) */
+  .layout-container {
+    display: flex;
+    gap: 20px;
+  }
+
+  /* Products Container (VẪN GIỮ NGUYÊN) */
+  .products-container {
+    width: 75%;
+    position: relative;
+  }
+
+  /* Products Header (Giờ nằm ở trên cùng) */
   .products-header {
     padding-bottom: 25px;
     border-bottom: 1px solid #eee;
@@ -76,23 +145,19 @@
       text-transform: uppercase;
     }
 
-  /* Products Grid */
+  /* Products Grid (Bên trong product slide) */
   .products-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    height: calc(100% - 80px);
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
-  /* Product Item */
+  /* Product Item (VẪN GIỮ NGUYÊN) */
   .product-item {
-    width: 185px;
     height: 409px;
-    margin: 0;
   }
 
-  /* Product Card */
+  /* (Các style .product-card, .image-container, .product-image, .product-info... giữ nguyên) */
   .product-card {
     width: 100%;
     height: 100%;
@@ -112,7 +177,6 @@
       border-color: #288ad6;
     }
 
-  /* Image Container */
   .image-container {
     width: 100%;
     height: 160px;
@@ -132,7 +196,6 @@
     object-fit: cover;
   }
 
-  /* Product Info */
   .product-info {
     padding: 15px;
     flex-grow: 1;
@@ -160,7 +223,6 @@
     margin-bottom: 12px;
   }
 
-  /* Price Styling */
   .product-price {
     margin-bottom: 10px;
   }
@@ -178,7 +240,6 @@
     font-weight: 500;
   }
 
-  /* Button Styling */
   .detail-btn {
     background: white;
     color: #288ad6;
@@ -198,22 +259,27 @@
       color: #1a7bc8;
     }
 
-  /* Scrollbar Styling */
-  .products-grid::-webkit-scrollbar {
-    width: 6px;
+  /* Style cho các nút của Product Carousel (VẪN GIỮ NGUYÊN) */
+  #productCarousel .carousel-control-prev,
+  #productCarousel .carousel-control-next {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
-  .products-grid::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
+  #productCarousel .carousel-control-prev {
+    left: -20px;
   }
 
-  .products-grid::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
+  #productCarousel .carousel-control-next {
+    right: -20px;
   }
 
-    .products-grid::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8;
-    }
+  #productCarousel .carousel-control-prev-icon,
+  #productCarousel .carousel-control-next-icon {
+    filter: invert(1) grayscale(100);
+  }
 </style>

@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Acme.SimpleTaskApp.Banners;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Products.Dtos;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,6 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 	public class ProductListViewModel
 	{
 		public List<Product> ProductsInfo { get; set; }
-
+		public Banner Banner { get; set; }
 	}
 }

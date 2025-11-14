@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Banners.Dtos;
@@ -129,6 +130,35 @@ namespace Acme.SimpleTaskApp.Banners
 				.ToListAsync();
 
 			return new PagedResultDto<Banner>(totalCount, result);
+		}
+
+		[UnitOfWork]
+		public async Task<List<Banner>> GetListBanners(GetAllBannerDto input)
+		{
+			var query = _bannerRepository.GetAll();
+
+			// Lọc theo từ khóa (Title)
+			if (!string.IsNullOrWhiteSpace(input.Filter))
+			{
+				var f = input.Filter.Trim().ToLower();
+				query = query.Where(x => x.Title.ToLower().Contains(f));
+			}
+
+			// Lọc theo trạng thái
+			if (input.IsActive.HasValue)
+				query = query.Where(x => x.IsActive == input.IsActive.Value);
+
+			// Lọc theo vị trí
+			if (input.Position.HasValue)
+				query = query.Where(x => x.Position == input.Position.Value);
+
+			// Tổng số banner
+			var totalCount = await query.CountAsync();
+			var result = await query
+				.OrderBy(c => c.SortOrder)
+				.ToListAsync();
+
+			return new List<Banner>(result);
 		}
 
 		public Task<Banner> GetBannerById(int id)
