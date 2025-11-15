@@ -255,18 +255,6 @@
     return new Intl.NumberFormat('vi-VN').format(price) + '₫';
   }
 
-  // Thêm vào giỏ hàng
-  //function addToCart(variantId) {
-  //  abp.services.app.carts.addToCart(variantId, 1)
-  //    .done(function () {
-  //      abp.notify.success('Đã thêm vào giỏ hàng');
-  //      // Có thể update cart counter ở đây
-  //    })
-  //    .fail(function (error) {
-  //      abp.notify.error('Có lỗi khi thêm vào giỏ hàng');
-  //    });
-  //}
-
   // Mua ngay
   function buyNow(variantId) {
     abp.services.app.carts.addToCart(variantId, 1)

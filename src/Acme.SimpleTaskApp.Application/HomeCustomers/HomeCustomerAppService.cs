@@ -225,18 +225,12 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		// lấy sản phẩm tổng quát
 		var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
 
-		// lấy ảnh biến thể
-		item.ImageUrls = await _productImageRepository.GetAll()
-			.Where(x => x.ProductVariantId == item.Id)
-			.Select(ig => ig.ImageUrl)
-			.ToListAsync();
-
 		// add vào product
 		product.ProductVariants.AddRange(allVariants);
-		product.ProductVariant = item;
+		product.ProductVariant = allVariants.FirstOrDefault (x => x.Id == id);
 		// lấy ảnh product
 		product.ImageUrls = await _productImageRepository.GetAll()
-			.Where(x => x.ProductId == product.Id)
+			.Where(x => x.ProductId == product.Id && x.ProductVariantId == null)
 			.Select(ig => ig.ImageUrl)
 			.ToListAsync();
 		return product;

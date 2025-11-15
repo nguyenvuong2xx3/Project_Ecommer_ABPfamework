@@ -127,6 +127,7 @@
 	}
 
 	$(document).on('click', '.btl-click-delete', function () {
+		debugger
 		let productvariantId = $(this).data('productvariant-id');
 		let cartId = $(this).data('productvariant-cartid');
 		deleteCartItem(productvariantId, cartId);
@@ -165,12 +166,26 @@
 		return urlParams.get('id');
 	}
 
+	$(document).on('click', '.add-buy', function (e) {
+		e.preventDefault();
+		var productvariantId = getProductIdFromUrl();
+		var quantity = 1;
+		addToCart(productvariantId, quantity);
+		(function ($) {
+			$(document).ready(function () {
+				// Điều hướng vào HomeCustomer/Cart
+				window.location.href = abp.appPath + 'HomeCustomer/Cart';
+			});
+		})(jQuery);
+	});
+
 	$(document).on('click', '.add-to-cart', function (e) {
 		e.preventDefault();
 		var productvariantId = getProductIdFromUrl();
 		var quantity = 1;
 		addToCart(productvariantId, quantity);
 	});
+
 	function addToCart(productvariantId, quantity) {
 		abp.ui.setBusy();
 		_cartService.createCart(productvariantId, quantity)
