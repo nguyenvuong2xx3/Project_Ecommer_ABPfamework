@@ -13,18 +13,18 @@
 		lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
 	});
 
-	// Carousel sử dụng Bootstrap, khởi tạo khi DOM ready
-	$(function () {
-		var myCarouselEl = document.querySelector('#carouselId');
-		if (myCarouselEl) {
-			var carousel = new bootstrap.Carousel(myCarouselEl, {
-				interval: 1000,
-				pause: false
-			});
-			$('.carousel-control-prev').click(function () { carousel.prev(); });
-			$('.carousel-control-next').click(function () { carousel.next(); });
-		}
-	});
+	//// Carousel sử dụng Bootstrap, khởi tạo khi DOM ready
+	//$(function () {
+	//	var myCarouselEl = document.querySelector('#carouselId');
+	//	if (myCarouselEl) {
+	//		var carousel = new bootstrap.Carousel(myCarouselEl, {
+	//			interval: 1000,
+	//			pause: false
+	//		});
+	//		$('.carousel-control-prev').click(function () { carousel.prev(); });
+	//		$('.carousel-control-next').click(function () { carousel.next(); });
+	//	}
+	//});
 
 	// Back to top button
 	$(window).scroll(function () {

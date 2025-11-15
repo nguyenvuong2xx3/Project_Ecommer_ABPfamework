@@ -260,12 +260,11 @@
 		console.log('Order data:', orderData);
 
 		_orderService.createOrder(orderData)
-			.done(function (response) {
+			.done(function (orderId) {
 				abp.notify.success('Đặt hàng thành công!');
 
-				// Chuyển hướng đến trang xác nhận đơn hàng
 				setTimeout(function () {
-					window.location.href = abp.appPath + 'Orders/OrderConfirmation?orderId=' + response.orderId;
+					window.location.href = abp.appPath + 'Orders/OrderConfirmation?orderId=' + orderId;
 				}, 2000);
 			})
 			.fail(function (error) {

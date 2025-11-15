@@ -21,7 +21,7 @@
     <script src="~/view-resources/Views/HomeCustomer/DetailProductHomeCustomer.js" asp-append-version="true"></script>
   </environment>
 }
-<div class="container-fluid py-3" style="padding: 0 390px">
+<div class="container-fluid py-3" style="padding: 0 200px">
   <div class="bg-white p-3 mb-3 rounded">
     <div class="row align-items-center">
       <div class="col">
@@ -95,6 +95,62 @@
           }
         </div>
       </div>
+
+      <!-- Thêm phần thông số kỹ thuật -->
+      <div class="bg-white p-3 rounded mt-3">
+        <h4 class="fw-bold mb-3">Thông số kỹ thuật</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td class="fw-semibold">Màn hình:</td>
+                  <td>@Model.ProductInfo.Screen</td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Chip xử lý:</td>
+                  <td>@Model.ProductInfo.Processor</td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Hệ thống camera:</td>
+                  <td>@Model.ProductInfo.CameraSystem</td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">RAM:</td>
+                  <td>@Model.ProductInfo.ProductVariant.Ram</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td class="fw-semibold">Dung lượng lưu trữ:</td>
+                  <td>@Model.ProductInfo.ProductVariant.Storage</td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Pin:</td>
+                  <td>@Model.ProductInfo.Battery</td>
+                </tr>
+                <tr>
+                  <td class="fw-semibold">Màu sắc:</td>
+                  <td>@Model.ProductInfo.ProductVariant.Color</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mô tả sản phẩm -->
+        @if (!string.IsNullOrEmpty(Model.ProductInfo.Description))
+        {
+          <div class="mt-4">
+            <h5 class="fw-bold mb-2">Mô tả sản phẩm</h5>
+            <p class="text-muted">@Model.ProductInfo.Description</p>
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Right Side - Purchase Options -->
@@ -126,22 +182,28 @@
         <!-- Color Options -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Màu sắc:</label>
-          <div class="d-flex gap-3 mb-3 flex-wrap justify-content-center">
-            @foreach (var imgpd in Model.ProductInfo.ProductVariants)
-            {
-              var isActive = imgpd.Id == Model.ProductInfo.ProductVariant.Id;
-              <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center @(isActive ? "border-primary shadow-sm" : "border-secondary-subtle")"
-                   style="min-width: 150px; border-radius: 10px; margin-right: 10px; cursor: pointer;"
-                   data-variant-id="@imgpd.Id">
-                <!-- Ảnh bên trái -->
-                <img src="@imgpd.ImageUrls.First()"
-                     style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
-                <!-- Thông tin bên phải -->
-                <div class="ms-2 d-flex flex-column align-items-start">
-                  <span class="small fw-semibold">@imgpd.Color</span>
-                  <span class="small text-muted">@imgpd.Price.ToString("#,##0")₫</span>
+          <div class="row">
+            @{
+              int colorIndex = 0;
+              foreach (var imgpd in Model.ProductInfo.ProductVariants)
+              {
+                var isActive = imgpd.Id == Model.ProductInfo.ProductVariant.Id;
+                <div class="col-6 mb-2">
+                  <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center @(isActive ? "border-primary shadow-sm" : "border-secondary-subtle")"
+                       style="border-radius: 10px; cursor: pointer;"
+                       data-variant-id="@imgpd.Id">
+                    <!-- Ảnh bên trái -->
+                    <img src="@imgpd.ImageUrls.First()"
+                         style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
+                    <!-- Thông tin bên phải -->
+                    <div class="ms-2 d-flex flex-column align-items-start">
+                      <span class="small fw-semibold">@imgpd.Color</span>
+                      <span class="small text-muted">@imgpd.Price.ToString("#,##0")₫</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+                colorIndex++;
+              }
             }
           </div>
         </div>
@@ -170,6 +232,9 @@
           </a>
         </div>
       </div>
+      @await Component.InvokeAsync("Banners", new { viewName = "BannerDetailMiddle" })
+
     </div>
+    @await Component.InvokeAsync("ProductList", new { viewName = "FilterCategory", categoryId = @Model.ProductInfo.CategoryId })
   </div>
 </div>

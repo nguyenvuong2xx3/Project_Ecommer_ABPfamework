@@ -1,6 +1,8 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Orders
+@model OrderViewModel
 ﻿@{
-  ViewData["Title"] = "Order";
-  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+ViewData["Title"] = "Order";
+Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 
 <div class="container success-container" style="padding-top: 100px; margin-top: 100px; margin-bottom: 50px;">
@@ -22,23 +24,21 @@
         <div class="row mb-4">
           <div class="col-md-6">
             <div class="info-item">
+              <span class="fw-bold">Mã đơn hàng:</span>
+              <span>@Model.Order.Code</span>
+            </div>
+            <div class="info-item mt-2">
               <span class="fw-bold">Trạng thái:</span>
               <span class="status-badge">
-                @switch (Model.Status)
+                @switch (Model.Order.Status)
                 {
                   case 0:
                     <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                     break;
                   case 1:
-                    <span class="badge bg-info text-white">Đã xác nhận</span>
-                    break;
-                  case 2:
-                    <span class="badge bg-primary text-white">Đang giao</span>
-                    break;
-                  case 3:
                     <span class="badge bg-success text-white">Hoàn thành</span>
                     break;
-                  case 4:
+                  case 2:
                     <span class="badge bg-danger text-white">Đã hủy</span>
                     break;
                   default:
@@ -49,18 +49,35 @@
             </div>
             <div class="info-item mt-2">
               <span class="fw-bold">Tên người đặt:</span>
-              <span>@Model.UserName</span>
+              <span>@Model.Order.FullName</span>
+            </div>
+            <div class="info-item mt-2">
+              <span class="fw-bold">Giới tính:</span>
+              <span>
+                @if (Model.Order.GioiTinh.HasValue)
+                {
+                  @(Model.Order.GioiTinh == 1 ? "Nam" : "Nữ")
+                }
+                else
+                {
+                  <text>Không xác định</text>
+                }
+              </span>
             </div>
           </div>
           <div class="col-md-6">
             <div class="info-item">
-              <span class="fw-bold">Email:</span>
-              <span>@Model.EmailAddress</span>
+              <span class="fw-bold">Số điện thoại:</span>
+              <span>@Model.Order.PhoneNumber</span>
+            </div>
+            <div class="info-item mt-2">
+              <span class="fw-bold">Địa chỉ:</span>
+              <span>@Model.Order.DiaChiChiTiet, @Model.Order.PhuongXa, @Model.Order.TinhThanh</span>
             </div>
             <div class="info-item mt-2">
               <span class="fw-bold">Phương thức thanh toán:</span>
               <span class="payment-badge">
-                @switch (Model.PaymentMethod)
+                @switch (Model.Order.PaymentMethod)
                 {
                   case 0:
                     <span class="badge bg-cash">Tiền mặt</span>
@@ -86,7 +103,6 @@
           <table class="table table-hover align-middle">
             <thead class="table-light">
               <tr>
-                <th style="width: 10%">Mã SP</th>
                 <th style="width: 25%">Tên sản phẩm</th>
                 <th style="width: 15%">Ảnh</th>
                 <th style="width: 15%">Đơn giá</th>
@@ -95,25 +111,33 @@
               </tr>
             </thead>
             <tbody>
-              @foreach (var item in Model.OrderDetails)
+              @if (Model.Order.OrderDetails != null && Model.Order.OrderDetails.Any())
+              {
+                foreach (var item in Model.Order.OrderDetails)
+                {
+                  <tr>
+                    <td>@item.ProductVariant.ProductName</td>
+                    <td>
+                      @if (!string.IsNullOrEmpty(item.ProductVariant.ImageUrl))
+                      {
+                        <img src="@item.ProductVariant.ImageUrl" alt="@item.ProductVariant.ProductName"
+                             class="img-thumbnail product-img" />
+                      }
+                      else
+                      {
+                        <span class="text-muted">Không có ảnh</span>
+                      }
+                    </td>
+                    <td>@item.NewPrice.Value.ToString("N0") ₫</td>
+                    <td>@item.Quantity</td>
+                    <td class="fw-bold">@((item.NewPrice * item.Quantity).Value.ToString("N0")) ₫</td>
+                  </tr>
+                }
+              }
+              else
               {
                 <tr>
-                  <td>@item.ProductId</td>
-                  <td>@item.ProductName</td>
-                  <td>
-                    @if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                      <img src="@item.ImageUrl" alt="@item.ProductName"
-                           class="img-thumbnail product-img" />
-                    }
-                    else
-                    {
-                      <span class="text-muted">Không có ảnh</span>
-                    }
-                  </td>
-                  <td>@item.NewPrice.ToString("N0") ₫</td>
-                  <td>@item.Quantity</td>
-                  <td class="fw-bold">@item.TotalUnit.ToString("N0") ₫</td>
+                  <td colspan="6" class="text-center">Không có sản phẩm nào trong đơn hàng</td>
                 </tr>
               }
             </tbody>
@@ -127,7 +151,7 @@
             <div class="d-flex justify-content-between border-top pt-2">
               <span class="fw-bold">Tổng cộng:</span>
               <span class="fw-bold text-danger fs-5">
-                @Model.TotalPrice.ToString("N0") ₫
+                @Model.Order.TotalPrice?.ToString("N0") ₫
               </span>
             </div>
           </div>
@@ -135,10 +159,6 @@
       </div>
     </div>
   </div>
-
-  @* <div class="d-flex justify-content-center mt-4"> *@
-  @*   <li><a class="dropdown-item" href="/Orders/IndexForCustomer"><i class="fas fa-box-open me-2"></i>Tất cả đơn hàng</a></li> *@
-  @* </div> *@
 </div>
 
 <style>

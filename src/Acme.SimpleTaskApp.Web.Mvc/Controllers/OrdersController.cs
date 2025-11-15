@@ -106,18 +106,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_DetailOrderModal", model);
 		}
 
-		//public async Task<IActionResult> DetailOrderForUser()
-		//{
-		//	var viewModel = await _ordersAppService.GetOrderByUserId();
-
-		//	var model = new OrderViewModel()
-		//	{
-		//		Status = viewModel.Status,
-		//		UserName = viewModel.UserName,
-		//		EmailAddress = viewModel.EmailAddress,
-		//		OrderDetails = viewModel.OrderDetails
-		//	};
-		//	return PartialView("DetailOrderUserModal", model);
-		//}
+		public async Task<IActionResult> OrderConfirmation(int orderId)
+		{
+			var order = await _ordersAppService.GetOrder(orderId);
+			var model = new OrderViewModel()
+			{
+				Order = order
+			};
+			return PartialView("OrderConfirmation", model);
+		}
 	}
 }

@@ -99,9 +99,9 @@
                 <img src="@item.ProductVariant.ImageUrl" alt="@item.ProductVariant.ProductName" style="width:60px;height:60px;object-fit:cover;" class="img-thumbnail" />
               }
             </td>
-            <td>@item.NewPrice.ToString("N0")</td>
-            <td>@item.Quantity</td>
-            <td>@((item.NewPrice * item.Quantity).ToString("N0"))</td>
+            <td>@item.NewPrice.Value.ToString("N0")</td>
+            <td>@item.Quantity.Value</td>
+            <td>@((item.NewPrice.Value * item.Quantity.Value).ToString("N0"))</td>
           </tr>
         }
       </tbody>

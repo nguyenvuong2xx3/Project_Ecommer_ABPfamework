@@ -8,6 +8,7 @@ using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Carts;
+using Acme.SimpleTaskApp.Email;
 using Acme.SimpleTaskApp.Notifications;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders.Dtos;
@@ -35,7 +36,7 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly IOrderQueueService _orderQueueService;
 		private readonly IRepository<Cart, int> _cartRepository;
 		private readonly IRepository<CartItem, int> _cartItemRepository;
-
+		private readonly ISendMailAppService _sendMailAppService;
 
 		public OrdersAppService(
 			IRepository<ProductImage> productImageRepository,
@@ -46,8 +47,10 @@ namespace Acme.SimpleTaskApp.Orders
 			INotificationAppService notificationAppService,
 			IRepository<CartItem, int> cartItemRepository,
 		IRepository<Cart, int> cartRepository,
+		ISendMailAppService sendMailAppService,
 		IOrderQueueService orderQueueService)
 		{
+			_sendMailAppService = sendMailAppService;
 			_productImageRepository = productImageRepository;
 			_cartRepository = cartRepository;
 			_cartItemRepository = cartItemRepository;
@@ -83,7 +86,7 @@ namespace Acme.SimpleTaskApp.Orders
 				// Tính tổng giá - không cần validate stock nữa vì đã validate trong TryLockProductsAsync
 				foreach (var item in input.OrderDetails)
 				{
-					totalPrice += item.Quantity * item.NewPrice;
+					totalPrice += item.Quantity.Value * item.NewPrice.Value;
 
 					orderDetailsList.Add(new OrderDetails
 					{
@@ -133,6 +136,8 @@ namespace Acme.SimpleTaskApp.Orders
 				}
 
 				await CurrentUnitOfWork.SaveChangesAsync();
+				// Gửi email xác nhận đơn hàng
+				_sendMailAppService.SendMailOrderAsync();
 				return orderId;
 			}
 			catch (Exception)
@@ -205,7 +210,7 @@ namespace Acme.SimpleTaskApp.Orders
 					foreach (var detail in order.OrderDetails)
 					{
 						// Lấy ProductVariant đã có sẵn từ Dictionary
-						if (variantsMap.TryGetValue(detail.ProductVariantId, out var variant))
+						if (variantsMap.TryGetValue(detail.ProductVariantId.Value, out var variant))
 						{
 							detail.ProductVariant = variant;
 						}
@@ -261,7 +266,12 @@ namespace Acme.SimpleTaskApp.Orders
 			{
 				if (order.UserId.HasValue && users.TryGetValue(order.UserId.Value, out var user))
 				{
-					order.User = user;
+					order.User = new User
+					{
+						Id = user.Id,
+						UserName = user.UserName,
+						Name = user.Name
+					};
 				}
 			}
 
@@ -306,11 +316,11 @@ namespace Acme.SimpleTaskApp.Orders
 				// Assign variants and images to order details
 				foreach (var item in order.OrderDetails)
 				{
-					if (variants.TryGetValue(item.ProductVariantId, out var variant))
+					if (variants.TryGetValue(item.ProductVariantId.Value ,out var variant))
 					{
 						item.ProductVariant = variant;
 
-						if (images.TryGetValue(item.ProductVariantId, out var imageUrl))
+						if (images.TryGetValue(item.ProductVariantId.Value, out var imageUrl))
 						{
 							item.ProductVariant.ImageUrl = imageUrl;
 						}
@@ -321,11 +331,6 @@ namespace Acme.SimpleTaskApp.Orders
 					}
 				}
 			}
-			//foreach (var item in order.OrderDetails)
-			//{
-			//	item.ProductVariant = _productVariantRepository.FirstOrDefault(x => x.Id == item.ProductVariantId);
-			//	item.ProductVariant.ImageUrl = _productImageRepository.FirstOrDefault(x => x.ProductVariantId == item.ProductVariantId)?.ImageUrl;
-			//}
 			return order;
 		}
 

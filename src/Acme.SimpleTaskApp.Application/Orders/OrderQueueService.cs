@@ -98,7 +98,7 @@ namespace Acme.SimpleTaskApp.Orders
         private async Task<bool> LockAndVerifyStockAsync(CreateOrderInput orderInput)
         {
             var semaphores = orderInput.OrderDetails
-                .Select(od => GetOrCreateLock(od.ProductVariantId))
+                .Select(od => GetOrCreateLock(od.ProductVariantId.Value))
                 .ToList();
 
             try
@@ -134,7 +134,7 @@ namespace Acme.SimpleTaskApp.Orders
         {
             foreach (var orderDetail in orderInput.OrderDetails)
             {
-                if (_productLocks.TryGetValue(orderDetail.ProductVariantId, out var semaphore))
+                if (_productLocks.TryGetValue(orderDetail.ProductVariantId.Value, out var semaphore))
                 {
                     try
                     {
@@ -160,7 +160,7 @@ namespace Acme.SimpleTaskApp.Orders
 
                     if (productVariant != null)
                     {
-                        productVariant.StockQuantity -= orderDetail.Quantity;
+                        productVariant.StockQuantity -= orderDetail.Quantity.Value;
                         await _productVariantRepository.UpdateAsync(productVariant);
                     }
                 }

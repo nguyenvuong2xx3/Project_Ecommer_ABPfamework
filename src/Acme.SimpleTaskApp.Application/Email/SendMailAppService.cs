@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Email
 {
-	public class SendMailAppService : ApplicationService, IDomainService
+	public class SendMailAppService : ApplicationService, IDomainService, ISendMailAppService
 	{
 		private readonly IBackgroundJobManager _backgroundJobManager;
 		private readonly IEmailSender _emailSender;
@@ -41,7 +41,6 @@ namespace Acme.SimpleTaskApp.Email
 
 			string htmlTemplatePath = webRootPath + Path.DirectorySeparatorChar.ToString() + "assets" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates" + Path.DirectorySeparatorChar.ToString() + "EmailDatHangThanhCong.html";
 
-			//string htmlTemplatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "order_mail_template.html");
 			string htmlBody = await File.ReadAllTextAsync(htmlTemplatePath);
 
 			// Thay các placeholder trong template (nếu có)

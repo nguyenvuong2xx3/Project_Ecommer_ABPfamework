@@ -1,10 +1,10 @@
-﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.BannerHomeTop
-@model BannerHomeTopViewModel
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.Banners
+@model BannersViewModel
 
 <div class="container-fluid hero-header" style="background-color: #f8f9fa;">
   <div class="container d-flex justify-content-center align-items-center"
        min-height: 406px;">
-    <div class="col-lg-10">
+    <div class="col-lg-10 pt-2">
       <div id="carouselId" class="carousel slide rounded overflow-hidden shadow" data-bs-ride="carousel">
         <div class="carousel-inner">
           @if (Model.Banners != null && Model.Banners.Any())
@@ -18,16 +18,15 @@
             }
           }
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+        @* <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
         <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
-        </button>
+        </button> *@
       </div>
     </div>
   </div>
 </div>
-

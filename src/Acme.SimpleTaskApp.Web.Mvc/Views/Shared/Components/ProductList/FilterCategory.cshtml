@@ -1,25 +1,9 @@
-﻿﻿@using Acme.SimpleTaskApp.Products;
-@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
-@using Acme.SimpleTaskApp.Web.Models.Products;
-@model HomeCustomerViewModel
-@{
-  ViewData["Title"] = "Index";
-  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
-}
-
-@section scripts
-{
-  <environment names="Development">
-    <script src="~/view-resources/Views/HomeCustomer/MainCustomer.js" asp-append-version="true"></script>
-  </environment>
-}
-@await Component.InvokeAsync("Banners", new { viewName = "BannerHomeTop" })
-
-
-<!-- Main Container -->
+﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
+@using static Acme.SimpleTaskApp.Products.Product
+@model ProductListViewModel
 <div class="main-container mt-3">
   <div class="products-header">
-    <h3>Tất cả sản phẩm</h3>
+    <h3>Sản phẩm cùng loại</h3>
   </div>
   <div class="products-grid">
     @foreach (var product in Model.ProductsInfo)
@@ -65,11 +49,6 @@
     }
   </div>
 </div>
-
-@await Component.InvokeAsync("ProductList", new { viewName = "FilterCreatetion" })
-@await Component.InvokeAsync("ProductList", new { viewName = "FilterPrice" })
-
-
 
 <style>
   /* Main Container Styling */

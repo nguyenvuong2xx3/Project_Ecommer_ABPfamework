@@ -12,6 +12,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="Email\ISendMailAppService.cs" />
+  </ItemGroup>
+  <ItemGroup>
 		<PackageReference Include="Abp.MailKit" Version="8.4.0" />
 		<PackageReference Include="EPPlus" Version="8.2.1" />
 		<PackageReference Include="System.Drawing.Common" Version="9.0.4" />

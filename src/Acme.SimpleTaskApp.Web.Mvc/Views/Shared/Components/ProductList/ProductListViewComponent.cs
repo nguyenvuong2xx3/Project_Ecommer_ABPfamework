@@ -26,28 +26,39 @@ namespace Acme.SimpleTaskApp.Web.Views.Shared.Components.ProductList
 				_bannerAppService = bannerAppService;
 			}
 
-			public async Task<IViewComponentResult> InvokeAsync(string viewName = "FilterPrice")
+			public async Task<IViewComponentResult> InvokeAsync(string viewName = "FilterPrice", int categoryId = 0)
 			{
-				if(viewName == "FilterPrice")
+				if (viewName == "FilterPrice")
 				{
 					var result = await _homeCustomerAppService.GetAllProductHomeCustomers(new SearchHomeCustomerDto { MaxPrice = 5000000 });
 					var banners = await _bannerAppService.GetListBanners(new GetAllBannerDto { Position = BannerPosition.HomeTop, IsActive = true });
 					var model = new ProductListViewModel
 					{
 						ProductsInfo = result.Items.ToList(),
-						Banner = banners.First()
+						Banner = banners.FirstOrDefault()
 					};
 
 					return View(viewName, model);
 				}
-				if(viewName == "FilterCreatetion")
+				if (viewName == "FilterCreatetion")
 				{
 					var result = await _homeCustomerAppService.GetAllProductHomeCustomers(new SearchHomeCustomerDto { SortingCreation = true });
 					var banners = await _bannerAppService.GetListBanners(new GetAllBannerDto { Position = BannerPosition.HomeMiddle, IsActive = true });
 					var model = new ProductListViewModel
 					{
 						ProductsInfo = result.Items.ToList(),
-						Banner = banners.First()
+						Banner = banners.FirstOrDefault()
+					};
+					return View(viewName, model);
+				}
+				if (viewName == "FilterCategory" && categoryId > 0)
+				{
+					var result = await _homeCustomerAppService.GetAllProductHomeCustomers(new SearchHomeCustomerDto { SortingCreation = true, CategoryId = categoryId });
+					var banners = await _bannerAppService.GetListBanners(new GetAllBannerDto { Position = BannerPosition.HomeMiddle, IsActive = true });
+					var model = new ProductListViewModel
+					{
+						ProductsInfo = result.Items.ToList(),
+						Banner = banners.FirstOrDefault()
 					};
 					return View(viewName, model);
 				}
