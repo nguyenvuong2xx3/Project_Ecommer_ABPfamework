@@ -162,5 +162,20 @@ namespace Acme.SimpleTaskApp.Categories
 
 			return roots;
 		}
+
+		public async Task<List<CategoryListDto>> GetAllCategoriesForSelect()
+		{
+			var categories = await _categoryRepository.GetAll()
+				.OrderBy(c => c.Order)
+				.ToListAsync();
+
+			return categories.Select(c => new CategoryListDto
+			{
+				Id = c.Id,
+				Name = c.Name,
+				Description = c.Description,
+				CreationTime = c.CreationTime
+			}).ToList();
+		}
 	}
 }

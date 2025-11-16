@@ -15,5 +15,6 @@ namespace Acme.SimpleTaskApp.Products
 		Task<Product> GetProductById(int id);
 		Task<Product> EditProduct(Product input);
 		Task<Product> DeleteProduct(int id);
+		Task<List<ProductListDto>> GetAllProductsForSelect();
 	}
 }

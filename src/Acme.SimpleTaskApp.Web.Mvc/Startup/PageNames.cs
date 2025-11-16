@@ -15,7 +15,6 @@
         public const string SmtpSettings = "SmtpSettings";
         public const string Settings = "Settings";
         public const string Banners = "Banners";
-
-
+        public const string Sales = "Sales";
 	}
 }

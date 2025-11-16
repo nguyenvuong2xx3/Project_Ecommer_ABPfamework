@@ -279,5 +279,19 @@ namespace Acme.SimpleTaskApp.Products
 			CurrentUnitOfWork.SaveChanges();
 			return item;
 		}
+
+		public async Task<List<ProductListDto>> GetAllProductsForSelect()
+		{
+			var products = await _productRepository.GetAll()
+				.OrderBy(p => p.Name)
+				.ToListAsync();
+
+			return products.Select(p => new ProductListDto
+			{
+				Id = p.Id,
+				Name = p.Name,
+				Description = p.Description
+			}).ToList();
+		}
 	}
 }

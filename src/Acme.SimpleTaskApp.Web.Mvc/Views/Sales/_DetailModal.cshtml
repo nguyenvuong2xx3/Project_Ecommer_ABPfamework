@@ -1,0 +1,237 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Sales
+@using Acme.SimpleTaskApp.Sales
+@model SaleViewModel
+
+<div class="modal-header bg-info text-white">
+  <h5 class="modal-title">
+    <i class="fas fa-info-circle"></i> Chi tiết Sale/Voucher
+  </h5>
+  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+    <!-- Thông tin chung -->
+    <div class="col-md-12">
+      <h6 class="border-bottom pb-2 mb-3">
+        <i class="fas fa-info text-primary"></i> Thông tin chung
+      </h6>
+      <table class="table table-borderless table-sm">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold" style="width: 200px">Tên chương trình:</td>
+            <td>@Model.Sale.Name</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Mô tả:</td>
+            <td>@(Model.Sale.Description ?? "Không có")</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Loại:</td>
+            <td>
+              <span class="badge @(Model.Sale.DiscountType == DiscountType.Automatic ? "badge-success" : "badge-primary")">
+                @Model.Sale.DiscountTypeName
+              </span>
+            </td>
+          </tr>
+          @if (!string.IsNullOrEmpty(Model.Sale.VoucherCode))
+          {
+            <tr>
+              <td class="font-weight-bold">Mã Voucher:</td>
+              <td>
+                <code class="bg-light p-2">@Model.Sale.VoucherCode</code>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@Model.Sale.VoucherCode')">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </td>
+            </tr>
+          }
+          <tr>
+            <td class="font-weight-bold">Trạng thái:</td>
+            <td>
+              <span class="badge @(Model.Sale.Status == "Đang hoạt động" ? "badge-success" : 
+                                    Model.Sale.Status == "Sắp diễn ra" ? "badge-info" : 
+                                    Model.Sale.Status == "Đã hết lượt" ? "badge-warning" : 
+                                    Model.Sale.Status == "Đã tạm dừng" ? "badge-secondary" : "badge-danger")">
+                @Model.Sale.Status
+              </span>
+              @if (Model.Sale.IsActive)
+              {
+                <span class="badge badge-success ml-2">
+                  <i class="fas fa-check-circle"></i> Kích hoạt
+                </span>
+              }
+              else
+              {
+                <span class="badge badge-secondary ml-2">
+                  <i class="fas fa-times-circle"></i> Tạm dừng
+                </span>
+              }
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Thời gian & Giảm giá -->
+    <div class="col-md-12 mt-3">
+      <h6 class="border-bottom pb-2 mb-3">
+        <i class="fas fa-clock text-warning"></i> Thời gian & Giảm giá
+      </h6>
+      <table class="table table-borderless table-sm">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold" style="width: 200px">Thời gian:</td>
+            <td>
+              <i class="fas fa-calendar-alt text-success"></i> @Model.Sale.StartDate.ToString("dd/MM/yyyy HH:mm")
+              <i class="fas fa-arrow-right mx-2"></i>
+              <i class="fas fa-calendar-alt text-danger"></i> @Model.Sale.EndDate.ToString("dd/MM/yyyy HH:mm")
+            </td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">Phần trăm giảm:</td>
+            <td>
+              <span class="badge badge-danger font-weight-bold" style="font-size: 1.1em">
+                @Model.Sale.DiscountPercentage%
+              </span>
+            </td>
+          </tr>
+          @if (Model.Sale.MaximumDiscountAmount.HasValue)
+          {
+            <tr>
+              <td class="font-weight-bold">Giảm tối đa:</td>
+              <td>@Model.Sale.MaximumDiscountAmount.Value.ToString("N0") VNĐ</td>
+            </tr>
+          }
+          @if (Model.Sale.MinimumOrderValue.HasValue)
+          {
+            <tr>
+              <td class="font-weight-bold">Đơn hàng tối thiểu:</td>
+              <td>@Model.Sale.MinimumOrderValue.Value.ToString("N0") VNĐ</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lượt sử dụng -->
+    <div class="col-md-12 mt-3">
+      <h6 class="border-bottom pb-2 mb-3">
+        <i class="fas fa-chart-line text-success"></i> Lượt sử dụng
+      </h6>
+      <table class="table table-borderless table-sm">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold" style="width: 200px">Đã sử dụng:</td>
+            <td>
+              <span class="badge badge-info">@Model.Sale.UsedCount lần</span>
+            </td>
+          </tr>
+          @if (Model.Sale.UsageLimit.HasValue)
+          {
+            <tr>
+              <td class="font-weight-bold">Giới hạn:</td>
+              <td>@Model.Sale.UsageLimit.Value lần</td>
+            </tr>
+            <tr>
+              <td class="font-weight-bold">Còn lại:</td>
+              <td>
+                <span class="badge badge-success">@Model.Sale.RemainingUsage lần</span>
+              </td>
+            </tr>
+          }
+          else
+          {
+            <tr>
+              <td class="font-weight-bold">Giới hạn:</td>
+              <td><span class="badge badge-secondary">Không giới hạn</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Phạm vi áp dụng -->
+    <div class="col-md-12 mt-3">
+      <h6 class="border-bottom pb-2 mb-3">
+        <i class="fas fa-sitemap text-danger"></i> Phạm vi áp dụng
+      </h6>
+      <table class="table table-borderless table-sm">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold" style="width: 200px">Áp dụng cho:</td>
+            <td>
+              <span class="badge badge-primary">@Model.Sale.ApplyToName</span>
+            </td>
+          </tr>
+          @if (Model.Sale.ApplyTo == DiscountApplication.Categories && Model.Sale.CategoryIds != null && Model.Sale.CategoryIds.Any())
+          {
+            <tr>
+              <td class="font-weight-bold">Danh mục:</td>
+              <td>
+                @foreach (var catId in Model.Sale.CategoryIds)
+                {
+                  <span class="badge badge-info mr-1">ID: @catId</span>
+                }
+              </td>
+            </tr>
+          }
+          @if (Model.Sale.ApplyTo == DiscountApplication.Products && Model.Sale.ProductIds != null && Model.Sale.ProductIds.Any())
+          {
+            <tr>
+              <td class="font-weight-bold">Sản phẩm:</td>
+              <td>
+                @foreach (var prodId in Model.Sale.ProductIds)
+                {
+                  <span class="badge badge-success mr-1">ID: @prodId</span>
+                }
+              </td>
+            </tr>
+          }
+          @if (Model.Sale.ApplyTo == DiscountApplication.Variants && Model.Sale.ProductVariantIds != null && Model.Sale.ProductVariantIds.Any())
+          {
+            <tr>
+              <td class="font-weight-bold">Biến thể:</td>
+              <td>
+                @foreach (var varId in Model.Sale.ProductVariantIds)
+                {
+                  <span class="badge badge-warning mr-1">ID: @varId</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Metadata -->
+    <div class="col-md-12 mt-3">
+      <h6 class="border-bottom pb-2 mb-3">
+        <i class="fas fa-database text-secondary"></i> Thông tin khác
+      </h6>
+      <table class="table table-borderless table-sm">
+        <tbody>
+          <tr>
+            <td class="font-weight-bold" style="width: 200px">Ngày tạo:</td>
+            <td>@Model.Sale.CreationTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
+          </tr>
+          <tr>
+            <td class="font-weight-bold">ID:</td>
+            <td>@Model.Sale.Id</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+    <i class="fas fa-times"></i> Đóng
+  </button>
+  <button type="button" class="btn btn-primary" data-sale-id="@Model.Sale.Id" id="EditSaleFromDetail">
+    <i class="fas fa-edit"></i> Chỉnh sửa
+  </button>
+</div>

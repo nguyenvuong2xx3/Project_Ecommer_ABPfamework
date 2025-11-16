@@ -1,0 +1,181 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Sales
+@using Acme.SimpleTaskApp.Sales
+@model SaleViewModel
+
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="fas fa-edit"></i> Chỉnh sửa Sale/Voucher
+  </h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form name="SaleEditForm" role="form" novalidate class="form-validation">
+  <input type="hidden" name="Id" value="@Model.Sale.Id" />
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Tên chương trình -->
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="Name" class="control-label">
+            Tên chương trình <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="Name" name="Name" value="@Model.Sale.Name" required />
+        </div>
+      </div>
+
+      <!-- Mô tả -->
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="Description" class="control-label">Mô tả</label>
+          <textarea class="form-control" id="Description" name="Description" rows="3">@Model.Sale.Description</textarea>
+        </div>
+      </div>
+
+      <!-- Loại giảm giá -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="DiscountType" class="control-label">
+            Loại giảm giá <span class="text-danger">*</span>
+          </label>
+          <select class="form-control" id="DiscountType" name="DiscountType" required>
+              <option value="0" selected="@(Model.Sale.DiscountType == DiscountType.Automatic)">Tự động</option>
+              <option value="1" selected="@(Model.Sale.DiscountType == DiscountType.Voucher)">Voucher</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Mã Voucher -->
+      <div class="col-md-6" id="VoucherCodeGroup" style="display: @(Model.Sale.DiscountType == DiscountType.Voucher ? "block" : "none");">
+        <div class="form-group">
+          <label for="VoucherCode" class="control-label">
+            Mã Voucher <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="VoucherCode" name="VoucherCode" value="@Model.Sale.VoucherCode" style="text-transform: uppercase" />
+            <div class="input-group-append">
+              <button type="button" class="btn btn-secondary" id="GenerateVoucherBtn" title="Tạo mã ngẫu nhiên">
+                <i class="fa fa-random"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thời gian áp dụng -->
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="DateRange" class="control-label">
+            Thời gian áp dụng <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="DateRange" name="DateRange" placeholder="Chọn thời gian..." required readonly />
+          <input type="hidden" id="StartDate" name="StartDate" value="@Model.Sale.StartDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
+          <input type="hidden" id="EndDate" name="EndDate" value="@Model.Sale.EndDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
+        </div>
+      </div>
+
+      <!-- Phần trăm giảm giá -->
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="DiscountPercentage" class="control-label">
+            Giảm giá (%) <span class="text-danger">*</span>
+          </label>
+          <input type="number" class="form-control" id="DiscountPercentage" name="DiscountPercentage" value="@Model.Sale.DiscountPercentage" min="0" max="100" step="0.01" required />
+        </div>
+      </div>
+
+      <!-- Giảm tối đa -->
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="MaximumDiscountAmount" class="control-label">Giảm tối đa (VNĐ)</label>
+          <input type="number" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" value="@Model.Sale.MaximumDiscountAmount" min="0" step="1000" />
+        </div>
+      </div>
+
+      <!-- Giá trị đơn tối thiểu -->
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="MinimumOrderValue" class="control-label">Đơn hàng tối thiểu (VNĐ)</label>
+          <input type="number" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" value="@Model.Sale.MinimumOrderValue" min="0" step="1000" />
+        </div>
+      </div>
+
+      <!-- Giới hạn lượt sử dụng -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="UsageLimit" class="control-label">Giới hạn lượt sử dụng</label>
+          <input type="number" class="form-control" id="UsageLimit" name="UsageLimit" value="@Model.Sale.UsageLimit" min="1" />
+          <small class="text-muted">
+            Đã sử dụng: <strong>@Model.Sale.UsedCount</strong> lần
+            @if (Model.Sale.RemainingUsage.HasValue)
+            {
+              <text> - Còn lại: <strong>@Model.Sale.RemainingUsage</strong> lần</text>
+            }
+          </small>
+        </div>
+      </div>
+
+      <!-- Trạng thái -->
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="control-label d-block">Trạng thái</label>
+          <div class="custom-control custom-checkbox mt-2">
+            <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" @(Model.Sale.IsActive ? "checked" : "")>
+            <label class="custom-control-label" for="IsActive">
+              Kích hoạt
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phạm vi áp dụng -->
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="ApplyTo" class="control-label">
+            Áp dụng cho <span class="text-danger">*</span>
+          </label>
+          <select class="form-control" id="ApplyTo" name="ApplyTo" required>
+            <option value="0" selected="@(Model.Sale.ApplyTo == DiscountApplication.EntireOrder)">Toàn bộ đơn hàng</option>
+            <option value="1" selected="@(Model.Sale.ApplyTo == DiscountApplication.Categories)">Theo danh mục</option>
+            <option value="2" selected="@(Model.Sale.ApplyTo == DiscountApplication.Products)">Theo sản phẩm</option>
+            <option value="3" selected="@(Model.Sale.ApplyTo == DiscountApplication.Variants)">Theo biến thể</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Tags -->
+      <div class="col-md-12" id="CategoryIdsGroup" style="display: @(Model.Sale.ApplyTo == DiscountApplication.Categories ? "block" : "none");">
+        <div class="form-group">
+          <label for="CategoryTags" class="control-label">
+            Chọn danh mục <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="CategoryTags" name="CategoryTags" placeholder="Chọn danh mục..." />
+        </div>
+      </div>
+
+      <!-- Product Tags -->
+      <div class="col-md-12" id="ProductIdsGroup" style="display: @(Model.Sale.ApplyTo == DiscountApplication.Products ? "block" : "none");">
+        <div class="form-group">
+          <label for="ProductTags" class="control-label">
+            Chọn sản phẩm <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="ProductTags" name="ProductTags" placeholder="Chọn sản phẩm..." />
+        </div>
+      </div>
+
+      <!-- Product Variant Tags -->
+      <div class="col-md-12" id="ProductVariantIdsGroup" style="display: @(Model.Sale.ApplyTo == DiscountApplication.Variants ? "block" : "none");">
+        <div class="form-group">
+          <label for="ProductVariantTags" class="control-label">
+            Chọn biến thể <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="ProductVariantTags" name="ProductVariantTags" placeholder="Chọn biến thể..." />
+        </div>
+      </div>
+
+    </div>
+  </div>
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>

@@ -140,5 +140,7 @@
 		<text name="OrderManagement" value="Quản lý đơn hàng" />
 		<text name="Administration" value="Quản lý hệ thống" />
 		<text name="AreYouSure" value="Bạn có chắc chắn muốn xóa không?" />
+		<text name="Banners" value="Quản lý Biển quảng cáo" />
+		<text name="Sales" value="Quản lý Giảm giá" />
 	</texts>
 </localizationDictionary>

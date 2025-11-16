@@ -62,9 +62,15 @@ namespace Acme.SimpleTaskApp.Web.Startup
 									PageNames.Banners,
 									L("Banners"),
 									url: "Banners",
-									icon: "fas fa-theater-masks"
-									//permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
-
+									icon: "fas fa-image"
+							)
+					)
+					.AddItem(
+							new MenuItemDefinition(
+									PageNames.Sales,
+									L("Sales"),
+									url: "Sales",
+									icon: "fas fa-tag"
 							)
 					)
 			);

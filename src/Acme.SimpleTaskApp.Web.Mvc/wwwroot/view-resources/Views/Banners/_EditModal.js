@@ -1,4 +1,4 @@
-(function ($) {
+﻿(function ($) {
   app.modals.BannerEditModal = function () {
     var _modalManager;
     var _$form = null;
@@ -37,17 +37,20 @@
         },
         messages: {
           Title: {
-            required: "Vui l�ng nh?p ti�u ?? banner",
-            minlength: "Ti�u ?? ph?i c� �t nh?t 3 k� t?",
-            maxlength: "Ti�u ?? t?i ?a 200 k� t?"
+            required: "Vui lòng nhập tiêu đề banner",
+            minlength: "Tiêu đề phải có ít nhất 3 ký tự",
+            maxlength: "Tiêu đề tối đa 200 ký tự"
           },
           Position: {
-            required: "Vui l�ng ch?n v? tr� hi?n th?"
+            required: "Vui lòng chọn vị trí hiển thị"
           },
           SortOrder: {
-            required: "Vui l�ng nh?p th? t? hi?n th?",
-            number: "Th? t? ph?i l� s?",
-            min: "Th? t? ph?i >= 0"
+            required: "Vui lòng nhập thứ tự hiển thị",
+            digits: "Thứ tự phải là số nguyên",
+            min: "Thứ tự phải >= 1"
+          },
+          BannerImage: {
+            required: "Vui lòng chọn ảnh banner"
           }
         },
         errorElement: "div",
@@ -88,7 +91,7 @@
           contentType: false,
           success: function (response) {
             _modalManager.close();
-            abp.notify.success('C?p nh?t banner th�nh c�ng!');
+            abp.notify.success('C?p nh?t banner thành công!');
             abp.event.trigger('banner.edited', response);
           },
           error: function (xhr) {
@@ -98,7 +101,7 @@
             } else if (xhr.responseText) {
               errorMessage = xhr.responseText;
             } else {
-              errorMessage = "C� l?i x?y ra khi c?p nh?t banner. Vui l�ng ki?m tra l?i th�ng tin.";
+              errorMessage = "Có l?i x?y ra khi c?p nh?t banner. Vui lòng ki?m tra l?i thông tin.";
             }
             $('#error-message').html(errorMessage).show();
           },
@@ -115,14 +118,14 @@
         // Validate file type
         const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!validTypes.includes(file.type)) {
-          abp.notify.error('Vui l�ng ch?n file ?nh h?p l? (JPG, PNG, GIF, WEBP)');
+          abp.notify.error('Vui lòng ch?n file ?nh h?p l? (JPG, PNG, GIF, WEBP)');
           resetNewImagePreview();
           return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-          abp.notify.error('K�ch th??c ?nh kh�ng ???c v??t qu� 5MB');
+          abp.notify.error('Kích th??c ?nh không ???c v??t quá 5MB');
           resetNewImagePreview();
           return;
         }

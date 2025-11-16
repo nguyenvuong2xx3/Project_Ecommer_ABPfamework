@@ -7,5 +7,8 @@
     "gulp-sass": "^6.0.1",
     "gulp-uglify": "^3.0.2",
     "sass": "^1.93.2"
+  },
+  "dependencies": {
+    "@yaireo/tagify": "^4.35.6"
   }
 }

@@ -16,5 +16,6 @@ namespace Acme.SimpleTaskApp.Categories
 		Task<Category> UpdateCategory(Category input);
 		Task<PagedResultDto<CategoryListDto>> SearchCategory(GetAllCategoryDto input);
 		Task<List<CategoryTreeDto>> GetAllCategoriesTree(GetAllCategoryDto input);
+		Task<List<CategoryListDto>> GetAllCategoriesForSelect();
 	}
 }

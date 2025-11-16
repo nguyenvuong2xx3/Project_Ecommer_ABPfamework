@@ -26,6 +26,7 @@
 						$(element).addClass('is-valid').removeClass('is-invalid');
 					},
 					rules: {
+						
 						Name: {
 							required: true,
 							minlength: 5,
@@ -51,6 +52,7 @@
 						}
 					},
 					messages: {
+						
 						Name: {
 							required: 'Tên sản phẩm không được để trống',
 							minlength: 'Tên sản phẩm phải có ít nhất 5 ký tự',

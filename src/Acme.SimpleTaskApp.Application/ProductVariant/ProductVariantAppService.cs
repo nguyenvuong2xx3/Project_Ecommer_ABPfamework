@@ -315,5 +315,29 @@ namespace Acme.SimpleTaskApp.ProductVariants
 
 			return item;
 		}
+
+		public async Task<List<ProductVariantListDto>> GetAllProductVariantsForSelect()
+		{
+			var variants = await _productVariantRepository.GetAll()
+				.OrderBy(v => v.SKU)
+				.ToListAsync();
+
+			var productIds = variants.Select(v => v.ProductId).Distinct().ToList();
+			var products = await _productRepository.GetAll()
+				.Where(p => productIds.Contains(p.Id))
+				.ToDictionaryAsync(p => p.Id, p => p.Name);
+
+			return variants.Select(v => new ProductVariantListDto
+			{
+				Id = v.Id,
+				ProductId = v.ProductId,
+				ProductName = products.ContainsKey(v.ProductId) ? products[v.ProductId] : "",
+				Ram = v.Ram,
+				Storage = v.Storage,
+				Color = v.Color,
+				Price = v.Price,
+				SKU = v.SKU
+			}).ToList();
+		}
 	}
 }

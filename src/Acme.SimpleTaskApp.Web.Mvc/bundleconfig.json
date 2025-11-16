@@ -409,5 +409,29 @@
     "inputFiles": [
       "wwwroot/Common/Scripts/bootstrap-filestyle.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Sales/_CreateModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Sales/_CreateModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Sales/_DetailModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Sales/_DetailModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Sales/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Sales/_EditModal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Sales/Index.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Sales/Index.js"
+    ]
   }
 ]
