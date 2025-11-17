@@ -3,7 +3,7 @@
 @using Acme.SimpleTaskApp.Sales
 @model SaleViewModel
 
-@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Tạo chương trình Sale/Voucher mới"))
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Tạo chương trình giảm giá mới"))
 
 
 <form name="SaleCreateForm" role="form" class="form-horizontal">
@@ -78,7 +78,7 @@
           <label for="DiscountPercentage" class="control-label">
             Giảm giá (%) <span class="text-danger">*</span>
           </label>
-          <input type="number" class="form-control" id="DiscountPercentage" name="DiscountPercentage" placeholder="10" min="0" max="100" step="0.01" required />
+          <input type="text" class="form-control" id="DiscountPercentage" name="DiscountPercentage" placeholder="Nhập % giảm giá" required />
         </div>
       </div>
 
@@ -86,7 +86,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MaximumDiscountAmount" class="control-label">Giảm tối đa (VNĐ)</label>
-          <input type="number" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" placeholder="Không giới hạn" min="0" step="1000" />
+          <input type="text" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" placeholder="Không giới hạn"/>
           <small class="text-muted">Để trống nếu không giới hạn</small>
         </div>
       </div>
@@ -95,7 +95,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MinimumOrderValue" class="control-label">Đơn hàng tối thiểu (VNĐ)</label>
-          <input type="number" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" placeholder="0" min="0" step="1000" />
+          <input type="text" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" placeholder="0"/>
         </div>
       </div>
 
@@ -103,7 +103,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="UsageLimit" class="control-label">Giới hạn lượt sử dụng</label>
-          <input type="number" class="form-control" id="UsageLimit" name="UsageLimit" placeholder="Không giới hạn" min="1" />
+          <input type="text" class="form-control" id="UsageLimit" name="UsageLimit" placeholder="Không giới hạn" />
           <small class="text-muted">Để trống nếu không giới hạn</small>
         </div>
       </div>

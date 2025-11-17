@@ -6,7 +6,7 @@
     var _productVariantService = abp.services.app.productVariant;
 
     var _modalManager;
-    var _$saleCreateForm = null;
+    var _$form = null;
 
     // Tagify instances
     var categoryTagify, productTagify, productVariantTagify;
@@ -19,7 +19,7 @@
 
     this.init = function (modalManager) {
       _modalManager = modalManager;
-      _$saleCreateForm = _modalManager.getModal().find('form[name=SaleCreateForm]');
+      _$form = _modalManager.getModal().find('form[name=SaleCreateForm]');
 
       // Initialize form validation
       initFormValidation();
@@ -32,11 +32,124 @@
 
       // Initialize Tagify (load data from server)
       initTagify();
+
+      // Initialize currency formatting
+      initCurrencyFormatting();
     };
+
+    // Initialize currency formatting
+    function initCurrencyFormatting() {
+      // Format currency inputs
+      $('#MaximumDiscountAmount, #MinimumOrderValue').on('input', function () {
+        formatCurrencyInput($(this));
+      });
+
+      // Format on blur (final format)
+      $('#MaximumDiscountAmount, #MinimumOrderValue').on('blur', function () {
+        finalFormatCurrency($(this));
+      });
+
+      // Remove formatting on focus for easy editing
+      $('#MaximumDiscountAmount, #MinimumOrderValue').on('focus', function () {
+        removeCurrencyFormatting($(this));
+      });
+
+      // Xử lý input phần trăm giảm giá
+      $('#DiscountPercentage').on('input', function () {
+        formatPercentageInput($(this));
+      });
+
+    }
+    // Thêm hàm xử lý phần trăm
+    function formatPercentageInput($input) {
+      var value = $input.val();
+
+      // Chỉ cho phép số và dấu chấm thập phân
+      value = value.replace(/[^\d.]/g, '');
+
+      // Chỉ cho phép một dấu chấm thập phân
+      var parts = value.split('.');
+      if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+      }
+
+      // Giới hạn 2 chữ số sau dấu thập phân
+      if (parts.length === 2 && parts[1].length > 2) {
+        value = parts[0] + '.' + parts[1].substring(0, 2);
+      }
+
+      $input.val(value);
+    }
+
+    // Format currency input in real-time
+    function formatCurrencyInput($input) {
+      var value = $input.val().replace(/\./g, '');
+
+      // Only allow numbers
+      if (!/^\d*$/.test(value)) {
+        value = value.replace(/[^\d]/g, '');
+      }
+
+      // Add thousand separators
+      if (value.length > 3) {
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      }
+
+      $input.val(value);
+    }
+
+    // Final format with proper currency formatting
+    function finalFormatCurrency($input) {
+      var value = $input.val().replace(/\./g, '');
+
+      if (value === '') {
+        $input.val('');
+        return;
+      }
+
+      var numberValue = parseInt(value);
+      if (isNaN(numberValue)) {
+        $input.val('');
+        return;
+      }
+
+      // Format with thousand separators
+      $input.val(numberValue.toLocaleString('vi-VN'));
+    }
+
+    // Remove formatting for editing
+    function removeCurrencyFormatting($input) {
+      var value = $input.val().replace(/\./g, '');
+      $input.val(value);
+    }
+
+    // Parse currency value to number
+    function parseCurrencyValue(value) {
+      if (!value || value === '') {
+        return null;
+      }
+
+      var numberValue = parseInt(value.replace(/\./g, ''));
+      return isNaN(numberValue) ? null : numberValue;
+    }
 
     // Initialize form validation
     function initFormValidation() {
-      _$saleCreateForm.validate({
+      // Custom validator for currency fields
+      $.validator.addMethod('currency', function (value, element) {
+        if (value === '') return true; // Empty is allowed
+
+        var numericValue = parseCurrencyValue(value);
+        return numericValue !== null && numericValue >= 0;
+      }, 'Vui lòng nhập số tiền hợp lệ');
+
+      $.validator.addMethod('percentage', function (value, element) {
+        if (value === '') return false;
+
+        var numericValue = parseFloat(value);
+        return !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
+      }, 'Vui lòng nhập phần trăm hợp lệ (0-100)');
+      _$form.validate({
         rules: {
           Name: {
             required: true,
@@ -54,17 +167,13 @@
           },
           DiscountPercentage: {
             required: true,
-            number: true,
-            min: 0,
-            max: 100
+            percentage: true
           },
           MaximumDiscountAmount: {
-            number: true,
-            min: 0
+            currency: true // Use custom currency validator
           },
           MinimumOrderValue: {
-            number: true,
-            min: 0
+            currency: true // Use custom currency validator
           },
           UsageLimit: {
             digits: true,
@@ -85,11 +194,16 @@
           },
           DiscountPercentage: {
             required: 'Phần trăm giảm giá không được để trống',
-            min: 'Phần trăm giảm giá phải lớn hơn hoặc bằng 0',
-            max: 'Phần trăm giảm giá không được vượt quá 100'
+            percentage: 'Phần trăm giảm giá phải từ 0 đến 100'
           },
           ApplyTo: {
             required: 'Vui lòng chọn phạm vi áp dụng'
+          },
+          MaximumDiscountAmount: {
+            currency: 'Vui lòng nhập số tiền hợp lệ'
+          },
+          MinimumOrderValue: {
+            currency: 'Vui lòng nhập số tiền hợp lệ'
           }
         },
         errorPlacement: function (error, element) {
@@ -123,7 +237,7 @@
           firstDay: 1,
           daysOfWeek: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
           monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-                       'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+            'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
         }
       });
 
@@ -167,10 +281,10 @@
       // ApplyTo change - show/hide corresponding tags
       $('#ApplyTo').on('change', function () {
         var applyTo = parseInt($(this).val());
-        
+
         // Hide all
         $('#CategoryIdsGroup, #ProductIdsGroup, #ProductVariantIdsGroup').hide();
-        
+
         // Show corresponding group
         switch (applyTo) {
           case 1: // Categories
@@ -275,7 +389,7 @@
             if (variant.color) label += ' - ' + variant.color;
             if (variant.ram) label += ' ' + variant.ram;
             if (variant.storage) label += ' ' + variant.storage;
-            
+
             return { value: variant.id.toString(), label: label };
           });
 
@@ -323,11 +437,11 @@
       var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       var length = 6;
       var code = prefix;
-      
+
       for (var i = 0; i < length; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      
+
       return code;
     }
 
@@ -358,7 +472,7 @@
 
     // Save function
     this.save = function () {
-      if (!_$saleCreateForm.valid()) {
+      if (!_$form.valid()) {
         return;
       }
 
@@ -379,7 +493,6 @@
         return;
       }
 
-      // Build request data
       var formData = {
         Name: $('#Name').val().trim(),
         Description: $('#Description').val().trim() || null,
@@ -389,15 +502,15 @@
         StartDate: _selectedDateRange.StartDate,
         EndDate: _selectedDateRange.EndDate,
         DiscountPercentage: parseFloat($('#DiscountPercentage').val()),
-        MaximumDiscountAmount: $('#MaximumDiscountAmount').val() ? parseFloat($('#MaximumDiscountAmount').val()) : null,
-        MinimumOrderValue: $('#MinimumOrderValue').val() ? parseFloat($('#MinimumOrderValue').val()) : null,
+        MaximumDiscountAmount: parseCurrencyValue($('#MaximumDiscountAmount').val()),
+        MinimumOrderValue: parseCurrencyValue($('#MinimumOrderValue').val()),
         ApplyTo: applyTo,
         CategoryIds: applyTo === 1 ? categoryIds : null,
         ProductIds: applyTo === 2 ? productIds : null,
         ProductVariantIds: applyTo === 3 ? variantIds : null,
         IsActive: $('#IsActive').is(':checked')
       };
-			debugger;
+
       _modalManager.setBusy(true);
 
       _saleService.createSale(formData)

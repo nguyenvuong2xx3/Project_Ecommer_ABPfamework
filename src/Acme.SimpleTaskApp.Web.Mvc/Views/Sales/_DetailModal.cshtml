@@ -1,15 +1,9 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.Sales
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Sales
 @using Acme.SimpleTaskApp.Sales
 @model SaleViewModel
 
-<div class="modal-header bg-info text-white">
-  <h5 class="modal-title">
-    <i class="fas fa-info-circle"></i> Chi tiết Sale/Voucher
-  </h5>
-  <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chi tiết chương trình giảm giá"))
 
 <div class="modal-body">
   <div class="row">

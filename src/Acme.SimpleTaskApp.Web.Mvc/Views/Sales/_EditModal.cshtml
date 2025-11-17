@@ -1,15 +1,9 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.Sales
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Sales
 @using Acme.SimpleTaskApp.Sales
 @model SaleViewModel
 
-<div class="modal-header">
-  <h5 class="modal-title">
-    <i class="fas fa-edit"></i> Chỉnh sửa Sale/Voucher
-  </h5>
-  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Chỉnh sửa chương trình giảm giá"))
 
 <form name="SaleEditForm" role="form" novalidate class="form-validation">
   <input type="hidden" name="Id" value="@Model.Sale.Id" />
@@ -40,7 +34,7 @@
           <label for="DiscountType" class="control-label">
             Loại giảm giá <span class="text-danger">*</span>
           </label>
-          <select class="form-control" id="DiscountType" name="DiscountType" required>
+          <select class="form-select" id="DiscountType" name="DiscountType" required>
               <option value="0" selected="@(Model.Sale.DiscountType == DiscountType.Automatic)">Tự động</option>
               <option value="1" selected="@(Model.Sale.DiscountType == DiscountType.Voucher)">Voucher</option>
           </select>
@@ -82,7 +76,7 @@
           <label for="DiscountPercentage" class="control-label">
             Giảm giá (%) <span class="text-danger">*</span>
           </label>
-          <input type="number" class="form-control" id="DiscountPercentage" name="DiscountPercentage" value="@Model.Sale.DiscountPercentage" min="0" max="100" step="0.01" required />
+          <input type="text" class="form-control" id="DiscountPercentage" name="DiscountPercentage" value="@Model.Sale.DiscountPercentage"/>
         </div>
       </div>
 
@@ -90,7 +84,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MaximumDiscountAmount" class="control-label">Giảm tối đa (VNĐ)</label>
-          <input type="number" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" value="@Model.Sale.MaximumDiscountAmount" min="0" step="1000" />
+          <input type="text" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" value="@Model.Sale.MaximumDiscountAmount" placeholder="Không giới hạn" />
         </div>
       </div>
 
@@ -98,7 +92,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MinimumOrderValue" class="control-label">Đơn hàng tối thiểu (VNĐ)</label>
-          <input type="number" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" value="@Model.Sale.MinimumOrderValue" min="0" step="1000" />
+          <input type="text" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" value="@Model.Sale.MinimumOrderValue"/>
         </div>
       </div>
 
@@ -106,7 +100,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="UsageLimit" class="control-label">Giới hạn lượt sử dụng</label>
-          <input type="number" class="form-control" id="UsageLimit" name="UsageLimit" value="@Model.Sale.UsageLimit" min="1" />
+          <input type="text" class="form-control" id="UsageLimit" name="UsageLimit" value="@Model.Sale.UsageLimit"/>
           <small class="text-muted">
             Đã sử dụng: <strong>@Model.Sale.UsedCount</strong> lần
             @if (Model.Sale.RemainingUsage.HasValue)
@@ -136,7 +130,7 @@
           <label for="ApplyTo" class="control-label">
             Áp dụng cho <span class="text-danger">*</span>
           </label>
-          <select class="form-control" id="ApplyTo" name="ApplyTo" required>
+          <select class="form-select" id="ApplyTo" name="ApplyTo" required>
             <option value="0" selected="@(Model.Sale.ApplyTo == DiscountApplication.EntireOrder)">Toàn bộ đơn hàng</option>
             <option value="1" selected="@(Model.Sale.ApplyTo == DiscountApplication.Categories)">Theo danh mục</option>
             <option value="2" selected="@(Model.Sale.ApplyTo == DiscountApplication.Products)">Theo sản phẩm</option>
