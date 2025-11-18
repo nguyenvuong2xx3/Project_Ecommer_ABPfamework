@@ -74,9 +74,33 @@
                               @($"/{item.Storage}/{item.Color}")
                             }
                           </div>
+
                           <div class="product-price">
-                            <div class="current-price">@item.Price.ToString("#,##0")₫</div>
-                            <span class="discount-text">Giảm giá ở đây</span>
+                            @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
+                            {
+                              <!-- Giá gốc gạch ngang -->
+                              <div class="original-price">@item.Price.ToString("#,##0")₫</div>
+                              <!-- Giá sau giảm -->
+                              <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
+                              <!-- Tên chương trình sale -->
+                              @if (!string.IsNullOrEmpty(item.SaleName))
+                              {
+                                <span class="discount-text">
+                                  <i class="fas fa-gift"></i> @item.SaleName
+                                </span>
+                              }
+                              else
+                              {
+                                <span class="discount-text">
+                                  <i class="fas fa-fire"></i> Đang giảm giá
+                                </span>
+                              }
+                            }
+                            else
+                            {
+                              <!-- Giá bình thường -->
+                              <div class="current-price">@item.Price.ToString("#,##0")₫</div>
+                            }
                           </div>
                         </div>
                         <button class="detail-btn productvariant-click-detail" data-id="@item.Id">

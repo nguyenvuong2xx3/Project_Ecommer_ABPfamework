@@ -1,4 +1,4 @@
-﻿﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
+﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
 @using System.Linq
 
 @model HomeCustomerViewModel
@@ -164,7 +164,22 @@
 
     <!-- Right Side - Purchase Options -->
     <div class="col-lg-4">
-      <div class="bg-white p-3 rounded" style="top: 20px;">
+      <div class="bg-white p-3 rounded position-sticky" style="top: 20px;">
+        
+        <!-- Discount Badge (if active) -->
+        @if (Model.ProductInfo.ProductVariant.HasActiveDiscount && Model.ProductInfo.ProductVariant.DiscountPercentage > 0)
+        {
+          <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+            <i class="fas fa-bolt me-2"></i>
+            <div>
+              <strong>Đang giảm giá @Model.ProductInfo.ProductVariant.DiscountPercentage.ToString("0.#")%</strong>
+              @if (!string.IsNullOrEmpty(Model.ProductInfo.ProductVariant.SaleName))
+              {
+                <br><small>@Model.ProductInfo.ProductVariant.SaleName</small>
+              }
+            </div>
+          </div>
+        }
 
         <!-- Price Section -->
         <div class="mb-3 p-3 rounded">
@@ -194,9 +209,8 @@
           <div class="btn-group" role="group" style="width: auto;">
             @foreach (var storage in uniqueStorages)
             {
-              // Tìm variant đầu tiên có storage này để lấy ID
               var firstVariantWithStorage = Model.ProductInfo.ProductVariants
-              .FirstOrDefault(pv => pv.Storage == storage);
+                .FirstOrDefault(pv => pv.Storage == storage);
 
               if (firstVariantWithStorage != null)
               {
@@ -211,7 +225,7 @@
           </div>
         </div>
 
-        <!-- Color Options -->
+        <!-- Color Options with Discount -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Màu sắc:</label>
           <div class="row">
@@ -224,7 +238,7 @@
                   <div class="color-option border border-2 rounded-3 p-2 d-flex align-items-center position-relative @(isActive ? "border-primary shadow-sm" : "border-secondary-subtle")"
                        style="border-radius: 10px; cursor: pointer;"
                        data-variant-id="@imgpd.Id">
-
+                    
                     @* Discount badge on variant *@
                     @if (imgpd.HasActiveDiscount && imgpd.DiscountPercentage > 0)
                     {
@@ -232,11 +246,11 @@
                         -@imgpd.DiscountPercentage.ToString("0")%
                       </span>
                     }
-
+                    
                     <!-- Ảnh bên trái -->
                     <img src="@imgpd.ImageUrls.First()"
                          style="height: 45px; width: 45px; object-fit: contain; border-radius: 5px; margin-right: 10px">
-
+                    
                     <!-- Thông tin bên phải -->
                     <div class="ms-2 d-flex flex-column align-items-start">
                       <span class="small fw-semibold">@imgpd.Color</span>

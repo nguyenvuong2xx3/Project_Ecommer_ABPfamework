@@ -11,9 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Microsoft.AspNetCore.Authorization;
+using Acme.SimpleTaskApp.Sales;
 
 public class CartAppService : ApplicationService, ICartAppService
 {
+	private readonly ISaleAppService _saleAppService;
 	private readonly IRepository<Cart, int> _cartRepository;
 	private readonly IRepository<Product, int> _productRepository;
 	private readonly IRepository<ProductVariant, int> _productVariantRepository;
@@ -21,11 +23,14 @@ public class CartAppService : ApplicationService, ICartAppService
 	private readonly IRepository<ProductImage> _productImageRepository;
 
 
-	public CartAppService(IRepository<Cart, int> cartRepository, IRepository<CartItem, int> cartItemRepository,
+	public CartAppService(
+		ISaleAppService saleAppService,
+		IRepository<Cart, int> cartRepository, IRepository<CartItem, int> cartItemRepository,
 		IRepository<ProductVariant, int> productVariantRepository,
 		IRepository<ProductImage> productImageRepository,
 	IRepository<Product, int> productRepository)
 	{
+		_saleAppService = saleAppService;
 		_productImageRepository = productImageRepository;
 		_productVariantRepository = productVariantRepository;
 		_productRepository = productRepository;
@@ -112,16 +117,40 @@ public class CartAppService : ApplicationService, ICartAppService
 											 IdCart = cart.Id,
 											 IdCartItem = cartItem.Id,
 											 IdProductVariant = productVariant.Id,
+											 ProductId = product.Id,
+											 CategoryId = product.CategoryId,
 											 Name = product.Name + " - " + productVariant.Storage + " - " + productVariant.Color,
+											 Color = productVariant.Color,
 											 Quantity = cartItem.Quantity,
 											 Price = productVariant.Price,
-											 ImageUrl = firstImage != null ? firstImage.ImageUrl : null
+											 ImageUrl = firstImage != null ? firstImage.ImageUrl : null,
+											 DiscountPercentage = 0,
+											 DiscountedPrice = productVariant.Price,
+											 HasActiveDiscount = false
 										 }).ToList();
 
-		return new CartListDto
+		// Calculate discounts for each cart item
+		foreach (var cartItem in cartItems)
 		{
-			CartItems = cartItems
-		};
-	}
+			var productVariant = await _productVariantRepository.GetAsync(cartItem.IdProductVariant);
+			var product = await _productRepository.GetAsync(cartItem.ProductId);
+			
+			// Get best sale for this variant
+			var bestSale = await _saleAppService.GetBestSaleForProductVariant(
+				cartItem.IdProductVariant, 
+				cartItem.ProductId, 
+				cartItem.CategoryId
+			);
+			
+			if (bestSale != null && bestSale.DiscountPercentage > 0)
+			{
+				cartItem.HasActiveDiscount = true;
+				cartItem.DiscountPercentage = bestSale.DiscountPercentage;
+				cartItem.DiscountedPrice = cartItem.Price - (cartItem.Price * (bestSale.DiscountPercentage / 100));
+				cartItem.SaleName = bestSale.Name;
+			}
+		}
 
+		return new CartListDto { CartItems = cartItems };
+	}
 }

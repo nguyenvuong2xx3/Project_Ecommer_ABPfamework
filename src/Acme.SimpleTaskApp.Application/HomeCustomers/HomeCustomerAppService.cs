@@ -9,6 +9,7 @@ using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.Sales;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +21,20 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	private readonly IRepository<ProductVariant> _productVariantRepository;
 	private readonly IRepository<Category> _categoryRepository;
 	private readonly IRepository<ProductImage> _productImageRepository;
+	private readonly ISaleAppService _saleAppService;
 
 	public HomeCustomerAppService(
 		IRepository<Product> productRepository,
 		IRepository<ProductVariant> productVariantRepository,
 		IRepository<Category> categoryRepository,
-		IRepository<ProductImage> productImageRepository)
+		IRepository<ProductImage> productImageRepository,
+		ISaleAppService saleAppService)
 	{
 		_productRepository = productRepository;
 		_productVariantRepository = productVariantRepository;
 		_categoryRepository = categoryRepository;
 		_productImageRepository = productImageRepository;
+		_saleAppService = saleAppService;
 	}
 	[UnitOfWork]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
@@ -127,9 +131,12 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		{
 			// Attach variants
 			var pVariants = variants.Where(v => v.ProductId == p.Id).ToList();
+			
+			// Get sales for each variant
 			foreach (var v in pVariants)
 			{
 				v.ProductName = p.Name;
+				
 				// Images for this variant
 				v.ImageUrls = images
 					.Where(img => img.ProductVariantId.HasValue && img.ProductVariantId.Value == v.Id)
@@ -137,7 +144,17 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 					.Select(img => img.ImageUrl)
 					.ToList();
 				v.ImageUrl = v.ImageUrls.FirstOrDefault();
+				
+				// NEW: Get best sale for this variant
+				var bestSale = await _saleAppService.GetBestSaleForProductVariant(v.Id, p.Id, p.CategoryId);
+				if (bestSale != null)
+				{
+					v.DiscountPercentage = bestSale.DiscountPercentage;
+					v.DiscountedPrice = v.GetDiscountedPrice(bestSale.DiscountPercentage);
+					v.HasActiveDiscount = true;
+				}
 			}
+			
 			p.ProductVariants = pVariants;
 
 			// Attach images that are product-level (ProductVariantId == null)
@@ -201,7 +218,6 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		return result;
 	}
 
-
 	public async Task<Product> GetProductById(int id)
 	{
 		if (id <= 0)
@@ -220,19 +236,32 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 				.Where(x => x.ProductVariantId == variant.Id)
 				.Select(ig => ig.ImageUrl)
 				.ToListAsync();
+				
+			// NEW: Get best sale for variant
+			var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == variant.ProductId);
+			var bestSale = await _saleAppService.GetBestSaleForProductVariant(variant.Id, variant.ProductId, product?.CategoryId);
+			if (bestSale != null)
+			{
+				variant.DiscountPercentage = bestSale.DiscountPercentage;
+				variant.DiscountedPrice = variant.GetDiscountedPrice(bestSale.DiscountPercentage);
+				variant.HasActiveDiscount = true;
+				variant.SaleName = bestSale.Name;
+			}
 		}
 
 		// lấy sản phẩm tổng quát
-		var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
+		var productResult = await _productRepository.FirstOrDefaultAsync(x => x.Id == item.ProductId);
 
 		// add vào product
-		product.ProductVariants.AddRange(allVariants);
-		product.ProductVariant = allVariants.FirstOrDefault (x => x.Id == id);
+		productResult.ProductVariants.AddRange(allVariants);
+		productResult.ProductVariant = allVariants.FirstOrDefault(x => x.Id == id);
+		
 		// lấy ảnh product
-		product.ImageUrls = await _productImageRepository.GetAll()
-			.Where(x => x.ProductId == product.Id && x.ProductVariantId == null)
+		productResult.ImageUrls = await _productImageRepository.GetAll()
+			.Where(x => x.ProductId == productResult.Id && x.ProductVariantId == null)
 			.Select(ig => ig.ImageUrl)
 			.ToListAsync();
-		return product;
+			
+		return productResult;
 	}
 }

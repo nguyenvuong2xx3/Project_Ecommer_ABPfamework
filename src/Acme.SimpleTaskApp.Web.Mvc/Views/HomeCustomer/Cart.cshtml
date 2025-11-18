@@ -57,7 +57,8 @@
                                value="@product.Quantity" id="quantity-@product.IdProductVariant">
                         <div class="input-group-btn">
                           <button class="btn btn-sm btn-plus rounded-circle bg-light border btl-click-plus"
-                                  data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart">
+                                  data-productvariant-id="@product.IdProductVariant" data-productvariant-cartid="@product.IdCart"
+                                  data-product-id="@product.ProductId" data-category-id="@product.CategoryId">
                             <i class="fa fa-plus"></i>
                           </button>
                         </div>
@@ -71,26 +72,38 @@
                   <div class="col-md-4 text-end">
                     <div class="d-flex flex-column">
                       <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted text-decoration-line-through">45.990.000đ</span>
-                        <h4 class="text-primary mb-0">@product.Price.ToString("N0")đ</h4>
+                        @if (product.HasActiveDiscount)
+                        {
+                          <span class="text-muted text-decoration-line-through">@product.Price.ToString("N0")đ</span>
+                          <h4 class="text-primary mb-0">@product.DiscountedPrice.ToString("N0")đ</h4>
+                          total += product.DiscountedPrice * product.Quantity;
+                        }
+                        else
+                        {
+                          <h4 class="text-primary mb-0">@product.Price.ToString("N0")đ</h4>
+                          total += product.Price * product.Quantity;
+                        }
                       </div>
-                      <div class="mb-3">
-                        <span class="badge bg-success">8 Khuyến mãi</span>
-                      </div>
-                      <div class="input-group input-group-sm mb-2">
+                      @if (product.HasActiveDiscount)
+                      {
+                        <div class="mb-3">
+                          <span class="badge bg-success">Giảm @product.DiscountPercentage%</span>
+                        </div>
+                      }
+                      @* <div class="input-group input-group-sm mb-2">
                         <input type="text" class="form-control" placeholder="Mã giảm giá">
                         <button class="btn btn-outline-primary" type="button">Áp dụng</button>
-                      </div>
+                      </div> *@
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            total += product.Price * product.Quantity;
+            
           }
 
           @* Phần mua kèm giảm giá *@
-          <div class="card border-0 shadow-sm mb-4">
+          @* <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
               <h5 class="card-title">Mua kèm giảm đến 10%</h5>
               <div class="d-flex align-items-center">
@@ -103,7 +116,7 @@
                 <span class="ms-auto text-primary fw-bold">+ 250.000đ</span>
               </div>
             </div>
-          </div>
+          </div> *@
         </div>
 
         @* Phần thông tin đơn hàng *@
@@ -139,6 +152,24 @@
 
           @* Phần tổng đơn hàng *@
           <div class="card border-0 shadow-sm sticky-top" style="top: 120px;">
+
+            <div class="voucher-section mb-4 p-3 rounded">
+              <h6 class="mb-3">
+                <i class="fas fa-ticket-alt text-primary"></i> Mã giảm giá
+              </h6>
+              <div class="input-group">
+                <input type="text"
+                       id="voucherCodeInput"
+                       class="form-control"
+                       placeholder="Nhập mã voucher"
+                       >
+                <button class="btn btn-primary" type="button" id="applyVoucherBtn">
+                  <i class="fas fa-check"></i> Áp dụng
+                </button>
+              </div>
+              <div id="VoucherMessage" class="mt-2" style="display: none;"></div>
+            </div>
+
             <div class="card-header bg-light">
               <h4 class="mb-0">Tổng đơn hàng</h4>
             </div>
@@ -153,12 +184,12 @@
               </div>
               <div class="d-flex justify-content-between mb-3">
                 <span>Giảm giá</span>
-                <span class="text-success">- 0đ</span>
+                <span class="text-success discount-amount">- 0đ</span>
               </div>
               <hr>
               <div class="d-flex justify-content-between mb-4">
                 <span class="fw-bold">Tổng cộng</span>
-                <span class="fw-bold text-primary fs-5">@total.ToString("N0")đ</span>
+                <span class="fw-bold text-primary fs-5 final-amount">@total.ToString("N0")đ</span>
               </div>
 
               @* Phương thức thanh toán *@

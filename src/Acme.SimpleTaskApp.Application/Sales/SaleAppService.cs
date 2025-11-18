@@ -2,9 +2,11 @@
 using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.UI;
 using Acme.SimpleTaskApp.Sales.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -468,6 +470,241 @@ namespace Acme.SimpleTaskApp.Sales
 			};
 
 			return stats;
+		}
+
+		#endregion
+
+		#region Calculate Discount Methods
+
+		// Tính discount cho một product variant
+		public async Task<decimal> CalculateProductVariantDiscount(int productVariantId, int productId, int? categoryId)
+		{
+			var bestSale = await GetBestSaleForProductVariant(productVariantId, productId, categoryId);
+			return bestSale?.DiscountPercentage ?? 0;
+		}
+
+		// Lấy sale tốt nhất cho product variant
+		public async Task<SaleDto> GetBestSaleForProductVariant(int productVariantId, int productId, int? categoryId)
+		{
+			var now = DateTime.Now;
+
+			// Lấy tất cả sale đang active
+			var activeSales = await _saleRepository.GetAll()
+				.Where(s => s.IsActive &&
+					s.DiscountType == DiscountType.Automatic && // Chỉ lấy automatic sales
+					s.StartDate <= now &&
+					s.EndDate >= now &&
+					(!s.UsageLimit.HasValue || s.UsedCount < s.UsageLimit.Value))
+				.ToListAsync();
+
+			// Lọc sales áp dụng cho variant này
+			var applicableSales = activeSales.Where(s =>
+			{
+				switch (s.ApplyTo)
+				{
+					case DiscountApplication.EntireOrder:
+						return true;
+					case DiscountApplication.Variants:
+						return s.ProductVariantIds != null && s.ProductVariantIds.Contains(productVariantId);
+					case DiscountApplication.Products:
+						return s.ProductIds != null && s.ProductIds.Contains(productId);
+					case DiscountApplication.Categories:
+						return categoryId.HasValue && s.CategoryIds != null && s.CategoryIds.Contains(categoryId.Value);
+					default:
+						return false;
+				}
+			}).ToList();
+
+			// Trả về sale có % giảm giá cao nhất
+			var bestSale = applicableSales.OrderByDescending(s => s.DiscountPercentage).FirstOrDefault();
+
+			return bestSale != null ? MapToDto(bestSale) : null;
+		}
+
+		// Tính discount cho giỏ hàng
+		[HttpPost]
+		public async Task<DiscountCalculationResultDto> CalculateCartDiscount(RequestDisCountVoucherCart request)
+		{
+			var result = new DiscountCalculationResultDto
+			{
+				ItemDiscounts = new List<ItemDiscountDetailDto>(),
+				Success = true
+			};
+
+			decimal totalAmount = 0;
+			decimal totalDiscount = 0;
+
+			// Tính discount cho từng item
+			foreach (var item in request.CartItems)
+			{
+				var itemTotal = item.Price * item.Quantity;
+				totalAmount += itemTotal;
+
+				// Lấy sale tốt nhất cho item này
+				var bestSale = await GetBestSaleForProductVariant(item.ProductVariantId, item.ProductId, item.CategoryId);
+
+				if (bestSale != null)
+				{
+					var discountAmount = itemTotal * (bestSale.DiscountPercentage / 100);
+					totalDiscount += discountAmount;
+
+					result.ItemDiscounts.Add(new ItemDiscountDetailDto
+					{
+						ProductVariantId = item.ProductVariantId,
+						OriginalPrice = item.Price,
+						DiscountPercentage = bestSale.DiscountPercentage,
+						DiscountAmount = discountAmount,
+						FinalPrice = item.Price - (item.Price * (bestSale.DiscountPercentage / 100)),
+						AppliedSale = bestSale
+					});
+				}
+			}
+
+			result.TotalAmount = totalAmount;
+
+			// Apply voucher nếu có
+			if (!string.IsNullOrWhiteSpace(request.VoucherCode))
+			{
+				try
+				{
+					var voucher = await _saleRepository.FirstOrDefaultAsync(s =>
+						s.VoucherCode == request.VoucherCode.Trim().ToUpper() &&
+						s.DiscountType == DiscountType.Voucher &&
+						s.IsActive);
+
+					if (voucher == null)
+					{
+						result.Success = false;
+						result.Message = "Mã voucher không tồn tại hoặc đã hết hạn";
+						result.FinalAmount = totalAmount - totalDiscount;
+						return result;
+					}
+
+					// Validate voucher
+					var now = DateTime.Now;
+					if (now < voucher.StartDate || now > voucher.EndDate)
+					{
+						result.Success = false;
+						result.Message = $"Mã voucher chỉ có hiệu lực từ {voucher.StartDate:dd/MM/yyyy} đến {voucher.EndDate:dd/MM/yyyy}";
+						result.FinalAmount = totalAmount - totalDiscount;
+						return result;
+					}
+
+					if (voucher.UsageLimit.HasValue && voucher.UsedCount >= voucher.UsageLimit.Value)
+					{
+						result.Success = false;
+						result.Message = "Mã voucher đã hết lượt sử dụng";
+						result.FinalAmount = totalAmount - totalDiscount;
+						return result;
+					}
+
+					if (voucher.MinimumOrderValue.HasValue && totalAmount < voucher.MinimumOrderValue.Value)
+					{
+						result.Success = false;
+						result.Message = $"Đơn hàng tối thiểu phải từ {voucher.MinimumOrderValue.Value:N0}đ để áp dụng voucher này";
+						result.FinalAmount = totalAmount - totalDiscount;
+						return result;
+					}
+
+					// Check if voucher applies to cart items
+					bool voucherApplies = false;
+					switch (voucher.ApplyTo)
+					{
+						case DiscountApplication.EntireOrder:
+							voucherApplies = true;
+							break;
+						case DiscountApplication.Categories:
+							voucherApplies = request.CartItems.Any(item =>
+								item.CategoryId.HasValue &&
+								voucher.CategoryIds != null &&
+								voucher.CategoryIds.Contains(item.CategoryId.Value));
+							break;
+						case DiscountApplication.Products:
+							voucherApplies = request.CartItems.Any(item =>
+								voucher.ProductIds != null &&
+								voucher.ProductIds.Contains(item.ProductId));
+							break;
+						case DiscountApplication.Variants:
+							voucherApplies = request.CartItems.Any(item =>
+								voucher.ProductVariantIds != null &&
+								voucher.ProductVariantIds.Contains(item.ProductVariantId));
+							break;
+					}
+
+					if (!voucherApplies)
+					{
+						result.Success = false;
+						result.Message = "Mã voucher không áp dụng cho sản phẩm trong giỏ hàng";
+						result.FinalAmount = totalAmount - totalDiscount;
+						return result;
+					}
+
+					// Calculate voucher discount
+					decimal voucherDiscount = 0;
+
+					if (voucher.ApplyTo == DiscountApplication.EntireOrder)
+					{
+						// Apply to entire cart
+						voucherDiscount = (totalAmount - totalDiscount) * (voucher.DiscountPercentage / 100);
+					}
+					else
+					{
+						// Apply only to applicable items
+						foreach (var item in request.CartItems)
+						{
+							bool itemApplies = false;
+							switch (voucher.ApplyTo)
+							{
+								case DiscountApplication.Categories:
+									itemApplies = item.CategoryId.HasValue &&
+										voucher.CategoryIds != null &&
+										voucher.CategoryIds.Contains(item.CategoryId.Value);
+									break;
+								case DiscountApplication.Products:
+									itemApplies = voucher.ProductIds != null &&
+										voucher.ProductIds.Contains(item.ProductId);
+									break;
+								case DiscountApplication.Variants:
+									itemApplies = voucher.ProductVariantIds != null &&
+										voucher.ProductVariantIds.Contains(item.ProductVariantId);
+									break;
+							}
+
+							if (itemApplies)
+							{
+								var itemTotal = item.Price * item.Quantity;
+								// Subtract automatic discount first
+								var existingDiscount = result.ItemDiscounts.FirstOrDefault(d => d.ProductVariantId == item.ProductVariantId);
+								if (existingDiscount != null)
+								{
+									itemTotal -= existingDiscount.DiscountAmount;
+								}
+								voucherDiscount += itemTotal * (voucher.DiscountPercentage / 100);
+							}
+						}
+					}
+
+					// Check maximum discount
+					if (voucher.MaximumDiscountAmount.HasValue && voucherDiscount > voucher.MaximumDiscountAmount.Value)
+					{
+						voucherDiscount = voucher.MaximumDiscountAmount.Value;
+					}
+
+					totalDiscount += voucherDiscount;
+					result.AppliedVoucher = MapToDto(voucher);
+					result.Message = $"Áp dụng mã {request.VoucherCode} thành công! Giảm {voucherDiscount:N0}đ";
+				}
+				catch (Exception ex)
+				{
+					result.Success = false;
+					result.Message = "Có lỗi khi áp dụng voucher: " + ex.Message;
+				}
+			}
+
+			result.DiscountAmount = totalDiscount;
+			result.FinalAmount = totalAmount - totalDiscount;
+
+			return result;
 		}
 
 		#endregion

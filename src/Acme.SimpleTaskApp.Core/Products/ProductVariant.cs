@@ -22,5 +22,13 @@ namespace Acme.SimpleTaskApp.Products
 		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về
 		[NotMapped] public List<ProductImage> ProductImages { get; set; } // cho BE trả về
 
+		[NotMapped]
+		public decimal DiscountPercentage { get; set; }
+		[NotMapped]
+		public decimal DiscountedPrice { get; set; }
+		[NotMapped]
+		public bool HasActiveDiscount { get; set; }
+		[NotMapped]
+		public string SaleName { get; set; }
 	}
 }
