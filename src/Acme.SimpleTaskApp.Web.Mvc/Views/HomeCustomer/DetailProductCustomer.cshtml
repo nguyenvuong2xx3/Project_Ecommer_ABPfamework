@@ -261,10 +261,10 @@
         <!-- Payment Options -->
         <div class="mb-3">
           <div class="d-grid gap-2 mb-3">
-            <button class="btn btn-outline-primary btn-lg add-to-cart">
+            <button class="btn btn-outline-primary btn-lg add-to-cart" @(Model.ProductInfo.ProductVariant.StockQuantity == 0 ? "disabled" : "")>
               <i class="bi bi-cart-plus"></i> Thêm vào giỏ
             </button>
-            <button class="btn btn-warning btn-lg text-white fw-bold add-buy">
+            <button class="btn btn-warning btn-lg text-white fw-bold add-buy" @(Model.ProductInfo.ProductVariant.StockQuantity == 0 ? "disabled" : "")>
               Mua ngay
             </button>
           </div>

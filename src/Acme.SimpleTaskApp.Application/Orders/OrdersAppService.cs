@@ -13,6 +13,7 @@ using Acme.SimpleTaskApp.Notifications;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders.Dtos;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.Sales;
 using MailKit.Search;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace Acme.SimpleTaskApp.Orders
 {
 	public class OrdersAppService : ApplicationService, IOrdersAppService
 	{
+		private readonly IRepository<Sale, int> _saleRepository;
 		private readonly IRepository<Order, int> _ordersRepository;
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IRepository<Product> _productRepository;
@@ -37,8 +39,10 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly IRepository<Cart, int> _cartRepository;
 		private readonly IRepository<CartItem, int> _cartItemRepository;
 		private readonly ISendMailAppService _sendMailAppService;
+		private readonly ISaleAppService _saleAppService;
 
 		public OrdersAppService(
+			IRepository<Sale, int> saleRepository,
 			IRepository<ProductImage> productImageRepository,
 			IRepository<Order, int> orderRepository,
 			IRepository<Product> productRepository,
@@ -48,8 +52,10 @@ namespace Acme.SimpleTaskApp.Orders
 			IRepository<CartItem, int> cartItemRepository,
 		IRepository<Cart, int> cartRepository,
 		ISendMailAppService sendMailAppService,
-		IOrderQueueService orderQueueService)
+		IOrderQueueService orderQueueService,
+		ISaleAppService saleAppService)
 		{
+			_saleRepository = saleRepository;
 			_sendMailAppService = sendMailAppService;
 			_productImageRepository = productImageRepository;
 			_cartRepository = cartRepository;
@@ -61,14 +67,17 @@ namespace Acme.SimpleTaskApp.Orders
 			_productVariantRepository = productVariantRepository;
 			_notificationAppService = notificationAppService;
 			_orderQueueService = orderQueueService;
+			_saleAppService = saleAppService;
 		}
 
 		public async Task<int> CreateOrder(CreateOrderInput input)
 		{
 			decimal totalPrice = 0;
+			decimal finalPrice = 0;
 			var orderDetailsList = new List<OrderDetails>();
 			var currentUser = _userRepository.Get(AbpSession.UserId.Value);
 			var user = await _userRepository.GetAsync(currentUser.Id);
+			
 			if (string.IsNullOrEmpty(user.TinhThanh) && string.IsNullOrEmpty(user.PhuongXa) &&
 				string.IsNullOrEmpty(input.Order.TinhThanh) && string.IsNullOrEmpty(input.Order.PhuongXa))
 			{
@@ -83,10 +92,25 @@ namespace Acme.SimpleTaskApp.Orders
 
 			try
 			{
-				// Tính tổng giá - không cần validate stock nữa vì đã validate trong TryLockProductsAsync
+				// Tính tổng giá và chuẩn bị cart items để validate voucher
+				var cartItemsForDiscount = new List<Sales.CartItemDiscountDto>();
+				
 				foreach (var item in input.OrderDetails)
 				{
 					totalPrice += item.Quantity.Value * item.NewPrice.Value;
+
+					// Lấy thông tin product và category để validate voucher
+					var variant = await _productVariantRepository.GetAsync(item.ProductVariantId.Value);
+					var product = await _productRepository.GetAsync(variant.ProductId);
+					
+					cartItemsForDiscount.Add(new Sales.CartItemDiscountDto
+					{
+						ProductVariantId = item.ProductVariantId.Value,
+						ProductId = variant.ProductId,
+						CategoryId = product.CategoryId,
+						Price = item.NewPrice.Value,
+						Quantity = item.Quantity.Value
+					});
 
 					orderDetailsList.Add(new OrderDetails
 					{
@@ -96,35 +120,63 @@ namespace Acme.SimpleTaskApp.Orders
 					});
 				}
 
-				// Tạo Order
+				finalPrice = totalPrice;
 
+				// Validate và apply voucher nếu có
+				if (!string.IsNullOrWhiteSpace(input.VoucherCode))
+				{
+					var request = new RequestDisCountVoucherCart
+					{
+						CartItems = cartItemsForDiscount,
+						VoucherCode = input.VoucherCode.Trim().ToUpper()
+					};
+					
+					var discountResult = await _saleAppService.CalculateCartDiscount(request);
+
+					if (!discountResult.Success)
+					{
+						throw new UserFriendlyException($"Mã voucher không hợp lệ: {discountResult.Message}");
+					}
+					// cập nhật lại số lượng voucher
+					//var sale = await _saleRepository.FirstOrDefaultAsync(x => x.VoucherCode == input.VoucherCode);
+					//if (sale != null)
+					//{
+					//	//sale.UsageLimit = (sale.UsageLimit ?? 0) - 1;
+					//	sale.UsedCount = sale.UsedCount + 1;
+					//}
+					//await _saleRepository.UpdateAsync(sale);
+
+					// Cập nhật final price sau khi áp dụng voucher
+					finalPrice = discountResult.FinalAmount;
+
+					// Increment voucher used count
+					if (discountResult.AppliedVoucher != null)
+					{
+						await _saleAppService.IncrementUsedCount(discountResult.AppliedVoucher.Id);
+					}
+				}
+
+				// Tạo Order với giá cuối cùng (đã trừ voucher nếu có)
 				Order order = new Order
 				{
 					Code = currentUser.Id + DateTime.Now.ToString("yyyyMMdd:HHmm"),
 					PaymentMethod = input.Order.PaymentMethod,
 					UserId = input.Order.UserId ?? user.Id,
 					Status = 0,
-					TotalPrice = totalPrice,
+					TotalPrice = finalPrice, // Sử dụng finalPrice thay vì totalPrice
 					FullName = string.IsNullOrWhiteSpace(input.Order.FullName) ? user.Name : input.Order.FullName,
 					OrderDetails = orderDetailsList,
-					// Fix: Logic bị ngược - nếu input có giá trị thì dùng input, ngược lại dùng user
 					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh >= 0 ? input.Order.GioiTinh : user.GioiTinh,
 					TinhThanh = string.IsNullOrWhiteSpace(input.Order.TinhThanh) ? user.TinhThanh : input.Order.TinhThanh,
 					PhuongXa = string.IsNullOrWhiteSpace(input.Order.PhuongXa) ? user.PhuongXa : input.Order.PhuongXa,
 					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet,
-					PhoneNumber = string.IsNullOrWhiteSpace(input.Order.PhoneNumber) ? input.Order.PhoneNumber : user.PhoneNumber,
+					PhoneNumber = string.IsNullOrWhiteSpace(input.Order.PhoneNumber) ? user.PhoneNumber : input.Order.PhoneNumber,
 				};
+				
 				order.Serialize();
 				var orderId = await _ordersRepository.InsertAndGetIdAsync(order);
 
-				// Thêm order details
-				//foreach (var orderDetail in orderDetailsList)
-				//{
-				//	orderDetail.OrderId = orderId;
-				//	await _orderDetailsRepository.InsertAsync(orderDetail);
-				//}
-
-				// Xử lý trừ stock và release locks - CHỈ GỌI 1 LẦN
+				// Xử lý trừ stock và release locks
 				await _orderQueueService.ProcessOrderAsync(input);
 
 				// Xóa cart và cartItem của user
@@ -136,8 +188,10 @@ namespace Acme.SimpleTaskApp.Orders
 				}
 
 				await CurrentUnitOfWork.SaveChangesAsync();
+				
 				// Gửi email xác nhận đơn hàng
 				_sendMailAppService.SendMailOrderAsync();
+				
 				return orderId;
 			}
 			catch (Exception)

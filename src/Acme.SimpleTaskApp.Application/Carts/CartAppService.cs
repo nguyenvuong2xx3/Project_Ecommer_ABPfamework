@@ -134,14 +134,14 @@ public class CartAppService : ApplicationService, ICartAppService
 		{
 			var productVariant = await _productVariantRepository.GetAsync(cartItem.IdProductVariant);
 			var product = await _productRepository.GetAsync(cartItem.ProductId);
-			
+
 			// Get best sale for this variant
 			var bestSale = await _saleAppService.GetBestSaleForProductVariant(
-				cartItem.IdProductVariant, 
-				cartItem.ProductId, 
+				cartItem.IdProductVariant,
+				cartItem.ProductId,
 				cartItem.CategoryId
 			);
-			
+
 			if (bestSale != null && bestSale.DiscountPercentage > 0)
 			{
 				cartItem.HasActiveDiscount = true;

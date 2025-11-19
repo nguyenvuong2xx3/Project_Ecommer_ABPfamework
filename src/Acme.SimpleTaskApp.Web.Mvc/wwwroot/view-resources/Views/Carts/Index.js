@@ -67,6 +67,7 @@
 		let quantity = parseInt(input.val()) - 1;
 
 		// Lấy số hiện tại trong #cart-count
+		// cập nhật ở trên navbar
 		var $cartCount = $('#cart-count');
 		var currentCount = parseInt($cartCount.text()) || 0;
 		var newCount = currentCount > 0 ? currentCount - 1 : 0;
@@ -118,6 +119,7 @@
 			const price = parseFloat($('#productvariant-price-' + productvariantId).text());
 			const newTotal = price * quantity;
 			$('#productvariant-total-' + productvariantId).text(newTotal.toLocaleString('vi-VN') + ' VND');
+			$(`#quantity-${productvariantId}`).val(quantity)
 			abp.notify.info('Cập nhật thành công!');
 		}).fail(function (error) {
 			abp.notify.error('Cập nhật thất bại!');
@@ -127,8 +129,8 @@
 		});
 	}
 
+	
 	$(document).on('click', '.btl-click-delete', function () {
-		debugger
 		let productvariantId = $(this).data('productvariant-id');
 		let cartId = $(this).data('productvariant-cartid');
 		deleteCartItem(productvariantId, cartId);
@@ -160,8 +162,6 @@
 			}
 		);
 	}
-
-	// Helper function to get productId from URL query string (Id=...)
 	function getProductIdFromUrl() {
 		const urlParams = new URLSearchParams(window.location.search);
 		return urlParams.get('id');
@@ -234,7 +234,6 @@
 			cartItems: cartItems,
 			voucherCode: voucherCode
 		}).done(function (result) {
-			debugger
 			if (result.success) {
 				showVoucherMessage(result.message, 'success');
 				updateOrderSummary(result);
@@ -295,13 +294,11 @@
 
 	// Hàm cập nhật tổng đơn hàng sau khi áp dụng voucher
 	function updateOrderSummary(result) {
-		debugger
 		// Cập nhật phần giảm giá
 		$('.discount-amount').text('-' + result.discountAmount.toLocaleString('vi-VN') + 'đ');
 
 		// Cập nhật tổng cộng
 		$('.final-amount').text(result.finalAmount.toLocaleString('vi-VN') + 'đ');
-
 		// Hiển thị thông tin voucher đã áp dụng (nếu có)
 		if (result.appliedVoucher) {
 			var voucherInfo = ' (Mã: ' + result.appliedVoucher.voucherCode + ' - Giảm ' + result.appliedVoucher.discountPercentage + '%)';
@@ -318,7 +315,9 @@
 		// Reset phần giảm giá về 0
 		var originalTotal = calculateOriginalTotal();
 		$('.discount-amount').text('- 0đ');
+		debugger
 		$('.final-amount').text(originalTotal.toLocaleString('vi-VN') + 'đ');
+		$('.total-cart').text(originalTotal.toLocaleString('vi-VN') + 'đ');
 	}
 
 	// Hàm tính tổng tiền gốc
@@ -343,26 +342,32 @@
 	$(".btl-click-plus, .btl-click-minus, .btl-click-delete").click(function () {
 		setTimeout(resetVoucher, 100);
 	});
+	// ============= ORDER PROCESSING =============
+
 	function processOrder(userInfo) {
 		const orderData = collectOrderData(userInfo);
 		submitOrder(orderData);
 	}
 
-	// Hàm thu thập dữ liệu đơn hàng - ĐÃ SỬA ĐỂ PHÙ HỢP VỚI DTO
 	function collectOrderData(userInfo) {
 		const orderDetails = [];
 		let totalAmount = 0;
 
-		// Thu thập thông tin từng sản phẩm trong giỏ hàng cho OrderDetails
-		// CHỈ lấy các card có class cart-item
 		$('.cart-item').each(function () {
 			const $card = $(this);
-			const $plusButton = $card.find('.btl-click-plus');
-			const productVariantId = $plusButton.data('productvariant-id');
-			const quantityInput = $card.find('input[type="text"].form-control');
-			const quantity = parseInt(quantityInput.val()) || 1;
-			const priceText = $card.find('.text-primary.mb-0').first().text().replace(/[^\d]/g, '');
+			const variantElement = $card.find('.btl-click-plus')
+			const productVariantId = variantElement.data('productvariant-id');
+			//const quantityInput = $card.find('input[data-productvariant-id="' + productVariantId + '"]');
+			//const quantity = parseInt(quantityInput.val()) || 1;
+
+			let input = $(`#quantity-${productVariantId}`);
+			let quantity = parseInt(input.val());
+
+			// Get price (đã bao gồm automatic discount nếu có)
+			const $priceElement = $card.find('.text-primary');
+			const priceText = $priceElement.text().replace(/[^\d]/g, '');
 			const price = parseFloat(priceText) || 0;
+
 			const total = price * quantity;
 
 			orderDetails.push({
@@ -374,33 +379,32 @@
 			totalAmount += total;
 		});
 
-		// Lấy phương thức thanh toán
 		const paymentMethod = $('input[name="PaymentMethod"]:checked').val();
 
-		// Tạo object Order
 		const order = {
 			userId: abp.session.userId || null,
 			paymentMethod: parseInt(paymentMethod),
-			status: 0, // 0: Pending
+			status: 0,
 			totalPrice: totalAmount
 		};
 
-		// Thêm thông tin người dùng nếu có
 		if (userInfo && userInfo.userInfo) {
 			order.fullName = `${userInfo.userInfo.surname} ${userInfo.userInfo.name}`.trim();
 			order.gioiTinh = userInfo.userInfo.gioiTinh || null;
 		}
 
-		// Thêm thông tin địa chỉ nếu có
 		if (userInfo && userInfo.address) {
 			order.tinhThanh = userInfo.address.tinhThanh?.name || null;
 			order.phuongXa = userInfo.address.phuongXa?.name || null;
 			order.diaChiChiTiet = userInfo.address.diaChiChiTiet || null;
 		}
 
+		const voucherCode = $('#voucherCodeInput').val();
+		debugger
 		return {
 			order: order,
-			orderDetails: orderDetails
+			orderDetails: orderDetails,
+			voucherCode: voucherCode // Send voucher code to backend
 		};
 	}
 
@@ -417,7 +421,8 @@
 				}, 2000);
 			})
 			.fail(function (error) {
-				abp.notify.error('Đặt hàng thất bại: ' + (error.message || 'Vui lòng thử lại'));
+				const errorMsg = error.message || error.error?.message || 'Vui lòng thử lại';
+				abp.notify.error('Đặt hàng thất bại: ' + errorMsg);
 				console.error('Order error:', error);
 			})
 			.always(function () {

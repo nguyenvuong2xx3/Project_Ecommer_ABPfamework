@@ -102,6 +102,15 @@
                               <div class="current-price">@item.Price.ToString("#,##0")₫</div>
                             }
                           </div>
+                          <div class="stock-status">
+                            @if (item.StockQuantity == 0)
+                            {
+                              <div class="sold-out-overlay">
+                                <i class="fas fa-ban"></i>
+                                Hết hàng
+                              </div>
+                            }
+                          </div>
                         </div>
                         <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
                           Xem chi tiết
@@ -132,6 +141,24 @@
 </div>
 
 <style>
+  .sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 160px;
+    background: rgba(173, 173, 173, 0.5);
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-bottom: 1px solid #f3f3f3;
+  }
+
   /* Main Container Styling */
   .main-container {
     width: 1200px;

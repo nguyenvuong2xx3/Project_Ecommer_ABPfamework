@@ -532,35 +532,39 @@ namespace Acme.SimpleTaskApp.Sales
 			};
 
 			decimal totalAmount = 0;
+			foreach (var item in request.CartItems)
+			{
+				totalAmount += item.Quantity * item.Price;
+			}
 			decimal totalDiscount = 0;
 
 			// Tính discount cho từng item
-			foreach (var item in request.CartItems)
-			{
-				var itemTotal = item.Price * item.Quantity;
-				totalAmount += itemTotal;
+			//foreach (var item in request.CartItems)
+			//{
+			//	var itemTotal = item.Price * item.Quantity;
+			//	totalAmount += itemTotal;
 
-				// Lấy sale tốt nhất cho item này
-				var bestSale = await GetBestSaleForProductVariant(item.ProductVariantId, item.ProductId, item.CategoryId);
+			//	// Lấy sale tốt nhất cho item này
+			//	var bestSale = await GetBestSaleForProductVariant(item.ProductVariantId, item.ProductId, item.CategoryId);
 
-				if (bestSale != null)
-				{
-					var discountAmount = itemTotal * (bestSale.DiscountPercentage / 100);
-					totalDiscount += discountAmount;
+			//	if (bestSale != null)
+			//	{
+			//		var discountAmount = itemTotal * (bestSale.DiscountPercentage / 100);
+			//		totalDiscount += discountAmount;
 
-					result.ItemDiscounts.Add(new ItemDiscountDetailDto
-					{
-						ProductVariantId = item.ProductVariantId,
-						OriginalPrice = item.Price,
-						DiscountPercentage = bestSale.DiscountPercentage,
-						DiscountAmount = discountAmount,
-						FinalPrice = item.Price - (item.Price * (bestSale.DiscountPercentage / 100)),
-						AppliedSale = bestSale
-					});
-				}
-			}
+			//		result.ItemDiscounts.Add(new ItemDiscountDetailDto
+			//		{
+			//			ProductVariantId = item.ProductVariantId,
+			//			OriginalPrice = item.Price,
+			//			DiscountPercentage = bestSale.DiscountPercentage,
+			//			DiscountAmount = discountAmount,
+			//			FinalPrice = item.Price - (item.Price * (bestSale.DiscountPercentage / 100)),
+			//			AppliedSale = bestSale
+			//		});
+			//	}
+			//}
 
-			result.TotalAmount = totalAmount;
+			//result.TotalAmount = totalAmount;
 
 			// Apply voucher nếu có
 			if (!string.IsNullOrWhiteSpace(request.VoucherCode))
