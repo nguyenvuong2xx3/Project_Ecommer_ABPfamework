@@ -1,95 +1,305 @@
-﻿$(function () {
-
-    'use strict';
-
-    /* ChartJS
-     * -------
-     * Here we will create a few charts using ChartJS
-     */
-
-    //-----------------------
-    //- MONTHLY SALES CHART -
-    //-----------------------
-
-    // Get context with jQuery - using jQuery's .get() method.
-    var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
-    // This will get the first returned node in the jQuery collection.
-
-    var salesChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-            {
-                label: 'Electronics',
-                fill: '#dee2e6',
-                borderColor: '#ced4da',
-                pointBackgroundColor: '#ced4da',
-                pointBorderColor: '#c1c7d1',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(220,220,220)',
-                spanGaps: true,
-                data: [65, 59, 80, 81, 56, 55, 40]
+﻿(function () {
+    $(function () {
+        var _dashboardService = abp.services.app.dashboard;
+        
+        var dashboardApp = {
+            charts: {
+                salesChart: null,
+                categoryChart: null
             },
-            {
-                label: 'Digital Goods',
-                fill: 'rgba(0, 123, 255, 0.9)',
-                borderColor: 'rgba(0, 123, 255, 1)',
-                pointBackgroundColor: '#3b8bba',
-                pointBorderColor: 'rgba(0, 123, 255, 1)',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(0, 123, 255, 1)',
-                spanGaps: true,
-                data: [28, 48, 40, 19, 86, 27, 90]
+            
+            // Load dashboard stats
+            loadStats: function() {
+                abp.ui.setBusy();
+                _dashboardService.getDashboardStats()
+                    .done(function(result) {
+                        dashboardApp.updateStats(result);
+                    })
+                    .fail(function(error) {
+                        abp.notify.error('Không thể tải thống kê dashboard');
+                        console.error(error);
+                    })
+                    .always(function() {
+                        abp.ui.clearBusy();
+                    });
+            },
+            
+            // Update stats cards
+            updateStats: function(data) {
+                // Main stats
+                $('#totalRevenue').html(dashboardApp.formatCurrency(data.totalRevenue));
+                $('#totalOrders').text(data.totalOrders);
+                $('#totalProducts').text(data.totalProducts);
+                $('#totalCustomers').text(data.totalCustomers);
+                
+                // Growth indicators
+                var revenueGrowth = data.revenueGrowth.toFixed(1);
+                var revenueIcon = data.revenueGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                var revenueClass = data.revenueGrowth >= 0 ? 'text-white' : 'text-warning';
+                $('#revenueGrowth').html(
+                    '<i class="fas ' + revenueIcon + ' ' + revenueClass + '"></i> ' + 
+                    Math.abs(revenueGrowth) + '% so với tháng trước'
+                );
+                
+                var ordersGrowth = data.ordersGrowth;
+                var ordersIcon = data.ordersGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                var ordersClass = data.ordersGrowth >= 0 ? 'text-white' : 'text-warning';
+                $('#ordersGrowth').html(
+                    '<i class="fas ' + ordersIcon + ' ' + ordersClass + '"></i> ' + 
+                    Math.abs(ordersGrowth) + '% so với tháng trước'
+                );
+                
+                // Low stock info
+                if (data.lowStockProducts > 0) {
+                    $('#lowStockInfo').html(
+                        '<i class="fas fa-exclamation-triangle"></i> ' + 
+                        data.lowStockProducts + ' sản phẩm sắp hết'
+                    );
+                } else {
+                    $('#lowStockInfo').html('<i class="fas fa-check"></i> Tồn kho ổn định');
+                }
+                
+                // Average order value
+                $('#avgOrderValue').html(
+                    'Giá trị trung bình: ' + dashboardApp.formatCurrency(data.averageOrderValue)
+                );
+                
+                // Additional stats
+                $('#pendingOrders').text(data.pendingOrders);
+                $('#completedOrders').text(data.completedOrders);
+                $('#activeVouchers').text(data.activeVouchers);
+                $('#lowStockProducts').text(data.lowStockProducts);
+            },
+            
+            // Load sales chart
+            loadSalesChart: function() {
+                _dashboardService.getSalesChartData(30)
+                    .done(function(result) {
+                        dashboardApp.renderSalesChart(result);
+                    })
+                    .fail(function(error) {
+                        console.error('Error loading sales chart:', error);
+                    });
+            },
+            
+            // Render sales chart
+            renderSalesChart: function(data) {
+                var ctx = document.getElementById('salesChart').getContext('2d');
+                
+                if (dashboardApp.charts.salesChart) {
+                    dashboardApp.charts.salesChart.destroy();
+                }
+                
+                dashboardApp.charts.salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => d.label),
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: data.map(d => d.value),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Doanh thu: ' + dashboardApp.formatCurrency(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return dashboardApp.formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            
+            // Load category chart
+            loadCategoryChart: function() {
+                _dashboardService.getRevenueByCategory()
+                    .done(function(result) {
+                        dashboardApp.renderCategoryChart(result);
+                    })
+                    .fail(function(error) {
+                        console.error('Error loading category chart:', error);
+                    });
+            },
+            
+            // Render category chart
+            renderCategoryChart: function(data) {
+                var ctx = document.getElementById('categoryChart').getContext('2d');
+                
+                if (dashboardApp.charts.categoryChart) {
+                    dashboardApp.charts.categoryChart.destroy();
+                }
+                
+                dashboardApp.charts.categoryChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.map(d => d.label),
+                        datasets: [{
+                            data: data.map(d => d.value),
+                            backgroundColor: data.map(d => d.color),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + dashboardApp.formatCurrency(context.parsed);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            
+            // Load top selling products
+            loadTopProducts: function() {
+                _dashboardService.getTopSellingProducts(5)
+                    .done(function(result) {
+                        dashboardApp.renderTopProducts(result);
+                    })
+                    .fail(function(error) {
+                        console.error('Error loading top products:', error);
+                        $('#topProductsTable').html(
+                            '<tr><td colspan="3" class="text-center text-danger">Không thể tải dữ liệu</td></tr>'
+                        );
+                    });
+            },
+            
+            // Render top products table
+            renderTopProducts: function(products) {
+                var html = '';
+                
+                if (products.length === 0) {
+                    html = '<tr><td colspan="3" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+                } else {
+                    products.forEach(function(product, index) {
+                        html += '<tr class="top-product-item">';
+                        html += '<td>';
+                        html += '<div class="d-flex align-items-center">';
+                        html += '<img src="' + product.imageUrl + '" class="img-thumbnail mr-2" style="width: 50px; height: 50px; object-fit: cover;">';
+                        html += '<div>';
+                        html += '<div class="font-weight-bold">' + product.productName + '</div>';
+                        html += '<small class="text-muted">Top ' + (index + 1) + '</small>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</td>';
+                        html += '<td class="text-center"><span class="badge badge-primary">' + product.totalSold + '</span></td>';
+                        html += '<td class="text-right text-success font-weight-bold">' + dashboardApp.formatCurrency(product.totalRevenue) + '</td>';
+                        html += '</tr>';
+                    });
+                }
+                
+                $('#topProductsTable').html(html);
+            },
+            
+            // Load recent orders
+            loadRecentOrders: function() {
+                _dashboardService.getRecentOrders(10)
+                    .done(function(result) {
+                        dashboardApp.renderRecentOrders(result);
+                    })
+                    .fail(function(error) {
+                        console.error('Error loading recent orders:', error);
+                        $('#recentOrdersTable').html(
+                            '<tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>'
+                        );
+                    });
+            },
+            
+            // Render recent orders table
+            renderRecentOrders: function(orders) {
+                var html = '';
+                
+                if (orders.length === 0) {
+                    html = '<tr><td colspan="4" class="text-center text-muted">Chưa có đơn hàng</td></tr>';
+                } else {
+                    orders.forEach(function(order) {
+                        var statusClass = dashboardApp.getStatusClass(order.status);
+                        
+                        html += '<tr>';
+                        html += '<td><a href="/Orders/Detail?id=' + order.orderId + '">' + order.orderCode + '</a></td>';
+                        html += '<td>' + order.customerName + '</td>';
+                        html += '<td class="text-right font-weight-bold">' + dashboardApp.formatCurrency(order.totalPrice) + '</td>';
+                        html += '<td class="text-center">';
+                        html += '<span class="badge ' + statusClass + ' status-badge">' + order.statusText + '</span>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                }
+                
+                $('#recentOrdersTable').html(html);
+            },
+            
+            // Get status badge class
+            getStatusClass: function(status) {
+                switch(status) {
+                    case 0: return 'badge-warning';  // Pending
+                    case 1: return 'badge-info';     // Confirmed
+                    case 2: return 'badge-success';  // Completed
+                    case 3: return 'badge-danger';   // Cancelled
+                    case 4: return 'badge-secondary'; // Returned
+                    default: return 'badge-secondary';
+                }
+            },
+            
+            // Format currency
+            formatCurrency: function(amount) {
+                return new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).format(amount);
+            },
+            
+            // Initialize dashboard
+            init: function() {
+                dashboardApp.loadStats();
+                dashboardApp.loadSalesChart();
+                dashboardApp.loadCategoryChart();
+                dashboardApp.loadTopProducts();
+                dashboardApp.loadRecentOrders();
+                
+                // Auto refresh every 5 minutes
+                setInterval(function() {
+                    dashboardApp.loadStats();
+                    dashboardApp.loadRecentOrders();
+                }, 300000);
             }
-        ]
-    };
-
-    var salesChartOptions = {
-        //Boolean - If we should show the scale at all
-        showScale: true,
-        //Boolean - Whether grid lines are shown across the chart
-        scaleShowGridLines: false,
-        //String - Colour of the grid lines
-        scaleGridLineColor: 'rgba(0,0,0,.05)',
-        //Number - Width of the grid lines
-        scaleGridLineWidth: 1,
-        //Boolean - Whether to show horizontal lines (except X axis)
-        scaleShowHorizontalLines: true,
-        //Boolean - Whether to show vertical lines (except Y axis)
-        scaleShowVerticalLines: true,
-        //Boolean - Whether the line is curved between points
-        bezierCurve: true,
-        //Number - Tension of the bezier curve between points
-        bezierCurveTension: 0.3,
-        //Boolean - Whether to show a dot for each point
-        pointDot: false,
-        //Number - Radius of each point dot in pixels
-        pointDotRadius: 4,
-        //Number - Pixel width of point dot stroke
-        pointDotStrokeWidth: 1,
-        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-        pointHitDetectionRadius: 20,
-        //Boolean - Whether to show a stroke for datasets
-        datasetStroke: true,
-        //Number - Pixel width of dataset stroke
-        datasetStrokeWidth: 2,
-        //Boolean - Whether to fill the dataset with a color
-        datasetFill: true,
-        //String - A legend template
-        legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].lineColor%>"></span><%=datasets[i].label%></li><%}%></ul>',
-        //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-        maintainAspectRatio: false,
-        //Boolean - whether to make the chart responsive to window resizing
-        responsive: true
-    };
-
-    //Create the line chart
-    var salesChart = new Chart(salesChartCanvas, {
-        type: 'line',
-        data: salesChartData,
-        options: salesChartOptions
+        };
+        
+        // Start the app
+        dashboardApp.init();
     });
-
-    //---------------------------
-    //- END MONTHLY SALES CHART -
-    //---------------------------
-});
+})();

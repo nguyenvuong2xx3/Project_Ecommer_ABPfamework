@@ -142,5 +142,160 @@
 		<text name="AreYouSure" value="Bạn có chắc chắn muốn xóa không?" />
 		<text name="Banners" value="Quản lý Biển quảng cáo" />
 		<text name="Sales" value="Quản lý Giảm giá" />
+		<!-- Dashboard -->
+		<text name="DashboardOverview" value="Tổng quan Dashboard" />
+		<text name="TotalRevenue" value="Tổng doanh thu" />
+		<text name="TotalOrders" value="Tổng đơn hàng" />
+		<text name="TotalProducts" value="Tổng sản phẩm" />
+		<text name="TotalCustomers" value="Tổng khách hàng" />
+		<text name="PendingOrders" value="Đơn chờ xử lý" />
+		<text name="CompletedOrders" value="Đơn hoàn thành" />
+		<text name="VoucherActive" value="Voucher active" />
+		<text name="LowStockProducts" value="Sản phẩm sắp hết" />
+		<text name="Revenue30Days" value="Doanh thu 30 ngày gần đây" />
+		<text name="RevenueByCategory" value="Doanh thu theo danh mục" />
+		<text name="TopSellingProducts" value="Top sản phẩm bán chạy" />
+		<text name="RecentOrders" value="Đơn hàng gần đây" />
+		<text name="LoadingData" value="Đang tải dữ liệu..." />
+		<text name="ViewAll" value="Xem tất cả" />
+		<text name="OrderCode" value="Mã đơn" />
+		<text name="Customer" value="Khách hàng" />
+		<text name="Sold" value="Đã bán" />
+		<text name="ComparedLastMonth" value="so với tháng trước" />
+		<text name="StockWarning" value="cảnh báo tồn kho" />
+		<text name="AverageValue" value="Giá trị trung bình:" />
+
+		<!-- Sales Management -->
+		<text name="SalesManagement" value="Quản lý chương trình giảm giá" />
+		<text name="SaleVoucherManagement" value="Quản lý Sale/Voucher" />
+		<text name="CreateNewSaleVoucher" value="Tạo mới Sale/Voucher" />
+		<text name="SearchByNameOrCode" value="Tìm theo tên hoặc mã voucher..." />
+		<text name="AllTypes" value="Tất cả loại" />
+		<text name="Automatic" value="Tự động" />
+		<text name="Voucher" value="Voucher" />
+		<text name="AllStatus" value="Tất cả trạng thái" />
+		<text name="Active" value="Đang kích hoạt" />
+		<text name="Inactive" value="Đã tắt" />
+		<text name="ApplyScope" value="Phạm vi áp dụng" />
+		<text name="EntireOrder" value="Toàn bộ đơn hàng" />
+		<text name="ByCategory" value="Theo danh mục" />
+		<text name="ByProduct" value="Theo sản phẩm" />
+		<text name="ByVariant" value="Theo biến thể" />
+		<text name="DiscountFrom" value="Giảm giá từ (%)" />
+		<text name="DiscountTo" value="Giảm giá đến (%)" />
+		<text name="UsageStatus" value="Trạng thái lượt dùng" />
+		<text name="UsageLimitReached" value="Đã hết lượt" />
+		<text name="Reset" value="Đặt lại" />
+		<text name="ShowAdvancedFilters" value="Hiển thị bộ lọc nâng cao" />
+		<text name="HideAdvancedFilters" value="Ẩn bộ lọc nâng cao" />
+		<text name="No" value="STT" />
+		<text name="ProgramName" value="Tên chương trình" />
+		<text name="Type" value="Loại" />
+		<text name="VoucherCode" value="Mã Voucher" />
+		<text name="DiscountPercentage" value="Giảm giá (%)" />
+		<text name="Scope" value="Phạm vi" />
+		<text name="Time" value="Thời gian" />
+		<text name="Usage" value="Sử dụng" />
+		<text name="Action" value="Thao tác" />
+		<text name="CreateNewSaleProgram" value="Tạo chương trình giảm giá mới" />
+		<text name="ProgramDescription" value="Mô tả chi tiết về chương trình..." />
+		<text name="DiscountType" value="Loại giảm giá" />
+		<text name="SelectType" value="Chọn loại" />
+		<text name="AutomaticNoCode" value="Tự động (không cần mã)" />
+		<text name="VoucherRequireCode" value="Voucher (yêu cầu nhập mã)" />
+		<text name="GenerateRandomCode" value="Tạo mã ngẫu nhiên" />
+		<text name="ApplyTime" value="Thời gian áp dụng" />
+		<text name="SelectStartEndTime" value="Chọn thời gian bắt đầu và kết thúc..." />
+		<text name="EnterDiscountPercentage" value="Nhập % giảm giá" />
+		<text name="MaxDiscountAmount" value="Giảm tối đa (VNĐ)" />
+		<text name="NoLimit" value="Không giới hạn" />
+		<text name="LeaveBlankForNoLimit" value="Để trống nếu không giới hạn" />
+		<text name="MinimumOrderValue" value="Đơn hàng tối thiểu (VNĐ)" />
+		<text name="UsageLimit" value="Giới hạn lượt sử dụng" />
+		<text name="ActivateNow" value="Kích hoạt ngay" />
+		<text name="ApplyFor" value="Áp dụng cho" />
+		<text name="SelectScope" value="Chọn phạm vi" />
+		<text name="ByProductVariant" value="Theo biến thể sản phẩm" />
+		<text name="SelectCategories" value="Chọn danh mục" />
+		<text name="SelectOneOrMoreCategories" value="Chọn một hoặc nhiều danh mục" />
+		<text name="SelectProducts" value="Chọn sản phẩm" />
+		<text name="SelectOneOrMoreProducts" value="Chọn một hoặc nhiều sản phẩm" />
+		<text name="SelectVariants" value="Chọn biến thể" />
+		<text name="SelectProductVariants" value="Chọn biến thể sản phẩm..." />
+		<text name="SelectOneOrMoreVariants" value="Chọn một hoặc nhiều biến thể" />
+
+		<!-- Cart -->
+		<text name="EmptyCart" value="Chưa có sản phẩm trong giỏ hàng" />
+		<text name="Color" value="Màu:" />
+		<text name="Remove" value="Xóa" />
+		<text name="Discount" value="Giảm giá" />
+		<text name="ShippingInfo" value="Thông tin nhận hàng" />
+		<text name="PleaseUpdateShippingInfo" value="Vui lòng cập nhật đầy đủ thông tin nhận hàng để tiếp tục đặt hàng." />
+		<text name="ChangeAddress" value="Thay đổi địa chỉ" />
+		<text name="DiscountCode" value="Mã giảm giá" />
+		<text name="EnterVoucherCode" value="Nhập mã voucher" />
+		<text name="Apply" value="Áp dụng" />
+		<text name="OrderSummary" value="Tổng đơn hàng" />
+		<text name="Subtotal" value="Tạm tính" />
+		<text name="Items" value="sản phẩm" />
+		<text name="ShippingFee" value="Phí vận chuyển" />
+		<text name="Free" value="Miễn phí" />
+		<text name="Total" value="Tổng cộng" />
+		<text name="COD" value="Thanh toán khi nhận hàng (COD)" />
+		<text name="BankTransfer" value="Chuyển khoản ngân hàng" />
+		<text name="PlaceOrder" value="Đặt hàng" />
+
+		<!-- Products Management -->
+		<text name="SearchWithThreeDot" value="Tìm kiếm..." />
+		<text name="ExportExcel" value="Xuất Excel" />
+		<text name="ImportExcel" value="Nhập Excel" />
+		<text name="AllCategories" value="Tất cả danh mục" />
+		<text name="Screen" value="Màn hình" />
+		<text name="ScreenSpecs" value="Thông số màn hình" />
+		<text name="Processor" value="Bộ vi xử lý" />
+		<text name="CameraSystem" value="Hệ thống camera" />
+		<text name="Battery" value="Pin" />
+		<text name="BatteryInfo" value="Thông tin pin" />
+		<text name="fromTo" value="Từ - Đến" />
+		<text name="ShowAdvancedFilter" value="Hiển thị bộ lọc nâng cao" />
+		<text name="HideAdvancedFilter" value="Ẩn bộ lọc nâng cao" />
+		<text name="ImageUrl" value="Hình ảnh" />
+		<text name="AddNewProduct" value="Thêm mới sản phẩm" />
+		<text name="ProductInfo" value="Thông tin sản phẩm" />
+		<text name="GeneralDescription" value="Mô tả chung" />
+		<text name="GeneralDescriptionPlaceholder" value="Mô tả các tính năng chung, thiết kế của sản phẩm..." />
+		<text name="TechnicalSpecs" value="Thông số kỹ thuật" />
+		<text name="ScreenExample" value="Ví dụ: 6.1 inch, Super Retina XDR" />
+		<text name="ProcessorExample" value="Ví dụ: Apple A17 Pro" />
+		<text name="CameraExample" value="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
+		<text name="BatteryExample" value="Ví dụ: Xem video 23 giờ" />
+		<text name="ProductImages" value="Hình ảnh sản phẩm" />
+		<text name="DragDropImages" value="Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh" />
+		<text name="SupportedFormats" value="Hỗ trợ nhiều ảnh, định dạng: JPG, PNG, GIF" />
+
+		<!-- Product Variants Management -->
+		<text name="AddNewVariant" value="Thêm mới biến thể sản phẩm" />
+		<text name="SelectProduct" value="Chọn sản phẩm" />
+		<text name="AllProducts" value="Tất cả sản phẩm" />
+		<text name="Ram" value="RAM" />
+		<text name="RamCapacity" value="Dung lượng RAM" />
+		<text name="RamExample" value="Ví dụ: 8GB, 12GB" />
+		<text name="Storage" value="Bộ nhớ" />
+		<text name="InternalStorage" value="Bộ nhớ trong" />
+		<text name="StorageCapacity" value="Dung lượng bộ nhớ" />
+		<text name="StorageExample" value="Ví dụ: 128GB, 256GB, 512GB" />
+		<text name="ColorOption" value="Màu sắc" />
+		<text name="ColorExample" value="Ví dụ: Đen, Trắng, Xanh" />
+		<text name="SKU" value="Mã SKU" />
+		<text name="SKUCode" value="Mã SKU" />
+		<text name="PriceRange" value="Khoảng giá" />
+		<text name="MinPrice" value="Giá thấp nhất" />
+		<text name="MaxPrice" value="Giá cao nhất" />
+		<text name="StockQuantity" value="Số lượng tồn kho" />
+		<text name="EnterQuantity" value="Nhập số lượng" />
+		<text name="PriceExample" value="Ví dụ: 23990000" />
+		<text name="VariantImages" value="Hình ảnh biến thể" />
+		<text name="Required" value="*" />
+		<text name="Optional" value="(Tùy chọn)" />
 	</texts>
 </localizationDictionary>

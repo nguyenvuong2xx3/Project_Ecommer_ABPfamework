@@ -342,7 +342,6 @@
 	$(".btl-click-plus, .btl-click-minus, .btl-click-delete").click(function () {
 		setTimeout(resetVoucher, 100);
 	});
-	// ============= ORDER PROCESSING =============
 
 	function processOrder(userInfo) {
 		const orderData = collectOrderData(userInfo);
