@@ -1,9 +1,68 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.SideBarMenu
 @using Acme.SimpleTaskApp.Web.Views.Shared.Components.SideBarUserArea
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar elevation-4" style="background-color: white;">
     @await Html.PartialAsync("_SideBar.Logo.cshtml")
     <div class="sidebar">
         @await Component.InvokeAsync(typeof(SideBarUserAreaViewComponent))
         @await Component.InvokeAsync(typeof(SideBarMenuViewComponent))
     </div>
 </aside>
+
+<style>
+    /* Sidebar white theme */
+    .main-sidebar {
+        background-color: white !important;
+    }
+
+    /* Menu items styling */
+    .main-sidebar .nav-link {
+        color: #495057 !important;
+    }
+
+    .main-sidebar .nav-link:hover {
+        background-color: #f8f9fa !important;
+        color: #007bff !important;
+    }
+
+    .main-sidebar .nav-link.active {
+        background-color: #007bff !important;
+        color: white !important;
+    }
+
+    .main-sidebar .nav-link.active .nav-icon {
+        color: white !important;
+    }
+
+    /* Icon colors */
+    .main-sidebar .nav-icon {
+        color: #6c757d !important;
+    }
+
+    .main-sidebar .nav-link:hover .nav-icon {
+        color: #007bff !important;
+    }
+
+    /* User panel */
+    .main-sidebar .user-panel {
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .main-sidebar .user-panel .info a {
+        color: #495057 !important;
+    }
+
+    /* Brand/Logo area */
+    .main-sidebar .brand-link {
+        border-bottom: 1px solid #dee2e6 !important;
+        background-color: white !important;
+    }
+
+    .main-sidebar .brand-text {
+        color: #495057 !important;
+    }
+
+    /* Remove dark theme styles */
+    .sidebar-dark-primary {
+        background-color: white !important;
+    }
+</style>
