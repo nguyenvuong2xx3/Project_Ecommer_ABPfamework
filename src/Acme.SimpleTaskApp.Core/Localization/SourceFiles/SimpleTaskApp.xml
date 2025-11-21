@@ -91,7 +91,7 @@
     <text name="On">On</text>
     <text name="Off">Off</text>
     <text name="AreYouSureWantToDelete">Are you sure want to delete {0}?</text>
-    <text name="SuccessfullyDeleted">Successfully deleted</text>
+    <text name="SuccessfullyDeleted" value="Successfully deleted" />
     <text name="StartTyping">Start Typing</text>
     <text name="Skins">Skins</text>
     <text name="Settings">Settings</text>
@@ -120,5 +120,19 @@
     <text name="403PageHeader">Forbidden</text>
     <text name="403PageDescription">You don't have permission to access this resource. Please contact your administrator.</text>
     <text name="403PageButton">Go back to Dashboard</text>
+	
+    <!-- Menu Groups -->
+    <text name="ContentManagement" value="Content Management" />
+    <text name="ProductManagement" value="Product Management" />
+    <text name="SalesManagement" value="Sales Management" />
+	
+    <!-- Menu Items -->
+    <text name="Banners" value="Banners" />
+    <text name="Sales" value="Promotions" />
+    <text name="Categories" value="Categories" />
+    <text name="Products" value="Products" />
+    <text name="ProductVariants" value="Product Variants" />
+    <text name="HomeCustomer" value="Storefront" />
+    <text name="Orders" value="Orders" />
   </texts>
 </localizationDictionary>

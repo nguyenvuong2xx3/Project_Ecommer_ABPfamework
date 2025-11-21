@@ -111,7 +111,7 @@
 		<text name="CreateNewCategory" value="Tạo mới danh mục" />
 		<text name="CategoryName" value="Tên danh mục" />
 		<text name="Orders" value="Đơn đặt hàng" />
-		<text name="HomeCustomer" value="Trang người dùng" />
+		<text name="HomeCustomer" value="Trang khách hàng" />
 		<text name="EditProduct" value="Chỉnh sửa sản phẩm" />
 		<text name="EditCategory" value="Chỉnh sửa danh mục" />
 		<text name="CreateCategory" value="Tạo mới danh mục" />
@@ -138,10 +138,16 @@
 		<text name="CommodityManagement" value="Quản lý hàng hóa" />
 		<text name="ProductVariants" value="Quản lý biến thể sản phẩm" />
 		<text name="OrderManagement" value="Quản lý đơn hàng" />
-		<text name="Administration" value="Quản lý hệ thống" />
+		<text name="Administration" value="Quản trị hệ thống" />
 		<text name="AreYouSure" value="Bạn có chắc chắn muốn xóa không?" />
-		<text name="Banners" value="Quản lý Biển quảng cáo" />
-		<text name="Sales" value="Quản lý Giảm giá" />
+		<text name="Banners" value="Quản lý Banner" />
+		<text name="Sales" value="Khuyến mãi" />
+		
+		<!-- Menu Groups - NEW -->
+		<text name="ContentManagement" value="Quản lý nội dung" />
+		<text name="ProductManagement" value="Quản lý sản phẩm" />
+		<text name="SalesManagement" value="Quản lý bán hàng" />
+		
 		<!-- Dashboard -->
 		<text name="DashboardOverview" value="Tổng quan Dashboard" />
 		<text name="TotalRevenue" value="Tổng doanh thu" />
@@ -166,7 +172,6 @@
 		<text name="AverageValue" value="Giá trị trung bình:" />
 
 		<!-- Sales Management -->
-		<text name="SalesManagement" value="Quản lý chương trình giảm giá" />
 		<text name="SaleVoucherManagement" value="Quản lý Sale/Voucher" />
 		<text name="CreateNewSaleVoucher" value="Tạo mới Sale/Voucher" />
 		<text name="SearchByNameOrCode" value="Tìm theo tên hoặc mã voucher..." />

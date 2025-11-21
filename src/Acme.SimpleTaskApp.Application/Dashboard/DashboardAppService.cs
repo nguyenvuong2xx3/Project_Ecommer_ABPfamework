@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Acme.SimpleTaskApp.Authorization.Users;
+using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Orders;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Sales;
@@ -19,14 +20,18 @@ namespace Acme.SimpleTaskApp.Dashboard
 		private readonly IRepository<ProductVariant, int> _variantRepository;
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IRepository<Sale, int> _saleRepository;
+		private readonly IRepository<Category, int> _categoryRepository;
 
 		public DashboardAppService(
 			IRepository<Order, int> orderRepository,
 			IRepository<Product, int> productRepository,
 			IRepository<ProductVariant, int> variantRepository,
 			IRepository<User, long> userRepository,
-			IRepository<Sale, int> saleRepository)
+			IRepository<Sale, int> saleRepository,
+			IRepository<Category, int> categoryRepository
+			)
 		{
+			_categoryRepository = categoryRepository;
 			_orderRepository = orderRepository;
 			_productRepository = productRepository;
 			_variantRepository = variantRepository;
@@ -51,8 +56,8 @@ namespace Acme.SimpleTaskApp.Dashboard
 			decimal lastMonthRevenue = lastMonthOrders.Sum(o => o.TotalPrice ?? 0);
 
 			// Calculate growth
-			decimal revenueGrowth = lastMonthRevenue > 0 
-				? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
+			decimal revenueGrowth = lastMonthRevenue > 0
+				? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
 				: 0;
 
 			int ordersGrowth = lastMonthOrders.Count > 0
@@ -72,9 +77,9 @@ namespace Acme.SimpleTaskApp.Dashboard
 
 			// Count active vouchers
 			var activeVouchers = await _saleRepository.GetAll()
-				.Where(s => s.IsActive && 
+				.Where(s => s.IsActive &&
 					s.DiscountType == DiscountType.Voucher &&
-					s.StartDate <= now && 
+					s.StartDate <= now &&
 					s.EndDate >= now)
 				.CountAsync();
 
@@ -219,7 +224,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 			}
 
 			// Get revenue by category - simplified without Category navigation
-			var categoryRevenue = new Dictionary<int, decimal>();
+			var categoryRevenue = new Dictionary<string, decimal>();
 
 			foreach (var order in orders)
 			{
@@ -236,12 +241,13 @@ namespace Acme.SimpleTaskApp.Dashboard
 								if (product != null && product.CategoryId.HasValue)
 								{
 									var categoryId = product.CategoryId.Value;
+									var categoryName = _categoryRepository.FirstOrDefaultAsync(x => x.Id == categoryId).Result.Name;
 									var revenue = (detail.Quantity ?? 0) * (detail.NewPrice ?? 0);
 
-									if (categoryRevenue.ContainsKey(categoryId))
-										categoryRevenue[categoryId] += revenue;
+									if (categoryRevenue.ContainsKey(categoryName))
+										categoryRevenue[categoryName] += revenue;
 									else
-										categoryRevenue[categoryId] = revenue;
+										categoryRevenue[categoryName] = revenue;
 								}
 							}
 						}
@@ -256,7 +262,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 				.OrderByDescending(x => x.Value)
 				.Select(x => new ChartDataDto
 				{
-					Label = "Category " + x.Key, // Simple label without navigation
+					Label = x.Key, // Simple label without navigation
 					Value = x.Value,
 					Color = colors[index++ % colors.Length]
 				})

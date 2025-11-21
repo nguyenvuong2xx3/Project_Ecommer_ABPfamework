@@ -86,7 +86,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			public async Task<ActionResult> SearchProductCustomer(SearchHomeCustomerDto input)
 			{
 				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
-				var cattegory = _categoryRepository.GetAll();
+				var cattegory = await _categoryRepository.GetAllAsync();
 				var model = new HomeCustomerViewModel()
 				{
 					ProductsInfo = output.Items.ToList(),
