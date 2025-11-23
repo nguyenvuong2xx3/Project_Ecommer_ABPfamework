@@ -302,5 +302,26 @@
 		<text name="VariantImages" value="Hình ảnh biến thể" />
 		<text name="Required" value="*" />
 		<text name="Optional" value="(Tùy chọn)" />
+		<text name="SmtpSettings" value="Cài đặt SMTP" />
+		<text name="SmtpConfiguration" value="Cấu hình SMTP" />
+		<text name="TestSmtp" value="Kiểm tra SMTP" />
+		<text name="Server" value="Máy chủ" />
+		<text name="ServerIsRequired" value="Máy chủ là bắt buộc." />
+		<text name="Port" value="Cổng" />
+		<text name="PortIsRequired" value="Cổng là bắt buộc." />
+		<text name="SenderName" value="Tên người gửi" />
+		<text name="SenderNameIsRequired" value="Tên người gửi là bắt buộc." />
+		<text name="SenderEmail" value="Email người gửi" />
+		<text name="SenderEmailIsRequired" value="Email người gửi là bắt buộc." />
+		<text name="UserNameIsRequired" value="Tên đăng nhập là bắt buộc." />
+		<text name="PasswordIsRequired" value="Mật khẩu là bắt buộc." />
+		<text name="EnableSsl" value="Bật SSL" />
+		<text name="EnableSslDescription" value="Bật SSL để gửi email an toàn." />
+		<text name="TestSmtpConfiguration" value="Kiểm tra cấu hình SMTP" />
+		<text name="TestEmailAddress" value="Email kiểm tra" />
+		<text name="SendTestEmail" value="Gửi email kiểm tra" />
+		<text name="TestResult" value="Kết quả kiểm tra" />
+		<text name="Close" value="Đóng" />
+
 	</texts>
 </localizationDictionary>
