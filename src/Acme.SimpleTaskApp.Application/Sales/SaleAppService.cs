@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
+using Abp.Timing;
 using Abp.UI;
 using Acme.SimpleTaskApp.Sales.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -252,6 +253,27 @@ namespace Acme.SimpleTaskApp.Sales
 		#endregion
 
 		#region Voucher Operations
+		public async Task<Sale> ActiveOrInActive(int id)
+		{
+			if (id <= 0)
+			{
+				throw new UserFriendlyException("Id không hợp lệ");
+			}
+
+			var sale = await _saleRepository.FirstOrDefaultAsync(id);
+			if (sale == null)
+			{
+				throw new UserFriendlyException($"Không tìm thấy Sale có Id = {id}");
+			}
+
+			// Toggle trạng thái
+			sale.IsActive = !sale.IsActive;
+
+			await _saleRepository.UpdateAsync(sale);
+
+			return sale;
+		}
+
 
 		// Lấy Sale theo mã Voucher
 		public async Task<SaleDto> GetSaleByVoucherCode(string voucherCode)

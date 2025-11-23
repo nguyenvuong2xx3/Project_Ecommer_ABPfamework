@@ -8,6 +8,7 @@ using Acme.SimpleTaskApp.Carts.Dtos;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
+using Acme.SimpleTaskApp.Orders;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Sales;
 using Microsoft.EntityFrameworkCore;
@@ -22,14 +23,17 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	private readonly IRepository<Category> _categoryRepository;
 	private readonly IRepository<ProductImage> _productImageRepository;
 	private readonly ISaleAppService _saleAppService;
+	private readonly IRepository<Order> _order;
 
 	public HomeCustomerAppService(
+		IRepository<Order> order,
 		IRepository<Product> productRepository,
 		IRepository<ProductVariant> productVariantRepository,
 		IRepository<Category> categoryRepository,
 		IRepository<ProductImage> productImageRepository,
 		ISaleAppService saleAppService)
 	{
+		_order = order;
 		_productRepository = productRepository;
 		_productVariantRepository = productVariantRepository;
 		_categoryRepository = categoryRepository;
@@ -45,7 +49,6 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		// lấy sản phẩm ra
 		var prodQuery = _productRepository.GetAll();
 
-		// Thay thế đoạn lọc tên sản phẩm bằng bộ lọc không phân biệt khoảng trắng và chữ hoa/thường
 		// lọc theo tên tìm kiếm
 		if (!string.IsNullOrWhiteSpace(input.Filter))
 		{
@@ -125,6 +128,9 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		var images = await _productImageRepository.GetAll()
 			.Where(i => variantIds.Contains(i.ProductVariantId.Value))
 			.ToListAsync();
+		// số lượng sản phẩm đã bán
+		var countSold = await _order.GetAllAsync();
+		countSold = countSold.Where(x => x.Status == 2);
 
 		// Attach variants and images to products
 		foreach (var p in prodQuery)
@@ -144,8 +150,22 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 					.Select(img => img.ImageUrl)
 					.ToList();
 				v.ImageUrl = v.ImageUrls.FirstOrDefault();
-				
-				// NEW: Get best sale for this variant
+
+
+				// lấy số lượng đã bán
+				foreach (var o in countSold)
+				{
+					o.Deserialize();
+					foreach (var item in o.OrderDetails)
+					{
+						if (item.ProductVariantId == v.Id)
+						{
+							v.SoldQuantity += item.Quantity ?? 0;
+						}
+					}
+				};
+
+				// lấy sale
 				var bestSale = await _saleAppService.GetBestSaleForProductVariant(v.Id, p.Id, p.CategoryId);
 				if (bestSale != null)
 				{

@@ -65,13 +65,19 @@
                         <div class="product-info">
                           <div class="product-name">
                             @product.Name
+                          </div>
+                          <div class="product-tags">
                             @if (!string.IsNullOrEmpty(item.Ram))
                             {
-                              @($"/{item.Ram}/{item.Storage}")
+                              <span class="product-tag">@item.Ram</span>
                             }
-                            else
+                            @if (!string.IsNullOrEmpty(item.Storage))
                             {
-                              @($"/{item.Storage}/{item.Color}")
+                              <span class="product-tag">@item.Storage</span>
+                            }
+                            @if (!string.IsNullOrEmpty(item.Color))
+                            {
+                              <span class="product-tag">@item.Color</span>
                             }
                           </div>
 
@@ -111,6 +117,10 @@
                               </div>
                             }
                           </div>
+                        </div>
+                        <div class="sold-info">
+                          <i class="fas fa-shopping-bag"></i>
+                          <span class="sold-text">Đã bán <strong>@item.SoldQuantity</strong></span>
                         </div>
                         <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
                           Xem chi tiết
