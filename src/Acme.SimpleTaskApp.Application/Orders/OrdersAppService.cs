@@ -1,6 +1,7 @@
 ﻿using Abp;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.BackgroundJobs;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -23,11 +24,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using static Acme.SimpleTaskApp.Orders.OrderNotificationJob;
 
 namespace Acme.SimpleTaskApp.Orders
 {
 	public class OrdersAppService : ApplicationService, IOrdersAppService
 	{
+		private readonly IBackgroundJobManager _backgroundJobManager;
 		private readonly IRepository<Sale, int> _saleRepository;
 		private readonly IRepository<Order, int> _ordersRepository;
 		private readonly IRepository<User, long> _userRepository;
@@ -42,6 +45,7 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly ISaleAppService _saleAppService;
 
 		public OrdersAppService(
+			IBackgroundJobManager backgroundJobManager,
 			IRepository<Sale, int> saleRepository,
 			IRepository<ProductImage> productImageRepository,
 			IRepository<Order, int> orderRepository,
@@ -55,6 +59,7 @@ namespace Acme.SimpleTaskApp.Orders
 		IOrderQueueService orderQueueService,
 		ISaleAppService saleAppService)
 		{
+			_backgroundJobManager = backgroundJobManager;
 			_saleRepository = saleRepository;
 			_sendMailAppService = sendMailAppService;
 			_productImageRepository = productImageRepository;
@@ -190,8 +195,11 @@ namespace Acme.SimpleTaskApp.Orders
 				await CurrentUnitOfWork.SaveChangesAsync();
 
 				// Gửi email xác nhận đơn hàng
-				_sendMailAppService.SendMailOrderAsync();
-
+				await _sendMailAppService.SendMailOrderAsync();
+				// thông báo đơn hàng mới
+				await _backgroundJobManager.EnqueueAsync<OrderNotificationJob, OrderNotificationJobArgs>(
+						new OrderNotificationJobArgs { Code = order.Code }
+				);
 				return orderId;
 			}
 			catch (Exception)
@@ -209,7 +217,7 @@ namespace Acme.SimpleTaskApp.Orders
 
 			var query = _ordersRepository.GetAll()
 					.Where(x => x.UserId == currentUserId)
-					.WhereIf(input.StatusUser != null && input.StatusUser.Any(), x =>  input.StatusUser.Contains(x.Status.Value))
+					.WhereIf(input.StatusUser != null && input.StatusUser.Any(), x => input.StatusUser.Contains(x.Status.Value))
 					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
 					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
 

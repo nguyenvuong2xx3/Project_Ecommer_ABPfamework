@@ -29,7 +29,7 @@ namespace Acme.SimpleTaskApp.Migrator
                 SimpleTaskAppConsts.ConnectionStringName
             );
 
-            Configuration.BackgroundJobs.IsJobExecutionEnabled = false;
+            Configuration.BackgroundJobs.IsJobExecutionEnabled = true;
             Configuration.ReplaceService(
                 typeof(IEventBus), 
                 () => IocManager.IocContainer.Register(
