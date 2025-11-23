@@ -1,0 +1,102 @@
+﻿@using Acme.SimpleTaskApp.Products
+@model IEnumerable<Product>
+
+@if (Model != null)
+{
+  <input class="total-count-hidden" type="hidden" value="@ViewBag.TotalCount">
+  @foreach (var product in Model)
+  {
+    var item = product.ProductVariants.FirstOrDefault();
+    if (item != null)
+    {
+      <div class="product-item">
+        <div class="product-card product-click-detail" data-id="@item.Id">
+          <!-- Discount Badge -->
+          @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
+          {
+            <div class="discount-badge">
+              <i class="fas fa-bolt"></i> -@item.DiscountPercentage.ToString("0.#")%
+            </div>
+          }
+
+          <div class="image-container">
+            @if (item.ImageUrl != null)
+            {
+              <img src="@item.ImageUrl" class="product-image" alt="@product.Name">
+            }
+            else
+            {
+              <img src="~/img/products/default.png" class="product-image" alt="@product.Name">
+            }
+          </div>
+
+          <div class="product-info">
+            <div class="product-name">
+              @product.Name
+            </div>
+            <div class="product-tags">
+              @if (!string.IsNullOrEmpty(item.Ram))
+              {
+                <span class="product-tag">@item.Ram</span>
+              }
+              @if (!string.IsNullOrEmpty(item.Storage))
+              {
+                <span class="product-tag">@item.Storage</span>
+              }
+              @if (!string.IsNullOrEmpty(item.Color))
+              {
+                <span class="product-tag">@item.Color</span>
+              }
+            </div>
+
+            <div class="product-price">
+              @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
+              {
+                <!-- Giá gốc gạch ngang -->
+                <div class="original-price">@item.Price.ToString("#,##0")₫</div>
+                <!-- Giá sau giảm -->
+                <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
+                <!-- Tên chương trình sale -->
+                @if (!string.IsNullOrEmpty(item.SaleName))
+                {
+                  <span class="discount-text">
+                    <i class="fas fa-gift"></i> @item.SaleName
+                  </span>
+                }
+                else
+                {
+                  <span class="discount-text">
+                    <i class="fas fa-fire"></i> Đang giảm giá
+                  </span>
+                }
+              }
+              else
+              {
+                <!-- Giá bình thường -->
+                <div class="current-price">@item.Price.ToString("#,##0")₫</div>
+              }
+            </div>
+
+            <!-- Stock Quantity -->
+            <div class="stock-status">
+              @if (item.StockQuantity == 0)
+              {
+                <div class="sold-out-overlay">
+                  <i class="fas fa-ban"></i>
+                  Hết hàng
+                </div>
+              }
+            </div>
+          </div>
+          <div class="sold-info">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="sold-text">Đã bán <strong>@item.SoldQuantity</strong></span>
+          </div>
+          <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
+            Xem chi tiết
+          </button>
+        </div>
+      </div>
+    }
+  }
+}

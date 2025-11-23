@@ -96,6 +96,16 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 				return View(model);
 			}
+
+			[HttpPost]
+			public async Task<IActionResult> GetListProduct(SearchHomeCustomerDto input)
+			{
+				// 1. Gọi Service lấy dữ liệu như bình thường
+				var result = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
+
+				ViewBag.TotalCount = result.TotalCount;
+				return PartialView("_ProductList", result.Items);
+			}
 			public async Task<PartialViewResult> FilterAdvancedModal()
 			{
 

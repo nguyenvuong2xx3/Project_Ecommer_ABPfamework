@@ -75,7 +75,7 @@
             @foreach (var category in Model.Categories)
             {
               <label class="brand-item">
-                <input type="checkbox" name="category" value="@category.Id">
+                <input type="checkbox" name="category" data-name="@category.Name" value="@category.Id">
                 <span class="checkmark"></span>
                 @category.Name.ToUpper()
               </label>
@@ -141,80 +141,7 @@
     <!-- Products Grid -->
     <div class="products-container">
       <div class="products-grid">
-        @foreach (var product in Model.ProductsInfo)
-        {
-          @foreach (var item in product.ProductVariants)
-          {
-            <div class="product-item">
-              <div class="product-card product-click-detail" data-id="@product.Id">
-
-                <!-- Discount Badge -->
-                @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
-                {
-                  <div class="discount-badge">
-                    <i class="fas fa-bolt"></i> -@item.DiscountPercentage.ToString("0.#")%
-                  </div>
-                }
-
-                <div class="image-container">
-                  @if (!string.IsNullOrEmpty(item.ImageUrl))
-                  {
-                    <img src="@item.ImageUrl" class="product-image" alt="@product.Name">
-                  }
-                  else
-                  {
-                    <img src="~/img/products/default.png" class="product-image" alt="@product.Name">
-                  }
-                </div>
-
-                <div class="product-info">
-                  <div class="product-name">@product.Name</div>
-                  <div class="variant-info">
-                    @if (!string.IsNullOrEmpty(item.Ram))
-                    {
-                      <span>@item.Ram/@item.Storage</span>
-                    }
-                    else
-                    {
-                      <span>@item.Storage/@item.Color</span>
-                    }
-                  </div>
-
-                  <div class="price-section">
-                    @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
-                    {
-                      <!-- Giá gốc gạch ngang -->
-                      <div class="original-price">@item.Price.ToString("#,##0")₫</div>
-                      <!-- Giá sau giảm -->
-                      <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
-                      <!-- Tên chương trình sale -->
-                      @if (!string.IsNullOrEmpty(item.SaleName))
-                      {
-                        <span class="discount-text">
-                          <i class="fas fa-gift"></i> @item.SaleName
-                        </span>
-                      }
-                      else
-                      {
-                        <span class="discount-text">
-                          <i class="fas fa-fire"></i> Đang giảm giá
-                        </span>
-                      }
-                    }
-                    else
-                    {
-                      <div class="current-price">@item.Price.ToString("#,##0")₫</div>
-                    }
-                  </div>
-                </div>
-
-                <button class="view-detail-btn productvariant-click-detail" data-id="@item.Id">
-                  Xem chi tiết
-                </button>
-              </div>
-            </div>
-          }
-        }
+        <partial name="_ProductList" model="Model.ProductsInfo" />
       </div>
 
       <div class="load-more-container">
@@ -227,6 +154,104 @@
 </div>
 
 <style>
+
+  .sold-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+    font-size: 12px;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 8px 0;
+    background-color: #fafafa;
+  }
+
+  .sold-info i {
+    color: #288ad6;
+    font-size: 11px;
+  }
+
+  .sold-text {
+    font-weight: 400;
+  }
+
+    .sold-text strong {
+      color: #d0021b;
+      font-weight: 600;
+    }
+
+  .product-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .product-tag {
+    background-color: #e4e1e1;
+    color: #555;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Điều chỉnh lại product name */
+  .product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 160px;
+    background: rgba(173, 173, 173, 0.5);
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-bottom: 1px solid #f3f3f3;
+  }
+
+    .sold-out-overlay i {
+      font-size: 22px;
+    }
+
+  .detail-btn {
+    background: white;
+    color: #288ad6;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-top: 1px solid #e1e1e1;
+    margin-top: auto;
+  }
+
+    .detail-btn:hover {
+      background: #f8f9fa;
+      color: #1a7bc8;
+    }
   /* ====== Main Container ====== */
   .main-container {
     width: 1200px;
