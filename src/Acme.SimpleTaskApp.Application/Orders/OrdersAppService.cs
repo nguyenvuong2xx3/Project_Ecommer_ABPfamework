@@ -77,7 +77,7 @@ namespace Acme.SimpleTaskApp.Orders
 			var orderDetailsList = new List<OrderDetails>();
 			var currentUser = _userRepository.Get(AbpSession.UserId.Value);
 			var user = await _userRepository.GetAsync(currentUser.Id);
-			
+
 			if (string.IsNullOrEmpty(user.TinhThanh) && string.IsNullOrEmpty(user.PhuongXa) &&
 				string.IsNullOrEmpty(input.Order.TinhThanh) && string.IsNullOrEmpty(input.Order.PhuongXa))
 			{
@@ -94,7 +94,7 @@ namespace Acme.SimpleTaskApp.Orders
 			{
 				// Tính tổng giá và chuẩn bị cart items để validate voucher
 				var cartItemsForDiscount = new List<Sales.CartItemDiscountDto>();
-				
+
 				foreach (var item in input.OrderDetails)
 				{
 					totalPrice += item.Quantity.Value * item.NewPrice.Value;
@@ -102,7 +102,7 @@ namespace Acme.SimpleTaskApp.Orders
 					// Lấy thông tin product và category để validate voucher
 					var variant = await _productVariantRepository.GetAsync(item.ProductVariantId.Value);
 					var product = await _productRepository.GetAsync(variant.ProductId);
-					
+
 					cartItemsForDiscount.Add(new Sales.CartItemDiscountDto
 					{
 						ProductVariantId = item.ProductVariantId.Value,
@@ -130,7 +130,7 @@ namespace Acme.SimpleTaskApp.Orders
 						CartItems = cartItemsForDiscount,
 						VoucherCode = input.VoucherCode.Trim().ToUpper()
 					};
-					
+
 					var discountResult = await _saleAppService.CalculateCartDiscount(request);
 
 					if (!discountResult.Success)
@@ -172,7 +172,7 @@ namespace Acme.SimpleTaskApp.Orders
 					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet,
 					PhoneNumber = string.IsNullOrWhiteSpace(input.Order.PhoneNumber) ? user.PhoneNumber : input.Order.PhoneNumber,
 				};
-				
+
 				order.Serialize();
 				var orderId = await _ordersRepository.InsertAndGetIdAsync(order);
 
@@ -188,10 +188,10 @@ namespace Acme.SimpleTaskApp.Orders
 				}
 
 				await CurrentUnitOfWork.SaveChangesAsync();
-				
+
 				// Gửi email xác nhận đơn hàng
 				_sendMailAppService.SendMailOrderAsync();
-				
+
 				return orderId;
 			}
 			catch (Exception)
@@ -209,7 +209,7 @@ namespace Acme.SimpleTaskApp.Orders
 
 			var query = _ordersRepository.GetAll()
 					.Where(x => x.UserId == currentUserId)
-					.WhereIf(input.Status.HasValue, x => x.Status == input.Status)
+					.WhereIf(input.StatusUser != null && input.StatusUser.Any(), x =>  input.StatusUser.Contains(x.Status.Value))
 					.WhereIf(input.PaymentMethod.HasValue, x => x.PaymentMethod == input.PaymentMethod)
 					.WhereIf(input.StartTime.HasValue && input.EndTime.HasValue, x => x.CreationTime >= input.StartTime && x.CreationTime <= input.EndTime);
 
@@ -271,7 +271,6 @@ namespace Acme.SimpleTaskApp.Orders
 					}
 				}
 			}
-
 			return orders;
 		}
 
@@ -370,7 +369,7 @@ namespace Acme.SimpleTaskApp.Orders
 				// Assign variants and images to order details
 				foreach (var item in order.OrderDetails)
 				{
-					if (variants.TryGetValue(item.ProductVariantId.Value ,out var variant))
+					if (variants.TryGetValue(item.ProductVariantId.Value, out var variant))
 					{
 						item.ProductVariant = variant;
 
@@ -388,7 +387,9 @@ namespace Acme.SimpleTaskApp.Orders
 			return order;
 		}
 
-		public async Task ApproveOrder(int orderId)
+
+		// đang xử lý - admin
+		public async Task XuLyOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
 			if (order == null)
@@ -398,7 +399,74 @@ namespace Acme.SimpleTaskApp.Orders
 			order.Status = 1;
 			await _ordersRepository.UpdateAsync(order);
 		}
-		public async Task RejectOrder(int orderId)
+
+		// hủy đơn - admin
+		public async Task HuyAdminOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Deserialize();
+			order.Status = 4;
+			await _ordersRepository.UpdateAsync(order);
+
+			// hoàn lại số lượng voucher đã sử dụng
+
+			// hoàn lại số lượng sản phẩm
+			if (order.OrderDetails != null && order.OrderDetails.Any())
+			{
+				foreach (var detail in order.OrderDetails)
+				{
+					var variant = await _productVariantRepository.GetAsync(detail.ProductVariantId.Value);
+					if (variant != null && detail.Quantity.HasValue)
+					{
+						variant.StockQuantity += detail.Quantity.Value;
+						await _productVariantRepository.UpdateAsync(variant);
+					}
+				}
+			}
+		}
+		// hủy đơn - user, 
+		public async Task HuyUserOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Deserialize();
+			order.Status = 5;
+			await _ordersRepository.UpdateAsync(order);
+
+			if (order.OrderDetails != null && order.OrderDetails.Any())
+			{
+				foreach (var detail in order.OrderDetails)
+				{
+					var variant = await _productVariantRepository.GetAsync(detail.ProductVariantId.Value);
+					if (variant != null && detail.Quantity.HasValue)
+					{
+						variant.StockQuantity += detail.Quantity.Value;
+						await _productVariantRepository.UpdateAsync(variant);
+					}
+				}
+			}
+		}
+
+		/// đang giao - admin
+		public async Task DangGiaoOrder(int orderId)
+		{
+			var order = await _ordersRepository.GetAsync(orderId);
+			if (order == null)
+			{
+				throw new UserFriendlyException("Order not found.");
+			}
+			order.Status = 2;
+			await _ordersRepository.UpdateAsync(order);
+		}
+		/// thành công - admin
+		public async Task ThanhCongOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
 			if (order == null)
@@ -409,27 +477,8 @@ namespace Acme.SimpleTaskApp.Orders
 			await _ordersRepository.UpdateAsync(order);
 		}
 
-		public async Task CancelOrder(int orderId)
-		{
-			var order = await _ordersRepository.GetAsync(orderId);
-			if (order == null)
-			{
-				throw new UserFriendlyException("Order not found.");
-			}
-			order.Status = 4;
-			await _ordersRepository.UpdateAsync(order);
-		}
-		public async Task ReorderOrder(int orderId)
-		{
-			var order = await _ordersRepository.GetAsync(orderId);
-			if (order == null)
-			{
-				throw new UserFriendlyException("Order not found.");
-			}
-			order.Status = 0;
-			await _ordersRepository.UpdateAsync(order);
-		}
-		public async Task CompleteOrder(int orderId)
+		// hoàn hàng - user
+		public async Task HoanHangOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
 			if (order == null)

@@ -14,6 +14,7 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 	{
 		public string? UserName { get; set; }
 		public int? Status { get; set; } // Order status filter
+		public List<int>? StatusUser { get; set; } // Order status filter
 		public int? PaymentMethod { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }

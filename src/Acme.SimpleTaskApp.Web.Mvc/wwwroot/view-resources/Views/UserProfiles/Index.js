@@ -22,7 +22,7 @@
 
   function loadOrders() {
     var input = {
-      Status: _currentStatus,
+      StatusUser: _currentStatus,
       PaymentMethod: _currentPaymentMethod,
       StartTime: _selectedDateRange.StartTime,
       EndTime: _selectedDateRange.EndTime,
@@ -179,7 +179,7 @@
     return html;
   }
 
-  function cancelOrder(orderId) {
+  function huyUserOrder(orderId) {
     abp.message.confirm(
       'Bạn có chắc chắn muốn hủy đơn hàng này?',
       'Xác nhận hủy đơn hàng',
@@ -187,7 +187,7 @@
         if (isConfirmed) {
           abp.ui.setBusy($('#orders-tab-pane'));
 
-          _orderService.cancelOrder(orderId)
+          _orderService.huyUserOrder(orderId)
             .done(function (result) {
               console.log('Hủy đơn hàng thành công:', result);
               abp.notify.success('Hủy đơn hàng thành công!');
@@ -296,11 +296,23 @@
       $(this).addClass('active');
 
       var statusValue = $(this).data('status');
-      _currentStatus = statusValue === 'all' ? null : parseInt(statusValue);
+      statusValue = statusValue.toString();
+
+      if (statusValue === 'all') {
+        _currentStatus = null; // load tất cả
+      } else {
+        // Nếu có dấu phẩy → tách thành mảng
+        if (statusValue.includes(',')) {
+          _currentStatus = statusValue.split(',').map(Number); // [4, 5]
+        } else {
+          _currentStatus = [parseInt(statusValue)]; // [0], [1], [2], [3], [4]
+        }
+      }
 
       loadOrders();
     });
   }
+
 
   // Xử lý bộ lọc phương thức thanh toán
   function initializePaymentMethodFilter() {
@@ -507,7 +519,7 @@
   function initializeCancelOrderEvents() {
     $(document).on('click', '.cancel-order', function () {
       var orderId = $(this).data('order-id');
-      cancelOrder(orderId);
+      huyUserOrder(orderId);
     });
   }
   function initializeLocationOnClick() {

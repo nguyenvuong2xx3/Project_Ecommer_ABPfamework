@@ -19,8 +19,8 @@ namespace Acme.SimpleTaskApp.Orders
 		public int? PaymentMethod { get; set; }
 		public string? FullName { get; set; }
 		public int? GioiTinh { get; set; }
-		public int? Status { get; set; } // 0: Pending, 1: duyệt, 2, hoàn thành, 3: từ chối 
-		public string? PhoneNumber { get; set; }
+		public int? Status { get; set; } // 0: chờ xác nhận - mặc định; 1: đang xử lý; 2: đang giao; 3: thành công, 4: đã hủy của admin; 5: đã hủy của user
+		public string? PhoneNumber { get; set; } = string.Empty;
 		public string? TinhThanh { get; set; }
 		public string? PhuongXa { get; set; }
 		public string? DiaChiChiTiet { get; set; }
