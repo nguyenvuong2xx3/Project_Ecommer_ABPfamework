@@ -9,6 +9,7 @@
     "sass": "^1.93.2"
   },
   "dependencies": {
-    "@yaireo/tagify": "^4.35.6"
+    "@yaireo/tagify": "^4.35.6",
+    "mustache": "^4.2.0"
   }
 }
