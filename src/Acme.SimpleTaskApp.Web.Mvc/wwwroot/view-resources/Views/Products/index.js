@@ -184,9 +184,9 @@
         sortable: false,
         render: function (data, type, row) {
           if (data) {
-            return `<span class="badge bg-info">${moment(data).format('DD-MM-YYYY HH:MM')}</span>`;
+            return `<span class="badge bg-info">${moment(data).format('DD-MM-YYYY HH:mm')}</span>`; // HH:mm (chữ m thường)
           }
-          return '<span class="text-muted">Không có số lượng</span>';
+          return '<span class="text-muted">Không có thời gian</span>';
         }
       },
       {
@@ -548,6 +548,10 @@
 
   // Event khi product được edit
   abp.event.on('product.edited', (data) => {
+    _$productsTable.ajax.reload();
+  });
+
+  abp.event.on('app.productCreatedOrUpdated', function () {
     _$productsTable.ajax.reload();
   });
 

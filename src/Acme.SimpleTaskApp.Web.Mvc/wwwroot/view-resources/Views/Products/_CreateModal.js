@@ -249,13 +249,9 @@
 				data: formData,
 				success: function (response) {
 					_modalManager.setBusy(false);
+					abp.event.trigger('app.productCreatedOrUpdated');
 					abp.notify.info(l('Lưu thành công'));
 					_modalManager.close();
-
-					// Reload trang hoặc refresh datatable
-					setTimeout(function () {
-						window.location.href = abp.appPath + 'Products';
-					}, 500);
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					_modalManager.setBusy(false);
@@ -268,7 +264,6 @@
 					} else {
 						errorMessage = "Có lỗi xảy ra khi tạo mới sản phẩm (Có thể do upload ảnh không đúng định dạng .jpg, .jpeg, .png, .gif)";
 					}
-
 					// Hiển thị error trong modal
 					var $errorContainer = _modalManager.getModal().find('#error-message');
 					if ($errorContainer.length) {

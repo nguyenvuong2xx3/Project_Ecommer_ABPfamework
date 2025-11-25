@@ -148,8 +148,6 @@
 				formData.append(`DeletedImageUrls[${i}]`, url);
 			});
 
-			console.log(">>> Dữ liệu gửi đi:", Array.from(formData.entries()));
-
 			$.ajax({
 				url: abp.appPath + 'Products/EditProduct',
 				type: 'POST',
@@ -158,9 +156,9 @@
 				data: formData,
 				success: function (res) {
 					_modalManager.setBusy(false);
+					abp.event.trigger('app.productCreatedOrUpdated');
 					abp.notify.info(l('Cập nhật thành công'));
 					_modalManager.close();
-					setTimeout(() => window.location.href = abp.appPath + 'Products', 500);
 				},
 				error: function (xhr) {
 					_modalManager.setBusy(false);

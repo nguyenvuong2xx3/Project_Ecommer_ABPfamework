@@ -291,9 +291,9 @@
 				data: formData,
 				success: function (res) {
 					_modalManager.setBusy(false);
+					abp.event.trigger('app.productVariantCreatedOrUpdated');
 					abp.notify.info(l('Tạo biến thể thành công'));
 					_modalManager.close();
-					setTimeout(() => window.location.href = abp.appPath + 'ProductVariants', 500);
 				},
 				error: function (xhr) {
 					_modalManager.setBusy(false);

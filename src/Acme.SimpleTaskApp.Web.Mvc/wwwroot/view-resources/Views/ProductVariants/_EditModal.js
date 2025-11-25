@@ -333,8 +333,8 @@
 					}
 					else if (item.name === 'StockQuantity') {
 						// Convert sang integer
-						const stock = parseInt(item.value, 10) || 0;
-						formData.append(item.name, stock);
+						const stockQuantity = parseInt(item.value, 10) || 0;
+						formData.append(item.name, stockQuantity);
 					}
 					else if (item.name === 'ProductId') {
 						// Convert ID sang integer
@@ -370,9 +370,9 @@
 				data: formData,
 				success: function (res) {
 					_modalManager.setBusy(false);
+					abp.event.trigger('app.productVariantCreatedOrUpdated');
 					abp.notify.info(l('Cập nhật biến thể thành công'));
 					_modalManager.close();
-					setTimeout(() => window.location.href = abp.appPath + 'ProductVariants', 500);
 				},
 				error: function (xhr) {
 					_modalManager.setBusy(false);

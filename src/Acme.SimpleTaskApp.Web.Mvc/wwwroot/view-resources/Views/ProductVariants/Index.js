@@ -302,5 +302,7 @@
   abp.event.on('productvariant.edited', (data) => {
     _$productvariantsTable.ajax.reload();
   });
-
+  abp.event.on('app.productVariantCreatedOrUpdated', function () {
+    _$productvariantsTable.ajax.reload();
+  });
 })(jQuery);
