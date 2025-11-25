@@ -439,5 +439,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Users/_EditModal.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Notifications/appUserNotificationHelper.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Notifications/appUserNotificationHelper.js"
+    ]
   }
 ]

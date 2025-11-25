@@ -108,22 +108,23 @@
 			var notificationsHtml = '';
 			if (data.notifications && data.notifications.length > 0) {
 				data.notifications.forEach(function (notification) {
+					var clickableClass = notification.url ? 'user-notification-item-clickable' : '';
+					var cursorStyle = notification.url ? 'style="cursor: pointer;"' : '';
+
 					notificationsHtml += `
-                <div class="notification-item p-3 border-bottom">
-                    <a href="#" class="text-decoration-none text-dark user-notification-item-clickable d-block" 
-                       data-url="${notification.url || '#'}" 
-                       data-notification-id="${notification.userNotificationId}">
-                        <div class="d-flex align-items-start">
-                            <div class="flex-shrink-0 mt-1">
-                                <i class="material-symbols-outlined text-primary" style="font-size: 1.2rem;">notifications</i>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="mb-1 text-break">${escapeHtml(notification.text)}</p>
-                                <small class="text-muted">${escapeHtml(notification.timeAgo)}</small>
-                            </div>
-                            ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge bg-primary rounded-circle" style="width: 8px; height: 8px;"></span></div>' : ''}
+                <div class="notification-item p-3 border-bottom" ${cursorStyle}>
+                    <div class="d-flex align-items-start ${clickableClass}" 
+                         data-url="${notification.url || '#'}" 
+                         data-notification-id="${notification.userNotificationId}">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="material-symbols-outlined text-primary" style="font-size: 1.2rem;">notifications</i>
                         </div>
-                    </a>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="mb-1 text-break">${escapeHtml(notification.text)}</p>
+                            <small class="text-muted">${escapeHtml(notification.timeAgo)}</small>
+                        </div>
+                        ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge bg-primary rounded-circle" style="width: 8px; height: 8px;"></span></div>' : ''}
+                    </div>
                 </div>`;
 				});
 			} else {
@@ -168,6 +169,48 @@
                 ` : ''}
             </div>
         </div>`;
+		}
+
+		function bindNotificationEvents() {
+			shouldUserUpdateApp();
+
+			// Sự kiện cho nút "Đánh dấu đã đọc"
+			$(document).off('click', '#btnSetAllNotificationsAsRead').on('click', '#btnSetAllNotificationsAsRead', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				_appUserNotificationHelper.setAllAsRead(function () {
+					loadNotifications();
+				});
+			});
+
+			// Sự kiện cho từng thông báo
+			$(document).off('click', '.user-notification-item-clickable').on('click', '.user-notification-item-clickable', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				var $this = $(this);
+				var notificationId = $this.attr('data-notification-id');
+				var url = $this.attr('data-url');
+
+				if (notificationId) {
+					_appUserNotificationHelper.setAsRead(notificationId, function () {
+						loadNotifications();
+					});
+				}
+
+				if (url && url !== '#') {
+					setTimeout(function () {
+						document.location.href = url;
+					}, 300);
+				}
+			});
+
+			$('#openNotificationSettingsModalLink').click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				_appUserNotificationHelper.openSettingsModal();
+			});
 		}
 
 		// Helper function to escape HTML
