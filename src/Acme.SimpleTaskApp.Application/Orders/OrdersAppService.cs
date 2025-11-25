@@ -184,13 +184,19 @@ namespace Acme.SimpleTaskApp.Orders
 				// Xử lý trừ stock và release locks
 				await _orderQueueService.ProcessOrderAsync(input);
 
-				// Xóa cart và cartItem của user
-				var getCart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == AbpSession.UserId);
-				if (getCart != null)
+				// Xóa cart và cartItem của user CHỈ KHI không phải VNPay
+				// VNPay (PaymentMethod = 2) sẽ giữ cart cho đến khi payment thành công
+				// Nếu payment thất bại, user có thể thử lại
+				if (input.Order.PaymentMethod != 2) // 0 = COD, 1 = Bank Transfer
 				{
-					await _cartItemRepository.DeleteAsync(x => x.CartId == getCart.Id);
-					await _cartRepository.DeleteAsync(getCart);
+					var getCart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == AbpSession.UserId);
+					if (getCart != null)
+					{
+						await _cartItemRepository.DeleteAsync(x => x.CartId == getCart.Id);
+						await _cartRepository.DeleteAsync(getCart);
+					}
 				}
+				// Note: Với VNPay, cart sẽ được xóa trong IPN callback khi thanh toán thành công
 
 				await CurrentUnitOfWork.SaveChangesAsync();
 

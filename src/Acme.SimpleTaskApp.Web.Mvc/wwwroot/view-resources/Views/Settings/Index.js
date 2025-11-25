@@ -77,7 +77,7 @@
 
     abp.ui.setBusy($('#SmtpSettingsForm'));
 
-    _smtpService.testConnection(smtpSettings)
+    _settingService.testConnection(smtpSettings)
       .done(function (result) {
         showTestResult(result.success, result.message || 'SMTP connection test completed successfully!');
       })

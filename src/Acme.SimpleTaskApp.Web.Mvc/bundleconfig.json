@@ -433,5 +433,11 @@
     "inputFiles": [
       "wwwroot/view-resources/Views/Sales/Index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/view-resources/Views/Users/_EditModal.min.js",
+    "inputFiles": [
+      "wwwroot/view-resources/Views/Users/_EditModal.js"
+    ]
   }
 ]

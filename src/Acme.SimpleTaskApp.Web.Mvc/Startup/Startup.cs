@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Web.Realtime;
+using Acme.SimpleTaskApp.Payment.VNPay;
 
 namespace Acme.SimpleTaskApp.Web.Startup
 {
@@ -46,10 +47,16 @@ namespace Acme.SimpleTaskApp.Web.Startup
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
+			
 			services.Configure<WebEncoderOptions>(options =>
-						{
-							options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
-						});
+			{
+				options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+			});
+
+			// Configure VNPay
+			var vnpayConfig = _appConfiguration.GetSection("VNPAY");
+			services.Configure<VnpayConfig>(vnpayConfig);
+			services.AddScoped<IVnpayAppService, VnpayAppService>();
 
 			services.AddScoped<IWebResourceManager, WebResourceManager>();
 

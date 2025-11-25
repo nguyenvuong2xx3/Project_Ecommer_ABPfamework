@@ -37,7 +37,16 @@
 
 	// Nút "Đặt hàng" - THÊM SỰ KIỆN NÀY
 	$(document).on('click', '#SubmitOrderButton', function () {
-		processOrder(_latestUserInfo); // Truyền thông tin mới nhất (có thể null)
+		// Kiểm tra phương thức thanh toán
+		var paymentMethod = $('input[name="PaymentMethod"]:checked').val();
+		
+		if (paymentMethod === '2') {
+			// VNPay payment
+			processVNPayOrder(_latestUserInfo);
+		} else {
+			// COD or Bank Transfer
+			processOrder(_latestUserInfo);
+		}
 	});
 
 	// Xử lý khi nhấn nút tăng
@@ -299,6 +308,10 @@
 
 		// Cập nhật tổng cộng
 		$('.final-amount').text(result.finalAmount.toLocaleString('vi-VN') + 'đ');
+		
+		// Update hidden total for VNPay
+		$('#totalAmountValue').val(result.finalAmount);
+		
 		// Hiển thị thông tin voucher đã áp dụng (nếu có)
 		if (result.appliedVoucher) {
 			var voucherInfo = ' (Mã: ' + result.appliedVoucher.voucherCode + ' - Giảm ' + result.appliedVoucher.discountPercentage + '%)';
@@ -315,9 +328,9 @@
 		// Reset phần giảm giá về 0
 		var originalTotal = calculateOriginalTotal();
 		$('.discount-amount').text('- 0đ');
-		debugger
 		$('.final-amount').text(originalTotal.toLocaleString('vi-VN') + 'đ');
 		$('.total-cart').text(originalTotal.toLocaleString('vi-VN') + 'đ');
+		$('#totalAmountValue').val(originalTotal);
 	}
 
 	// Hàm tính tổng tiền gốc
@@ -335,14 +348,93 @@
 		return total;
 	}
 
-	//$(document).on('click', '.btl-click-plus, .btl-click-minus, .btl-click-delete', function () {
-	//	// Đợi một chút để DOM cập nhật trước khi reset voucher
-	//	setTimeout(resetVoucher, 100);
-	//});
 	$(".btl-click-plus, .btl-click-minus, .btl-click-delete").click(function () {
 		setTimeout(resetVoucher, 100);
 	});
 
+	// ========== VNPay Integration ==========
+	function processVNPayOrder(userInfo) {
+		// Validate thông tin người nhận
+		if (!validateUserInfo(userInfo)) {
+			abp.notify.warn('Vui lòng cập nhật đầy đủ thông tin nhận hàng trước khi thanh toán.');
+			$('#OrderInfoButton').click();
+			return;
+		}
+
+		const orderData = collectOrderData(userInfo);
+		
+		// Show confirmation dialog
+		var totalAmount = parseFloat($('#totalAmountValue').val());
+		var formattedAmount = totalAmount.toLocaleString('vi-VN') + 'đ';
+		
+		abp.message.confirm(
+			'Bạn sẽ được chuyển đến trang thanh toán VNPay để thanh toán số tiền: ' + formattedAmount,
+			'Xác nhận thanh toán VNPay',
+			function (isConfirmed) {
+				if (isConfirmed) {
+					submitVNPayOrder(orderData, totalAmount);
+				}
+			}
+		);
+	}
+
+	function submitVNPayOrder(orderData, totalAmount) {
+		abp.ui.setBusy();
+		console.log('Creating VNPay order:', orderData);
+
+		// Tạo đơn hàng trước
+		_orderService.createOrder(orderData)
+			.done(function (orderId) {
+				abp.notify.info('Đang chuyển đến trang thanh toán VNPay...');
+
+				// Tạo payment request
+				var paymentRequest = {
+					orderId: orderId.toString(),
+					amount: totalAmount,
+					orderDescription: 'Thanh toán đơn hàng #' + orderId
+				};
+
+				// Gọi service VNPay để tạo payment URL
+				abp.services.app.vnpay.createPaymentUrl(paymentRequest)
+					.done(function (response) {
+						debugger
+						if (response.success && response.paymentUrl) {
+							// Redirect to VNPay
+							window.location.href = response.paymentUrl;
+						} else {
+							abp.notify.error(response.message || 'Không thể tạo link thanh toán VNPay');
+							abp.ui.clearBusy();
+						}
+					})
+					.fail(function (error) {
+						debugger
+						var errorMsg = error.message || error.error?.message || 'Có lỗi xảy ra khi tạo link thanh toán';
+						abp.notify.error(errorMsg);
+						console.error('VNPay payment error:', error);
+						abp.ui.clearBusy();
+					});
+			})
+			.fail(function (error) {
+				const errorMsg = error.message || error.error?.message || 'Vui lòng thử lại';
+				abp.notify.error('Tạo đơn hàng thất bại: ' + errorMsg);
+				console.error('Order error:', error);
+				abp.ui.clearBusy();
+			});
+	}
+
+	function validateUserInfo(userInfo) {
+		// Check if user info is complete
+		var fullName = $('#FullName').text().trim();
+		var phoneNumber = $('#PhoneNumber').text().trim();
+		var address = $('#DiaChi').text().trim();
+		
+		return fullName && phoneNumber && address && 
+			   fullName !== '' && 
+			   phoneNumber !== 'Không có số điện thoại' &&
+			   address !== '';
+	}
+
+	// ========== Regular Order (COD/Bank Transfer) ==========
 	function processOrder(userInfo) {
 		const orderData = collectOrderData(userInfo);
 		submitOrder(orderData);
@@ -356,8 +448,6 @@
 			const $card = $(this);
 			const variantElement = $card.find('.btl-click-plus')
 			const productVariantId = variantElement.data('productvariant-id');
-			//const quantityInput = $card.find('input[data-productvariant-id="' + productVariantId + '"]');
-			//const quantity = parseInt(quantityInput.val()) || 1;
 
 			let input = $(`#quantity-${productVariantId}`);
 			let quantity = parseInt(input.val());
@@ -384,7 +474,7 @@
 			userId: abp.session.userId || null,
 			paymentMethod: parseInt(paymentMethod),
 			status: 0,
-			totalPrice: totalAmount
+			totalPrice: parseFloat($('#totalAmountValue').val()) || totalAmount
 		};
 
 		if (userInfo && userInfo.userInfo) {
@@ -399,11 +489,11 @@
 		}
 
 		const voucherCode = $('#voucherCodeInput').val();
-		debugger
+		
 		return {
 			order: order,
 			orderDetails: orderDetails,
-			voucherCode: voucherCode // Send voucher code to backend
+			voucherCode: voucherCode
 		};
 	}
 
