@@ -100,9 +100,8 @@
 
 		function renderNotificationTemplate(data) {
 			var hasUnread = data.unreadCount && data.unreadCount > 0;
-
 			var badgeHtml = hasUnread
-				? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; min-width: 18px; height: 18px; line-height: 1;">${data.unreadCount}</span>`
+				? `<span class="position-absolute badge badge-pill badge-danger" style="top: -5px; right: -5px; font-size: 0.6rem; min-width: 18px; height: 18px; line-height: 1.2;">${data.unreadCount}</span>`
 				: '';
 
 			var notificationsHtml = '';
@@ -112,63 +111,63 @@
 					var cursorStyle = notification.url ? 'style="cursor: pointer;"' : '';
 
 					notificationsHtml += `
-                <div class="notification-item p-3 border-bottom" ${cursorStyle}>
-                    <div class="d-flex align-items-start ${clickableClass}" 
-                         data-url="${notification.url || '#'}" 
-                         data-notification-id="${notification.userNotificationId}">
-                        <div class="flex-shrink-0 mt-1">
-                            <i class="material-symbols-outlined text-primary" style="font-size: 1.2rem;">notifications</i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="mb-1 text-break">${escapeHtml(notification.text)}</p>
-                            <small class="text-muted">${escapeHtml(notification.timeAgo)}</small>
-                        </div>
-                        ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge bg-primary rounded-circle" style="width: 8px; height: 8px;"></span></div>' : ''}
+            <div class="notification-item p-3 border-bottom" ${cursorStyle}>
+                <div class="d-flex align-items-start ${clickableClass}" 
+                     data-url="${notification.url || '#'}" 
+                     data-notification-id="${notification.userNotificationId}">
+                    <div class="flex-shrink-0 mt-1">
+                        <i class="material-symbols-outlined text-primary" style="font-size: 1.2rem;">notifications</i>
                     </div>
-                </div>`;
+                    <div class="flex-grow-1 ml-3">
+                        <p class="mb-1 text-break">${escapeHtml(notification.text)}</p>
+                        <small class="text-muted">${escapeHtml(notification.timeAgo)}</small>
+                    </div>
+                    ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge badge-primary rounded-circle" style="width: 8px; height: 8px;"></span></div>' : ''}
+                </div>
+            </div>`;
 				});
 			} else {
 				notificationsHtml = `
-            <div class="text-center p-4 text-muted">
-                <i class="material-symbols-outlined mb-2" style="font-size: 3rem;">notifications_off</i>
-                <p class="mb-0">Không có thông báo</p>
-            </div>`;
+        <div class="text-center p-4 text-muted">
+            <i class="material-symbols-outlined mb-2" style="font-size: 3rem;">notifications_off</i>
+            <p class="mb-0">Không có thông báo</p>
+        </div>`;
 			}
 
 			return `
-        <div class="dropdown position-relative">
-            <button class="btn btn-light border-0 position-relative" type="button" 
-                    data-bs-toggle="dropdown" aria-expanded="false"
-                    style="background: transparent !important;">
-                <span class="material-symbols-outlined" style="font-size: 1.5rem;">notifications</span>
-                ${badgeHtml}
-            </button>
+    <div class="dropdown position-relative">
+        <button class="btn btn-light border-0 position-relative" type="button" 
+                data-toggle="dropdown" aria-expanded="false"
+                style="background: transparent !important;">
+            <span class="material-symbols-outlined" style="font-size: 1.5rem;">notifications</span>
+            ${badgeHtml}
+        </button>
 
-            <div class="dropdown-menu dropdown-menu-end p-0 border-0 shadow" 
-                 style="width: 380px; max-height: 500px; overflow: hidden; left: auto; right: 0; z-index: 1060;">
-                <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
-                    <h6 class="mb-0 fw-bold text-dark">Thông báo</h6>
-                    <div>
-                        ${data.unreadCount > 0 ?
-					`<button class="btn btn-sm btn-outline-primary me-2" id="btnSetAllNotificationsAsRead">Đánh dấu đã đọc</button>` :
+        <div class="dropdown-menu dropdown-menu-right p-0 border-0 shadow" 
+             style="width: 380px; max-height: 500px; overflow: hidden; left: auto; right: 0; z-index: 1060;">
+            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+                <h6 class="mb-0 font-weight-bold text-dark">Thông báo</h6>
+                <div>
+                    ${data.unreadCount > 0 ?
+					`<button class="btn btn-sm btn-outline-primary mr-2" id="btnSetAllNotificationsAsRead">Đánh dấu đã đọc</button>` :
 					''}
-                        <a href="/App/Notifications" class="btn btn-sm btn-link text-decoration-none">Xem tất cả</a>
-                    </div>
+                    <a href="/App/Notifications" class="btn btn-sm btn-link text-decoration-none">Xem tất cả</a>
                 </div>
-
-                <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
-                    ${notificationsHtml}
-                </div>
-
-                ${data.notifications && data.notifications.length > 0 ? `
-                <div class="border-top p-2 text-center bg-light">
-                    <a href="/App/Notifications" class="text-primary text-decoration-none fw-medium">
-                        Xem tất cả thông báo
-                    </a>
-                </div>
-                ` : ''}
             </div>
-        </div>`;
+
+            <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
+                ${notificationsHtml}
+            </div>
+
+            ${data.notifications && data.notifications.length > 0 ? `
+            <div class="border-top p-2 text-center bg-light">
+                <a href="/App/Notifications" class="text-primary text-decoration-none font-weight-medium">
+                    Xem tất cả thông báo
+                </a>
+            </div>
+            ` : ''}
+        </div>
+    </div>`;
 		}
 
 		function bindNotificationEvents() {
