@@ -1,6 +1,4 @@
-﻿// BBK.SaaS.Application.Shared, Version=9.1.0.0, Culture=neutral, PublicKeyToken=null
-// BBK.SaaS.Notifications.INotificationAppService
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Dependency;
 using Acme.SimpleTaskApp.Notifications.Dtos;
@@ -10,32 +8,32 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Noti
 {
-public interface INotifiAppService : IApplicationService, ITransientDependency
-{
-	Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input);
+	public interface INotifiAppService : IApplicationService, ITransientDependency
+	{
+		Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input);
 
-	Task<SetNotificationAsReadOutput> SetAllAvailableVersionNotificationAsRead();
+		Task<SetNotificationAsReadOutput> SetAllAvailableVersionNotificationAsRead();
 
-	Task SetAllNotificationsAsRead();
+		Task SetAllNotificationsAsRead();
 
-	Task<SetNotificationAsReadOutput> SetNotificationAsRead(EntityDto<Guid> input);
+		Task<SetNotificationAsReadOutput> SetNotificationAsRead(EntityDto<Guid> input);
 
-	Task<GetNotificationSettingsOutput> GetNotificationSettings();
+		Task<GetNotificationSettingsOutput> GetNotificationSettings();
 
-	Task UpdateNotificationSettings(UpdateNotificationSettingsInput input);
+		Task UpdateNotificationSettings(UpdateNotificationSettingsInput input);
 
-	Task DeleteNotification(EntityDto<Guid> input);
+		Task DeleteNotification(EntityDto<Guid> input);
 
-	Task DeleteAllUserNotifications(DeleteAllUserNotificationsInput input);
+		Task DeleteAllUserNotifications(DeleteAllUserNotificationsInput input);
 
-	//Task CreateMassNotification(CreateMassNotificationInput input);
+		//Task CreateMassNotification(CreateMassNotificationInput input);
 
-	//Task CreateNewVersionReleasedNotification();
+		//Task CreateNewVersionReleasedNotification();
 
-	Task<bool> ShouldUserUpdateApp();
+		Task<bool> ShouldUserUpdateApp();
 
-	List<string> GetAllNotifiers();
+		List<string> GetAllNotifiers();
 
-	Task<GetPublishedNotificationsOutput> GetNotificationsPublishedByUser(GetPublishedNotificationsInput input);
-}
+		Task<GetPublishedNotificationsOutput> GetNotificationsPublishedByUser(GetPublishedNotificationsInput input);
+	}
 }

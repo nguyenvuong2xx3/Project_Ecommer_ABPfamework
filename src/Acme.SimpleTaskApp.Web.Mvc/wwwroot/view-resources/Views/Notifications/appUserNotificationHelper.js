@@ -2,53 +2,47 @@
 (function ($) {
   app.UserNotificationHelper = (function () {
     return function () {
-      /* Message Extracting based on Notification Data Type ********/
 
-      //add your custom notification data types here...
+      /* 1. ĐĂNG KÝ FORMATTER CHO THÔNG BÁO MỚI ********/
+      // Đây là phần bạn còn thiếu để hiển thị text đúng
+      abp.notifications.messageFormatters['App.NewOrder'] = function (userNotification) {
+        // Lấy dữ liệu từ property "Message" mà ta đã gửi từ Backend
+        return userNotification.notification.data.properties['Message'];
+      };
 
-      /* Example:
-            abp.notifications.messageFormatters['BBK.SaaS.MyNotificationDataType'] = function(userNotification) {
-                return ...; //format and return message here
-            };
-            */
+      abp.notifications.messageFormatters['Đơn hàng mới'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'];
+      };
 
       var _notificationService = abp.services.app.notification;
 
       /* Converter functions ***************************************/
-
       function getUrl(userNotification) {
         switch (userNotification.notification.notificationName) {
           case 'App.NewUserRegistered':
             return '/AppAreaName/users?filterText=' + userNotification.notification.data.properties.emailAddress;
-          case 'App.NewTenantRegistered':
-            return '/AppAreaName/tenants?filterText=' + userNotification.notification.data.properties.tenancyName;
+
+          // 2. Thêm URL điều hướng cho đơn hàng mới
+          case 'App.NewOrder':
+            // Giả sử bạn có trang chi tiết đơn hàng, thay đổi link này cho đúng
+            // Ví dụ: /Admin/Orders/Detail?code=...
+            return '/App/Orders/Detail?code=' + userNotification.notification.data.properties['Code'];
+
           case 'App.GdprDataPrepared':
             return (
               '/File/DownloadBinaryFile?id=' +
               userNotification.notification.data.properties.binaryObjectId +
               '&contentType=application/zip&fileName=collectedData.zip'
             );
-          case 'App.DownloadInvalidImportUsers':
-            return (
-              '/File/DownloadTempFile?fileToken=' +
-              userNotification.notification.data.properties.fileToken +
-              '&fileType=' +
-              userNotification.notification.data.properties.fileType +
-              '&fileName=' +
-              userNotification.notification.data.properties.fileName
-            );
-          //Add your custom notification names to navigate to a URL when user clicks to a notification.
         }
-
-        //No url for this notification
         return '';
       }
 
       /* PUBLIC functions ******************************************/
-
       var format = function (userNotification, truncateText) {
         var formatted = {
           userNotificationId: userNotification.id,
+          // Dòng này sẽ gọi cái formatter ta vừa đăng ký ở trên
           text: abp.notifications.getFormattedMessageFromUserNotification(userNotification),
           time: moment(userNotification.notification.creationTime).format('YYYY-MM-DD HH:mm:ss'),
           icon: app.notification.getUiIconBySeverity(userNotification.notification.severity),

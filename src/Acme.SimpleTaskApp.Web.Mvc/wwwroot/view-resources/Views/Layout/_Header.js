@@ -107,6 +107,9 @@
 			var notificationsHtml = '';
 			if (data.notifications && data.notifications.length > 0) {
 				data.notifications.forEach(function (notification) {
+					// Debug: kiểm tra dữ liệu notification
+					console.log('Notification data:', notification);
+
 					var clickableClass = notification.url ? 'user-notification-item-clickable' : '';
 					var cursorStyle = notification.url ? 'style="cursor: pointer;"' : '';
 
@@ -114,13 +117,13 @@
             <div class="notification-item p-3 border-bottom" ${cursorStyle}>
                 <div class="d-flex align-items-start ${clickableClass}" 
                      data-url="${notification.url || '#'}" 
-                     data-notification-id="${notification.userNotificationId}">
+                     data-notification-id="${notification.userNotificationId || notification.id}">
                     <div class="flex-shrink-0 mt-1">
                         <i class="material-symbols-outlined text-primary" style="font-size: 1.2rem;">notifications</i>
                     </div>
                     <div class="flex-grow-1 ml-3">
-                        <p class="mb-1 text-break">${escapeHtml(notification.text)}</p>
-                        <small class="text-muted">${escapeHtml(notification.timeAgo)}</small>
+                        <p class="mb-1 text-break">${escapeHtml(notification.text || 'Không có nội dung')}</p>
+                        <small class="text-muted">${escapeHtml(notification.timeAgo || 'Vừa xong')}</small>
                     </div>
                     ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge badge-primary rounded-circle" style="width: 8px; height: 8px;"></span></div>' : ''}
                 </div>
@@ -276,7 +279,8 @@
 					result.unreadMessageExists = result.unreadCount > 0;
 
 					$.each(result.items, function (index, item) {
-						var formattedItem = _appUserNotificationHelper.format(item);
+						// Format dữ liệu thủ công nếu helper không hoạt động
+						var formattedItem = formatNotificationItem(item);
 						result.notifications.push(formattedItem);
 					});
 
@@ -286,6 +290,52 @@
 
 					bindNotificationEvents();
 				});
+		}
+
+		// Hàm format thay thế
+		function formatNotificationItem(item) {
+			var notification = item.notification;
+			var data = notification.data || {};
+			var properties = data.properties || {};
+
+			return {
+				userNotificationId: item.id, // ID của user notification
+				text: properties.Message || 'Không có nội dung', // Lấy từ properties.Message
+				timeAgo: formatTimeAgo(notification.creationTime), // Định dạng thời gian
+				isUnread: item.state === 0, // state = 0 là chưa đọc
+				url: generateNotificationUrl(properties) // Tạo URL dựa trên loại thông báo
+			};
+		}
+
+		// Hàm định dạng thời gian
+		function formatTimeAgo(creationTime) {
+			if (!creationTime) return 'Vừa xong';
+
+			var created = new Date(creationTime);
+			var now = new Date();
+			var diffMs = now - created;
+			var diffMins = Math.floor(diffMs / 60000);
+			var diffHours = Math.floor(diffMs / 3600000);
+			var diffDays = Math.floor(diffMs / 86400000);
+
+			if (diffMins < 1) return 'Vừa xong';
+			if (diffMins < 60) return diffMins + ' phút trước';
+			if (diffHours < 24) return diffHours + ' giờ trước';
+			if (diffDays < 7) return diffDays + ' ngày trước';
+
+			return created.toLocaleDateString('vi-VN');
+		}
+
+		// Hàm tạo URL cho thông báo
+		function generateNotificationUrl(properties) {
+			var type = properties.Type;
+			var code = properties.Code;
+
+			if (type === 'NewOrder' && code) {
+				return '/App/Orders?code=' + encodeURIComponent(code);
+			}
+
+			return null; // Không có URL
 		}
 
 		abp.event.on('abp.notifications.received', function (userNotification) {

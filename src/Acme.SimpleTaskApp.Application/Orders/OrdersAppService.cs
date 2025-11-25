@@ -6,6 +6,7 @@ using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
+using Abp.Notifications;
 using Abp.UI;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Carts;
@@ -43,7 +44,6 @@ namespace Acme.SimpleTaskApp.Orders
 		private readonly IRepository<CartItem, int> _cartItemRepository;
 		private readonly ISendMailAppService _sendMailAppService;
 		private readonly ISaleAppService _saleAppService;
-
 		public OrdersAppService(
 			IBackgroundJobManager backgroundJobManager,
 			IRepository<Sale, int> saleRepository,
@@ -412,6 +412,22 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 			order.Status = 1;
 			await _ordersRepository.UpdateAsync(order);
+
+			// Sử dụng _backgroundJobManager instance thay vì static class
+			await _backgroundJobManager.EnqueueAsync<OrderStatusNotificationJob, OrderStatusNotificationJob.OrderStatusNotificationJobArgs>(
+					new OrderStatusNotificationJob.OrderStatusNotificationJobArgs
+					{
+						TenantId = 1,
+						UserId = order.UserId.Value,
+						OrderId = order.Id,
+						OrderCode = order.Code,
+						NotificationName = "Đơn hàng đã được duyệt",
+						Title = "Đơn hàng đã được duyệt",
+						Message = $"Đơn hàng #{order.Code} của bạn đã được xử lý và đang chuẩn bị.",
+						NotificationType = "OrderProcessed",
+						Status = order.Status.Value,
+						Severity = NotificationSeverity.Info
+					});
 		}
 
 		// hủy đơn - admin
@@ -441,6 +457,21 @@ namespace Acme.SimpleTaskApp.Orders
 					}
 				}
 			}
+
+			await _backgroundJobManager.EnqueueAsync<OrderStatusNotificationJob, OrderStatusNotificationJob.OrderStatusNotificationJobArgs>(
+			 new OrderStatusNotificationJob.OrderStatusNotificationJobArgs
+			 {
+				 TenantId = 1,
+				 UserId = order.UserId.Value,
+				 OrderId = order.Id,
+				 OrderCode = order.Code,
+				 NotificationName = "Đơn hàng đã bị hủy",
+				 Title = "Đơn hàng đã bị hủy",
+				 Message = $"Đơn hàng #{order.Code} của bạn đã bị hủy bởi quản trị viên.",
+				 NotificationType = "OrderCancelledByAdmin",
+				 Status = order.Status.Value,
+				 Severity = NotificationSeverity.Warn
+			 });
 		}
 		// hủy đơn - user, 
 		public async Task HuyUserOrder(int orderId)
@@ -478,7 +509,23 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 			order.Status = 2;
 			await _ordersRepository.UpdateAsync(order);
+
+			await _backgroundJobManager.EnqueueAsync<OrderStatusNotificationJob, OrderStatusNotificationJob.OrderStatusNotificationJobArgs>(
+				new OrderStatusNotificationJob.OrderStatusNotificationJobArgs
+				{
+					TenantId = 1,
+					UserId = order.UserId.Value,
+					OrderId = order.Id,
+					OrderCode = order.Code,
+					NotificationName = "Đơn hàng đang giao",
+					Title = "Đơn hàng đang giao",
+					Message = $"Đơn hàng #{order.Code} của bạn đang được vận chuyển.",
+					NotificationType = "OrderShipping",
+					Status = order.Status.Value,
+					Severity = NotificationSeverity.Info
+				});
 		}
+
 		/// thành công - admin
 		public async Task ThanhCongOrder(int orderId)
 		{
@@ -489,6 +536,21 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 			order.Status = 3;
 			await _ordersRepository.UpdateAsync(order);
+			// Gửi thông báo cho user
+			await _backgroundJobManager.EnqueueAsync<OrderStatusNotificationJob, OrderStatusNotificationJob.OrderStatusNotificationJobArgs>(
+					new OrderStatusNotificationJob.OrderStatusNotificationJobArgs
+					{
+						TenantId = 1,
+						UserId = order.UserId.Value,
+						OrderId = order.Id,
+						OrderCode = order.Code,
+						NotificationName = "Đơn hàng hoàn thành",
+						Title = "Đơn hàng hoàn thành",
+						Message = $"Đơn hàng #{order.Code} của bạn đã được giao thành công. Cảm ơn bạn!",
+						NotificationType = "OrderCompleted",
+						Status = order.Status.Value,
+						Severity = NotificationSeverity.Success
+					});
 		}
 
 		// hoàn hàng - user

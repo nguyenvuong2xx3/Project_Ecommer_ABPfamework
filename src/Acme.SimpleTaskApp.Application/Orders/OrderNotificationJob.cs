@@ -1,11 +1,9 @@
-﻿using Abp.BackgroundJobs;
+﻿using Abp;
+using Abp.BackgroundJobs;
 using Abp.Dependency;
 using Abp.Notifications;
 using Acme.SimpleTaskApp.Authorization.Users;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static Acme.SimpleTaskApp.Orders.OrderNotificationJob;
 
@@ -15,6 +13,9 @@ namespace Acme.SimpleTaskApp.Orders
 	{
 		private readonly INotificationPublisher _notificationPublisher;
 		private readonly UserManager _userManager;
+
+		// Định nghĩa hằng số tên thông báo để dùng chung
+		public const string NotificationName = "App.NewOrder";
 
 		public OrderNotificationJob(
 				INotificationPublisher notificationPublisher,
@@ -26,23 +27,24 @@ namespace Acme.SimpleTaskApp.Orders
 
 		public override async Task ExecuteAsync(OrderNotificationJobArgs args)
 		{
-			// 1. Lấy tất cả user có role Admin
 			var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
 
-			// 2. Tạo nội dung thông báo trực tiếp
+			// Tạo data
 			var notificationData = new NotificationData();
+			// Lưu message vào properties để JS lấy ra hiển thị
 			notificationData["Message"] = $"Có đơn hàng mới #{args.Code} được tạo";
 			notificationData["Code"] = args.Code;
 			notificationData["Type"] = "NewOrder";
 
-			// 3. Gửi thông báo đến từng admin
-			foreach (var admin in adminUsers)
+			if (adminUsers.Count > 0)
 			{
+				var userIds = adminUsers.Select(u => u.ToUserIdentifier()).ToArray();
+
 				await _notificationPublisher.PublishAsync(
-						"Đơn hàng mới", // Tên loại thông báo
+						NotificationName, // Sử dụng tên chuẩn "App.NewOrder"
 						notificationData,
 						severity: NotificationSeverity.Info,
-						userIds: new[] { admin.ToUserIdentifier() } // Gửi đến admin cụ thể
+						userIds: userIds
 				);
 			}
 		}
@@ -52,4 +54,5 @@ namespace Acme.SimpleTaskApp.Orders
 			public string Code { get; set; }
 		}
 	}
+	
 }
