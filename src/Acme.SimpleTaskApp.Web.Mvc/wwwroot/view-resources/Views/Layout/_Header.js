@@ -147,7 +147,7 @@
         </button>
 
         <div class="dropdown-menu dropdown-menu-right p-0 border-0 shadow" 
-             style="width: 380px; max-height: 500px; overflow: hidden; left: auto; right: 0; z-index: 1060;">
+             style="position: absolute !important; width: 380px; max-height: 500px; overflow: hidden; top: 100%; right: 0; left: auto; z-index: 1070 !important; margin-top: 0.125rem;">
             <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
                 <h6 class="mb-0 font-weight-bold text-dark">Thông báo</h6>
                 <div>
@@ -270,6 +270,13 @@
 		}
 
 		function loadNotifications() {
+			// Kiểm tra nếu user chưa đăng nhập thì không làm gì cả
+			if (!abp.session.userId) {
+				// Hoặc điều kiện kiểm tra khác tùy vào cách bạn lưu trạng thái đăng nhập
+				console.log('User is not logged in, skip loading notifications.');
+				return;
+			}
+
 			_notificationService
 				.getUserNotifications({
 					maxResultCount: 3,

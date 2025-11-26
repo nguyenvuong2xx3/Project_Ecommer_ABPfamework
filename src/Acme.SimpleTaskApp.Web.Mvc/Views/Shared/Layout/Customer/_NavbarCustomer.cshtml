@@ -1,6 +1,6 @@
 ﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.AppTrezoRecentNotifications
 <div class="container-fluid fixed-top shadow bg-white">
-  <nav class="navbar navbar-light navbar-expand-xl w-100">
+  <nav class="navbar navbar-light navbar-expand-xl w-100" style="position: relative; z-index: 1040;">
     <!-- Logo -->
     <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
       <h1 class="text-primary display-6">Shop Ecommer</h1>
@@ -34,15 +34,17 @@
         </div>
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
-      @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
-            {
-        cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
-            })
+      
+       
 
       <!-- Giỏ hàng và Đăng nhập -->
       <div class="d-flex align-items-center cart-login" style="padding-right: 192px">
         <!-- Giỏ hàng -->
         <!-- Đăng nhập -->
+        @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
+                {
+          cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
+                })
         @await Component.InvokeAsync("CartMenu")
         @await Component.InvokeAsync("User")
       </div>
@@ -53,6 +55,9 @@
 </div>
 
 <style>
+  li.header-right-item {
+    list-style-type: none !important;
+  }
   /* Thanh tìm kiếm */
   .txt-search {
     font-size: 14px;
@@ -114,5 +119,39 @@
 
   .cart-login {
     padding-right: 180px;
+  }
+
+  /* Fix z-index cho notification dropdown - phải cao hơn mọi thứ */
+  #header_notification_bar {
+    position: relative;
+    z-index: 1070;
+  }
+
+  #header_notification_bar .dropdown {
+    position: static !important;
+  }
+
+  #header_notification_bar .dropdown-menu {
+    position: fixed !important;
+    z-index: 1070 !important;
+  }
+
+  /* Đảm bảo category dropdown thấp hơn notification */
+  .menu-category {
+    position: relative;
+    z-index: 1000;
+  }
+
+  .menu-category .dropdown-menu {
+    z-index: 1000;
+  }
+
+  .menu-category .sub-dropdown {
+    z-index: 1001;
+  }
+
+  .dropdown-menu.dropdown-menu-right.p-0.border-0.shadow.show {
+    visibility: visible !important; /* Đảm bảo thuộc tính này được ưu tiên */
+    opacity: 1 !important; /* Đảm bảo thuộc tính này được ưu tiên */
   }
 </style>

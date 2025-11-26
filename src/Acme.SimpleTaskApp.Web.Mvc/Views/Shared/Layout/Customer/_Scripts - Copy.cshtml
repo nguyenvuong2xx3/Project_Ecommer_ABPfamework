@@ -11,18 +11,14 @@
   @*core scripts end*@
 
   @*admin-lte scripts start*@
-  <script src="~/libs/bootstrap/dist/js/bootstrap.bundle.js" asp-append-version="true"></script>
+  <script src="~/themes/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+  <script src="~/themes/bootstrap-5.0.2-dist/js/bootstrap.esm.min.js" asp-append-version="true"></script>
   <script src="~/libs/datatables/js/jquery.dataTables.min.js" asp-append-version="true"></script>
   <script src="~/view-resources/Views/_Bundles/helpers.min.js" asp-append-version="true"></script>
   <script src="~/view-resources/Views/_Bundles/datatables.ajax.min.js" asp-append-version="true"></script>
-  <script src="~/libs/datatables/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
   <script src="~/libs/datatables/js/dataTables.responsive.min.js" asp-append-version="true"></script>
-  <script src="~/libs/datatables/js/responsive.bootstrap4.min.js" asp-append-version="true"></script>
   <script src="~/libs/datatables/js/dataTables.buttons.js" asp-append-version="true"></script>
-  <script src="~/libs/datatables/js/buttons.bootstrap4.js" asp-append-version="true"></script>
-  <script src="~/libs/admin-lte/dist/js/adminlte.js" asp-append-version="true"></script>
-  <script src="~/libs//abp-web-resources/abp/framework/scripts/libs/abp.signalr.min.js" asp-append-version="true"></script>
-  <script src="~/libs//abp-web-resources/abp/framework/scripts/libs/abp.signalr-client.min.js" asp-append-version="true"></script>
+  @* <script src="~/libs/admin-lte/dist/js/adminlte.js" asp-append-version="true"></script> *@
   @*admin-lte scripts end*@
 
   @*abp scripts start*@
@@ -39,41 +35,38 @@
   <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.blockUI.js" asp-append-version="true"></script>
   <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.spin.js" asp-append-version="true"></script>
   <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.sweet-alert.js" asp-append-version="true"></script>
+  @* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> *@
   <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/abp.signalr-client.js" asp-append-version="true"></script>
   <script src="~/Common/Scripts/ModalManager.js" asp-append-version="true"></script>
+  @* <script src="~/libs/abp-web-resources/Abp/Framework/scripts/libs/common-scripts.min.js" asp-append-version="true"></script>  *@
   <script src="~/Common/Scripts/ResourceLoader.js" asp-append-version="true"></script>
   <script src="~/Common/Scripts/bs-timepicker/bootstrap-timepicker.js" asp-append-version="true"></script>
   <script src="~/Common/Scripts/bs-daterangepicker/daterangepicker.js" asp-append-version="true"></script>
-  <script src="~/Common/tagify/dist/tagify.js" asp-append-version="true"></script>
-  <script src="~/Common/Scripts/helpers.js" asp-append-version="true"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.2.0/mustache.min.js"></script>
+  <script src="~/Common/Scripts/helpers.js" asp-append-version="true"></script>
   <script src="~/view-resources/Views/Layout/_Header.js"></script>
   <script src="~/view-resources/Views/Notifications/appUserNotificationHelper.js"></script>
-
-
   @*abp scripts end*@
-  @* <script src="/themes/trezo/assets/js/bootstrap.bundle.min.js"></script> *@
-  <script src="/themes/trezo/assets/js/sidebar-menu.js"></script>
-  <script src="/themes/trezo/assets/js/dragdrop.js"></script>
-  <script src="/themes/trezo/assets/js/rangeslider.min.js"></script>
-  @* <script src="/themes/trezo/assets/js/sweetalert.js"></script> *@
-  <script src="/themes/trezo/assets/js/quill.min.js"></script>
-  <script src="/themes/trezo/assets/js/data-table.js"></script>
-  <script src="/themes/trezo/assets/js/prism.js"></script>
-  <script src="/themes/trezo/assets/js/clipboard.min.js"></script>
-  <script src="/themes/trezo/assets/js/feather.min.js"></script>
-  <script src="/themes/trezo/assets/js/simplebar.min.js"></script>
-  <script src="/themes/trezo/assets/js/apexcharts.min.js"></script>
-  <script src="/themes/trezo/assets/js/swiper-bundle.min.js"></script>
-  <script src="/themes/trezo/assets/js/jsvectormap.min.js"></script>
-  <script src="/themes/trezo/assets/js/world-merc.js"></script>
-  <script src="/themes/trezo/assets/js/lightpick.js"></script>
-  <script src="/themes/trezo/assets/js/custom/apexcharts.js"></script>
-  <script src="/themes/trezo/assets/js/custom/custom.js"></script>
 
+  @* 	<script src="/themes/trezo/assets/js/sidebar-menu.js"></script>
+	<script src="/themes/trezo/assets/js/dragdrop.js"></script>
+	<script src="/themes/trezo/assets/js/rangeslider.min.js"></script>
+	<script src="/themes/trezo/assets/js/sweetalert.js"></script>
+	<script src="/themes/trezo/assets/js/quill.min.js"></script>
+	<script src="/themes/trezo/assets/js/data-table.js"></script>
+	<script src="/themes/trezo/assets/js/prism.js"></script>
+	<script src="/themes/trezo/assets/js/clipboard.min.js"></script>
+	<script src="/themes/trezo/assets/js/feather.min.js"></script> 
+	<script src="/themes/trezo/assets/js/simplebar.min.js"></script>
+	<script src="/themes/trezo/assets/js/apexcharts.min.js"></script>
+	<script src="/themes/trezo/assets/js/swiper-bundle.min.js"></script>
+	<script src="/themes/trezo/assets/js/jsvectormap.min.js"></script>
+	<script src="/themes/trezo/assets/js/world-merc.js"></script>
+	<script src="/themes/trezo/assets/js/lightpick.js"></script>
+	<script src="/themes/trezo/assets/js/custom/apexcharts.js"></script> *@
+  @*abp scripts end
 
-
-  @*other scripts start*@
+	@*other scripts start*@
   <script src="~/libs/jquery-validate/jquery.validate.js" asp-append-version="true"></script>
   <script src="~/libs/jquery-validate/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
   <script src="~/libs/push.js/push.js" asp-append-version="true"></script>
@@ -91,6 +84,53 @@
     abp.appPath = '@ApplicationPath';
   </script>
 </environment>
+
+<environment names="Staging,Production">
+  <script src="~/view-resources/Views/_Bundles/shared-layout.min.js" asp-append-version="true"></script>
+  <script type="text/javascript">
+    // This is used to get the application's root path from javascript.
+    // It's useful if you're running application in a virtual directory under IIS.
+    var abp = abp || {};
+    abp.appPath = '@ApplicationPath';
+  </script>
+</environment>
+
+@if (CultureInfo.CurrentUICulture.Name != "en")
+{
+  var normalizedCurrentUICultureName = CultureInfo.CurrentUICulture.Name.Replace("-", "_");
+  var localizationFileNameWithExtension = "messages_";
+  switch (normalizedCurrentUICultureName)
+  {
+    case "zh_Hans":
+      localizationFileNameWithExtension += "zh";
+      break;
+    case "es_MX":
+      localizationFileNameWithExtension += "es";
+      break;
+    default:
+      localizationFileNameWithExtension += normalizedCurrentUICultureName;
+      break;
+  }
+  localizationFileNameWithExtension += ".min.js";
+  <script src="~/libs/jquery-validate/localization/@localizationFileNameWithExtension" asp-append-version="true"></script>
+}
+
+<script type="text/javascript">
+  // Localizing momentjs
+  moment.locale('@CultureInfo.CurrentUICulture.Name');
+</script>
+
+<!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
+<script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+
+@if (GetScriptsResponsePerUserConfiguration.IsEnabled)
+{
+  <script src="@(ApplicationPath)AbpScripts/GetScripts?v=@(await CachedUniqueKeyPerUser.GetKeyAsync(GetScriptsResponsePerUserCache.CacheName))" type="text/javascript"></script>
+}
+else
+{
+  <script src="@(ApplicationPath)AbpScripts/GetScripts?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
+}
 
 <environment names="Staging,Production">
   <script src="~/view-resources/Views/_Bundles/shared-layout.min.js" asp-append-version="true"></script>
@@ -122,10 +162,10 @@
   <script src="~/libs/jquery-validate/localization/@localizationFileNameWithExtension" asp-append-version="true"></script>
 } *@
 
-@* <script type="text/javascript">
+<script type="text/javascript">
   // Localizing momentjs
   moment.locale('@CultureInfo.CurrentUICulture.Name');
-</script> *@
+</script>
 
 <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->
 <script src="~/AbpServiceProxies/GetAll?v=@(AppTimes.StartupTime.Ticks)" type="text/javascript"></script>
