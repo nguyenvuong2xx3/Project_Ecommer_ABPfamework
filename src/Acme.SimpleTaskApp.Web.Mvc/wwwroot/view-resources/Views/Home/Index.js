@@ -82,56 +82,121 @@
                     });
             },
             
-            // Render sales chart
+            // Render sales chart with ApexCharts (Beautiful Column Chart with Gradient)
             renderSalesChart: function(data) {
-                var ctx = document.getElementById('salesChart').getContext('2d');
-                
                 if (dashboardApp.charts.salesChart) {
                     dashboardApp.charts.salesChart.destroy();
                 }
                 
-                dashboardApp.charts.salesChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.map(d => d.label),
-                        datasets: [{
-                            label: 'Doanh thu (VNĐ)',
-                            data: data.map(d => d.value),
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return 'Doanh thu: ' + dashboardApp.formatCurrency(context.parsed.y);
-                                    }
-                                }
-                            }
+                var options = {
+                    series: [{
+                        name: 'Doanh thu',
+                        data: data.map(d => d.value)
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 300,
+                        toolbar: {
+                            show: false
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return dashboardApp.formatCurrency(value);
-                                    }
-                                }
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 8,
+                            columnWidth: '60%',
+                            distributed: false,
+                            dataLabels: {
+                                position: 'top'
                             }
                         }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    colors: ['#3b82f6'],
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'light',
+                            type: 'vertical',
+                            shadeIntensity: 0.5,
+                            gradientToColors: ['#60a5fa'],
+                            opacityFrom: 0.9,
+                            opacityTo: 0.7,
+                            stops: [0, 100]
+                        }
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    xaxis: {
+                        categories: data.map(d => d.label),
+                        labels: {
+                            style: {
+                                fontSize: '11px',
+                                colors: '#6b7280'
+                            }
+                        },
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                fontSize: '11px',
+                                colors: '#6b7280'
+                            },
+                            formatter: function(value) {
+                                return dashboardApp.formatCurrencyShort(value);
+                            }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#f1f5f9',
+                        strokeDashArray: 3,
+                        xaxis: {
+                            lines: {
+                                show: false
+                            }
+                        },
+                        yaxis: {
+                            lines: {
+                                show: true
+                            }
+                        }
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: {
+                            formatter: function(value) {
+                                return dashboardApp.formatCurrency(value);
+                            }
+                        },
+                        style: {
+                            fontSize: '12px'
+                        }
+                    },
+                    legend: {
+                        show: false
                     }
-                });
+                };
+                
+                dashboardApp.charts.salesChart = new ApexCharts(
+                    document.querySelector("#salesChart"), 
+                    options
+                );
+                dashboardApp.charts.salesChart.render();
             },
             
             // Load category chart
@@ -145,43 +210,101 @@
                     });
             },
             
-            // Render category chart
+            // Render category chart with ApexCharts (Beautiful Donut Chart)
             renderCategoryChart: function(data) {
-                var ctx = document.getElementById('categoryChart').getContext('2d');
-                
                 if (dashboardApp.charts.categoryChart) {
                     dashboardApp.charts.categoryChart.destroy();
                 }
                 
-                dashboardApp.charts.categoryChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: data.map(d => d.label),
-                        datasets: [{
-                            data: data.map(d => d.value),
-                            backgroundColor: data.map(d => d.color),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
+                var options = {
+                    series: data.map(d => d.value),
+                    chart: {
+                        type: 'donut',
+                        height: 300,
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.label + ': ' + dashboardApp.formatCurrency(context.parsed);
+                    labels: data.map(d => d.label),
+                    colors: data.map(d => d.color),
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        color: '#374151'
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '20px',
+                                        fontWeight: 700,
+                                        color: '#111827',
+                                        formatter: function(val) {
+                                            return dashboardApp.formatCurrencyShort(val);
+                                        }
+                                    },
+                                    total: {
+                                        show: true,
+                                        label: 'Tổng doanh thu',
+                                        fontSize: '12px',
+                                        color: '#6b7280',
+                                        formatter: function(w) {
+                                            var total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                            return dashboardApp.formatCurrencyShort(total);
+                                        }
                                     }
                                 }
                             }
                         }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    legend: {
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        markers: {
+                            width: 10,
+                            height: 10,
+                            radius: 2
+                        },
+                        itemMargin: {
+                            horizontal: 8,
+                            vertical: 4
+                        }
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: {
+                            formatter: function(value) {
+                                return dashboardApp.formatCurrency(value);
+                            }
+                        },
+                        style: {
+                            fontSize: '12px'
+                        }
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['#fff']
                     }
-                });
+                };
+                
+                dashboardApp.charts.categoryChart = new ApexCharts(
+                    document.querySelector("#categoryChart"), 
+                    options
+                );
+                dashboardApp.charts.categoryChart.render();
             },
             
             // Load top selling products
@@ -281,6 +404,18 @@
                     style: 'currency',
                     currency: 'VND'
                 }).format(amount);
+            },
+            
+            // Format currency short (for charts)
+            formatCurrencyShort: function(amount) {
+                if (amount >= 1000000000) {
+                    return (amount / 1000000000).toFixed(1) + ' tỷ';
+                } else if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1) + ' tr';
+                } else if (amount >= 1000) {
+                    return (amount / 1000).toFixed(0) + 'k';
+                }
+                return amount.toLocaleString('vi-VN');
             },
             
             // Initialize dashboard

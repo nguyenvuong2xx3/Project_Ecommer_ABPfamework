@@ -43,7 +43,7 @@
 
     .chart-container {
       position: relative;
-      height: 250px;
+      min-height: 300px;
     }
 
     .top-product-item {
@@ -157,13 +157,20 @@
       font-size: 0.7rem;
       padding: 0.2rem 0.4rem;
     }
+
+    /* ApexCharts custom styles */
+    .apexcharts-tooltip {
+      background: #fff !important;
+      border: 1px solid #e3e3e3 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    }
   </style>
 }
 
 @section scripts
 {
   <environment names="Development">
-    <script src="~/libs/chartjs/dist/Chart.js" asp-append-version="true"></script>
+    <script src="/themes/trezo/assets/js/apexcharts.min.js"></script>
     <script src="~/view-resources/Views/Home/Index.js" asp-append-version="true"></script>
   </environment>
 }
@@ -299,9 +306,7 @@
             </div>
           </div>
           <div class="card-body p-2">
-            <div class="chart-container">
-              <canvas id="salesChart"></canvas>
-            </div>
+            <div id="salesChart" class="chart-container"></div>
           </div>
         </div>
       </div>
@@ -317,9 +322,7 @@
             </div>
           </div>
           <div class="card-body p-2">
-            <div class="chart-container">
-              <canvas id="categoryChart"></canvas>
-            </div>
+            <div id="categoryChart" class="chart-container"></div>
           </div>
         </div>
       </div>

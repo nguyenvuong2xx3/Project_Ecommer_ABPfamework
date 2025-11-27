@@ -1,13 +1,9 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.UserProfiles
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.UserProfiles
 @model UserProfileViewModel
 <!-- Modal Content -->
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thông tin giao hàng"))
 <div class="modal-content">
-  <div class="modal-header">
-    <h5 class="modal-title">
-      <i class="fas fa-shipping-fast me-2"></i>Thông tin giao hàng
-    </h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-  </div>
   <div class="modal-body">
     <!-- Thông báo -->
     <div class="alert alert-info d-flex align-items-center" role="alert">
