@@ -1,0 +1,27 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.UserProfiles
+@model UserProfileViewModel
+<!-- Modal Content -->
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thông tin giao hàng"))
+<div class="modal-content">
+  <div class="modal-body">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="LowProductVariantsTable" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>@L("ProductName")</th>
+              <th>@L("ImageUrl")</th>
+              <th>@L("Ram")</th>
+              <th>@L("Storage")</th>
+              <th>@L("Color")</th>
+              <th>@L("StockQuantity")</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+  </div>
+</div>

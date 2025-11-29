@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Categories;
@@ -16,25 +17,28 @@ namespace Acme.SimpleTaskApp.Dashboard
 	public class DashboardAppService : ApplicationService, IDashboardAppService
 	{
 		private readonly IRepository<Order, int> _orderRepository;
+		private readonly IRepository<ProductImage, int> _productImageRepository;
 		private readonly IRepository<Product, int> _productRepository;
-		private readonly IRepository<ProductVariant, int> _variantRepository;
+		private readonly IRepository<ProductVariant, int> _productvariantRepository;
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IRepository<Sale, int> _saleRepository;
 		private readonly IRepository<Category, int> _categoryRepository;
 
 		public DashboardAppService(
-			IRepository<Order, int> orderRepository,
+			IRepository<ProductImage, int> productImageRepository,
+		IRepository<Order, int> orderRepository,
 			IRepository<Product, int> productRepository,
-			IRepository<ProductVariant, int> variantRepository,
+			IRepository<ProductVariant, int> productvariantRepository,
 			IRepository<User, long> userRepository,
 			IRepository<Sale, int> saleRepository,
 			IRepository<Category, int> categoryRepository
 			)
 		{
+			_productImageRepository = productImageRepository;
 			_categoryRepository = categoryRepository;
 			_orderRepository = orderRepository;
 			_productRepository = productRepository;
-			_variantRepository = variantRepository;
+			_productvariantRepository = productvariantRepository;
 			_userRepository = userRepository;
 			_saleRepository = saleRepository;
 		}
@@ -84,7 +88,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 				.CountAsync();
 
 			// Count low stock products
-			var lowStockProducts = await _variantRepository.GetAll()
+			var lowStockProducts = await _productvariantRepository.GetAll()
 				.Where(v => v.StockQuantity < 10)
 				.CountAsync();
 
@@ -172,7 +176,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 
 			foreach (var item in topVariants)
 			{
-				var variant = await _variantRepository.FirstOrDefaultAsync(item.VariantId);
+				var variant = await _productvariantRepository.FirstOrDefaultAsync(item.VariantId);
 				if (variant == null)
 					continue; // Skip if variant was deleted
 
@@ -234,7 +238,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 					{
 						if (detail.ProductVariantId.HasValue)
 						{
-							var variant = await _variantRepository.FirstOrDefaultAsync(detail.ProductVariantId.Value);
+							var variant = await _productvariantRepository.FirstOrDefaultAsync(detail.ProductVariantId.Value);
 							if (variant != null)
 							{
 								var product = await _productRepository.FirstOrDefaultAsync(variant.ProductId);
@@ -281,5 +285,54 @@ namespace Acme.SimpleTaskApp.Dashboard
 				_ => "Không xác định"
 			};
 		}
+
+		public async Task<PagedResultDto<LowStockProductDto>> GetLowStockProducts(PagedAndSortedResultRequestDto input)
+		{
+			var productVariants = await _productvariantRepository.GetAll()
+				.Where(v => v.StockQuantity < 3)
+				.ToListAsync();
+
+			var result = new List<LowStockProductDto>();
+
+			foreach (var variant in productVariants)
+			{
+				var product = await _productRepository.FirstOrDefaultAsync(variant.ProductId);
+				if (product == null)
+					continue;
+
+				var productImage = await _productImageRepository.FirstOrDefaultAsync(x => x.ProductVariantId == variant.Id);
+
+				result.Add(new LowStockProductDto
+				{
+					ProductId = product.Id,
+					ProductName = product.Name,
+					ImageUrl = productImage?.ImageUrl ?? variant.ImageUrl ?? "/img/products/default.png",
+					VariantId = variant.Id,
+					Storage = variant.Storage,
+					Ram = variant.Ram,
+					Color = variant.Color,
+					StockQuantity = variant.StockQuantity,
+				});
+			}
+
+			var totalCount = result.Count;
+			var pagedResult = result
+				.Skip(input.SkipCount)
+				.Take(input.MaxResultCount)
+				.ToList();
+
+			return new PagedResultDto<LowStockProductDto>(totalCount, pagedResult);
+		}
+	}
+	public class LowStockProductDto
+	{
+		public int ProductId { get; set; }
+		public string ProductName { get; set; }
+		public string ImageUrl { get; set; }
+		public int VariantId { get; set; }
+		public string Storage { get; set; }
+		public string Ram { get; set; }
+		public string Color { get; set; }
+		public int StockQuantity { get; set; }
 	}
 }

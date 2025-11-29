@@ -4,12 +4,16 @@ using Acme.SimpleTaskApp.Controllers;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-    [AbpMvcAuthorize]
-    public class HomeController : SimpleTaskAppControllerBase
-    {
-        public ActionResult Index()
-        {
-            return View();
-        }
-    }
+	[AbpMvcAuthorize]
+	public class HomeController : SimpleTaskAppControllerBase
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
+		public ActionResult LowProductVariantModal()
+		{
+			return PartialView("_LowProductVariantModal");
+		}
+	}
 }
