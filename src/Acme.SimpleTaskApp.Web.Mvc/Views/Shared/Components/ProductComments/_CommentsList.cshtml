@@ -1,0 +1,17 @@
+@using Acme.SimpleTaskApp.ProductComments.Dtos
+@model List<ProductCommentDto>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var comment in Model)
+    {
+        @await Html.PartialAsync("Components/ProductComments/_CommentItem", comment)
+    }
+}
+else
+{
+    <div class="text-center text-muted py-5">
+        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+        <p>Ch?a có bình lu?n nào. Hãy là ng??i ??u tiên bình lu?n!</p>
+    </div>
+}

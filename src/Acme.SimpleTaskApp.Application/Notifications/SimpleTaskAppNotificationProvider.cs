@@ -69,6 +69,15 @@ namespace Acme.SimpleTaskApp.Notifications
 					displayName: new LocalizableString("NewProductNotification", "SimpleTaskApp")
 				)
 			);
+
+			// Notification cho bình lu?n s?n ph?m m?i (Admin only)
+			context.Manager.Add(
+				new NotificationDefinition(
+					"App.NewProductComment",
+					displayName: new LocalizableString("NewProductCommentNotification", "SimpleTaskApp"),
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
+				)
+			);
 		}
 	}
 }

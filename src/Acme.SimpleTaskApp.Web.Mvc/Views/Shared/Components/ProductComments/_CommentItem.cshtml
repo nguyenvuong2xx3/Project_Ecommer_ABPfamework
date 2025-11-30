@@ -1,0 +1,143 @@
+﻿@using Acme.SimpleTaskApp.ProductComments.Dtos
+@model ProductCommentDto
+
+@{
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var canEdit = currentUserId != null && Model.UserId.ToString() == currentUserId;
+    var isEdited = Model.IsEdited ? "(đã chỉnh sửa)" : "";
+}
+
+<div class="comment-item mb-3 @(Model.ParentCommentId.HasValue ? "ms-5" : "")" data-comment-id="@Model.Id">
+    <div class="card">
+        <div class="card-body">
+            <!-- Comment Header -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center">
+                    <div class="avatar me-2">
+                        <div class="avatar-circle bg-primary text-white">
+                            @Model.UserFullName?.Substring(0, 1).ToUpper()
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">@Model.UserFullName</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> 
+                            @Model.CreationTime.ToString("dd/MM/yyyy HH:mm")
+                            <span class="text-info">@isEdited</span>
+                        </small>
+                    </div>
+                </div>
+                
+                @if (canEdit)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-link text-muted" 
+                                type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item btn-edit-comment" 
+                                   href="javascript:void(0)" 
+                                   data-comment-id="@Model.Id">
+                                    <i class="fas fa-edit text-primary"></i> Sửa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item btn-delete-comment" 
+                                   href="javascript:void(0)" 
+                                   data-comment-id="@Model.Id">
+                                    <i class="fas fa-trash text-danger"></i> Xóa
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+
+            <!-- Comment Content -->
+            <div class="comment-content" data-comment-id="@Model.Id">
+                <p class="mb-2 comment-text">@Model.Content</p>
+            </div>
+
+            <!-- Edit Form (Hidden by default) -->
+            <div class="comment-edit-form" style="display: none;">
+                <textarea class="form-control mb-2" rows="3" maxlength="1000">@Model.Content</textarea>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary btn-save-edit" 
+                            data-comment-id="@Model.Id">
+                        <i class="fas fa-save"></i> Lưu
+                    </button>
+                    <button class="btn btn-sm btn-secondary btn-cancel-edit">
+                        <i class="fas fa-times"></i> Hủy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comment Actions -->
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <div class="comment-actions mt-2">
+                    <button class="btn btn-sm btn-link text-primary btn-reply" 
+                            data-comment-id="@Model.Id"
+                            data-user-name="@Model.UserFullName">
+                        <i class="fas fa-reply"></i> Trả lời
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Replies -->
+    @if (Model.Replies != null && Model.Replies.Any())
+    {
+        <div class="replies mt-2">
+            @foreach (var reply in Model.Replies)
+            {
+                @await Html.PartialAsync("Components/ProductComments/_CommentItem", reply)
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .comment-item .card {
+        border: 1px solid #e3e6f0;
+        transition: box-shadow 0.3s;
+    }
+    
+    .comment-item .card:hover {
+        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+    
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    
+    .comment-content {
+        word-wrap: break-word;
+    }
+    
+    .comment-actions .btn-link {
+        text-decoration: none;
+        padding: 0;
+        font-size: 0.875rem;
+    }
+    
+    .comment-actions .btn-link:hover {
+        text-decoration: underline;
+    }
+    
+    .replies {
+        border-left: 2px solid #e3e6f0;
+        padding-left: 1rem;
+    }
+</style>

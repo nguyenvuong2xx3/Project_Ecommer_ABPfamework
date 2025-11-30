@@ -7,6 +7,7 @@ using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Identity;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.ProductComments;
 using Acme.SimpleTaskApp.Web.Models.Carts;
 using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
 using Acme.SimpleTaskApp.Web.Models.Products;
@@ -18,6 +19,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Notifications;
+using Acme.SimpleTaskApp.ProductComments.Dtos;
+using System.Collections.Generic;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
@@ -33,6 +37,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			private readonly SignInManager _signInManager;
 			private readonly UserManager _userManager;
 			private readonly ILocationAppService _locationAppService;
+			private readonly IProductCommentAppService _productCommentAppService;
+			private readonly INotificationPublisher _notificationPublisher;
 
 			public HomeCustomerController(IProductAppService productAppService,
 				IRepository<Category> categoryRepository,
@@ -41,7 +47,9 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 																ICategoryAppService categoryAppService,
 																ICartAppService cartAppService,
 																UserManager userManager,
-																ILocationAppService locationAppService
+																ILocationAppService locationAppService,
+																IProductCommentAppService productCommentAppService,
+																INotificationPublisher notificationPublisher
 																)
 			{
 				_locationAppService = locationAppService;
@@ -52,12 +60,16 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				_signInManager = signInManager;
 				_productAppService = productAppService;
 				_categoryAppService = categoryAppService;
+				_productCommentAppService = productCommentAppService;
+				_notificationPublisher = notificationPublisher;
 			}
+			
 			public async Task<ActionResult> SignOut()
 			{
 				await _signInManager.SignOutAsync();
 				return RedirectToAction("Index");
 			}
+			
 			public async Task<ActionResult> Index(SearchHomeCustomerDto input)
 			{
 				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
@@ -73,13 +85,66 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			public async Task<IActionResult> DetailProductCustomer(int id)
 			{
 				var product = await _homeCustomerAppService.GetProductById(id);
+				
+				// Load comments for product
+				var comments = await _productCommentAppService.GetProductCommentsTree(product.Id);
 
 				var model = new HomeCustomerViewModel()
 				{
 					ProductInfo = product
 				};
+				
+				// Pass comments to ViewBag for partial view
+				ViewBag.ProductComments = comments;
+				ViewBag.ProductId = product.Id;
 
 				return View(model);
+			}
+
+			/// <summary>
+			/// Load comments partial view - AJAX call to refresh only comment section
+			/// </summary>
+			[HttpGet]
+			public async Task<IActionResult> LoadCommentsPartial(int productId)
+			{
+				var comments = await _productCommentAppService.GetProductCommentsTree(productId);
+				
+				ViewBag.ProductId = productId;
+				
+				return PartialView("Components/ProductComments/_CommentsList", comments);
+			}
+
+			/// <summary>
+			/// Send notification to admin when new comment is created
+			/// </summary>
+			private async Task SendCommentNotificationToAdmin(int productId, string productName, string userName, string commentContent)
+			{
+				// Get all admin users
+				var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+				
+				if (adminUsers != null && adminUsers.Any())
+				{
+					foreach (var admin in adminUsers)
+					{
+						// Create notification data
+						var notificationData = new Abp.Notifications.NotificationData();
+						notificationData["ProductId"] = productId;
+						notificationData["ProductName"] = productName;
+						notificationData["UserName"] = userName;
+						notificationData["CommentContent"] = commentContent.Length > 50 
+							? commentContent.Substring(0, 50) + "..." 
+							: commentContent;
+						notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}#product-comments-section";
+						
+						// Publish notification
+						await _notificationPublisher.PublishAsync(
+							notificationName: "App.NewProductComment",
+							data: notificationData,
+							severity: NotificationSeverity.Info,
+							userIds: new[] { new Abp.UserIdentifier(admin.TenantId, admin.Id) }
+						);
+					}
+				}
 			}
 
 			// Trong HomeCustomerController.cs
@@ -106,17 +171,12 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				ViewBag.TotalCount = result.TotalCount;
 				return PartialView("_ProductList", result.Items);
 			}
+			
 			public async Task<PartialViewResult> FilterAdvancedModal()
 			{
 
 				return PartialView("_FilterAdvancedModal");
 			}
-
-			//// Thêm action cho form search
-			//public async Task<ActionResult> LoginMember()
-			//{
-			//	return View();
-			//}
 
 			[Authorize]
 			public async Task<ActionResult> Cart()

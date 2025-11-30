@@ -201,5 +201,15 @@
     <text name="SetNotificationsAsRead" value="Mark Notifications as Read" />
     <text name="DeleteNotifications" value="Delete Notifications" />
     <text name="NotificationSettings" value="Notification Settings" />
+
+    <!-- Notification Definitions -->
+    <text name="NewOrderNotification">Đơn hàng mới</text>
+    <text name="OrderStatusChangedNotification">Trạng thái đơn hàng thay đổi</text>
+    <text name="OrderApprovedNotification">Đơn hàng được duyệt</text>
+    <text name="OrderRejectedNotification">Đơn hàng bị từ chối</text>
+    <text name="OrderCompletedNotification">Đơn hàng hoàn thành</text>
+    <text name="LowStockNotification">Cảnh báo tồn kho thấp</text>
+    <text name="NewProductNotification">Sản phẩm mới</text>
+    <text name="NewProductCommentNotification">Bình luận sản phẩm mới</text>
   </texts>
 </localizationDictionary>

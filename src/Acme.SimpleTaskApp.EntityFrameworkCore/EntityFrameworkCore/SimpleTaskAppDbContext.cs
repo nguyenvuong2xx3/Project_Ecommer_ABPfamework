@@ -7,6 +7,7 @@ using Acme.SimpleTaskApp.MultiTenancy;
 using Acme.SimpleTaskApp.OrderItems;
 using Acme.SimpleTaskApp.Orders;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.ProductComments;
 using Acme.SimpleTaskApp.Sales;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ namespace Acme.SimpleTaskApp.EntityFrameworkCore
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<Banner> Banners { get; set; }
 		public DbSet<Sale> Sales { get; set; }
+		public DbSet<ProductComment> ProductComments { get; set; }
 		//public DbSet<OrderDetails> OrderDetails { get; set; }
 
 		public SimpleTaskAppDbContext(DbContextOptions<SimpleTaskAppDbContext> options)

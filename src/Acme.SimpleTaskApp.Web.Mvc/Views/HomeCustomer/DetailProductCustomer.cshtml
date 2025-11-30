@@ -1,4 +1,4 @@
-﻿﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
+﻿@using Acme.SimpleTaskApp.Web.Models.HomeCustomers
 @using System.Linq
 
 @model HomeCustomerViewModel
@@ -160,6 +160,9 @@
           </div>
         }
       </div>
+
+      <!-- COMMENT SECTION - THÊM MỚI -->
+      @await Html.PartialAsync("Components/ProductComments/_ProductComments", ViewBag.ProductComments as List<Acme.SimpleTaskApp.ProductComments.Dtos.ProductCommentDto>)
     </div>
 
     <!-- Right Side - Purchase Options -->
