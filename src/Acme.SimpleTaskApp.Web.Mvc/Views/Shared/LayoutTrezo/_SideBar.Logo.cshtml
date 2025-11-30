@@ -13,7 +13,7 @@
 <a class="brand-link" style="text-decoration: none;" asp-controller="Home" asp-action="Index">
     @if (isConfigured)
     {
-        <img src="@logoUrl" alt="@storeName" class="brand-image img-circle elevation-3" 
+        <img src="@logoUrl" alt="@storeName" class="brand-image" 
              onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
         <i class="fas fa-store brand-image" style="display:none; font-size: 1.5rem; color: #6c757d;"></i>
     <span class="brand-text font-weight-bold"><i>@storeName</i></span>
