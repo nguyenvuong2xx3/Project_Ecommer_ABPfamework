@@ -1,4 +1,38 @@
-﻿<a class="brand-link" asp-controller="Home" asp-action="Index">
-    <img src="~/img/logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-    <span class="brand-text font-weight-light">SimpleTaskApp</span>
+﻿@using Abp.Configuration
+@using Acme.SimpleTaskApp.Configuration
+@inject ISettingManager SettingManager
+
+@{
+    var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+    var logoUrl = await SettingManager.GetSettingValueAsync(AppNameStore.UrlLogo);
+    
+    // Check if settings are configured
+    var isConfigured = !string.IsNullOrWhiteSpace(storeName) && !string.IsNullOrWhiteSpace(logoUrl);
+}
+
+<a class="brand-link" style="text-decoration: none;" asp-controller="Home" asp-action="Index">
+    @if (isConfigured)
+    {
+        <img src="@logoUrl" alt="@storeName" class="brand-image img-circle elevation-3" 
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <i class="fas fa-store brand-image" style="display:none; font-size: 1.5rem; color: #6c757d;"></i>
+    <span class="brand-text font-weight-bold"><i>@storeName</i></span>
+    }
+    else
+    {
+        <i class="fas fa-exclamation-triangle brand-image" style="font-size: 1.5rem; color: #dc3545;"></i>
+        <span class="brand-text font-weight-light text-danger">
+            <small>Chưa cấu hình</small>
+        </span>
+    }
 </a>
+
+@if (!isConfigured)
+{
+    <div class="alert alert-warning mx-2 mt-2 mb-0" style="font-size: 0.75rem; padding: 0.5rem;">
+        <i class="fas fa-info-circle mr-1"></i>
+        <a href="@Url.Action("Index", "Settings")" class="alert-link">
+            <strong>Cấu hình cửa hàng</strong>
+        </a>
+    </div>
+}

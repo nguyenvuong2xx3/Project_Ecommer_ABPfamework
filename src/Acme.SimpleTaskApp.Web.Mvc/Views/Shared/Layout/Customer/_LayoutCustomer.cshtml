@@ -2,16 +2,25 @@
 @using Abp.Web.Mvc.Alerts
 @using Abp.Web.Security.AntiForgery
 @using Acme.SimpleTaskApp.Web.Resources
+@using Abp.Configuration
+@using Acme.SimpleTaskApp.Configuration
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
 @inject IMultiTenancyConfig MultiTenancyConfig
 @inject IWebResourceManager WebResourceManager
 @inject IAlertManager AlertManager
 @inject ILanguageManager LanguageManager
+@inject ISettingManager SettingManager
 @{
 	AbpAntiForgeryManager.SetCookie(Context);
 
-	var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
-	pageTitle += "SimpleTaskApp";
+	var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+	if (string.IsNullOrWhiteSpace(storeName))
+	{
+		storeName = "Shop";
+	}
+
+	var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " - " : "";
+	pageTitle += storeName;
 }
 
 <!DOCTYPE html>
@@ -27,19 +36,12 @@
 	@RenderSection("styles", required: false)
 </head>
 <body class="hold-transition sidebar-mini">
-	@* <div class="wrapper"> *@
-		@* @await Html.PartialAsync("_Header.cshtml") *@
-		@* @await Html.PartialAsync("_SideBar.cshtml") *@
-		@* <div class="content-wrapper"> *@
-			@await Html.PartialAsync("_Alerts.cshtml")
-			@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_NavbarCustomer.cshtml")
-			<div style="margin-top:102px">
-			@RenderBody()
-			</div>
-			@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_FooterCustomer.cshtml")
-		@* </div> *@
-		@* @await Html.PartialAsync("_Footer.cshtml") *@
-	@* </div> *@
+	@await Html.PartialAsync("_Alerts.cshtml")
+	@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_NavbarCustomer.cshtml")
+	<div style="margin-top:102px">
+		@RenderBody()
+	</div>
+	@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_FooterCustomer.cshtml")
 
 	@await Html.PartialAsync("_Scripts.cshtml")
 	@RenderSection("scripts", required: false)

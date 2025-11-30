@@ -12,5 +12,7 @@ namespace Acme.SimpleTaskApp.Settings
 	{
 		Task<GetAllSettingDto> GetAllSetting();
 		Task<MailSettingDto> MailSettings();
+		Task<StoreSettingDto> GetStoreSettings();
+		Task UpdateStoreSettings(StoreSettingDto input);
 	}
 }

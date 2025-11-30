@@ -16,6 +16,6 @@
         public const string Settings = "Settings";
         public const string Banners = "Banners";
         public const string Sales = "Sales";
-        //public const string LowProduct = "Biến thể sản phẩm sắp hết hàng";
+        public const string Notifications = "Notifications";
 	}
 }

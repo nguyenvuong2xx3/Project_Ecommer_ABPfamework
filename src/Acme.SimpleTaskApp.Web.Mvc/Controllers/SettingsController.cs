@@ -1,7 +1,9 @@
 ﻿using Acme.SimpleTaskApp.Configuration;
 using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.Settings;
+using Acme.SimpleTaskApp.Settings.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Settings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			_settingAppService = settingAppService;
 		}
+		
 		public async Task<IActionResult> Index()
 		{
 			var getAll = await _settingAppService.GetAllSetting();
@@ -22,6 +25,32 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				GetAllSetting = getAll
 			};
 			return View(model);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> UpdateStoreSettings([FromForm] StoreSettingDto input)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new { success = false, message = "Dữ liệu không hợp lệ!" });
+			}
+
+			try
+			{
+				await _settingAppService.UpdateStoreSettings(input);
+				return Json(new { success = true, message = "Cập nhật thông tin cửa hàng thành công!" });
+			}
+			catch (System.Exception ex)
+			{
+				return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}" });
+			}
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetStoreSettings()
+		{
+			var settings = await _settingAppService.GetStoreSettings();
+			return Json(settings);
 		}
 	}
 }

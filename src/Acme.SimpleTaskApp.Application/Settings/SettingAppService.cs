@@ -4,6 +4,7 @@ using Abp.Runtime.Session;
 using Abp.UI;
 using Acme.SimpleTaskApp.Configuration;
 using Acme.SimpleTaskApp.Settings.Dtos;
+using Acme.SimpleTaskApp.UploadFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,24 @@ namespace Acme.SimpleTaskApp.Settings
 	{
 		private readonly ISettingManager _settingManager;
 		private readonly IAbpSession _abpSession;
+		private readonly IUploadFileAppService _uploadFileAppService;
 
-		public SettingAppService(ISettingManager settingManager, IAbpSession abpSession)
+		public SettingAppService(
+			ISettingManager settingManager, 
+			IAbpSession abpSession,
+			IUploadFileAppService uploadFileAppService)
 		{
 			_settingManager = settingManager;
 			_abpSession = abpSession;
+			_uploadFileAppService = uploadFileAppService;
 		}
 
 		public async Task<GetAllSettingDto> GetAllSetting()
 		{
 			var setting = new GetAllSettingDto
 			{
-				MailSetting = await MailSettings()
+				MailSetting = await MailSettings(),
+				StoreSetting = await GetStoreSettings()
 			};
 			return setting;
 		}
@@ -141,6 +148,49 @@ namespace Acme.SimpleTaskApp.Settings
 					Success = false,
 					Message = $"Failed to send test email: {ex.Message}"
 				};
+			}
+		}
+
+		// Store Settings Methods
+		public async Task<StoreSettingDto> GetStoreSettings()
+		{
+			return new StoreSettingDto
+			{
+				NameStore = await _settingManager.GetSettingValueForApplicationAsync(AppNameStore.NameStore),
+				UrlLogo = await _settingManager.GetSettingValueForApplicationAsync(AppNameStore.UrlLogo)
+			};
+		}
+
+		public async Task UpdateStoreSettings(StoreSettingDto input)
+		{
+			// Cập nhật tên cửa hàng
+			await _settingManager.ChangeSettingForApplicationAsync(AppNameStore.NameStore, input.NameStore);
+
+			// Xử lý upload logo nếu có file mới
+			if (input.LogoFile != null && input.LogoFile.Length > 0)
+			{
+				// Xóa logo cũ nếu có (không xóa logo mặc định)
+				var oldLogoUrl = await _settingManager.GetSettingValueForApplicationAsync(AppNameStore.UrlLogo);
+				if (!string.IsNullOrEmpty(oldLogoUrl) && !oldLogoUrl.Contains("default-logo"))
+				{
+					try
+					{
+						await _uploadFileAppService.RemoveImage(oldLogoUrl);
+					}
+					catch (Exception ex)
+					{
+						Logger.Warn($"Could not delete old logo: {ex.Message}");
+					}
+				}
+
+				// Upload logo mới
+				var newLogoUrl = await _uploadFileAppService.UploadImageAsync(input.LogoFile, "store/logo");
+				await _settingManager.ChangeSettingForApplicationAsync(AppNameStore.UrlLogo, newLogoUrl);
+			}
+			else if (!string.IsNullOrEmpty(input.UrlLogo))
+			{
+				// Nếu không upload file mới nhưng có URL (trường hợp nhập URL thủ công)
+				await _settingManager.ChangeSettingForApplicationAsync(AppNameStore.UrlLogo, input.UrlLogo);
 			}
 		}
 

@@ -14,4 +14,9 @@
 		public const string UserName = "App.Mail.UserName";
 		public const string Password = "App.Mail.Password";
 	}
+	public static class AppNameStore
+	{
+		public const string NameStore = "App.NameStore";
+		public const string UrlLogo = "App.UrlLogo";
+	}
 }

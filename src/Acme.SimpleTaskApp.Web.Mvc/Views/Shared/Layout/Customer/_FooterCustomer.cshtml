@@ -1,68 +1,432 @@
-﻿<!-- Footer Start -->
-<div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
-  <div class="container py-5">
-    <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5) ;">
-      <div class="row g-4">
-        <div class="col-lg-3">
-          <a href="#">
-            <h1 class="text-primary mb-0">Ecommer Shop</h1>
-            <p class="text-secondary mb-0">Shop bán đồ điện tử</p>
-          </a>
-        </div>
-        <div class="col-lg-6">
-          <div class="position-relative mx-auto">
-            <input class="form-control border-0 w-100 py-3 px-4 rounded-pill" type="number" placeholder="Your Email">
-            @* <button type="submit" class="btn btn-primary border-0 border-secondary py-3 px-4 position-absolute rounded-pill text-white" style="top: 0; right: 0;">Subscribe Now</button> *@
+﻿@using Abp.Configuration
+@using Acme.SimpleTaskApp.Configuration
+@inject ISettingManager SettingManager
+
+@{
+    var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+    var logoUrl = await SettingManager.GetSettingValueAsync(AppNameStore.UrlLogo);
+    
+    if (string.IsNullOrWhiteSpace(storeName))
+    {
+        storeName = "Cửa hàng";
+    }
+}
+
+<!-- Footer Start -->
+<footer class="modern-footer">
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-top">
+        <div class="row g-4 align-items-center">
+          <!-- Logo & Description -->
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-brand">
+              @if (!string.IsNullOrWhiteSpace(logoUrl))
+              {
+                <img src="@logoUrl" alt="@storeName" class="footer-logo mb-3" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <h3 class="text-white mb-2" style="display:none;">@storeName</h3>
+              }
+              else
+              {
+                <h3 class="text-white mb-2">@storeName</h3>
+              }
+              <p class="footer-description">
+                Shop bán đồ điện tử chính hãng, uy tín hàng đầu Việt Nam
+              </p>
+            </div>
+          </div>
+
+          <!-- Social Media -->
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-social text-center">
+              <h5 class="text-white mb-3">Kết nối với chúng tôi</h5>
+              <div class="social-links">
+                <a href="#" class="social-link" title="Facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-link" title="Twitter">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link" title="Instagram">
+                  <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-link" title="YouTube">
+                  <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="social-link" title="LinkedIn">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Contact -->
+          <div class="col-lg-4 col-md-12">
+            <div class="footer-contact">
+              <h5 class="text-white mb-3">Liên hệ nhanh</h5>
+              <div class="contact-item">
+                <i class="fas fa-phone-alt"></i>
+                <span>Hotline: <strong>1900 232 460</strong></span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>Email: <strong>support@example.com</strong></span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-lg-3">
-          <div class="d-flex justify-content-end pt-3">
-            <a class="btn  btn-outline-secondary me-2 btn-md-square rounded-circle" href=""><i class="fab fa-twitter"></i></a>
-            <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle" href=""><i class="fab fa-facebook-f"></i></a>
-            <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle" href=""><i class="fab fa-youtube"></i></a>
-            <a class="btn btn-outline-secondary btn-md-square rounded-circle" href=""><i class="fab fa-linkedin-in"></i></a>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <!-- Footer Links -->
+      <div class="footer-content">
+        <div class="row g-4">
+          <!-- Column 1: Support -->
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-section">
+              <h5 class="footer-title">
+                <i class="fas fa-headset me-2"></i>Tổng đài hỗ trợ
+              </h5>
+              <ul class="footer-links">
+                <li>
+                  <i class="fas fa-phone"></i>
+                  <span>Gọi mua: <strong>1900 232 460</strong></span>
+                </li>
+                <li>
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Khiếu nại: <strong>1800.1062</strong></span>
+                </li>
+                <li>
+                  <i class="fas fa-tools"></i>
+                  <span>Bảo hành: <strong>1900 232 464</strong></span>
+                </li>
+                <li class="text-muted small mt-2">
+                  <i class="far fa-clock"></i> Thời gian: 8:00 - 21:30
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="row g-5">
-      @* <div class="col-lg-3 col-md-6"> *@
-      @*   <div class="footer-item"> *@
-      @*     <h4 class="text-light mb-3">Why People Like us!</h4> *@
-      @*     <p class="mb-4"> *@
-      @*       typesetting, remaining essentially unchanged. It was *@
-      @*       popularised in the 1960s with the like Aldus PageMaker including of Lorem Ipsum. *@
-      @*     </p> *@
-      @*     <a href="" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Read More</a> *@
-      @*   </div> *@
-      @* </div> *@
-      <div class="col-lg-3 col-md-6">
-        <div class="d-flex flex-column text-start footer-item">
-          <h4 class="text-light mb-3">Tổng đài hỗ trợ</h4>
-          <a class="btn-link" href="">Gọi mua: 1900 232 460 (8:00 - 21:30)</a>
-          <a class="btn-link" href="">Khiếu nại: 1800.1062 (8:00 - 21:30)</a>
-          <a class="btn-link" href="">Bảo hành: 1900 232 464 (8:00 - 21:00)</a>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="d-flex flex-column text-start footer-item">
-          <h4 class="text-light mb-3">Về công ty</h4>
-          <a class="btn-link" href="">Giới thiệu công ty (MWG.vn)</a>
-          <a class="btn-link" href="">Tuyển dụng</a>
-          <a class="btn-link" href="">Gửi góp ý, khiếu nại</a>
-          <a class="btn-link" href="">Tìm siêu thị (2.960 shop)</a>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="footer-item">
-          <h4 class="text-light mb-3">Thông tin khác</h4>
-          <p>Tích điểm Quà tặng VIP</p>
-          <p>Lịch sử mua hàng</p>
-          <p>Đăng ký bán hàng CTV chiết khấu cao</p>
-          <p>Tìm hiểu về mua trả chậm</p>
+
+          <!-- Column 2: About -->
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-section">
+              <h5 class="footer-title">
+                <i class="fas fa-building me-2"></i>Về công ty
+              </h5>
+              <ul class="footer-links">
+                <li><a href="#">Giới thiệu công ty</a></li>
+                <li><a href="#">Tuyển dụng</a></li>
+                <li><a href="#">Gửi góp ý, khiếu nại</a></li>
+                <li><a href="#">Tìm siêu thị gần bạn</a></li>
+                <li><a href="#">Tin tức & Sự kiện</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Column 3: Services -->
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-section">
+              <h5 class="footer-title">
+                <i class="fas fa-concierge-bell me-2"></i>Dịch vụ
+              </h5>
+              <ul class="footer-links">
+                <li><a href="#">Tích điểm Quà tặng VIP</a></li>
+                <li><a href="#">Lịch sử mua hàng</a></li>
+                <li><a href="#">Chương trình CTV</a></li>
+                <li><a href="#">Mua trả góp 0%</a></li>
+                <li><a href="#">Chính sách bảo hành</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Column 4: Contact Info -->
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-section">
+              <h5 class="footer-title">
+                <i class="fas fa-map-marker-alt me-2"></i>Thông tin liên hệ
+              </h5>
+              <ul class="footer-links contact-info">
+                <li>
+                  <i class="fas fa-map-marked-alt"></i>
+                  <span>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</span>
+                </li>
+                <li>
+                  <i class="fas fa-envelope-open"></i>
+                  <span>Email: support@example.com</span>
+                </li>
+                <li>
+                  <i class="fas fa-fax"></i>
+                  <span>Fax: (028) 1234 5678</span>
+                </li>
+                <li>
+                  <i class="fas fa-id-card"></i>
+                  <span>MST: 0123456789</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="copyright mb-0">
+            <i class="far fa-copyright"></i> @DateTime.Now.Year <strong>@storeName</strong> - Mọi quyền được bảo lưu.
+          </p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <div class="footer-payment">
+            <span class="me-2">Phương thức thanh toán:</span>
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-paypal"></i>
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 <!-- Footer End -->
+
+<style>
+  /* Modern Footer Styles */
+  .modern-footer {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modern-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #ff6b6b);
+    background-size: 200% 100%;
+    animation: gradient-flow 3s ease infinite;
+  }
+
+  @@keyframes gradient-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .footer-main {
+    padding: 50px 0 30px;
+  }
+
+  /* Footer Top Section */
+  .footer-top {
+    margin-bottom: 40px;
+  }
+
+  .footer-brand .footer-logo {
+    max-height: 60px;
+    max-width: 180px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .footer-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Social Media */
+  .footer-social .social-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .social-link:hover {
+    background: #ffffff;
+    color: #1e3c72;
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Quick Contact */
+  .footer-contact .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+
+  .footer-contact .contact-item i {
+    width: 24px;
+    color: #4ecdc4;
+    font-size: 1.1rem;
+  }
+
+  /* Divider */
+  .footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    margin: 30px 0;
+  }
+
+  /* Footer Content */
+  .footer-content {
+    padding: 20px 0;
+  }
+
+  .footer-section {
+    margin-bottom: 20px;
+  }
+
+  .footer-title {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+  }
+
+  .footer-title i {
+    color: #4ecdc4;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .footer-links li i {
+    margin-top: 3px;
+    color: #4ecdc4;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .footer-links li a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .footer-links li a:hover {
+    color: #4ecdc4;
+    padding-left: 5px;
+  }
+
+  .footer-links.contact-info li span {
+    flex: 1;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .copyright {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+  }
+
+  .footer-payment {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+  }
+
+  .footer-payment i {
+    font-size: 1.5rem;
+    margin-left: 8px;
+    color: #4ecdc4;
+  }
+
+  /* Responsive */
+  @@media (max-width: 992px) {
+    .footer-main {
+      padding: 40px 0 20px;
+    }
+
+    .footer-top {
+      text-align: center;
+    }
+
+    .footer-social .social-links {
+      justify-content: center;
+    }
+
+    .footer-contact {
+      text-align: center;
+    }
+
+    .footer-contact .contact-item {
+      justify-content: center;
+    }
+  }
+
+  @@media (max-width: 768px) {
+    .footer-section {
+      text-align: center;
+    }
+
+    .footer-links li {
+      justify-content: center;
+    }
+
+    .footer-title {
+      justify-content: center;
+    }
+
+    .footer-bottom .row > div {
+      margin-bottom: 15px;
+    }
+
+    .footer-payment {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+</style>

@@ -9,5 +9,6 @@ namespace Acme.SimpleTaskApp.Settings.Dtos
 	public class GetAllSettingDto
 	{
 		public MailSettingDto MailSetting { get; set; }
+		public StoreSettingDto StoreSetting { get; set; }
 	}
 }

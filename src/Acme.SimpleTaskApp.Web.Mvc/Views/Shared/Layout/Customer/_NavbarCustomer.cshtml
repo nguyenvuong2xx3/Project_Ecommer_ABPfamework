@@ -1,9 +1,53 @@
-﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.AppTrezoRecentNotifications
+﻿﻿@using Acme.SimpleTaskApp.Web.Views.Shared.Components.AppTrezoRecentNotifications
+@using Abp.Configuration
+@using Acme.SimpleTaskApp.Configuration
+@inject ISettingManager SettingManager
+
+@{
+  var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+  var logoUrl = await SettingManager.GetSettingValueAsync(AppNameStore.UrlLogo);
+  var isConfigured = !string.IsNullOrWhiteSpace(storeName) || !string.IsNullOrWhiteSpace(logoUrl);
+}
+
 <div class="container-fluid fixed-top shadow bg-white">
   <nav class="navbar navbar-light navbar-expand-xl w-100" style="position: relative; z-index: 1040;">
-    <!-- Logo -->
-    <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand">
-      <h1 class="text-primary display-6">Shop Ecommer</h1>
+    <!-- Logo - Đã sửa để hiển thị động -->
+    <a asp-controller="HomeCustomer" asp-action="Index" class="navbar-brand d-flex align-items-center">
+      @if (isConfigured)
+      {
+        @if (!string.IsNullOrWhiteSpace(logoUrl))
+        {
+          <div class="brand-logo-container me-2">
+            <img src="@logoUrl" alt="@storeName"
+                 class="brand-image img-circle elevation-1"
+                 style="max-height: 45px; width: auto; object-fit: contain; box-shadow: none !important;"
+                 onerror="this.style.display='none'; this.nextElementSibling?.style.display='inline';">
+            <i class="fas fa-store text-primary" style="display: none; font-size: 1.8rem;"></i>
+          </div>
+        }
+        else
+        {
+          <div class="brand-logo-container me-2">
+            <i class="fas fa-store text-primary" style="font-size: 1.8rem;"></i>
+          </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(storeName))
+        {
+          <span class="brand-text text-primary fw-bold fs-4">@storeName</span>
+        }
+        else
+        {
+          <span class="brand-text text-primary fw-bold fs-4">Cửa Hàng</span>
+        }
+      }
+      else
+      {
+        <div class="brand-logo-container me-2">
+          <i class="fas fa-exclamation-triangle text-warning" style="font-size: 1.8rem;"></i>
+        </div>
+        <span class="brand-text text-warning fw-bold fs-6">Chưa cấu hình cửa hàng</span>
+      }
     </a>
 
     <!-- Thanh tìm kiếm -->
@@ -34,15 +78,15 @@
         </div>
         <a href="contact.html" class="nav-item nav-link">Contact</a>
       </div>
-      
-       
+
+
 
       <!-- Giỏ hàng và Đăng nhập -->
       <div class="d-flex align-items-center cart-login" style="padding-right: 192px">
         <!-- Giỏ hàng -->
         <!-- Đăng nhập -->
         @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
-                {
+        {
           cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
                 })
         @await Component.InvokeAsync("CartMenu")
@@ -58,6 +102,40 @@
   li.header-right-item {
     list-style-type: none !important;
   }
+
+  /* Brand logo container */
+  .brand-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    min-height: 45px;
+  }
+
+  /* Brand logo image */
+  .brand-image {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+
+    .brand-image:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+  /* Brand text */
+  .brand-text {
+    transition: color 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .navbar-brand:hover .brand-text {
+    color: #0056b3 !important;
+  }
+
   /* Thanh tìm kiếm */
   .txt-search {
     font-size: 14px;
@@ -93,11 +171,12 @@
     padding: 8px 16px;
   }
 
-  /* Logo */
-  .navbar-brand h1 {
+  /* Logo container */
+  .navbar-brand {
+    display: flex;
+    align-items: center;
     padding-left: 192px;
-    font-size: 26px;
-    margin: 0;
+    text-decoration: none;
   }
 
   /* Căn chỉnh giỏ hàng và đăng nhập */
@@ -127,14 +206,14 @@
     z-index: 1070;
   }
 
-  #header_notification_bar .dropdown {
-    position: static !important;
-  }
+    #header_notification_bar .dropdown {
+      position: static !important;
+    }
 
-  #header_notification_bar .dropdown-menu {
-    position: fixed !important;
-    z-index: 1070 !important;
-  }
+    #header_notification_bar .dropdown-menu {
+      position: fixed !important;
+      z-index: 1070 !important;
+    }
 
   /* Đảm bảo category dropdown thấp hơn notification */
   .menu-category {
@@ -142,16 +221,55 @@
     z-index: 1000;
   }
 
-  .menu-category .dropdown-menu {
-    z-index: 1000;
-  }
+    .menu-category .dropdown-menu {
+      z-index: 1000;
+    }
 
-  .menu-category .sub-dropdown {
-    z-index: 1001;
-  }
+    .menu-category .sub-dropdown {
+      z-index: 1001;
+    }
 
   .dropdown-menu.dropdown-menu-right.p-0.border-0.shadow.show {
     visibility: visible !important; /* Đảm bảo thuộc tính này được ưu tiên */
     opacity: 1 !important; /* Đảm bảo thuộc tính này được ưu tiên */
+  }
+
+  /* Responsive adjustments */
+  @@media (max-width: 1200px) {
+    .navbar-brand {
+      padding-left: 100px;
+    }
+
+    .cart-login {
+      padding-right: 100px;
+    }
+
+    .brand-text {
+      max-width: 150px;
+    }
+  }
+
+  @@media (max-width: 768px) {
+    .navbar-brand {
+      padding-left: 20px;
+    }
+
+    .cart-login {
+      padding-right: 20px;
+    }
+
+    .brand-text {
+      max-width: 120px;
+      font-size: 1.1rem !important;
+    }
+
+    .brand-logo-container {
+      min-width: 35px;
+      min-height: 35px;
+    }
+
+    .brand-image {
+      max-height: 35px !important;
+    }
   }
 </style>

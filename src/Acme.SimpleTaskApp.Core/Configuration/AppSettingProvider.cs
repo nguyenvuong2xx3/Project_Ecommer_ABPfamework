@@ -52,6 +52,20 @@ namespace Acme.SimpleTaskApp.Configuration
 								"true",
 								scopes: SettingScopes.Application | SettingScopes.Tenant,
 								isVisibleToClients: false
+						),
+						
+						// Store Configuration Settings - NO DEFAULT VALUES
+						new SettingDefinition(
+								AppNameStore.NameStore,
+								"", // Empty default - user must configure
+								scopes: SettingScopes.Application | SettingScopes.Tenant,
+								isVisibleToClients: true
+						),
+						new SettingDefinition(
+								AppNameStore.UrlLogo,
+								"", // Empty default - user must configure
+								scopes: SettingScopes.Application | SettingScopes.Tenant,
+								isVisibleToClients: true
 						)
 			};
 		}

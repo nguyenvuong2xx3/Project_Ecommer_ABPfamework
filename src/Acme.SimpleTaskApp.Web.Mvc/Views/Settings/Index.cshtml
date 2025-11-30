@@ -3,7 +3,7 @@
 @model MailSettingViewModel
 
 @{
-  ViewBag.Title = L("SmtpSettings");
+  ViewBag.Title = L("Settings");
   ViewBag.CurrentPageName = PageNames.SmtpSettings;
 }
 
@@ -19,17 +19,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-6">
-        <h1>@L("SmtpSettings")</h1>
-      </div>
-      <div class="col-sm-6">
-        <button type="button" id="TestSmtpButton" class="btn bg-orange float-sm-right mr-2">
-          <i class="fa fa-paper-plane"></i>
-          @L("TestSmtp")
-        </button>
-        <button type="button" id="SaveSmtpButton" class="btn bg-blue float-sm-right">
-          <i class="fa fa-save"></i>
-          @L("Save")
-        </button>
+        <h1><i class="fas fa-cogs mr-2"></i>@L("Settings")</h1>
       </div>
     </div>
   </div>
@@ -40,108 +30,219 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div class="card">
-          <!-- Card Header -->
-          <div class="card-header">
-            <h5 class="card-title">@L("SmtpConfiguration")</h5>
+        <div class="card card-primary card-tabs">
+          <div class="card-header p-0 pt-1">
+            <ul class="nav nav-tabs" id="settings-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="store-tab" data-toggle="pill" href="#tab-store" role="tab">
+                  <i class="fas fa-store"></i> Cấu hình cửa hàng
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="smtp-tab" data-toggle="pill" href="#tab-smtp" role="tab">
+                  <i class="fas fa-envelope"></i> @L("SmtpSettings")
+                </a>
+              </li>
+            </ul>
           </div>
-
-          <!-- Card Body -->
+          
           <div class="card-body">
-            <form id="SmtpSettingsForm">
-              <!-- Server và Port -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="Server" class="form-label">@L("Server") *</label>
-                  <input type="text" id="Server" name="Server" class="form-control"
-                         placeholder="smtp.gmail.com" value="@Model.GetAllSetting.MailSetting.Server" required />
-                  <div class="invalid-feedback">@L("ServerIsRequired")</div>
-                </div>
-                <div class="col-md-6">
-                  <label for="SmtpPort" class="form-label">@L("Port") *</label>
-                  <input type="number" id="SmtpPort" name="SmtpPort" class="form-control"
-                         placeholder="587" value="@Model.GetAllSetting.MailSetting.SmtpPort" min="1" max="65535" required />
-                  <div class="invalid-feedback">@L("PortIsRequired")</div>
-                </div>
-              </div>
-
-              <!-- Sender Information -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="SenderName" class="form-label">@L("SenderName") *</label>
-                  <input type="text" id="SenderName" name="SenderName" class="form-control"
-                         placeholder="Your Company Name" value="@Model.GetAllSetting.MailSetting.SenderName" required />
-                  <div class="invalid-feedback">@L("SenderNameIsRequired")</div>
-                </div>
-                <div class="col-md-6">
-                  <label for="SenderEmail" class="form-label">@L("SenderEmail") *</label>
-                  <input type="email" id="SenderEmail" name="SenderEmail" class="form-control"
-                         placeholder="noreply@company.com" value="@Model.GetAllSetting.MailSetting.SenderEmail" required />
-                  <div class="invalid-feedback">@L("SenderEmailIsRequired")</div>
-                </div>
-              </div>
-
-              <!-- Authentication -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="UserName" class="form-label">@L("UserName") *</label>
-                  <input type="text" id="UserName" name="UserName" class="form-control"
-                         placeholder="your-email@gmail.com" value="@Model.GetAllSetting.MailSetting.UserName" required />
-                  <div class="invalid-feedback">@L("UserNameIsRequired")</div>
-                </div>
-                <div class="col-md-6">
-                  <label for="Password" class="form-label">@L("Password") *</label>
-                  <div class="input-group">
-                    <input type="password" id="Password" name="Password" class="form-control"
-                           placeholder="••••••••" value="@Model.GetAllSetting.MailSetting.Password" required />
-                    <div class="input-group-append">
-                      <button type="button" class="btn btn-outline-secondary toggle-password">
-                        <i class="fa fa-eye"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="invalid-feedback">@L("PasswordIsRequired")</div>
-                </div>
-              </div>
-
-              <!-- SSL Option -->
-              <div class="row mb-3">
-                <div class="col-md-12">
-                  <div class="form-check">
-                    <input type="hidden" name="EnableSsl" value="false" />
-                    <input type="checkbox" id="EnableSsl" name="EnableSsl" value="true"
-                           class="form-check-input" @(Model.GetAllSetting.MailSetting.EnableSsl ? "checked" : "") />
-                    <label for="EnableSsl" class="form-check-label">@L("EnableSsl")</label>
-                    <small class="form-text text-muted">@L("EnableSslDescription")</small>
+            <div class="tab-content">
+              
+              <!-- Store Settings Tab -->
+              <div class="tab-pane fade show active" id="tab-store" role="tabpanel">
+                <div class="card-header mb-3">
+                  <h5 class="card-title">Thông tin cửa hàng</h5>
+                  <div class="card-tools">
+                    <button type="button" id="SaveStoreButton" class="btn btn-primary btn-sm">
+                      <i class="fa fa-save"></i> Lưu cấu hình
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              <!-- Test Email Section -->
-              <div class="row mb-3">
-                <div class="col-md-12">
-                  <div class="card bg-light">
-                    <div class="card-header">
-                      <h6 class="card-title mb-0">@L("TestSmtpConfiguration")</h6>
+                <form id="StoreSettingsForm" enctype="multipart/form-data">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="NameStore">Tên cửa hàng <span class="text-danger">*</span></label>
+                        <input type="text" id="NameStore" name="NameStore" class="form-control"
+                               placeholder="VD: Shop Ecommerce" value="@Model.GetAllSetting.StoreSetting.NameStore" required />
+                        <small class="form-text text-muted">Tên cửa hàng sẽ hiển thị trên website và các email gửi cho khách hàng</small>
+                      </div>
                     </div>
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-md-8">
-                          <label for="TestEmail" class="form-label">@L("TestEmailAddress")</label>
-                          <input type="email" id="TestEmail" class="form-control"
-                                 placeholder="test@example.com" />
+                    
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="LogoFile">Upload Logo cửa hàng</label>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="LogoFile" name="LogoFile" accept="image/*">
+                          <label class="custom-file-label" for="LogoFile">Chọn file ảnh...</label>
                         </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                          <button type="button" id="SendTestEmailBtn" class="btn btn-info">
-                            <i class="fa fa-paper-plane"></i> @L("SendTestEmail")
-                          </button>
+                        <small class="form-text text-muted">
+                          Định dạng: JPG, PNG, GIF, WEBP. Tối đa 5MB
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  @* <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="UrlLogo">Hoặc nhập URL logo</label>
+                        <input type="text" id="UrlLogo" name="UrlLogo" class="form-control"
+                               placeholder="/images/logo.png" value="@Model.GetAllSetting.StoreSetting.UrlLogo" />
+                        <small class="form-text text-muted">Để trống nếu bạn upload file ở trên</small>
+                      </div>
+                    </div>
+                  </div> *@
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="card bg-light">
+                        <div class="card-header">
+                          <h6 class="card-title mb-0">
+                            <i class="fas fa-image mr-2"></i>Xem trước logo
+                          </h6>
+                        </div>
+                        <div class="card-body text-center">
+                          @if (string.IsNullOrWhiteSpace(Model.GetAllSetting.StoreSetting.UrlLogo))
+                          {
+                            <div class="text-center py-5">
+                              <i class="fas fa-image text-muted" style="font-size: 4rem;"></i>
+                              <p class="text-muted mt-3 mb-0">Chưa có logo</p>
+                              <small class="text-muted">Vui lòng upload hoặc nhập URL logo</small>
+                            </div>
+                          }
+                          else
+                          {
+                            <img id="LogoPreview" src="@Model.GetAllSetting.StoreSetting.UrlLogo" 
+                                 alt="Store Logo" class="img-thumbnail" 
+                                 style="max-height: 150px; max-width: 300px;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                            <div style="display:none;" class="text-center py-5">
+                              <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                              <p class="text-muted mt-3 mb-0">Không thể tải ảnh</p>
+                              <small class="text-muted">URL không hợp lệ hoặc file không tồn tại</small>
+                            </div>
+                          }
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
-            </form>
+
+              <!-- SMTP Settings Tab -->
+              <div class="tab-pane fade" id="tab-smtp" role="tabpanel">
+                <div class="card-header mb-3">
+                  <h5 class="card-title">@L("SmtpConfiguration")</h5>
+                  <div class="card-tools">
+                    <button type="button" id="TestSmtpButton" class="btn btn-warning btn-sm mr-2">
+                      <i class="fa fa-paper-plane"></i> @L("TestSmtp")
+                    </button>
+                    <button type="button" id="SaveSmtpButton" class="btn btn-primary btn-sm">
+                      <i class="fa fa-save"></i> @L("Save")
+                    </button>
+                  </div>
+                </div>
+
+                <form id="SmtpSettingsForm">
+                  <!-- Server và Port -->
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label for="Server" class="form-label">@L("Server") *</label>
+                      <input type="text" id="Server" name="Server" class="form-control"
+                             placeholder="smtp.gmail.com" value="@Model.GetAllSetting.MailSetting.Server" required />
+                      <div class="invalid-feedback">@L("ServerIsRequired")</div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="SmtpPort" class="form-label">@L("Port") *</label>
+                      <input type="number" id="SmtpPort" name="SmtpPort" class="form-control"
+                             placeholder="587" value="@Model.GetAllSetting.MailSetting.SmtpPort" min="1" max="65535" required />
+                      <div class="invalid-feedback">@L("PortIsRequired")</div>
+                    </div>
+                  </div>
+
+                  <!-- Sender Information -->
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label for="SenderName" class="form-label">@L("SenderName") *</label>
+                      <input type="text" id="SenderName" name="SenderName" class="form-control"
+                             placeholder="Your Company Name" value="@Model.GetAllSetting.MailSetting.SenderName" required />
+                      <div class="invalid-feedback">@L("SenderNameIsRequired")</div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="SenderEmail" class="form-label">@L("SenderEmail") *</label>
+                      <input type="email" id="SenderEmail" name="SenderEmail" class="form-control"
+                             placeholder="noreply@company.com" value="@Model.GetAllSetting.MailSetting.SenderEmail" required />
+                      <div class="invalid-feedback">@L("SenderEmailIsRequired")</div>
+                    </div>
+                  </div>
+
+                  <!-- Authentication -->
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label for="UserName" class="form-label">@L("UserName") *</label>
+                      <input type="text" id="UserName" name="UserName" class="form-control"
+                             placeholder="your-email@gmail.com" value="@Model.GetAllSetting.MailSetting.UserName" required />
+                      <div class="invalid-feedback">@L("UserNameIsRequired")</div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="Password" class="form-label">@L("Password") *</label>
+                      <div class="input-group">
+                        <input type="password" id="Password" name="Password" class="form-control"
+                               placeholder="••••••••" value="@Model.GetAllSetting.MailSetting.Password" required />
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-outline-secondary toggle-password">
+                            <i class="fa fa-eye"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="invalid-feedback">@L("PasswordIsRequired")</div>
+                    </div>
+                  </div>
+
+                  <!-- SSL Option -->
+                  <div class="row mb-3">
+                    <div class="col-md-12">
+                      <div class="form-check">
+                        <input type="hidden" name="EnableSsl" value="false" />
+                        <input type="checkbox" id="EnableSsl" name="EnableSsl" value="true"
+                               class="form-check-input" @(Model.GetAllSetting.MailSetting.EnableSsl ? "checked" : "") />
+                        <label for="EnableSsl" class="form-check-label">@L("EnableSsl")</label>
+                        <small class="form-text text-muted">@L("EnableSslDescription")</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Test Email Section -->
+                  <div class="row mb-3">
+                    <div class="col-md-12">
+                      <div class="card bg-light">
+                        <div class="card-header">
+                          <h6 class="card-title mb-0">@L("TestSmtpConfiguration")</h6>
+                        </div>
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-md-8">
+                              <label for="TestEmail" class="form-label">@L("TestEmailAddress")</label>
+                              <input type="email" id="TestEmail" class="form-control"
+                                     placeholder="test@example.com" />
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                              <button type="button" id="SendTestEmailBtn" class="btn btn-info">
+                                <i class="fa fa-paper-plane"></i> @L("SendTestEmail")
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
