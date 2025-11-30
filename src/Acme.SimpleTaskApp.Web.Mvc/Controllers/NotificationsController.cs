@@ -4,9 +4,11 @@ using Acme.SimpleTaskApp.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
+	[AbpMvcAuthorize(PermissionNames.Pages_notifications)]
 	public class NotificationsController : SimpleTaskAppControllerBase
 	{
 		private readonly INotificationAppService _notificationAppService;

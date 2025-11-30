@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
+	[AbpMvcAuthorize(PermissionNames.Pages_Banners)]
 	public class BannersController : SimpleTaskAppControllerBase
 	{
 		private readonly IBannerAppService _bannerAppService;
@@ -31,12 +34,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// GET: /Banners/CreateModal
+		[AbpMvcAuthorize(PermissionNames.Pages_Banners_Create)]
 		public IActionResult CreateModal()
 		{
 			return PartialView("_CreateModal");
 		}
 
 		// POST: /Banners/Create
+		[AbpMvcAuthorize(PermissionNames.Pages_Banners_Create)]
 		[HttpPost]
 		public async Task<IActionResult> Create([FromForm] CreateBannerDto input)
 		{
@@ -44,6 +49,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return Json(result);
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_Banners_Edit)]
 		public async Task<IActionResult> EditModal(int id)
 		{
 			var banner = await _bannerAppService.GetBannerById(id);
@@ -54,6 +60,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_EditModal", viewModel);
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_Banners_Edit)]
 		[HttpPost]
 		public async Task<IActionResult> Edit(Banner input)
 		{
@@ -73,6 +80,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// POST: /Banners/Delete
+		[AbpMvcAuthorize(PermissionNames.Pages_Banners_Delete)]
 		[HttpPost]
 		public async Task<IActionResult> Delete(int id)
 		{

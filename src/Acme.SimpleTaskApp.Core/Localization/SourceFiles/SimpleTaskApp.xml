@@ -61,7 +61,7 @@
     <text name="SuccessfullyRegistered">Successfully registered</text>
     <text name="WaitingForEmailActivation">Your email address should be activated</text>
     <text name="Roles">Roles</text>
-    <text name="DisplayName">Display Name</text>
+    <text name="DisplayName" value="Display Name" />
     <text name="Edit">Edit</text>
     <text name="Delete">Delete</text>
     <text name="CreateNewRole">Create new role</text>
@@ -127,6 +127,7 @@
     <text name="SalesManagement" value="Sales Management" />
 	
     <!-- Menu Items -->
+    <text name="Dashboard" value="Dashboard" />
     <text name="Banners" value="Banners" />
     <text name="Sales" value="Promotions" />
     <text name="Categories" value="Categories" />
@@ -134,5 +135,71 @@
     <text name="ProductVariants" value="Product Variants" />
     <text name="HomeCustomer" value="Storefront" />
     <text name="Orders" value="Orders" />
+    <text name="Carts" value="Shopping Carts" />
+    <text name="Notifications" value="Notifications" />
+
+    <!-- Permission Names - Users -->
+    <text name="DeleteUser" value="Delete User" />
+    <text name="LoginForUsers" value="Login for Users" />
+    <text name="ChangePermissions" value="Change Permissions" />
+
+    <!-- Permission Names - Roles -->
+    <text name="DeleteRole" value="Delete Role" />
+
+    <!-- Permission Names - Settings -->
+    <text name="EditSettings" value="Edit Settings" />
+
+    <!-- Permission Names - Banners -->
+    <text name="CreateBanner" value="Create Banner" />
+    <text name="EditBanner" value="Edit Banner" />
+    <text name="DeleteBanner" value="Delete Banner" />
+
+    <!-- Permission Names - Sales/Promotions -->
+    <text name="CreateSale" value="Create Promotion" />
+    <text name="EditSale" value="Edit Promotion" />
+    <text name="DeleteSale" value="Delete Promotion" />
+    <text name="ToggleActiveSale" value="Toggle Active Promotion" />
+
+    <!-- Permission Names - Categories -->
+    <text name="CreateCategory" value="Create Category" />
+    <text name="UpdateCategory" value="Update Category" />
+    <text name="DeleteCategory" value="Delete Category" />
+
+    <!-- Permission Names - Products -->
+    <text name="CreateProduct" value="Create Product" />
+    <text name="UpdateProduct" value="Update Product" />
+    <text name="DeleteProduct" value="Delete Product" />
+    <text name="SearchProduct" value="Search Product" />
+    <text name="ViewProduct" value="View Product" />
+    <text name="ImportProduct" value="Import Product" />
+    <text name="ExportProduct" value="Export Product" />
+
+    <!-- Permission Names - Product Variants -->
+    <text name="CreateProductVariant" value="Create Product Variant" />
+    <text name="UpdateProductVariant" value="Update Product Variant" />
+    <text name="DeleteProductVariant" value="Delete Product Variant" />
+    <text name="ViewProductVariant" value="View Product Variant" />
+
+    <!-- Permission Names - Orders -->
+    <text name="CreateOrder" value="Create Order" />
+    <text name="ViewOrder" value="View Order" />
+    <text name="EditOrder" value="Edit Order" />
+    <text name="DeleteOrder" value="Delete Order" />
+    <text name="ConfirmOrder" value="Confirm Order" />
+    <text name="CancelOrder" value="Cancel Order" />
+    <text name="ShipOrder" value="Ship Order" />
+    <text name="CompleteOrder" value="Complete Order" />
+
+    <!-- Permission Names - Carts -->
+    <text name="AddToCart" value="Add to Cart" />
+    <text name="RemoveFromCart" value="Remove from Cart" />
+    <text name="ViewCart" value="View Cart" />
+    <text name="ClearCart" value="Clear Cart" />
+
+    <!-- Permission Names - Notifications -->
+    <text name="ViewNotifications" value="View Notifications" />
+    <text name="SetNotificationsAsRead" value="Mark Notifications as Read" />
+    <text name="DeleteNotifications" value="Delete Notifications" />
+    <text name="NotificationSettings" value="Notification Settings" />
   </texts>
 </localizationDictionary>

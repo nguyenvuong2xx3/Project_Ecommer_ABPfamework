@@ -1,44 +1,84 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Abp.Application.Services.Dto;
 using Abp.AspNetCore.Mvc.Authorization;
 using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Controllers;
+using Acme.SimpleTaskApp.Permissions;
 using Acme.SimpleTaskApp.Roles;
+using Acme.SimpleTaskApp.Roles.Dto;
 using Acme.SimpleTaskApp.Web.Models.Roles;
+using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Roles)]
+	//[AbpMvcAuthorize(PermissionNames.Pages_Roles)]
 	public class RolesController : SimpleTaskAppControllerBase
+	//{
+	//	private readonly IRoleAppService _roleAppService;
+
+	//	public RolesController(IRoleAppService roleAppService)
+	//	{
+	//		_roleAppService = roleAppService;
+	//	}
+
+	//	public async Task<IActionResult> Index()
+	//	{
+	//		return View();
+	//	}
+
+	//	public async Task<ActionResult> EditModal(int roleId)
+	//	{
+	//		var output = await _roleAppService.GetRoleForEdit(new EntityDto(roleId));
+	//		var model = new RoleEditTreeViewModel
+	//		{
+	//			Role = output.Role,
+	//			//Permissions = output.Permissions,
+	//			//GrantedPermissionNames = output.GrantedPermissionNames
+	//		};
+	//		return PartialView("_EditModal", model);
+	//	}
+
+	//	public async Task<ActionResult> CreateModal()
+	//	{
+	//		return PartialView("_CreateModal");
+	//	}
+	//}
 	{
 		private readonly IRoleAppService _roleAppService;
+		private readonly IPermissionAppService _permissionAppService;
 
-		public RolesController(IRoleAppService roleAppService)
+		public RolesController(
+				IRoleAppService roleAppService,
+				IPermissionAppService permissionAppService)
 		{
 			_roleAppService = roleAppService;
+			_permissionAppService = permissionAppService;
 		}
 
-		public async Task<IActionResult> Index()
+		public ActionResult Index()
 		{
-			return View();
-		}
+			var permissions = _permissionAppService.GetAllPermissions().Items.ToList();
 
-		public async Task<ActionResult> EditModal(int roleId)
-		{
-			var output = await _roleAppService.GetRoleForEdit(new EntityDto(roleId));
-			var model = new RoleEditTreeViewModel
+			var model = new RoleListViewModel
 			{
-				Role = output.Role,
-				//Permissions = output.Permissions,
-				//GrantedPermissionNames = output.GrantedPermissionNames
+				Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList(),
+				GrantedPermissionNames = new List<string>()
 			};
-			return PartialView("_EditModal", model);
+
+			return View(model);
 		}
 
-		public async Task<ActionResult> CreateModal()
+		[AbpMvcAuthorize(PermissionNames.Pages_Roles_Create, PermissionNames.Pages_Roles_Edit)]
+
+		public async Task<PartialViewResult> CreateOrEditModal(int? id)
 		{
-			return PartialView("_CreateModal");
+			var output = await _roleAppService.GetRoleForEdit(new NullableIdDto { Id = id });
+			var viewModel = ObjectMapper.Map<CreateOrEditRoleModalViewModel>(output);
+
+			return PartialView("_CreateOrEditModal", viewModel);
 		}
 	}
 }

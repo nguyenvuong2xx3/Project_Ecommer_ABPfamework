@@ -8,9 +8,12 @@ using Acme.SimpleTaskApp.Web.Models.Categories;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
+	[AbpMvcAuthorize(PermissionNames.Pages_categories)]
 	public class CategoriesController : SimpleTaskAppControllerBase
 	{
 		private readonly ICategoryAppService _categoryAppService;
@@ -21,6 +24,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_categoryAppService = categoryAppService;
 			_categoryRepository = categoryRepository;
 		}
+		
 		public async Task<ActionResult> Index()
 		{
 			var output = await _categoryRepository.GetAllAsync();
@@ -30,6 +34,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return View(model);
 		}
+		
+		[AbpMvcAuthorize(PermissionNames.Pages_category_create)]
 		public async Task<PartialViewResult> CreateModal()
 		{
 			// chuẩn bị model nếu cần dữ liệu phụ
@@ -41,6 +47,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_CreateCategoryModal", model);
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_category_update)]
 		public async Task<PartialViewResult> EditModal(int categoryId)
 		{
 			var input = new EntityDto<int> { Id = categoryId };

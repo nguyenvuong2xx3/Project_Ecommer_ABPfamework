@@ -20,7 +20,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					PageNames.Home,
 					L("HomePage"),
 					url: "Home",
-					icon: "fas fa-tachometer-alt"
+					icon: "fas fa-tachometer-alt",
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Dashboard)
 				)
 			);
 
@@ -60,7 +61,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Settings"),
 						url: "Settings",
 						icon: "fas fa-cog",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Settings)
 					)
 				)
 			);
@@ -76,14 +77,16 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						PageNames.Banners,
 						L("Banners"),
 						url: "Banners",
-						icon: "fas fa-images"
+						icon: "fas fa-images",
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Banners)
 					)
 				).AddItem(
 					new MenuItemDefinition(
 						PageNames.Sales,
 						L("Sales"),
 						url: "Sales",
-						icon: "fas fa-tag"
+						icon: "fas fa-tag",
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Sales)
 					)
 				)
 			);
@@ -108,7 +111,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Products"),
 						url: "Products",
 						icon: "fas fa-cube",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products_view)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -116,7 +119,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("ProductVariants"),
 						url: "ProductVariants",
 						icon: "fas fa-cubes",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_productVariants)
 					)
 				)
 			);
@@ -143,6 +146,25 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						icon: "fas fa-box-open",
 						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_orders)
 					)
+				).AddItem(
+					new MenuItemDefinition(
+						"Carts",
+						L("Carts"),
+						url: "Carts",
+						icon: "fas fa-shopping-cart",
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_carts)
+					)
+				)
+			);
+
+			// ===== THÔNG BÁO =====
+			menu.AddItem(
+				new MenuItemDefinition(
+					"Notifications",
+					L("Notifications"),
+					url: "Notifications",
+					icon: "fas fa-bell",
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_notifications)
 				)
 			);
 		}

@@ -6,9 +6,12 @@ using Acme.SimpleTaskApp.Web.Models.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
+	[AbpMvcAuthorize(PermissionNames.Pages_Settings)]
 	public class SettingsController : SimpleTaskAppControllerBase
 	{
 		private readonly ISettingAppService _settingAppService;
@@ -27,6 +30,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return View(model);
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_Settings_Edit)]
 		[HttpPost]
 		public async Task<IActionResult> UpdateStoreSettings([FromForm] StoreSettingDto input)
 		{

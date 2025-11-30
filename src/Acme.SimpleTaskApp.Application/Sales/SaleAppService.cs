@@ -13,9 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Sales
 {
+	[AbpAuthorize(PermissionNames.Pages_Sales)]
 	public class SaleAppService : ApplicationService, ISaleAppService
 	{
 		private readonly IRepository<Sale, int> _saleRepository;
@@ -28,6 +31,7 @@ namespace Acme.SimpleTaskApp.Sales
 		#region CRUD Operations
 
 		// Tạo mới Sale
+		[AbpAuthorize(PermissionNames.Pages_Sales_Create)]
 		public async Task<SaleDto> CreateSale(CreateSaleDto input)
 		{
 			if (input == null)
@@ -89,6 +93,7 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Cập nhật Sale
+		[AbpAuthorize(PermissionNames.Pages_Sales_Edit)]
 		public async Task<SaleDto> UpdateSale(UpdateSaleDto input)
 		{
 			if (input == null)
@@ -150,6 +155,7 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Xóa Sale
+		[AbpAuthorize(PermissionNames.Pages_Sales_Delete)]
 		public async Task DeleteSale(int id)
 		{
 			var sale = await _saleRepository.FirstOrDefaultAsync(id);

@@ -12,9 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Abp.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Banners
 {
+	[AbpAuthorize(PermissionNames.Pages_Banners)]
 	public class BannerAppService : ApplicationService, IBannerAppService
 	{
 		private readonly IRepository<Banner, int> _bannerRepository;
@@ -27,6 +30,7 @@ namespace Acme.SimpleTaskApp.Banners
 		}
 
 		// 🟢 Tạo mới Banner
+		[AbpAuthorize(PermissionNames.Pages_Banners_Create)]
 		public async Task<Banner> CreateBanner(CreateBannerDto input)
 		{
 			if (input == null)
@@ -58,6 +62,7 @@ namespace Acme.SimpleTaskApp.Banners
 		}
 
 		// 🟢 Cập nhật Banner
+		[AbpAuthorize(PermissionNames.Pages_Banners_Edit)]
 		public async Task<Banner> UpdateBanner(Banner input)
 		{
 			if (input == null)
@@ -93,6 +98,7 @@ namespace Acme.SimpleTaskApp.Banners
 		}
 
 		// 🟢 Xóa Banner
+		[AbpAuthorize(PermissionNames.Pages_Banners_Delete)]
 		public async Task DeleteBanner(int id)
 		{
 			var banner = await _bannerRepository.FirstOrDefaultAsync(id);

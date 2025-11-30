@@ -7,9 +7,12 @@ using Acme.SimpleTaskApp.Sales.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Sales;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
+	[AbpMvcAuthorize(PermissionNames.Pages_Sales)]
 	public class SalesController : SimpleTaskAppControllerBase
 	{
 		private readonly ISaleAppService _saleAppService;
@@ -36,6 +39,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// GET: /Sales/CreateModal
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_Create)]
 		public async Task<IActionResult> CreateModal()
 		{
 			var categories = await _categoryAppService.GetAllCategoriesForSelect();
@@ -53,6 +57,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// POST: /Sales/Create
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_Create)]
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] CreateSaleDto input)
 		{
@@ -61,6 +66,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// GET: /Sales/EditModal
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_Edit)]
 		public async Task<IActionResult> EditModal(int id)
 		{
 			var sale = await _saleAppService.GetSaleById(id);
@@ -80,6 +86,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// POST: /Sales/Edit
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_Edit)]
 		[HttpPost]
 		public async Task<IActionResult> Edit([FromBody] UpdateSaleDto input)
 		{
@@ -99,6 +106,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// POST: /Sales/Delete
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_Delete)]
 		[HttpPost]
 		public async Task<IActionResult> Delete(int id)
 		{
@@ -107,6 +115,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// GET: /Sales/ToggleActive - Bật/tắt trạng thái active
+		[AbpMvcAuthorize(PermissionNames.Pages_Sales_ToggleActive)]
 		[HttpPost]
 		public async Task<IActionResult> ToggleActive(int id)
 		{
@@ -136,7 +145,6 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		// GET: /Sales/GetStatistics
-		[HttpGet]
 		public async Task<IActionResult> GetStatistics(int id)
 		{
 			var stats = await _saleAppService.GetSaleStatistics(id);

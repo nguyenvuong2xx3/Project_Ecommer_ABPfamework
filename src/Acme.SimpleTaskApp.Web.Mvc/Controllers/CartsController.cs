@@ -10,10 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
 	[Authorize]
+	[AbpMvcAuthorize(PermissionNames.Pages_carts)]
 	public class CartsController : SimpleTaskAppControllerBase
 	{
 		private readonly ICartAppService _cartAppService;
@@ -27,11 +30,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_locationAppService = locationAppService;
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_carts_addItem)]
 		public async Task<ActionResult> AddCart(int productId, int quantity)
 		{
 			await _cartAppService.CreateCart(productId, quantity);
 			return Json(new { success = true });
 		}
+		
+		[AbpMvcAuthorize(PermissionNames.Pages_carts_view)]
 		public async Task<ActionResult> OrderInfoModal()
 		{
 			var user = await _userManager.FindByIdAsync(AbpSession.UserId.ToString());
