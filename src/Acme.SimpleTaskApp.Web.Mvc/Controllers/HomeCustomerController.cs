@@ -8,6 +8,8 @@ using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Identity;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.ProductComments;
+using Acme.SimpleTaskApp.ProductRatings;
+using Acme.SimpleTaskApp.ProductRatings.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Carts;
 using Acme.SimpleTaskApp.Web.Models.HomeCustomers;
 using Acme.SimpleTaskApp.Web.Models.Products;
@@ -38,19 +40,21 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			private readonly UserManager _userManager;
 			private readonly ILocationAppService _locationAppService;
 			private readonly IProductCommentAppService _productCommentAppService;
+			private readonly IProductRatingAppService _productRatingAppService;
 			private readonly INotificationPublisher _notificationPublisher;
 
-			public HomeCustomerController(IProductAppService productAppService,
+			public HomeCustomerController(
+				IProductAppService productAppService,
 				IRepository<Category> categoryRepository,
-			IHomeCustomerAppService homeCustomerAppService,
-																SignInManager signInManager,
-																ICategoryAppService categoryAppService,
-																ICartAppService cartAppService,
-																UserManager userManager,
-																ILocationAppService locationAppService,
-																IProductCommentAppService productCommentAppService,
-																INotificationPublisher notificationPublisher
-																)
+				IHomeCustomerAppService homeCustomerAppService,
+				SignInManager signInManager,
+				ICategoryAppService categoryAppService,
+				ICartAppService cartAppService,
+				UserManager userManager,
+				ILocationAppService locationAppService,
+				IProductCommentAppService productCommentAppService,
+				IProductRatingAppService productRatingAppService,
+				INotificationPublisher notificationPublisher)
 			{
 				_locationAppService = locationAppService;
 				_userManager = userManager;
@@ -61,6 +65,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				_productAppService = productAppService;
 				_categoryAppService = categoryAppService;
 				_productCommentAppService = productCommentAppService;
+				_productRatingAppService = productRatingAppService;
 				_notificationPublisher = notificationPublisher;
 			}
 			
@@ -89,14 +94,41 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				// Load comments for product
 				var comments = await _productCommentAppService.GetProductCommentsTree(product.Id);
 
+				// ✅ NEW: Load ratings for product
+				var ratingsResult = await _productRatingAppService.GetAllRatings(new GetProductRatingsInput
+				{
+					ProductId = product.Id,
+					MaxResultCount = 10,
+					IsApproved = true
+				});
+
+				// ✅ NEW: Load rating statistics
+				var ratingStatistics = await _productRatingAppService.GetProductRatingStatistics(product.Id);
+
+				// ✅ NEW: Check if user can rate (only if logged in)
+				bool canRate = false;
+				ProductRatingDto userRating = null;
+				
+				if (AbpSession.UserId.HasValue)
+				{
+					canRate = await _productRatingAppService.CanUserRateProduct(product.Id);
+					userRating = ratingsResult.Items.FirstOrDefault(r => r.UserId == AbpSession.UserId.Value);
+				}
+
 				var model = new HomeCustomerViewModel()
 				{
 					ProductInfo = product
 				};
 				
-				// Pass comments to ViewBag for partial view
+				// Pass data to ViewBag for partial views
 				ViewBag.ProductComments = comments;
 				ViewBag.ProductId = product.Id;
+				
+				// ✅ NEW: Pass rating data to ViewBag
+				ViewBag.ProductRatings = ratingsResult.Items;
+				ViewBag.RatingStatistics = ratingStatistics;
+				ViewBag.CanRate = canRate;
+				ViewBag.UserRating = userRating;
 
 				return View(model);
 			}

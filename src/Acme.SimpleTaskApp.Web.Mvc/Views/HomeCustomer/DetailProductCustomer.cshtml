@@ -14,13 +14,20 @@
       .ToList();
 }
 <link href="~/css/style.css" rel="stylesheet" />
+
 @section scripts
 {
   <environment names="Development">
+    <!-- SignalR Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@7.0.0/dist/browser/signalr.min.js"></script>
+    
     <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
     <script src="~/view-resources/Views/HomeCustomer/DetailProductHomeCustomer.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/Shared/Components/ProductComments/_ProductComments.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/Shared/Components/ProductRatings/_ProductRatings.js" asp-append-version="true"></script>
   </environment>
 }
+
 <div class="container-fluid py-3" style="padding: 0 200px">
   <div class="bg-white p-3 mb-3 rounded">
     <div class="row align-items-center">
@@ -163,6 +170,9 @@
 
       <!-- COMMENT SECTION - THÊM MỚI -->
       @await Html.PartialAsync("Components/ProductComments/_ProductComments", ViewBag.ProductComments as List<Acme.SimpleTaskApp.ProductComments.Dtos.ProductCommentDto>)
+
+      <!-- RATING SECTION -->
+      @await Html.PartialAsync("Components/ProductRatings/_ProductRatings", ViewBag.ProductRatings as List<Acme.SimpleTaskApp.ProductRatings.Dtos.ProductRatingDto>)
     </div>
 
     <!-- Right Side - Purchase Options -->

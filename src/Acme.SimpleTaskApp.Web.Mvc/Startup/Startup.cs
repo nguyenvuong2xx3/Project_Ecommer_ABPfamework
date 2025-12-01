@@ -104,7 +104,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapHub<AbpCommonHub>("/signalr");
-				endpoints.MapHub<NotificationHub>("/signalr-notification"); // Thêm NotificationHub
+				endpoints.MapHub<NotificationHub>("/signalr-notification");
+				endpoints.MapHub<ProductCommentHub>("/signalr-productCommentHub"); // ✅ NEW: Product Comment Hub
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 				endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=HomeCustomer}/{action=Index}/{id?}");
 			});

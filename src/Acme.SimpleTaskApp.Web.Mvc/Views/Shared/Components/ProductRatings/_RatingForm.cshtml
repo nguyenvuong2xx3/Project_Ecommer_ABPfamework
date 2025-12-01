@@ -1,0 +1,157 @@
+﻿<!-- Rating Form Modal/Collapsible -->
+<div id="ratingFormContainer" class="card mb-4" style="display: none;">
+  <div class="card-header bg-warning text-white">
+    <h5 class="mb-0">
+      <i class="fas fa-star"></i> Đánh giá sản phẩm
+    </h5>
+  </div>
+  <div class="card-body">
+    <form id="ratingForm">
+      <input type="hidden" id="RatingId" name="Id" value="" />
+      <input type="hidden" id="ProductIdInput" name="ProductId" value="" />
+
+      <!-- Star Rating Selector -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">
+          Đánh giá của bạn <span class="text-danger">*</span>
+        </label>
+        <div class="star-rating-input" id="starRatingInput">
+          <i class="far fa-star" data-rating="1"></i>
+          <i class="far fa-star" data-rating="2"></i>
+          <i class="far fa-star" data-rating="3"></i>
+          <i class="far fa-star" data-rating="4"></i>
+          <i class="far fa-star" data-rating="5"></i>
+        </div>
+        <input type="hidden" id="RatingValue" name="Rating" value="0" required />
+        <small class="form-text text-muted">
+          <span id="ratingText">Chọn số sao</span>
+        </small>
+      </div>
+
+      <!-- Review Title -->
+      <div class="mb-3">
+        <label for="RatingTitle" class="form-label fw-bold">
+          Tiêu đề đánh giá (tùy chọn)
+        </label>
+        <input type="text" class="form-control" id="RatingTitle" name="Title"
+               maxlength="200" placeholder="Ví dụ: Sản phẩm tuyệt vời, đáng giá!">
+        <small class="form-text text-muted">
+          <span id="titleCharCount">0</span>/200 ký tự
+        </small>
+      </div>
+
+      <!-- Review Text -->
+      <div class="mb-3">
+        <label for="ReviewText" class="form-label fw-bold">
+          Nội dung đánh giá (tùy chọn)
+        </label>
+        <textarea class="form-control" id="ReviewText" name="ReviewText"
+                  rows="5" maxlength="2000"
+                  placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
+        <small class="form-text text-muted">
+          <span id="reviewCharCount">0</span>/2000 ký tự
+        </small>
+      </div>
+
+      <!-- Image Upload (Optional) -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">
+          Hình ảnh (tùy chọn)
+        </label>
+        <div class="image-upload-area border rounded p-3 text-center" id="imageUploadArea">
+          <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+          <p class="text-muted mb-0">Kéo thả hoặc click để tải ảnh lên</p>
+          <small class="text-muted">Tối đa 5 ảnh, mỗi ảnh không quá 5MB</small>
+          <input type="file" id="RatingImages" name="Images"
+                 accept="image/*" multiple style="display: none;" />
+        </div>
+        <div id="imagePreviewContainer" class="mt-2 d-flex flex-wrap gap-2">
+          <!-- Image previews will be added here -->
+        </div>
+        <input type="hidden" id="ImageUrls" name="ImageUrls" value="" />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" id="btnCancelRating">
+          <i class="fas fa-times"></i> Hủy
+        </button>
+        <button type="button" class="btn btn-warning text-white" id="btnSubmitRating">
+          <i class="fas fa-paper-plane"></i> Gửi đánh giá
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .star-rating-input i {
+    font-size: 2.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 5px;
+  }
+
+    .star-rating-input i:hover,
+    .star-rating-input i.active {
+      color: #ffc107;
+      transform: scale(1.1);
+    }
+
+    .star-rating-input i.fas {
+      color: #ffc107;
+    }
+
+  .image-upload-area {
+    cursor: pointer;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+    .image-upload-area:hover {
+      background: #e9ecef;
+      border-color: #ffc107 !important;
+    }
+
+    .image-upload-area.dragover {
+      background: #fff3cd;
+      border-color: #ffc107 !important;
+    }
+
+  .image-preview-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview-item .remove-image {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+      .image-preview-item .remove-image:hover {
+        background: rgba(200, 35, 51, 1);
+      }
+</style>

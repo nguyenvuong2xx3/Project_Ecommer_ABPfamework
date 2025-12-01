@@ -78,6 +78,14 @@ namespace Acme.SimpleTaskApp.Notifications
 					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
 				)
 			);
+
+			// ? NEW: Notification khi có ng??i reply comment (User ? Admin)
+			context.Manager.Add(
+				new NotificationDefinition(
+					"App.CommentReply",
+					displayName: new LocalizableString("CommentReplyNotification", "SimpleTaskApp")
+				)
+			);
 		}
 	}
 }

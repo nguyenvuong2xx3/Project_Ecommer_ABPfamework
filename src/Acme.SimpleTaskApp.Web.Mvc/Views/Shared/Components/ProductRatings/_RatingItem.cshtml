@@ -1,0 +1,207 @@
+﻿@using Acme.SimpleTaskApp.ProductRatings.Dtos
+@model ProductRatingDto
+
+<div class="rating-item card mb-3" data-rating-id="@Model.Id">
+    <div class="card-body">
+        <!-- Rating Header -->
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex align-items-center flex-grow-1">
+                <!-- User Avatar -->
+                <div class="avatar me-3">
+                    <div class="avatar-circle bg-warning text-white d-flex align-items-center justify-content-center" 
+                         style="width: 48px; height: 48px; border-radius: 50%; font-size: 1.2rem; font-weight: bold;">
+                        @(Model.UserFullName?.Substring(0, 1).ToUpper() ?? "U")
+                    </div>
+                </div>
+
+                <!-- User Info & Rating -->
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-1">
+                        <h6 class="mb-0 fw-bold me-2">@Model.UserFullName</h6>
+                        @if (Model.IsVerifiedPurchase)
+                        {
+                            <span class="badge bg-success small">
+                                <i class="fas fa-check-circle"></i> Đã mua hàng
+                            </span>
+                        }
+                    </div>
+                    
+                    <!-- Star Rating -->
+                    <div class="rating-stars mb-1">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Model.Rating)
+                            {
+                                <i class="fas fa-star text-warning"></i>
+                            }
+                            else
+                            {
+                                <i class="far fa-star text-warning"></i>
+                            }
+                        }
+                    </div>
+
+                    <!-- Date & Edited Label -->
+                    <small class="text-muted">
+                        <i class="fas fa-clock"></i>
+                        @Model.CreationTime.ToString("dd/MM/yyyy HH:mm")
+                        @if (Model.IsEdited)
+                        {
+                            <span class="text-info">(đã chỉnh sửa)</span>
+                        }
+                    </small>
+                </div>
+            </div>
+
+            <!-- Action Dropdown (for owner) -->
+            @if (User.Identity.IsAuthenticated && Model.UserId.ToString() == User.FindFirst("sub")?.Value)
+            {
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item btn-edit-rating" href="javascript:void(0)" data-rating-id="@Model.Id">
+                                <i class="fas fa-edit text-primary"></i> Sửa
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item btn-delete-rating" href="javascript:void(0)" data-rating-id="@Model.Id">
+                                <i class="fas fa-trash text-danger"></i> Xóa
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            }
+        </div>
+
+        <!-- Review Title -->
+        @if (!string.IsNullOrEmpty(Model.Title))
+        {
+            <h5 class="mb-2 fw-bold">@Model.Title</h5>
+        }
+
+        <!-- Review Content -->
+        @if (!string.IsNullOrEmpty(Model.ReviewText))
+        {
+            <div class="review-content mb-3">
+                <p class="mb-0">@Model.ReviewText</p>
+            </div>
+        }
+
+        <!-- Review Images -->
+        @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+        {
+            <div class="review-images mb-3">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var imageUrl in Model.ImageUrls)
+                    {
+                        <div class="review-image-thumb" style="cursor: pointer;" onclick="openImageModal('@imageUrl')">
+                            <img src="@imageUrl" alt="Review Image" 
+                                 class="rounded" 
+                                 style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #dee2e6;" />
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Helpful Voting -->
+        <div class="rating-actions d-flex align-items-center gap-3">
+            <small class="text-muted">Đánh giá này có hữu ích không?</small>
+            
+            <button class="btn btn-sm btn-outline-success btn-vote-helpful @(Model.CurrentUserVote == true ? "active" : "")" 
+                    data-rating-id="@Model.Id" data-helpful="true">
+                <i class="fas fa-thumbs-up"></i> 
+                Có (<span class="helpful-count">@Model.HelpfulCount</span>)
+            </button>
+            
+            <button class="btn btn-sm btn-outline-danger btn-vote-helpful @(Model.CurrentUserVote == false ? "active" : "")" 
+                    data-rating-id="@Model.Id" data-helpful="false">
+                <i class="fas fa-thumbs-down"></i> 
+                Không (<span class="not-helpful-count">@Model.NotHelpfulCount</span>)
+            </button>
+
+            @if (Model.TotalVotes > 0)
+            {
+                <small class="text-muted">
+                    (@Model.HelpfulPercentage.ToString("0")% hữu ích)
+                </small>
+            }
+        </div>
+
+        <!-- Admin Response -->
+        @if (!string.IsNullOrEmpty(Model.AdminResponse))
+        {
+            <div class="admin-response mt-3 p-3 bg-light rounded border-start border-primary border-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                         style="width: 32px; height: 32px; border-radius: 50%; font-size: 0.9rem;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h6 class="mb-0 fw-bold">Phản hồi từ Shop</h6>
+                    <small class="text-muted ms-2">
+                        @Model.AdminResponseTime?.ToString("dd/MM/yyyy HH:mm")
+                    </small>
+                </div>
+                <p class="mb-0">@Model.AdminResponse</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .rating-item {
+        transition: all 0.3s ease;
+        border: 1px solid #e3e6f0;
+    }
+
+    .rating-item:hover {
+        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .rating-stars i {
+        font-size: 1rem;
+        margin-right: 2px;
+    }
+
+    .btn-vote-helpful.active {
+        font-weight: bold;
+    }
+
+    .btn-vote-helpful.active.btn-outline-success {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+
+    .btn-vote-helpful.active.btn-outline-danger {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+    }
+
+    .review-image-thumb {
+        transition: transform 0.2s ease;
+    }
+
+    .review-image-thumb:hover {
+        transform: scale(1.05);
+    }
+
+    .admin-response {
+        animation: slideDown 0.3s ease;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

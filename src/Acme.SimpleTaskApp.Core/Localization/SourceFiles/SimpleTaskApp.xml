@@ -211,5 +211,6 @@
     <text name="LowStockNotification">Cảnh báo tồn kho thấp</text>
     <text name="NewProductNotification">Sản phẩm mới</text>
     <text name="NewProductCommentNotification">Bình luận sản phẩm mới</text>
+    <text name="CommentReplyNotification">Trả lời bình luận</text>
   </texts>
 </localizationDictionary>
