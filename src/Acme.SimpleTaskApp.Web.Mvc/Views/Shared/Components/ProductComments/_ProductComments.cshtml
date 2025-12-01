@@ -2,130 +2,305 @@
 @model List<ProductCommentDto>
 
 @{
-    var productId = ViewBag.ProductId as int? ?? 0;
-    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+  var productId = ViewBag.ProductId as int? ?? 0;
+  var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 }
-@* @section scripts
-{
-  <environment names="Development">
-    <script src="~/view-resources/Views/Shared/Components/ProductComments/_ProductComments.js" asp-append-version="true"></script>
-  </environment>
-} *@
-<div class="bg-white p-4 rounded mt-3" id="product-comments-section">
-    <h4 class="fw-bold mb-4">
-        <i class="fas fa-comments"></i> Bình luận sản phẩm
-        <span class="badge bg-primary">@(Model?.Count ?? 0)</span>
-    </h4>
 
-    @if (isAuthenticated)
-    {
-        <!-- Comment Form -->
-        <div class="comment-form mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">Viết bình luận của bạn</h6>
-                    <form id="commentForm">
-                        <input type="hidden" id="ProductId" value="@productId" />
-                        <input type="hidden" id="ParentCommentId" value="" />
-                        
-                        <div class="mb-3">
-                            <textarea class="form-control" 
-                                      id="CommentContent" 
-                                      rows="3" 
-                                      placeholder="Nhập bình luận của bạn..."
-                                      maxlength="1000"></textarea>
-                            <small class="text-muted">
-                                <span id="charCount">0</span>/1000 ký tự
-                            </small>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <button type="button" 
-                                    class="btn btn-secondary btn-sm" 
-                                    id="btnCancelReply" 
-                                    style="display: none;">
-                                <i class="fas fa-times"></i> Hủy trả lời
-                            </button>
-                            <button type="button" class="btn btn-primary" id="submitComment">
-                                <i class="fas fa-paper-plane"></i> Gửi bình luận
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="comments-section" id="product-comments-section">
+  <!-- Header -->
+  <div class="section-header">
+    <h5 class="section-title">
+      <i class="fas fa-comments"></i> Bình luận
+      <span class="comment-count">@(Model?.Count ?? 0)</span>
+    </h5>
+  </div>
+
+  @if (isAuthenticated)
+  {
+    <!-- Comment Form -->
+    <div class="comment-form-wrapper">
+      <form id="commentForm">
+        <input type="hidden" id="ProductId" value="@productId" />
+        <input type="hidden" id="ParentCommentId" value="" />
+
+        <div class="comment-input-group">
+          <div class="user-avatar-small">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="input-wrapper">
+            <textarea class="comment-input"
+                    id="CommentContent"
+                    rows="1"
+                    placeholder="Viết bình luận của bạn..."
+                    maxlength="1000"></textarea>
+            <div class="input-actions">
+              <span class="char-counter"><span id="charCount">0</span>/1000</span>
+              <button type="button"
+                      class="btn-cancel-reply"
+                      id="btnCancelReply"
+                      style="display: none;">
+                Hủy
+              </button>
+              <button type="button" class="btn-submit" id="submitComment">
+                <i class="fas fa-paper-plane"></i>
+              </button>
             </div>
+          </div>
         </div>
+      </form>
+    </div>
+  }
+  else
+  {
+    <div class="login-prompt">
+      <i class="fas fa-lock"></i>
+      <a href="/Account/Login? returnUrl=@Context.Request.Path">Đăng nhập</a> để bình luận
+    </div>
+  }
+
+  <!-- Comments List -->
+  <div id="comments-list" class="comments-list">
+    @if (Model != null && Model.Any())
+    {
+      @foreach (var comment in Model)
+      {
+        @await Html.PartialAsync("Components/ProductComments/_CommentItem", comment)
+      }
     }
     else
     {
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            Vui lòng <a href="/Account/Login?returnUrl=@Context.Request.Path" class="alert-link">đăng nhập</a> để bình luận.
-        </div>
+      <div class="empty-state">
+        <i class="fas fa-comment-dots"></i>
+        <p>Chưa có bình luận nào</p>
+      </div>
     }
+  </div>
 
-    <!-- Comments List -->
-    <div id="comments-list">
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var comment in Model)
-            {
-                @await Html.PartialAsync("Components/ProductComments/_CommentItem", comment)
-            }
-        }
-        else
-        {
-            <div class="text-center text-muted py-5">
-                <i class="fas fa-comment-slash fa-3x mb-3"></i>
-                <p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
-            </div>
-        }
-    </div>
-
-    <!-- Loading Indicator -->
-    <div id="comments-loading" style="display: none;" class="text-center py-3">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Đang tải...</span>
-        </div>
-    </div>
+  <!-- Loading -->
+  <div id="comments-loading" style="display: none;" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
 </div>
 
-
-
 <style>
-    .comment-form .card {
-        border: 1px solid #e3e6f0;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  .comments-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+  }
+
+  .section-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+    .section-title i {
+      color: #3b82f6;
+      font-size: 14px;
     }
-    
-    .comment-form textarea {
-        border-radius: 0.5rem;
+
+  . comment-count {
+    background: #3b82f6;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  /* Comment Form */
+  .comment-form-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .comment-input-group {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .user-avatar-small {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .input-wrapper {
+    flex: 1;
+    background: #f8f9fa;
+    border-radius: 20px;
+    padding: 8px 16px;
+    transition: all 0. 2s ease;
+    border: 1px solid transparent;
+  }
+
+    .input-wrapper:focus-within {
+      background: #fff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0. 1);
     }
-    
-    .comment-form textarea:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+
+  .comment-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    outline: none;
+  }
+
+    .comment-input::placeholder {
+      color: #9ca3af;
     }
-    
-    #comments-list {
-        max-height: 800px;
-        overflow-y: auto;
+
+  . input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .char-counter {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+
+  .btn-submit {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+    .btn-submit:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0. 4);
     }
-    
-    #comments-list::-webkit-scrollbar {
-        width: 8px;
+
+  .btn-cancel-reply {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+    .btn-cancel-reply:hover {
+      background: #f3f4f6;
+      color: #ef4444;
     }
-    
-    #comments-list::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+
+  /* Login Prompt */
+  .login-prompt {
+    background: #f0f9ff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #0369a1;
+    margin-bottom: 16px;
+  }
+
+    . login-prompt i {
+      margin-right: 8px;
     }
-    
-    #comments-list::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
+
+    .login-prompt a {
+      color: #0284c7;
+      font-weight: 600;
+      text-decoration: none;
     }
-    
-    #comments-list::-webkit-scrollbar-thumb:hover {
-        background: #555;
+
+      .login-prompt a:hover {
+        text-decoration: underline;
+      }
+
+  /* Comments List */
+  . comments-list {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+    .comments-list::-webkit-scrollbar {
+      width: 4px;
     }
+
+    .comments-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .comments-list::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+    }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+  }
+
+    .empty-state i {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+  /* Loading */
+  .loading-spinner {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 </style>

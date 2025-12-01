@@ -32,5 +32,11 @@ namespace Acme.SimpleTaskApp.Products
 		public bool HasActiveDiscount { get; set; }
 		[NotMapped]
 		public string SaleName { get; set; }
+		
+		// ✅ NEW: Rating information
+		[NotMapped]
+		public double AverageRating { get; set; } = 0; // Trung bình số sao (0-5)
+		[NotMapped]
+		public int TotalRatings { get; set; } = 0; // Tổng số lượt đánh giá
 	}
 }

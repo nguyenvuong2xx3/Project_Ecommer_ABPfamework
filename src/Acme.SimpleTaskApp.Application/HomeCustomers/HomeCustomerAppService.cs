@@ -10,6 +10,7 @@ using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Orders;
 using Acme.SimpleTaskApp.Products;
+using Acme.SimpleTaskApp.ProductRatings;
 using Acme.SimpleTaskApp.Sales;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	private readonly IRepository<ProductVariant> _productVariantRepository;
 	private readonly IRepository<Category> _categoryRepository;
 	private readonly IRepository<ProductImage> _productImageRepository;
+	private readonly IRepository<ProductRating> _productRatingRepository;
 	private readonly ISaleAppService _saleAppService;
 	private readonly IRepository<Order> _order;
 
@@ -31,6 +33,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		IRepository<ProductVariant> productVariantRepository,
 		IRepository<Category> categoryRepository,
 		IRepository<ProductImage> productImageRepository,
+		IRepository<ProductRating> productRatingRepository,
 		ISaleAppService saleAppService)
 	{
 		_order = order;
@@ -38,8 +41,10 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		_productVariantRepository = productVariantRepository;
 		_categoryRepository = categoryRepository;
 		_productImageRepository = productImageRepository;
+		_productRatingRepository = productRatingRepository;
 		_saleAppService = saleAppService;
 	}
+	
 	[UnitOfWork]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
 	{
@@ -132,6 +137,19 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		var countSold = await _order.GetAllAsync();
 		countSold = countSold.Where(x => x.Status == 2);
 
+		// ✅ NEW: Load rating statistics for all products
+		var ratings = await _productRatingRepository.GetAll()
+			.Where(r => productIds.Contains(r.ProductId) && r.IsApproved)
+			.GroupBy(r => r.ProductId)
+			.Select(g => new
+			{
+				ProductId = g.Key,
+				AverageRating = g.Average(r => r.Rating),
+				TotalRatings = g.Count()
+			})
+			.ToListAsync();
+		var ratingDict = ratings.ToDictionary(r => r.ProductId);
+
 		// Attach variants and images to products
 		foreach (var p in prodQuery)
 		{
@@ -164,6 +182,13 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 						}
 					}
 				};
+
+				// ✅ NEW: Add rating statistics
+				if (ratingDict.TryGetValue(p.Id, out var ratingInfo))
+				{
+					v.AverageRating = System.Math.Round(ratingInfo.AverageRating, 1);
+					v.TotalRatings = ratingInfo.TotalRatings;
+				}
 
 				// lấy sale
 				var bestSale = await _saleAppService.GetBestSaleForProductVariant(v.Id, p.Id, p.CategoryId);

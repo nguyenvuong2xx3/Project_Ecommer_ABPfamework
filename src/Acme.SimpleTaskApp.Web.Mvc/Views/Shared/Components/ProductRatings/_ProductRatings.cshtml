@@ -6,51 +6,51 @@
   var statistics = ViewBag.RatingStatistics as ProductRatingStatisticsDto;
   var canRate = ViewBag.CanRate ?? false;
   var userRating = ViewBag.UserRating as ProductRatingDto;
+  var avgRating = statistics?.AverageRating ?? 0;
 }
 
 <input type="hidden" id="ProductIdForRating" value="@productId" />
 
-<!-- Product Rating Section -->
-<div id="product-rating-section" class="bg-white p-4 rounded shadow-sm mt-3">
+<div class="ratings-section" id="product-rating-section">
+  <!-- Header -->
+  <div class="section-header">
+    <h5 class="section-title">
+      <i class="fas fa-star"></i> Đánh giá sản phẩm
+    </h5>
+  </div>
 
   <!-- Rating Summary -->
-  <div class="row mb-4">
-    <div class="col-md-4 text-center border-end">
-      <h1 class="display-3 fw-bold text-warning mb-0">
-        @(statistics?.AverageRating.ToString("0.0") ?? "0.0")
-      </h1>
-      <div class="rating-stars mb-2">
+  <div class="rating-summary">
+    <div class="rating-score">
+      <div class="score-number">@avgRating.ToString("0. 0")</div>
+      <div class="score-stars">
         @for (int i = 1; i <= 5; i++)
         {
-          if (i <= Math.Floor(statistics?.AverageRating ?? 0))
+          if (i <= Math.Floor(avgRating))
           {
-            <i class="fas fa-star text-warning fs-5"></i>
+            <i class="fas fa-star"></i>
           }
-          else if (i <= Math.Ceiling(statistics?.AverageRating ?? 0))
+          else if (i <= Math.Ceiling(avgRating) && avgRating % 1 != 0)
           {
-            <i class="fas fa-star-half-alt text-warning fs-5"></i>
+            <i class="fas fa-star-half-alt"></i>
           }
           else
           {
-            <i class="far fa-star text-warning fs-5"></i>
+            <i class="far fa-star"></i>
           }
         }
       </div>
-      <p class="text-muted mb-0">
-        @(statistics?.TotalRatings ?? 0) đánh giá
-      </p>
+      <div class="score-count">@(statistics?.TotalRatings ?? 0) đánh giá</div>
       @if (statistics?.VerifiedPurchaseCount > 0)
       {
-        <small class="text-success">
-          <i class="fas fa-check-circle"></i> @statistics.VerifiedPurchaseCount đã mua hàng
-        </small>
+        <div class="verified-count">
+          <i class="fas fa-check-circle"></i> @statistics.VerifiedPurchaseCount đã mua
+        </div>
       }
     </div>
 
-    <!-- Rating Distribution -->
-    <div class="col-md-8">
-      <h5 class="mb-3">Phân bố đánh giá</h5>
-      @if (statistics != null && statistics.TotalRatings > 0)
+    <div class="rating-bars">
+      @if (statistics != null)
       {
         @for (int star = 5; star >= 1; star--)
         {
@@ -73,81 +73,58 @@
             _ => 0
           };
 
-          <div class="d-flex align-items-center mb-2">
-            <span class="me-2" style="width: 60px;">@star <i class="fas fa-star text-warning small"></i></span>
-            <div class="progress flex-grow-1 me-2" style="height: 10px;">
-              <div class="progress-bar bg-warning" role="progressbar"
-                   style="width: @percent%"
-                   aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">
-              </div>
+          <div class="bar-row">
+            <span class="bar-label">@star <i class="fas fa-star"></i></span>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: @percent%"></div>
             </div>
-            <span class="text-muted" style="width: 80px;">@count (@percent.ToString("0.0")%)</span>
+            <span class="bar-count">@count</span>
           </div>
         }
-      }
-      else
-      {
-        <p class="text-muted">Chưa có đánh giá nào</p>
       }
     </div>
   </div>
 
-  <!-- Filter Tabs -->
-  <ul class="nav nav-tabs mb-3" id="ratingFilterTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="all-tab" data-bs-toggle="tab"
-              data-bs-target="#all-ratings" type="button" role="tab"
-              data-filter="all">
-        Tất cả (@(statistics?.TotalRatings ?? 0))
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="verified-tab" data-bs-toggle="tab"
-              data-bs-target="#verified-ratings" type="button" role="tab"
-              data-filter="verified">
-        <i class="fas fa-check-circle text-success"></i> Đã mua hàng (@(statistics?.VerifiedPurchaseCount ?? 0))
-      </button>
-    </li>
+  <!-- Filter Pills -->
+  <div class="rating-filters" id="ratingFilterTabs">
+    <button class="filter-pill active" data-filter="all">
+      Tất cả
+    </button>
+    <button class="filter-pill" data-filter="verified">
+      <i class="fas fa-check-circle"></i> Đã mua
+    </button>
     @for (int s = 5; s >= 1; s--)
     {
-      var starCount = s switch
-      {
-        5 => statistics?.Distribution.FiveStars ?? 0,
-        4 => statistics?.Distribution.FourStars ?? 0,
-        3 => statistics?.Distribution.ThreeStars ?? 0,
-        2 => statistics?.Distribution.TwoStars ?? 0,
-        1 => statistics?.Distribution.OneStar ?? 0,
-        _ => 0
-      };
-
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="@s-star-tab" data-bs-toggle="tab"
-                data-bs-target="#@s-star-ratings" type="button" role="tab"
-                data-filter="@s">
-          @s <i class="fas fa-star text-warning small"></i> (@starCount)
-        </button>
-      </li>
+      <button class="filter-pill" data-filter="@s">
+        @s <i class="fas fa-star"></i>
+      </button>
     }
-  </ul>
+  </div>
 
-  <!-- Rating Form (if user can rate) -->
+  <!-- User Rating Status -->
   @if (User.Identity.IsAuthenticated)
   {
     if (canRate && userRating == null)
     {
-      <div class="alert alert-info">
-        <i class="fas fa-star"></i> Bạn đã mua sản phẩm này. Hãy đánh giá để giúp người khác!
-        <button class="btn btn-sm btn-primary float-end" id="btnShowRatingForm">
-          <i class="fas fa-pen"></i> Viết đánh giá
+      <div class="rate-prompt">
+        <span><i class="fas fa-gift"></i> Bạn đã mua sản phẩm này! </span>
+        <button class="btn-write-review" id="btnShowRatingForm">
+          Viết đánh giá
         </button>
       </div>
     }
     else if (userRating != null)
     {
-      <div class="alert alert-success">
-        <i class="fas fa-check-circle"></i> Bạn đã đánh giá sản phẩm này (@userRating.Rating <i class="fas fa-star text-warning small"></i>)
-        <button class="btn btn-sm btn-warning float-end" id="btnEditRating" data-rating-id="@userRating.Id">
-          <i class="fas fa-edit"></i> Chỉnh sửa
+      <div class="rated-notice">
+        <span>
+          <i class="fas fa-check-circle"></i> Đã đánh giá
+          @for (int i = 0; i < userRating.Rating; i++)
+          {
+            <i class="fas fa-star text-warning"></i>
+          }
+        </span>
+        <button class="btn-edit-review" id="btnEditRating" data-rating-id="@userRating.Id">
+          Chỉnh sửa
         </button>
       </div>
     }
@@ -156,14 +133,14 @@
   }
   else
   {
-    <div class="alert alert-info">
-      <i class="fas fa-info-circle"></i>
-      Vui lòng <a href="/Account/Login?returnUrl=@Context.Request.Path" class="alert-link">đăng nhập</a> để đánh giá sản phẩm.
+    <div class="login-prompt">
+      <i class="fas fa-lock"></i>
+      <a href="/Account/Login?returnUrl=@Context.Request. Path">Đăng nhập</a> để đánh giá
     </div>
   }
 
   <!-- Ratings List -->
-  <div id="ratings-list" class="mt-4">
+  <div id="ratings-list" class="ratings-list">
     @if (Model != null && Model.Any())
     {
       @foreach (var rating in Model)
@@ -173,65 +150,358 @@
     }
     else
     {
-      <div class="text-center text-muted py-5">
-        <i class="fas fa-star-half-alt fa-3x mb-3"></i>
-        <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+      <div class="empty-state">
+        <i class="fas fa-star-half-alt"></i>
+        <p>Chưa có đánh giá nào</p>
       </div>
     }
   </div>
 
-  <!-- Loading Indicator -->
-  <div id="ratings-loading" style="display: none;" class="text-center py-3">
-    <div class="spinner-border text-warning" role="status">
-      <span class="visually-hidden">Đang tải...</span>
-    </div>
+  <!-- Loading -->
+  <div id="ratings-loading" style="display: none;" class="loading-spinner">
+    <div class="spinner"></div>
   </div>
 
-  <!-- Load More Button -->
+  <!-- Load More -->
   @if (Model != null && Model.Count >= 10)
   {
-    <div class="text-center mt-3">
-      <button class="btn btn-outline-primary" id="btnLoadMoreRatings">
-        <i class="fas fa-chevron-down"></i> Xem thêm đánh giá
+    <div class="load-more">
+      <button class="btn-load-more" id="btnLoadMoreRatings">
+        Xem thêm <i class="fas fa-chevron-down"></i>
       </button>
     </div>
   }
 </div>
 
 <style>
-  .rating-stars i {
-    margin: 0 2px;
+  .ratings-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
   }
 
-  .nav-tabs .nav-link {
-    color: #6c757d;
+  .section-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
   }
 
-    .nav-tabs .nav-link.active {
-      color: #ffc107;
-      border-bottom: 2px solid #ffc107;
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+    .section-title i {
+      color: #fbbf24;
     }
 
-  #ratings-list {
-    max-height: 1000px;
+  /* Rating Summary */
+  . rating-summary {
+    display: flex;
+    gap: 24px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .rating-score {
+    text-align: center;
+    padding-right: 24px;
+    border-right: 1px solid #fde68a;
+    min-width: 100px;
+  }
+
+  .score-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #d97706;
+    line-height: 1;
+  }
+
+  .score-stars {
+    color: #fbbf24;
+    font-size: 14px;
+    margin: 6px 0;
+  }
+
+    . score-stars i {
+      margin: 0 1px;
+    }
+
+  .score-count {
+    font-size: 12px;
+    color: #92400e;
+  }
+
+  .verified-count {
+    font-size: 11px;
+    color: #059669;
+    margin-top: 4px;
+  }
+
+    .verified-count i {
+      margin-right: 2px;
+    }
+
+  /* Rating Bars */
+  .rating-bars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  . bar-label {
+    font-size: 12px;
+    color: #78350f;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+    .bar-label i {
+      color: #fbbf24;
+      font-size: 10px;
+    }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    border-radius: 4px;
+    transition: width 0. 3s ease;
+  }
+
+  . bar-count {
+    font-size: 11px;
+    color: #92400e;
+    width: 24px;
+    text-align: right;
+  }
+
+  /* Filter Pills */
+  .rating-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .filter-pill {
+    background: #f3f4f6;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+    .filter-pill:hover {
+      background: #e5e7eb;
+    }
+
+    .filter-pill.active {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #fff;
+    }
+
+    . filter-pill i {
+      font-size: 10px;
+    }
+
+  /* Prompts */
+  . rate-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ecfdf5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #065f46;
+  }
+
+    .rate-prompt i {
+      margin-right: 6px;
+    }
+
+  . btn-write-review {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0. 2s;
+  }
+
+    .btn-write-review:hover {
+      background: #059669;
+    }
+
+  .rated-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0fdf4;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #166534;
+  }
+
+  .btn-edit-review {
+    background: #f59e0b;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+    .btn-edit-review:hover {
+      background: #d97706;
+    }
+
+  .login-prompt {
+    background: #f0f9ff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #0369a1;
+    margin-bottom: 16px;
+  }
+
+    .login-prompt a {
+      color: #0284c7;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+  /* Ratings List */
+  .ratings-list {
+    max-height: 600px;
     overflow-y: auto;
   }
 
-    #ratings-list::-webkit-scrollbar {
-      width: 8px;
+    .ratings-list::-webkit-scrollbar {
+      width: 4px;
     }
 
-    #ratings-list::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
+    . ratings-list::-webkit-scrollbar-thumb {
+      background: #fbbf24;
+      border-radius: 4px;
     }
 
-    #ratings-list::-webkit-scrollbar-thumb {
-      background: #ffc107;
-      border-radius: 10px;
+  /* Empty State */
+  . empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+  }
+
+    .empty-state i {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.5;
     }
 
-      #ratings-list::-webkit-scrollbar-thumb:hover {
-        background: #ffb300;
-      }
+  /* Load More */
+  . load-more {
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .btn-load-more {
+    background: #f3f4f6;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+    .btn-load-more:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+  /* Loading */
+  .loading-spinner {
+    text-align: center;
+    padding: 20px;
+  }
+
+  . spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #fef3c7;
+    border-top-color: #fbbf24;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive */
+  @@media (max-width: 576px) {
+    .rating-summary {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rating-score {
+      border-right: none;
+      border-bottom: 1px solid #fde68a;
+      padding-bottom: 16px;
+      padding-right: 0;
+    }
+  }
+
+  .rating-score {
+    border-right: none;
+    border-bottom: 1px solid #fde68a;
+    padding-bottom: 16px;
+    padding-right: 0;
+  }
+
 </style>

@@ -2,142 +2,261 @@
 @model ProductCommentDto
 
 @{
-    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-    var canEdit = currentUserId != null && Model.UserId.ToString() == currentUserId;
-    var isEdited = Model.IsEdited ? "(đã chỉnh sửa)" : "";
+  var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+  var canEdit = currentUserId != null && Model.UserId.ToString() == currentUserId;
+  var isEdited = Model.IsEdited;
 }
 
-<div class="comment-item mb-3 @(Model.ParentCommentId.HasValue ? "ms-5" : "")" data-comment-id="@Model.Id">
-    <div class="card">
-        <div class="card-body">
-            <!-- Comment Header -->
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div class="d-flex align-items-center">
-                    <div class="avatar me-2">
-                        <div class="avatar-circle bg-primary text-white">
-                            @Model.UserFullName?.Substring(0, 1).ToUpper()
-                        </div>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold">@Model.UserFullName</h6>
-                        <small class="text-muted">
-                            <i class="fas fa-clock"></i> 
-                            @Model.CreationTime.ToString("dd/MM/yyyy HH:mm")
-                            <span class="text-info">@isEdited</span>
-                        </small>
-                    </div>
-                </div>
-                
-                @if (canEdit)
-                {
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-link text-muted" 
-                                type="button" 
-                                data-bs-toggle="dropdown">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item btn-edit-comment" 
-                                   href="javascript:void(0)" 
-                                   data-comment-id="@Model.Id">
-                                    <i class="fas fa-edit text-primary"></i> Sửa
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item btn-delete-comment" 
-                                   href="javascript:void(0)" 
-                                   data-comment-id="@Model.Id">
-                                    <i class="fas fa-trash text-danger"></i> Xóa
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                }
-            </div>
+<div class="comment-item @(Model.ParentCommentId.HasValue ? "is-reply" : "")" data-comment-id="@Model.Id">
+  
+  <div class="d-flex"></div>
+  <div class="comment-body">
+    <div class="comment-header">
+      <div class="comment-avatar">
+        @Model.UserFullName?.Substring(0, 1).ToUpper()
+      </div>
+      <span class="comment-author">@Model.UserFullName</span>
+      <span class="comment-time">
+        @Model.CreationTime.ToString("dd/MM/yyyy HH:mm")
+        @if (isEdited)
+        {
+          <span class="edited-badge">• đã sửa</span>
+        }
+      </span>
 
-            <!-- Comment Content -->
-            <div class="comment-content" data-comment-id="@Model.Id">
-                <p class="mb-2 comment-text">@Model.Content</p>
-            </div>
-
-            <!-- Edit Form (Hidden by default) -->
-            <div class="comment-edit-form" style="display: none;">
-                <textarea class="form-control mb-2" rows="3" maxlength="1000">@Model.Content</textarea>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-primary btn-save-edit" 
-                            data-comment-id="@Model.Id">
-                        <i class="fas fa-save"></i> Lưu
-                    </button>
-                    <button class="btn btn-sm btn-secondary btn-cancel-edit">
-                        <i class="fas fa-times"></i> Hủy
-                    </button>
-                </div>
-            </div>
-
-            <!-- Comment Actions -->
-            @if (User.Identity?.IsAuthenticated ?? false)
-            {
-                <div class="comment-actions mt-2">
-                    <button class="btn btn-sm btn-link text-primary btn-reply" 
-                            data-comment-id="@Model.Id"
-                            data-user-name="@Model.UserFullName">
-                        <i class="fas fa-reply"></i> Trả lời
-                    </button>
-                </div>
-            }
+      @if (canEdit)
+      {
+        <div class="comment-menu dropdown">
+          <button class="menu-trigger dropdown-toggle" type="button" id="commentMenu-@Model.Id" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="commentMenu-@Model.Id">
+            <li>
+              <a class="dropdown-item btn-edit-comment" href="#" data-comment-id="@Model.Id">
+                <i class="fas fa-pen"></i> Sửa
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item text-danger btn-delete-comment" href="#" data-comment-id="@Model.Id">
+                <i class="fas fa-trash"></i> Xóa
+              </a>
+            </li>
+          </ul>
         </div>
+      }
     </div>
 
-    <!-- Replies -->
-    @if (Model.Replies != null && Model.Replies.Any())
+    <!-- Content -->
+    <div class="comment-content" data-comment-id="@Model.Id">
+      <p class="comment-text">@Model.Content</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="comment-edit-form" style="display: none;">
+      <textarea class="edit-textarea" rows="2" maxlength="1000">@Model.Content</textarea>
+      <div class="edit-actions">
+        <button class="btn-save-edit" data-comment-id="@Model.Id">Lưu</button>
+        <button class="btn-cancel-edit">Hủy</button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    @if (User.Identity?.IsAuthenticated ?? false)
     {
-        <div class="replies mt-2">
-            @foreach (var reply in Model.Replies)
-            {
-                @await Html.PartialAsync("Components/ProductComments/_CommentItem", reply)
-            }
-        </div>
+      <div class="comment-actions">
+        <button class="btn-reply" data-comment-id="@Model.Id" data-user-name="@Model.UserFullName">
+          <i class="fas fa-reply"></i> Trả lời
+        </button>
+      </div>
     }
+  </div>
 </div>
 
+<!-- Replies -->
+@if (Model.Replies != null && Model.Replies.Any())
+{
+  <div class="replies-container">
+    @foreach (var reply in Model.Replies)
+    {
+      @await Html.PartialAsync("Components/ProductComments/_CommentItem", reply)
+    }
+  </div>
+}
+
 <style>
-    .comment-item .card {
-        border: 1px solid #e3e6f0;
-        transition: box-shadow 0.3s;
+  . comment-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+    .comment-item:last-child {
+      border-bottom: none;
     }
-    
-    .comment-item .card:hover {
-        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+
+    .comment-item.is-reply {
+      margin-left: 48px;
+      padding-left: 16px;
+      border-left: 2px solid #e5e7eb;
+      border-bottom: none;
     }
-    
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
+
+  .comment-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .comment-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .comment-author {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .comment-time {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+
+  .edited-badge {
+    color: #60a5fa;
+  }
+
+  .comment-menu {
+    margin-left: auto;
+  }
+
+  .menu-trigger {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+    .menu-trigger:hover {
+      background: #f3f4f6;
+      color: #6b7280;
     }
-    
-    .comment-content {
-        word-wrap: break-word;
+
+  .comment-content {
+    margin-bottom: 6px;
+  }
+
+  .comment-text {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+
+  /* Edit Form */
+  . comment-edit-form {
+    margin-top: 8px;
+  }
+
+  .edit-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+    .edit-textarea:focus {
+      border-color: #3b82f6;
     }
-    
-    .comment-actions .btn-link {
-        text-decoration: none;
-        padding: 0;
-        font-size: 0.875rem;
+
+  .edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn-save-edit {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+    .btn-save-edit:hover {
+      background: #2563eb;
     }
-    
-    .comment-actions .btn-link:hover {
-        text-decoration: underline;
+
+  .btn-cancel-edit {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+    .btn-cancel-edit:hover {
+      background: #e5e7eb;
     }
-    
-    .replies {
-        border-left: 2px solid #e3e6f0;
-        padding-left: 1rem;
+
+  /* Actions */
+  .comment-actions {
+    margin-top: 4px;
+  }
+
+  .btn-reply {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+    .btn-reply:hover {
+      background: #f3f4f6;
+      color: #3b82f6;
     }
+
+    .btn-reply i {
+      margin-right: 4px;
+    }
+
+  /* Replies Container */
+  .replies-container {
+    margin-left: 48px;
+  }
 </style>

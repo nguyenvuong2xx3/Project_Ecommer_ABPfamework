@@ -1,207 +1,331 @@
 ﻿@using Acme.SimpleTaskApp.ProductRatings.Dtos
 @model ProductRatingDto
 
-<div class="rating-item card mb-3" data-rating-id="@Model.Id">
-    <div class="card-body">
-        <!-- Rating Header -->
-        <div class="d-flex justify-content-between align-items-start mb-2">
-            <div class="d-flex align-items-center flex-grow-1">
-                <!-- User Avatar -->
-                <div class="avatar me-3">
-                    <div class="avatar-circle bg-warning text-white d-flex align-items-center justify-content-center" 
-                         style="width: 48px; height: 48px; border-radius: 50%; font-size: 1.2rem; font-weight: bold;">
-                        @(Model.UserFullName?.Substring(0, 1).ToUpper() ?? "U")
-                    </div>
-                </div>
+<div class="rating-item" data-rating-id="@Model.Id">
+  <div class="rating-avatar">
+    @(Model.UserFullName?.Substring(0, 1).ToUpper() ?? "U")
+  </div>
 
-                <!-- User Info & Rating -->
-                <div class="flex-grow-1">
-                    <div class="d-flex align-items-center mb-1">
-                        <h6 class="mb-0 fw-bold me-2">@Model.UserFullName</h6>
-                        @if (Model.IsVerifiedPurchase)
-                        {
-                            <span class="badge bg-success small">
-                                <i class="fas fa-check-circle"></i> Đã mua hàng
-                            </span>
-                        }
-                    </div>
-                    
-                    <!-- Star Rating -->
-                    <div class="rating-stars mb-1">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            if (i <= Model.Rating)
-                            {
-                                <i class="fas fa-star text-warning"></i>
-                            }
-                            else
-                            {
-                                <i class="far fa-star text-warning"></i>
-                            }
-                        }
-                    </div>
+  <div class="rating-body">
+    <div class="rating-header">
+      <div class="rating-user-info">
+        <span class="rating-author">@Model.UserFullName</span>
+        @if (Model.IsVerifiedPurchase)
+        {
+          <span class="verified-badge">
+            <i class="fas fa-check-circle"></i> Đã mua
+          </span>
+        }
+      </div>
 
-                    <!-- Date & Edited Label -->
-                    <small class="text-muted">
-                        <i class="fas fa-clock"></i>
-                        @Model.CreationTime.ToString("dd/MM/yyyy HH:mm")
-                        @if (Model.IsEdited)
-                        {
-                            <span class="text-info">(đã chỉnh sửa)</span>
-                        }
-                    </small>
-                </div>
-            </div>
-
-            <!-- Action Dropdown (for owner) -->
-            @if (User.Identity.IsAuthenticated && Model.UserId.ToString() == User.FindFirst("sub")?.Value)
-            {
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item btn-edit-rating" href="javascript:void(0)" data-rating-id="@Model.Id">
-                                <i class="fas fa-edit text-primary"></i> Sửa
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item btn-delete-rating" href="javascript:void(0)" data-rating-id="@Model.Id">
-                                <i class="fas fa-trash text-danger"></i> Xóa
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            }
+      @if (User.Identity.IsAuthenticated && Model.UserId.ToString() == User.FindFirst("sub")?.Value)
+      {
+        <div class="rating-menu dropdown">
+          <button class="menu-trigger" data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item btn-edit-rating" href="javascript:void(0)" data-rating-id="@Model.Id">
+                <i class="fas fa-pen"></i> Sửa
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item text-danger btn-delete-rating" href="javascript:void(0)" data-rating-id="@Model. Id">
+                <i class="fas fa-trash"></i> Xóa
+              </a>
+            </li>
+          </ul>
         </div>
-
-        <!-- Review Title -->
-        @if (!string.IsNullOrEmpty(Model.Title))
-        {
-            <h5 class="mb-2 fw-bold">@Model.Title</h5>
-        }
-
-        <!-- Review Content -->
-        @if (!string.IsNullOrEmpty(Model.ReviewText))
-        {
-            <div class="review-content mb-3">
-                <p class="mb-0">@Model.ReviewText</p>
-            </div>
-        }
-
-        <!-- Review Images -->
-        @if (Model.ImageUrls != null && Model.ImageUrls.Any())
-        {
-            <div class="review-images mb-3">
-                <div class="d-flex flex-wrap gap-2">
-                    @foreach (var imageUrl in Model.ImageUrls)
-                    {
-                        <div class="review-image-thumb" style="cursor: pointer;" onclick="openImageModal('@imageUrl')">
-                            <img src="@imageUrl" alt="Review Image" 
-                                 class="rounded" 
-                                 style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #dee2e6;" />
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-
-        <!-- Helpful Voting -->
-        <div class="rating-actions d-flex align-items-center gap-3">
-            <small class="text-muted">Đánh giá này có hữu ích không?</small>
-            
-            <button class="btn btn-sm btn-outline-success btn-vote-helpful @(Model.CurrentUserVote == true ? "active" : "")" 
-                    data-rating-id="@Model.Id" data-helpful="true">
-                <i class="fas fa-thumbs-up"></i> 
-                Có (<span class="helpful-count">@Model.HelpfulCount</span>)
-            </button>
-            
-            <button class="btn btn-sm btn-outline-danger btn-vote-helpful @(Model.CurrentUserVote == false ? "active" : "")" 
-                    data-rating-id="@Model.Id" data-helpful="false">
-                <i class="fas fa-thumbs-down"></i> 
-                Không (<span class="not-helpful-count">@Model.NotHelpfulCount</span>)
-            </button>
-
-            @if (Model.TotalVotes > 0)
-            {
-                <small class="text-muted">
-                    (@Model.HelpfulPercentage.ToString("0")% hữu ích)
-                </small>
-            }
-        </div>
-
-        <!-- Admin Response -->
-        @if (!string.IsNullOrEmpty(Model.AdminResponse))
-        {
-            <div class="admin-response mt-3 p-3 bg-light rounded border-start border-primary border-4">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
-                         style="width: 32px; height: 32px; border-radius: 50%; font-size: 0.9rem;">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <h6 class="mb-0 fw-bold">Phản hồi từ Shop</h6>
-                    <small class="text-muted ms-2">
-                        @Model.AdminResponseTime?.ToString("dd/MM/yyyy HH:mm")
-                    </small>
-                </div>
-                <p class="mb-0">@Model.AdminResponse</p>
-            </div>
-        }
+      }
     </div>
+
+    <div class="rating-stars-row">
+      <div class="stars">
+        @for (int i = 1; i <= 5; i++)
+        {
+          <i class="@(i <= Model.Rating ? "fas" : "far") fa-star"></i>
+        }
+      </div>
+      <span class="rating-time">
+        @Model.CreationTime.ToString("dd/MM/yyyy")
+        @if (Model.IsEdited)
+        {
+          <span class="edited">• đã sửa</span>
+        }
+      </span>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Title))
+    {
+      <h6 class="rating-title">@Model.Title</h6>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ReviewText))
+    {
+      <p class="rating-text">@Model.ReviewText</p>
+    }
+
+    @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+    {
+      <div class="rating-images">
+        @foreach (var imageUrl in Model.ImageUrls)
+        {
+          <div class="rating-image" onclick="openImageModal('@imageUrl')">
+            <img src="@imageUrl" alt="Review" />
+          </div>
+        }
+      </div>
+    }
+
+    <div class="rating-actions">
+      <span class="helpful-label">Hữu ích? </span>
+      <button class="btn-helpful @(Model.CurrentUserVote == true ? "active" : "")"
+              data-rating-id="@Model.Id" data-helpful="true">
+        <i class="fas fa-thumbs-up"></i>
+        <span class="helpful-count">@Model.HelpfulCount</span>
+      </button>
+      <button class="btn-not-helpful @(Model.CurrentUserVote == false ? "active" : "")"
+              data-rating-id="@Model.Id" data-helpful="false">
+        <i class="fas fa-thumbs-down"></i>
+        <span class="not-helpful-count">@Model.NotHelpfulCount</span>
+      </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.AdminResponse))
+    {
+      <div class="admin-response">
+        <div class="response-header">
+          <i class="fas fa-store"></i>
+          <span>Phản hồi từ Shop</span>
+          <span class="response-time">@Model.AdminResponseTime?.ToString("dd/MM/yyyy")</span>
+        </div>
+        <p class="response-text">@Model.AdminResponse</p>
+      </div>
+    }
+  </div>
 </div>
 
 <style>
-    .rating-item {
-        transition: all 0.3s ease;
-        border: 1px solid #e3e6f0;
+  .rating-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+    .rating-item:last-child {
+      border-bottom: none;
     }
 
-    .rating-item:hover {
-        box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+  .rating-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .rating-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rating-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .rating-user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rating-author {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .verified-badge {
+    font-size: 10px;
+    color: #059669;
+    background: #ecfdf5;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+    .verified-badge i {
+      margin-right: 2px;
     }
 
-    .rating-stars i {
-        font-size: 1rem;
-        margin-right: 2px;
+  . menu-trigger {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+    .menu-trigger:hover {
+      background: #f3f4f6;
     }
 
-    .btn-vote-helpful.active {
-        font-weight: bold;
+  .rating-stars-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .stars {
+    color: #fbbf24;
+    font-size: 12px;
+  }
+
+    .stars i {
+      margin-right: 1px;
     }
 
-    .btn-vote-helpful.active.btn-outline-success {
-        background-color: #d4edda;
-        border-color: #28a745;
-        color: #155724;
+  .rating-time {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+
+  .edited {
+    color: #60a5fa;
+  }
+
+  . rating-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 6px 0;
+  }
+
+  . rating-text {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin: 0 0 10px 0;
+  }
+
+  /* Images */
+  . rating-images {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .rating-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s;
+  }
+
+    .rating-image:hover {
+      transform: scale(1.05);
     }
 
-    .btn-vote-helpful.active.btn-outline-danger {
-        background-color: #f8d7da;
-        border-color: #dc3545;
-        color: #721c24;
+    .rating-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    .review-image-thumb {
-        transition: transform 0.2s ease;
+  /* Actions */
+  .rating-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .helpful-label {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+
+  .btn-helpful,
+  .btn-not-helpful {
+    background: #f3f4f6;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+
+    .btn-helpful:hover {
+      background: #dcfce7;
+      color: #16a34a;
     }
 
-    .review-image-thumb:hover {
-        transform: scale(1.05);
+    . btn-not-helpful:hover {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
-    .admin-response {
-        animation: slideDown 0.3s ease;
+    .btn-helpful.active {
+      background: #dcfce7;
+      color: #16a34a;
     }
 
-    @@keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    . btn-not-helpful.active {
+      background: #fee2e2;
+      color: #dc2626;
     }
+
+  /* Admin Response */
+  . admin-response {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 3px solid #3b82f6;
+  }
+
+  .response-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #3b82f6;
+    font-weight: 600;
+  }
+
+  .response-time {
+    color: #9ca3af;
+    font-weight: 400;
+    margin-left: auto;
+  }
+
+  .response-text {
+    margin: 0;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+  }
 </style>
