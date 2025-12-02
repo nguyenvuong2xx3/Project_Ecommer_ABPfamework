@@ -26,22 +26,13 @@
 
       @if (canEdit)
       {
-        <div class="comment-menu dropdown">
-          <button class="menu-trigger dropdown-toggle" type="button" id="commentMenu-@Model.Id" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-ellipsis-h"></i>
+        <div class="comment-menu">
+          <button class="btn-edit-comment" type="button" data-comment-id="@Model.Id">
+            <i class="fas fa-pen"></i>
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="commentMenu-@Model.Id">
-            <li>
-              <a class="dropdown-item btn-edit-comment" href="#" data-comment-id="@Model.Id">
-                <i class="fas fa-pen"></i> Sửa
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-danger btn-delete-comment" href="#" data-comment-id="@Model.Id">
-                <i class="fas fa-trash"></i> Xóa
-              </a>
-            </li>
-          </ul>
+          <button class="btn-delete-comment" type="button" data-comment-id="@Model.Id">
+            <i class="fas fa-trash"></i>
+          </button>
         </div>
       }
     </div>
@@ -146,22 +137,31 @@
 
   .comment-menu {
     margin-left: auto;
+    display: flex;
+    gap: 4px;
   }
 
-  .menu-trigger {
+  .btn-edit-comment,
+  .btn-delete-comment {
     background: none;
     border: none;
     color: #9ca3af;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 6px 8px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 14px;
+    transition: all 0.2s;
   }
 
-    .menu-trigger:hover {
-      background: #f3f4f6;
-      color: #6b7280;
-    }
+  .btn-edit-comment:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+  }
+
+  .btn-delete-comment:hover {
+    background: #fef2f2;
+    color: #ef4444;
+  }
 
   .comment-content {
     margin-bottom: 6px;
