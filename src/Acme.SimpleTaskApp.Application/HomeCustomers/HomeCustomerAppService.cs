@@ -9,9 +9,10 @@ using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.HomeCustomers;
 using Acme.SimpleTaskApp.HomeCustomers.Dtos;
 using Acme.SimpleTaskApp.Orders;
-using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.ProductRatings;
+using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.Sales;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	}
 	
 	[UnitOfWork]
+	[AllowAnonymous]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
 	{
 		input.MaxResultCount = 12;

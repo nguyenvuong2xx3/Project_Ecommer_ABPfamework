@@ -17,7 +17,7 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Banners
 {
-	[AbpAuthorize(PermissionNames.Pages_Banners)]
+	//[AbpAuthorize(PermissionNames.Pages_Banners)]
 	public class BannerAppService : ApplicationService, IBannerAppService
 	{
 		private readonly IRepository<Banner, int> _bannerRepository;

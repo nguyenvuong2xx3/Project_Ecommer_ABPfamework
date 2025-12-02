@@ -18,7 +18,7 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Sales
 {
-	[AbpAuthorize(PermissionNames.Pages_Sales)]
+	//[AbpAuthorize(PermissionNames.Pages_Sales)]
 	public class SaleAppService : ApplicationService, ISaleAppService
 	{
 		private readonly IRepository<Sale, int> _saleRepository;
