@@ -18,7 +18,6 @@ using Acme.SimpleTaskApp.Authorization.Roles;
 
 namespace Acme.SimpleTaskApp.ProductComments
 {
-	[AbpAuthorize] // Yêu cầu đăng nhập để comment
 	public class ProductCommentAppService : ApplicationService, IProductCommentAppService
 	{
 		private readonly IRepository<ProductComment, int> _commentRepository;
@@ -50,6 +49,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Tạo comment mới
 		/// </summary>
+		[AbpAuthorize] // Yêu cầu đăng nhập để comment
 		public async Task<ProductCommentDto> CreateComment(CreateProductCommentDto input)
 		{
 			if (string.IsNullOrWhiteSpace(input.Content))
@@ -363,6 +363,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Cập nhật comment
 		/// </summary>
+		[AbpAuthorize] // ✅ Yêu cầu đăng nhập để sửa comment
 		public async Task<ProductCommentDto> UpdateComment(UpdateProductCommentDto input)
 		{
 			var comment = await _commentRepository.GetAsync(input.Id);
@@ -415,6 +416,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Xóa comment
 		/// </summary>
+		[AbpAuthorize] // ✅ Yêu cầu đăng nhập để xóa comment
 		public async Task DeleteComment(int id)
 		{
 			var comment = await _commentRepository.GetAsync(id);

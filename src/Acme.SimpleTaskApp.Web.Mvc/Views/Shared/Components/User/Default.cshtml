@@ -3,16 +3,16 @@
 
 @if (Model.LoginInformations.User == null)
 {
-  <div class="d-flex">
-    <a class="nav-link" href="/Account/Register" style="padding-right: 15px;">
-      <i class="fas fa-user-plus "></i> Đăng ký
-    </a>
+  <a asp-controller="Account" asp-action="Register" class="btn-nav-action btn-register">
+    <i class="fas fa-user-plus"></i>
+    <span class="btn-text">Đăng ký</span>
+  </a>
 
-    <a asp-controller="Account" asp-action="Login" class="nav-link d-flex align-items-center">
-      <i class="fas fa-user-circle fs-4"></i>
-      <span class="ms-2">Đăng nhập</span>
-    </a>
-  </div>
+  <!-- Nút Đăng nhập -->
+  <a asp-controller="Account" asp-action="Login" class="btn-nav-action btn-login">
+    <i class="fas fa-sign-in-alt"></i>
+    <span class="btn-text">Đăng nhập</span>
+  </a>
 }
 else
 {

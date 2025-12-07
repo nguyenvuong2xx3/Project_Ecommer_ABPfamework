@@ -97,10 +97,10 @@
 			// Update content
 			$commentItem.find('.comment-text').first().text(comment.content);
 
-			// Add edited label if not exists
-			var $timeInfo = $commentItem.find('.text-muted small').first();
-			if (!$timeInfo.find('.text-info').length) {
-				$timeInfo.append(' <span class="text-info">(đã chỉnh sửa)</span>');
+			// Show edited badge if not exists
+			var $commentTime = $commentItem.find('.comment-time');
+			if (!$commentTime.find('.edited-badge').length) {
+				$commentTime.append('<span class="edited-badge">• đã sửa</span>');
 			}
 		}
 	}
@@ -118,17 +118,23 @@
 
 	// ✅ NEW: Render new comment to DOM
 	function renderComment(comment) {
+		// Check if comment already exists (to avoid duplicates)
+		if ($(`[data-comment-id="${comment.id}"]`).length > 0) {
+			return;
+		}
+
 		// Build comment HTML
 		var html = buildCommentHtml(comment);
 
 		if (comment.parentCommentId) {
 			// This is a reply
 			var $parentComment = $(`.comment-item[data-comment-id="${comment.parentCommentId}"]`);
-			var $repliesContainer = $parentComment.find('.replies').first();
+			var $repliesContainer = $parentComment.next('.replies-container');
 
+			// If replies container doesn't exist, create one
 			if ($repliesContainer.length === 0) {
-				$repliesContainer = $('<div class="replies mt-2"></div>');
-				$parentComment.append($repliesContainer);
+				$repliesContainer = $('<div class="replies-container"></div>');
+				$parentComment.after($repliesContainer);
 			}
 
 			$repliesContainer.append(html);
@@ -142,86 +148,76 @@
 		$newComment.hide().fadeIn(500);
 	}
 
+
 	// ✅ NEW: Build comment HTML
 	function buildCommentHtml(comment) {
 		var isOwner = abp.session.userId && comment.userId == abp.session.userId;
-		var editedLabel = comment.isEdited ? '<span class="text-info">(đã chỉnh sửa)</span>' : '';
+		var isEdited = comment.isEdited;
+		var isReply = comment.parentCommentId != null;
 
 		var html = `
-            <div class="comment-item mb-3 ${comment.parentCommentId ? 'ms-5' : ''}" data-comment-id="${comment.id}">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar me-2">
-                                    <div class="avatar-circle bg-primary text-white">
-                                        ${comment.userFullName.substring(0, 1).toUpperCase()}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold">${comment.userFullName}</h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-clock"></i> 
-                                        ${formatCommentTime(comment.creationTime)}
-                                        ${editedLabel}
-                                    </small>
-                                </div>
-                            </div>
+        <div class="comment-item ${isReply ? 'is-reply' : ''}" data-comment-id="${comment.id}">
+            <div class="d-flex"></div>
+            <div class="comment-body">
+                <div class="comment-header">
+                    <div class="comment-avatar">
+                        ${comment.userFullName ? comment.userFullName.substring(0, 1).toUpperCase() : ''}
+                    </div>
+                    <span class="comment-author">${comment.userFullName}</span>
+                    <span class="comment-time">
+                        ${formatCommentTime(comment.creationTime)}
+                        ${isEdited ? '<span class="edited-badge">• đã sửa</span>' : ''}
+                    </span>
+
         `;
 
 		if (isOwner) {
 			html += `
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item btn-edit-comment" href="javascript:void(0)" data-comment-id="${comment.id}">
-                                        <i class="fas fa-edit text-primary"></i> Sửa
-                                    </a></li>
-                                    <li><a class="dropdown-item btn-delete-comment" href="javascript:void(0)" data-comment-id="${comment.id}">
-                                        <i class="fas fa-trash text-danger"></i> Xóa
-                                    </a></li>
-                                </ul>
-                            </div>
-            `;
+                    <div class="comment-menu">
+                        <button class="btn-edit-comment" type="button" data-comment-id="${comment.id}">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-delete-comment" type="button" data-comment-id="${comment.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+        `;
 		}
 
 		html += `
-                        </div>
-                        <div class="comment-content" data-comment-id="${comment.id}">
-                            <p class="mb-2 comment-text">${comment.content}</p>
-                        </div>
-                        <div class="comment-edit-form" style="display: none;">
-                            <textarea class="form-control mb-2" rows="3" maxlength="1000">${comment.content}</textarea>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-primary btn-save-edit" data-comment-id="${comment.id}">
-                                    <i class="fas fa-save"></i> Lưu
-                                </button>
-                                <button class="btn btn-sm btn-secondary btn-cancel-edit">
-                                    <i class="fas fa-times"></i> Hủy
-                                </button>
-                            </div>
-                        </div>
+                </div>
+
+                <!-- Content -->
+                <div class="comment-content" data-comment-id="${comment.id}">
+                    <p class="comment-text">${comment.content}</p>
+                </div>
+
+                <!-- Edit Form -->
+                <div class="comment-edit-form" style="display: none;">
+                    <textarea class="edit-textarea" rows="2" maxlength="1000">${comment.content}</textarea>
+                    <div class="edit-actions">
+                        <button class="btn-save-edit" data-comment-id="${comment.id}">Lưu</button>
+                        <button class="btn-cancel-edit">Hủy</button>
+                    </div>
+                </div>
+
+                <!-- Actions -->
         `;
 
 		if (abp.session.userId) {
 			html += `
-                        <div class="comment-actions mt-2">
-                            <button class="btn btn-sm btn-link text-primary btn-reply" 
-                                    data-comment-id="${comment.id}"
-                                    data-user-name="${comment.userFullName}">
-                                <i class="fas fa-reply"></i> Trả lời
-                            </button>
-                        </div>
-            `;
+                <div class="comment-actions">
+                    <button class="btn-reply" data-comment-id="${comment.id}" data-user-name="${comment.userFullName}">
+                        <i class="fas fa-reply"></i> Trả lời
+                    </button>
+                </div>
+        `;
 		}
 
 		html += `
-                    </div>
-                </div>
             </div>
-        `;
+        </div>
+    `;
 
 		return html;
 	}
@@ -229,14 +225,14 @@
 	// ✅ NEW: Format comment time
 	function formatCommentTime(dateString) {
 		var date = new Date(dateString);
-		return date.toLocaleString('vi-VN', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
+		var day = ('0' + date.getDate()).slice(-2);
+		var month = ('0' + (date.getMonth() + 1)).slice(-2);
+		var year = date.getFullYear();
+		var hours = ('0' + date.getHours()).slice(-2);
+		var minutes = ('0' + date.getMinutes()).slice(-2);
+		return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
 	}
+
 
 	// ✅ NEW: Update comment count
 	function updateCommentCount(delta) {

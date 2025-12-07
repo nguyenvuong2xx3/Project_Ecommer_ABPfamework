@@ -29,6 +29,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 {
 	namespace Acme.SimpleTaskApp.Web.Controllers
 	{
+		[AllowAnonymous]
 		public class HomeCustomerController : SimpleTaskAppControllerBase
 		{
 			private readonly IRepository<Category> _categoryRepository;

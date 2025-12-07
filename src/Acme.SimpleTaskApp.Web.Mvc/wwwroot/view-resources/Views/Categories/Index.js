@@ -77,7 +77,7 @@
   }
 
 	function clearDetails() {
-		$details.html('<p class="text-muted">' + l('SelectACategoryFromTree') + '</p>');
+		$details.html('<p class="text-muted">' + 'Chọn một danh mục trong cây danh mục' + '</p>');
 		$('#editSelected').hide();
 		$('#deleteSelected').hide();
 		selectedNode = null;

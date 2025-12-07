@@ -46,15 +46,11 @@
 		<text name="DisplayName" value="Tên hiển thị" />
 		<text name="Edit" value="Chỉnh sửa" />
 		<text name="Delete" value="Xóa" />
-		<text name="CreateNewRole" value="Tạo vai trò mới" />
 		<text name="RoleName" value="Tên vai trò" />
 		<text name="Actions" value="Hành động" />
 		<text name="SuccessfullyDeleted" value="Xóa thành công" />
 		<text name="Search" value="Tìm kiếm" />
 		<text name="Clear" value="Xóa" />
-		<text name="Users" value="Người dùng" />
-		<text name="CreateNewUser" value="Tạo người dùng mới" />
-		<text name="Settings" value="Cài đặt" />
 		<text name="Filter" value="Lọc" />
 		<text name="CurrentPassword" value="Mật khẩu hiện tại" />
 		<text name="NewPassword" value="Mật khẩu mới" />
@@ -64,7 +60,6 @@
 		<text name="403PageHeader" value="Truy cập bị từ chối" />
 		<text name="403PageDescription" value="Bạn không có quyền truy cập tài nguyên này. Vui lòng liên hệ quản trị viên." />
 		<text name="Products" value="Sản phẩm" />
-		<text name="Categories" value="Danh mục" />
 		<text name="TaskList" value="Danh sách công việc" />
 		<text name="Create" value="Tạo mới" />
 		<text name="Details" value="Chi tiết" />
@@ -114,11 +109,8 @@
 		<text name="HomeCustomer" value="Trang khách hàng" />
 		<text name="EditProduct" value="Chỉnh sửa sản phẩm" />
 		<text name="EditCategory" value="Chỉnh sửa danh mục" />
-		<text name="CreateCategory" value="Tạo mới danh mục" />
-		<text name="DeleteCategory" value="Xóa danh mục" />
 		<text name="SearchProduct" value="Tìm kiếm sản phẩm" />
 		<text name="CreateProduct" value="Tạo mới sản phẩm" />
-		<text name="UpdateCategory" value="Chỉnh sửa danh mục" />
 		<text name="DeleteProduct" value="Xóa sản phẩm" />
 		<text name="UpdateProduct" value="Chỉnh sửa sản phẩm" />
 		<text name="RoleDescription" value="Mô tả vai trò" />
@@ -126,7 +118,6 @@
 		<text name="ConfirmPassword" value="Xác nhận mật khẩu" />
 		<text name="UserDetails" value="Chi tiết người dùng" />
 		<text name="UserRoles" value="Vai trò người dùng" />
-		<text name="EditUser" value="Chỉnh sửa người dùng" />
 		<text name="AreYouSureWantToDelete" value="Bạn có chắc chắn muốn xóa không?" />
 		<text name="RoleInfo" value="Thông tin vai trò" />
 		<text name="SelectPermissions" value="Chọn quyền" />
@@ -140,14 +131,14 @@
 		<text name="OrderManagement" value="Quản lý đơn hàng" />
 		<text name="Administration" value="Quản trị hệ thống" />
 		<text name="AreYouSure" value="Bạn có chắc chắn muốn xóa không?" />
-		<text name="Banners" value="Quản lý Banner" />
 		<text name="Sales" value="Khuyến mãi" />
+
 		
 		<!-- Menu Groups - NEW -->
 		<text name="ContentManagement" value="Quản lý nội dung" />
 		<text name="ProductManagement" value="Quản lý sản phẩm" />
 		<text name="SalesManagement" value="Quản lý bán hàng" />
-		
+
 		<!-- Dashboard -->
 		<text name="DashboardOverview" value="Tổng quan Dashboard" />
 		<text name="TotalRevenue" value="Tổng doanh thu" />
@@ -322,6 +313,67 @@
 		<text name="SendTestEmail" value="Gửi email kiểm tra" />
 		<text name="TestResult" value="Kết quả kiểm tra" />
 		<text name="Close" value="Đóng" />
+		<text name="Dashboard" value="Bảng điều khiển" />
+
+		<text name="Users" value="Người dùng" />
+		<text name="CreateNewUser" value="Tạo người dùng mới" />
+		<text name="EditUser" value="Chỉnh sửa người dùng" />
+		<text name="DeleteUser" value="Xóa người dùng" />
+		<text name="UsersActivation" value="Kích hoạt người dùng" />
+		<text name="LoginForUsers" value="Đăng nhập thay người dùng" />
+		<text name="ChangePermissions" value="Thay đổi quyền" />
+
+		<text name="CreateNewRole" value="Tạo vai trò mới" />
+		<text name="EditRole" value="Chỉnh sửa vai trò" />
+		<text name="DeleteRole" value="Xóa vai trò" />
+
+		<text name="Settings" value="Cài đặt" />
+		<text name="EditSettings" value="Chỉnh sửa cài đặt" />
+
+		<text name="Banners" value="Banner" />
+		<text name="CreateBanner" value="Tạo banner" />
+		<text name="EditBanner" value="Chỉnh sửa banner" />
+		<text name="DeleteBanner" value="Xóa banner" />
+
+		<text name="CreateSale" value="Tạo khuyến mãi" />
+		<text name="EditSale" value="Chỉnh sửa khuyến mãi" />
+		<text name="DeleteSale" value="Xóa khuyến mãi" />
+		<text name="ToggleActiveSale" value="Bật/tắt khuyến mãi" />
+
+		<text name="Categories" value="Danh mục" />
+		<text name="CreateCategory" value="Tạo danh mục" />
+		<text name="UpdateCategory" value="Cập nhật danh mục" />
+		<text name="DeleteCategory" value="Xóa danh mục" />
+
+		<text name="ViewProduct" value="Xem sản phẩm" />
+		<text name="ImportProduct" value="Nhập sản phẩm" />
+		<text name="ExportProduct" value="Xuất sản phẩm" />
+
+		<text name="CreateProductVariant" value="Tạo biến thể sản phẩm" />
+		<text name="UpdateProductVariant" value="Cập nhật biến thể sản phẩm" />
+		<text name="DeleteProductVariant" value="Xóa biến thể sản phẩm" />
+		<text name="ViewProductVariant" value="Xem biến thể sản phẩm" />
+
+		<text name="CreateOrder" value="Tạo đơn hàng" />
+		<text name="ViewOrder" value="Xem đơn hàng" />
+		<text name="EditOrder" value="Chỉnh sửa đơn hàng" />
+		<text name="DeleteOrder" value="Xóa đơn hàng" />
+		<text name="ConfirmOrder" value="Xác nhận đơn hàng" />
+		<text name="CancelOrder" value="Hủy đơn hàng" />
+		<text name="ShipOrder" value="Giao hàng" />
+		<text name="CompleteOrder" value="Hoàn thành đơn hàng" />
+
+		<text name="Carts" value="Giỏ hàng" />
+		<text name="AddToCart" value="Thêm vào giỏ" />
+		<text name="RemoveFromCart" value="Xóa khỏi giỏ" />
+		<text name="ViewCart" value="Xem giỏ hàng" />
+		<text name="ClearCart" value="Xóa toàn bộ giỏ" />
+
+		<text name="Notifications" value="Thông báo" />
+		<text name="ViewNotifications" value="Xem thông báo" />
+		<text name="SetNotificationsAsRead" value="Đánh dấu đã đọc" />
+		<text name="DeleteNotifications" value="Xóa thông báo" />
+		<text name="NotificationSettings" value="Cài đặt thông báo" />
 
 	</texts>
 </localizationDictionary>

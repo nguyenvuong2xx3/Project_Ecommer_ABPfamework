@@ -66,7 +66,7 @@
     <!-- Nội dung menu -->
     <div class="collapse navbar-collapse w-100" id="navbarCollapse">
       <div class="navbar-nav mx-auto">
-        <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Home</a>
+        @* <a asp-controller="HomeCustomer" asp-action="Index" class="nav-item nav-link active">Home</a>
         <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -76,7 +76,7 @@
             <a href="404.html" class="dropdown-item">404 Page</a>
           </div>
         </div>
-        <a href="contact.html" class="nav-item nav-link">Contact</a>
+        <a href="contact.html" class="nav-item nav-link">Contact</a> *@
       </div>
 
 
@@ -88,7 +88,7 @@
         @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
         {
           cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
-                })
+        })
         @await Component.InvokeAsync("CartMenu")
         @await Component.InvokeAsync("User")
       </div>
@@ -99,6 +99,207 @@
 </div>
 
 <style>
+
+  .header-right-item::marker {
+    content: "";
+  }
+
+  /* ===== STYLING CHO 3 NÚT: GIỎ HÀNG, ĐĂNG KÝ, ĐĂNG NHẬP ===== */
+
+  /* Container chung cho các nút */
+  .cart-login {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 192px;
+  }
+
+  /* Style chung cho tất cả các nút action */
+  .btn-nav-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0. 3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+  }
+
+  /* ===== NÚT GIỎ HÀNG ===== */
+  .btn-cart {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+    .btn-cart:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      color: #fff !important;
+    }
+
+    . btn-cart . btn-icon-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+      .btn-cart . btn-icon-wrapper i {
+        font-size: 18px;
+      }
+
+  /* Badge số lượng giỏ hàng */
+  .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #ff4757;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.5);
+    animation: pulse-badge 2s infinite;
+  }
+
+  @@keyframes pulse-badge {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  }
+
+  /* ===== NÚT ĐĂNG KÝ ===== */
+  .btn-register {
+    background: transparent;
+    color: #28a745 !important;
+    border: 2px solid #28a745;
+  }
+
+    .btn-register:hover {
+      background: #28a745;
+      color: #fff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0. 4);
+    }
+
+    . btn-register i {
+      font-size: 16px;
+    }
+
+  /* ===== NÚT ĐĂNG NHẬP ===== */
+  .btn-login {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  }
+
+    . btn-login:hover {
+      background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0. 5);
+      color: #fff !important;
+    }
+
+    .btn-login i {
+      font-size: 16px;
+    }
+
+  /* Text trong các nút */
+  . btn-text {
+    white-space: nowrap;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @@media (max-width: 1200px) {
+    .cart-login {
+      gap: 8px;
+      padding-right: 100px;
+    }
+
+    .btn-nav-action {
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+  }
+
+  @@media (max-width: 992px) {
+    .btn-nav-action .btn-text {
+      display: none;
+    }
+
+    .btn-nav-action {
+      padding: 10px 12px;
+      border-radius: 50%;
+    }
+
+    .cart-login {
+      gap: 6px;
+    }
+  }
+
+  .btn-nav-action {
+    padding: 10px 12px;
+    border-radius: 50%;
+  }
+
+  .cart-login {
+    gap: 6px;
+  }
+
+  }
+
+  @@media (max-width: 768px) {
+    .cart-login {
+      padding-right: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-nav-action .btn-text {
+      display: inline;
+    }
+
+    .btn-nav-action {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 25px;
+    }
+  }
+
+  .btn-nav-action . btn-text {
+    display: inline;
+  }
+
+  .btn-nav-action {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 25px;
+  }
+
+  }
+
   li.header-right-item {
     list-style-type: none !important;
   }

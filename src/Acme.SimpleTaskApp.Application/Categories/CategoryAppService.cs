@@ -35,6 +35,23 @@ namespace Acme.SimpleTaskApp.Categories
 
 		public async Task DeleteCategory(EntityDto<int> input)
 		{
+			var category = await _categoryRepository.GetAsync(input.Id);
+			if(category == null)
+			{
+				throw new UserFriendlyException("Danh mục cần xóa không tồn tại");
+			}
+			// nếu có quan hệ cha con thì không cho xóa
+			var listChild = await _categoryRepository.GetAll().Where(c => c.ParentId == input.Id).ToListAsync();
+			if(listChild.Count > 0)
+			{
+				throw new UserFriendlyException("Danh mục này có danh mục con, không thể xóa.");
+			}
+			// nếu có sản phẩm trong danh mục thì không cho xóa
+			var productsInCategory = await _productRepository.GetAll().Where(p => p.CategoryId == input.Id).ToListAsync();
+			if(productsInCategory.Count > 0)
+			{
+				throw new UserFriendlyException("Danh mục này có sản phẩm, không thể xóa.");
+			}
 			await _categoryRepository.DeleteAsync(input.Id);
 		}
 

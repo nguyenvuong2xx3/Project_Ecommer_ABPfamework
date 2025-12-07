@@ -5,9 +5,9 @@
   {
     <li class="menu-item @(category.Children != null && category.Children.Any() ? "has-dropdown" : "")">
       <a href="@($"/HomeCustomer/SearchProductCustomer?categoryId={category.Id}")" class="category-link">
-        <i class="category-icon">
+        @* <i class="category-icon">
           <img src="https://cdn.tgdd.vn/content/may-cu-24x24.png" alt="@category.Name" />
-        </i>
+        </i> *@
         <span class="category-name">
           @category.Name
         </span>
@@ -29,9 +29,9 @@
               {
                 <div class="dropdown-item-wrapper @(child.Children != null && child.Children.Any() ? "has-sub-dropdown" : "")">
                   <a href="@($"/HomeCustomer/SearchProductCustomer?categoryId={child.Id}")" class="dropdown-item">
-                    <img class="item-icon" width="25"
+                    @* <img class="item-icon" width="25"
                          src="https://cdnv2.tgdd.vn/mwg-static/common/Common/47/1b/471b8073fdb15619b6c958e5316e7f61.png"
-                         alt="@child.Name" />
+                         alt="@child.Name" /> *@
                     <span class="item-name">@child.Name</span>
                     @if (child.Children != null && child.Children.Any())
                     {

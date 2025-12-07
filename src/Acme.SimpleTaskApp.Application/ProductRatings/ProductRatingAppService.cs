@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.ProductRatings
 {
-	[AbpAuthorize]
 	public class ProductRatingAppService : ApplicationService, IProductRatingAppService
 	{
 		private readonly IRepository<ProductRating, int> _ratingRepository;
@@ -114,6 +113,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			};
 		}
 
+		[AbpAuthorize]
 		public async Task<ProductRatingDto> CreateRating(CreateProductRatingDto input)
 		{
 			var currentUserId = AbpSession.UserId;
@@ -165,6 +165,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			return result.FirstOrDefault();
 		}
 
+		[AbpAuthorize]
 		public async Task<ProductRatingDto> UpdateRating(UpdateProductRatingDto input)
 		{
 			var rating = await _ratingRepository.GetAsync(input.Id);
@@ -191,6 +192,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			return result.FirstOrDefault();
 		}
 
+		[AbpAuthorize]
 		public async Task DeleteRating(int id)
 		{
 			var rating = await _ratingRepository.GetAsync(id);
@@ -215,6 +217,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			await _ratingRepository.DeleteAsync(rating);
 		}
 
+		[AbpAuthorize]
 		public async Task<ProductRatingDto> VoteRatingHelpful(VoteRatingHelpfulDto input)
 		{
 			var currentUserId = AbpSession.UserId;
@@ -284,6 +287,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			return result.FirstOrDefault();
 		}
 
+		[AbpAuthorize]
 		public async Task<bool> CanUserRateProduct(int productId)
 		{
 			var currentUserId = AbpSession.UserId;

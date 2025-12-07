@@ -268,6 +268,12 @@ namespace Acme.SimpleTaskApp.Products
 			{
 				throw new UserFriendlyException("Product not found");
 			}
+			// nếu gắn các biến thể thì không cho xóa
+			var variants = _productVariantRepository.GetAll().Where(x => x.ProductId == id).ToList();
+			if (variants.Count > 0)
+			{
+				throw new UserFriendlyException("Không thể xóa sản phẩm này vì có các biến thể liên quan. Vui lòng xóa các biến thể trước.");
+			}
 			_productRepository.Delete(item);
 
 			// Xóa ảnh liên quan

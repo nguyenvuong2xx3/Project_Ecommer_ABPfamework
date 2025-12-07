@@ -1,60 +1,104 @@
 ﻿@using Abp.Configuration.Startup
 @using Abp.Web.Security.AntiForgery
 @using Acme.SimpleTaskApp
+@using Acme.SimpleTaskApp.Configuration
 @using Acme.SimpleTaskApp.Web.Resources
 @inject IAbpAntiForgeryManager AbpAntiForgeryManager
 @inject IWebResourceManager WebResourceManager
 @inject ILanguageManager LanguageManager
 @inject IMultiTenancyConfig MultiTenancyConfig
 @{
-    Layout = null;
-    AbpAntiForgeryManager.SetCookie(Context);
+  Layout = null;
+  AbpAntiForgeryManager.SetCookie(Context);
 
-    var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
-    pageTitle += "SimpleTaskApp";
-    
-    var hideTenantChange = ViewBag.HideTenantChange != null && ViewBag.HideTenantChange == true;
-    var showTenantChange = MultiTenancyConfig.IsEnabled && !hideTenantChange;
+  var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
+  pageTitle += "SimpleTaskApp";
+
+  var hideTenantChange = ViewBag.HideTenantChange != null && ViewBag.HideTenantChange == true;
+  var showTenantChange = MultiTenancyConfig.IsEnabled && !hideTenantChange;
+  var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+  var logoUrl = await SettingManager.GetSettingValueAsync(AppNameStore.UrlLogo);
+  var isConfigured = !string.IsNullOrWhiteSpace(storeName) || !string.IsNullOrWhiteSpace(logoUrl);
 }
 <!DOCTYPE html>
 <html lang="@LanguageManager.CurrentLanguage.Name">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>@pageTitle</title>
+  <title>@pageTitle</title>
 
-    @await Html.PartialAsync("_Styles.cshtml")
-    @RenderSection("styles", required: false)
+  @await Html.PartialAsync("_Styles.cshtml")
+  @RenderSection("styles", required: false)
 </head>
+
 <body class="hold-transition login-page">
-    <div class="login-box">
-        <div class="login-logo">
-            <a href="/"><b>SimpleTaskApp</b></a>
+  <div class="login-box">
+    <div class="login-logo" style="
+        display: flex;
+        width: 100%;
+        margin: 0px auto;
+        justify-content: center;
+        align-items: center;">
+      @if (isConfigured)
+      {
+        @if (!string.IsNullOrWhiteSpace(logoUrl))
+        {
+          <div class="brand-logo-container me-2">
+            <img src="@logoUrl" alt="@storeName"
+                 class="brand-image img-circle elevation-1"
+                 style="max-height: 45px; width: auto; object-fit: contain; box-shadow: none !important;"
+                 onerror="this.style.display='none'; this.nextElementSibling?.style.display='inline';">
+            <i class="fas fa-store text-primary" style="display: none; font-size: 1.8rem;"></i>
+          </div>
+        }
+        else
+        {
+          <div class="brand-logo-container me-2">
+            <i class="fas fa-store text-primary" style="font-size: 1.8rem;"></i>
+          </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(storeName))
+        {
+          <span class="brand-text text-primary fw-bold fs-4">@storeName</span>
+        }
+        else
+        {
+          <span class="brand-text text-primary fw-bold fs-4">Cửa Hàng</span>
+        }
+      }
+      else
+      {
+        <div class="brand-logo-container me-2">
+          <i class="fas fa-exclamation-triangle text-warning" style="font-size: 1.8rem;"></i>
         </div>
-        <div class="card">
-            @* @if (showTenantChange)
+        <span class="brand-text text-warning fw-bold fs-6">Chưa cấu hình cửa hàng</span>
+      }
+    </div>
+    <div class="card">
+      @* @if (showTenantChange)
             {
                 <div class="card-header p-0">
                     <vc:tenant-change></vc:tenant-change>
                 </div>
             } *@
-            <div class="card-body login-card-body">
-                @RenderBody()
-            </div>
-           @*  <div class="card-footer">
+      <div class="card-body login-card-body">
+        @RenderBody()
+      </div>
+      @*  <div class="card-footer">
                 <vc:account-languages></vc:account-languages>
             </div> *@
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <small>&copy; @DateTime.Now.Year SimpleTaskApp. <b>Version </b> @AppVersionHelper.Version [@AppVersionHelper.ReleaseDate.ToString("yyyyMMdd")]</small>
-            </div>
-        </div>
     </div>
-    @await Html.PartialAsync("_Scripts.cshtml")
-    @RenderSection("scripts", required: false)
-    @WebResourceManager.RenderScripts()
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <small>&copy; @DateTime.Now.Year SimpleTaskApp. <b>Version </b> @AppVersionHelper.Version [@AppVersionHelper.ReleaseDate.ToString("yyyyMMdd")]</small>
+      </div>
+    </div>
+  </div>
+  @await Html.PartialAsync("_Scripts.cshtml")
+  @RenderSection("scripts", required: false)
+  @WebResourceManager.RenderScripts()
 </body>
 </html>
