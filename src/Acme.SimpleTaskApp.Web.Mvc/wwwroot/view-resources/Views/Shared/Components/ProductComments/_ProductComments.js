@@ -80,14 +80,21 @@
 			return;
 		}
 
+		// ✅ NEW: Kiểm tra xem comment có phải của chính mình không
+		var isOwnComment = abp.session.userId && comment.userId == abp.session.userId;
+
 		// Render new comment
 		renderComment(comment);
 
 		// Update count
 		updateCommentCount(1);
 
-		// Show notification
-		abp.notify.info('Có bình luận mới');
+		// ✅ FIXED: Chỉ hiển thị notification nếu KHÔNG phải comment của chính mình
+		if (!isOwnComment) {
+			abp.notify.info('Có bình luận mới');
+		} else {
+			console.log('[Comment] Own comment received via SignalR - notification skipped');
+		}
 	}
 
 	// ✅ NEW: Handle comment updated via SignalR
