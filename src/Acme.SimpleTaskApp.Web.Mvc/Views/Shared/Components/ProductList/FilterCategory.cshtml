@@ -12,7 +12,7 @@
       if (item != null)
       {
         <div class="product-item">
-          <div class="product-card product-click-detail" data-id="@item.Id">
+          <div class="product-card productvariant-click-detail cursor" data-id="@item.Id">
             <!-- Discount Badge -->
             @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
             {
@@ -36,30 +36,9 @@
               <div class="product-name">
                 @product.Name
               </div>
-              @if (item.TotalRatings > 0)
-              {
-                <div class="product-rating mb-2">
-                  <div class="rating-stars">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                      if (i <= Math.Floor(item.AverageRating))
-                      {
-                        <i class="fas fa-star text-warning"></i>
-                      }
-                      else if (i <= Math.Ceiling(item.AverageRating))
-                      {
-                        <i class="fas fa-star-half-alt text-warning"></i>
-                      }
-                      else
-                      {
-                        <i class="far fa-star text-warning"></i>
-                      }
-                    }
-                  </div>
-                  <span class="rating-text">@item.AverageRating.ToString("0.0") (@item.TotalRatings)</span>
-                </div>
-              }
-              <!-- NEW: Product tags for configuration -->
+
+
+
               <div class="product-tags">
                 @if (!string.IsNullOrEmpty(item.Ram))
                 {
@@ -83,7 +62,7 @@
                   <!-- Giá sau giảm -->
                   <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
                   <!-- Tên chương trình sale -->
-                  @if (!string.IsNullOrEmpty(item.SaleName))
+                  @* @if (!string.IsNullOrEmpty(item.SaleName))
                   {
                     <span class="discount-text">
                       <i class="fas fa-gift"></i> @item.SaleName
@@ -94,7 +73,7 @@
                     <span class="discount-text">
                       <i class="fas fa-fire"></i> Đang giảm giá
                     </span>
-                  }
+                  } *@
                 }
                 else
                 {
@@ -102,14 +81,38 @@
                   <div class="current-price">@item.Price.ToString("#,##0")₫</div>
                 }
               </div>
+              <!-- đánh giá sao -->
+              @if (item.TotalRatings > 0)
+              {
+                <div class="product-rating mb-2">
+                  <div class="rating-stars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                      if (i <= Math.Floor(item.AverageRating))
+                      {
+                        <i class="fas fa-star text-warning"></i>
+                      }
+                      else if (i <= Math.Ceiling(item.AverageRating))
+                      {
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                      }
+                      else
+                      {
+                        <i class="far fa-star text-warning"></i>
+                      }
+                    }
+                  </div>
+                  <span class="rating-text">@item.AverageRating.ToString("0.0") (@item.TotalRatings)</span>
+                </div>
+              }
+              @* đã bán *@
               @if (item.SoldQuantity > 0)
               {
-                <div class="sold-info">
+                <div class="sold-info" style="margin: 0px;">
                   <i class="fas fa-shopping-cart"></i>
                   <span class="sold-text">Đã bán: <strong>@item.SoldQuantity</strong></span>
                 </div>
               }
-
               <!-- Stock Quantity -->
               <div class="stock-status">
                 @if (item.StockQuantity == 0)
@@ -121,13 +124,13 @@
                 }
               </div>
             </div>
-            <div class="sold-info">
+            <div class="sold-info" style="margin: 0px;">
               <i class="fas fa-shopping-bag"></i>
               <span class="sold-text">Đã bán <strong>@item.SoldQuantity</strong></span>
             </div>
-            <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
+            @* <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
               Xem chi tiết
-            </button>
+            </button> *@
           </div>
         </div>
       }
@@ -184,7 +187,6 @@
     white-space: nowrap;
   }
 
-  /* Điều chỉnh lại product name */
   .product-name {
     font-size: 14px;
     font-weight: 500;
@@ -220,7 +222,6 @@
       font-size: 22px;
     }
 
-  /* Main Container Styling */
   .main-container {
     width: 1200px;
     height: 980px;
@@ -245,7 +246,6 @@
       text-transform: uppercase;
     }
 
-  /* Products Grid */
   .products-grid {
     display: flex;
     flex-wrap: wrap;
@@ -254,14 +254,12 @@
     overflow-y: auto;
   }
 
-  /* Product Item */
   .product-item {
     width: 185px;
     height: 409px;
     margin: 0;
   }
 
-  /* Product Card */
   .product-card {
     width: 100%;
     height: 100%;
@@ -279,10 +277,8 @@
     .product-card:hover {
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       transform: translateY(-3px);
-      border-color: #288ad6;
     }
 
-  /* NEW: Discount Badge */
   .discount-badge {
     position: absolute;
     top: 10px;
@@ -315,7 +311,6 @@
     }
   }
 
-  /* Image Container */
   .image-container {
     width: 100%;
     height: 160px;
@@ -330,45 +325,22 @@
   }
 
   .product-image {
-    width: 130px;
-    height: 130px;
+    width: auto;
+    height: auto;
     object-fit: cover;
   }
 
-  /* Product Info */
   .product-info {
-    padding: 15px;
+    padding: 15px 15px 0 15px;
     flex-grow: 1;
     background-color: white;
     box-sizing: border-box;
   }
 
-  .product-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: #444;
-    height: 40px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-
-  .variant-info {
-    font-size: 13px;
-    color: #666;
-    font-weight: 400;
-    margin-bottom: 12px;
-  }
-
-  /* Price Styling */
   .product-price {
     margin-bottom: 10px;
   }
 
-  /* NEW: Original Price (strikethrough) */
   .original-price {
     font-size: 13px;
     font-weight: 400;
@@ -384,44 +356,6 @@
     margin-bottom: 5px;
   }
 
-  .discount-text {
-    font-size: 11px;
-    color: #288ad6;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #e8f4fd;
-    padding: 3px 8px;
-    border-radius: 10px;
-    margin-top: 5px;
-  }
-
-    .discount-text i {
-      font-size: 10px;
-    }
-
-  @* /* Button Styling */
-  .detail-btn {
-    background: white;
-    color: #288ad6;
-    border: none;
-    padding: 12px;
-    width: 100%;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-top: 1px solid #e1e1e1;
-    margin-top: auto;
-  } *@
-
-    @* .detail-btn:hover {
-      background: #f8f9fa;
-      color: #1a7bc8;
-    } *@
-
-  /* Scrollbar Styling */
   .products-grid::-webkit-scrollbar {
     width: 6px;
   }

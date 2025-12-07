@@ -4,6 +4,11 @@
 @{
   var productId = ViewBag.ProductId as int? ?? 0;
   var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+  
+  // ✅ NEW: Phân trang - Chỉ hiển thị 10 comments đầu tiên
+  var initialComments = Model?.Take(10).ToList() ?? new List<ProductCommentDto>();
+  var hasMoreComments = Model != null && Model.Count > 10;
+  var totalComments = Model?.Count ?? 0;
 }
 
 <div class="comments-section" id="product-comments-section">
@@ -11,7 +16,7 @@
   <div class="section-header">
     <h5 class="section-title">
       <i class="fas fa-comments"></i> Bình luận
-      <span class="comment-count">@(Model?.Count ?? 0)</span>
+      <span class="comment-count" id="totalCommentCount">@totalComments</span>
     </h5>
   </div>
 
@@ -58,11 +63,22 @@
     </div>
   }
 
+  <!-- ✅ NEW: Comments Stats -->
+  @if (totalComments > 0)
+  {
+    <div class="comments-stats">
+      <span class="stats-text">
+        Hiển thị <strong id="displayedCount">@Math.Min(10, totalComments)</strong> / <strong>@totalComments</strong> bình luận
+      </span>
+      <span class="stats-badge">Mới nhất</span>
+    </div>
+  }
+
   <!-- Comments List -->
   <div id="comments-list" class="comments-list">
-    @if (Model != null && Model.Any())
+    @if (initialComments.Any())
     {
-      @foreach (var comment in Model)
+      @foreach (var comment in initialComments)
       {
         @await Html.PartialAsync("Components/ProductComments/_CommentItem", comment)
       }
@@ -72,15 +88,33 @@
       <div class="empty-state">
         <i class="fas fa-comment-dots"></i>
         <p>Chưa có bình luận nào</p>
+        <small>Hãy là người đầu tiên bình luận!</small>
       </div>
     }
   </div>
 
+  <!-- ✅ NEW: Load More Button -->
+  @if (hasMoreComments)
+  {
+    <div class="load-more-container" id="loadMoreContainer">
+      <button type="button" class="btn-load-more" id="btnLoadMore">
+        <i class="fas fa-chevron-down"></i>
+        Xem thêm bình luận (@(totalComments - 10))
+      </button>
+    </div>
+  }
+
   <!-- Loading -->
   <div id="comments-loading" style="display: none;" class="loading-spinner">
     <div class="spinner"></div>
+    <p>Đang tải bình luận...</p>
   </div>
 </div>
+
+<!-- ✅ HIDDEN: Store all comments data for pagination -->
+<script type="application/json" id="allCommentsData">
+  @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model ?? new List<ProductCommentDto>()))
+</script>
 
 <style>
   .comments-section {
@@ -111,13 +145,39 @@
       font-size: 14px;
     }
 
-  . comment-count {
+  .comment-count {
     background: #3b82f6;
     color: #fff;
     font-size: 11px;
     padding: 2px 8px;
     border-radius: 10px;
     font-weight: 500;
+  }
+
+  /* ✅ NEW: Comments Stats */
+  .comments-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .stats-text strong {
+    color: #3b82f6;
+  }
+
+  .stats-badge {
+    background: #10b981;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
   }
 
   /* Comment Form */
@@ -149,14 +209,14 @@
     background: #f8f9fa;
     border-radius: 20px;
     padding: 8px 16px;
-    transition: all 0. 2s ease;
+    transition: all 0.2s ease;
     border: 1px solid transparent;
   }
 
     .input-wrapper:focus-within {
       background: #fff;
       border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0. 1);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
   .comment-input {
@@ -174,7 +234,7 @@
       color: #9ca3af;
     }
 
-  . input-actions {
+  .input-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -203,7 +263,7 @@
 
     .btn-submit:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0. 4);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
 
   .btn-cancel-reply {
@@ -231,7 +291,7 @@
     margin-bottom: 16px;
   }
 
-    . login-prompt i {
+    .login-prompt i {
       margin-right: 8px;
     }
 
@@ -245,24 +305,30 @@
         text-decoration: underline;
       }
 
-  /* Comments List */
-  . comments-list {
-    max-height: 500px;
+  /* Comments List - ✅ FIXED: Giới hạn chiều cao */
+  .comments-list {
+    max-height: 600px; /* ✅ Giới hạn chiều cao tối đa */
     overflow-y: auto;
+    margin-bottom: 12px;
   }
 
     .comments-list::-webkit-scrollbar {
-      width: 4px;
+      width: 6px;
     }
 
     .comments-list::-webkit-scrollbar-track {
-      background: transparent;
+      background: #f3f4f6;
+      border-radius: 3px;
     }
 
     .comments-list::-webkit-scrollbar-thumb {
       background: #d1d5db;
-      border-radius: 4px;
+      border-radius: 3px;
     }
+
+      .comments-list::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+      }
 
   /* Empty State */
   .empty-state {
@@ -280,6 +346,55 @@
     .empty-state p {
       margin: 0;
       font-size: 14px;
+      font-weight: 500;
+    }
+
+    .empty-state small {
+      font-size: 12px;
+      color: #d1d5db;
+    }
+
+  /* ✅ NEW: Load More Button */
+  .load-more-container {
+    text-align: center;
+    padding: 12px 0;
+  }
+
+  .btn-load-more {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+    .btn-load-more:hover {
+      background: #f9fafb;
+      border-color: #3b82f6;
+      color: #3b82f6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-load-more i {
+      font-size: 11px;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-load-more:hover i {
+      transform: translateY(2px);
+    }
+
+    .btn-load-more:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
   /* Loading */
@@ -287,6 +402,12 @@
     text-align: center;
     padding: 20px;
   }
+
+    .loading-spinner p {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
 
   .spinner {
     width: 24px;

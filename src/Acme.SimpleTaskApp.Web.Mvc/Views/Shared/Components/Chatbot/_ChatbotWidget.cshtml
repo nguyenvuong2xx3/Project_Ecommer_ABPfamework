@@ -1,0 +1,100 @@
+﻿<!-- ✅ AI Chatbot Widget - Floating Button & Chat Window -->
+<link rel="stylesheet" href="~/view-resources/Views/Shared/Components/Chatbot/_ChatbotWidget.css" asp-append-version="true" />
+
+<div id="ai-chatbot-widget">
+	<!-- Floating Chat Button -->
+	<button type="button" id="chatbot-toggle" class="chatbot-toggle" title="Trợ lý AI">
+		<i class="fas fa-robot"></i>
+		<span class="pulse-ring"></span>
+		<span class="unread-badge" id="unread-badge" style="display: none;">0</span>
+	</button>
+
+	<!-- Chat Window -->
+	<div id="chatbot-window" class="chatbot-window">
+		<!-- Header -->
+		<div class="chatbot-header">
+			<div class="chatbot-avatar">
+				<i class="fas fa-robot"></i>
+			</div>
+			<div class="chatbot-info">
+				<div class="chatbot-name">Trợ lý AI</div>
+				<div class="chatbot-status">
+					<span class="status-dot"></span>
+					<span class="status-text">Đang hoạt động</span>
+				</div>
+			</div>
+			<div class="chatbot-actions">
+				<button type="button" class="btn-clear-chat" title="Xóa lịch sử">
+					<i class="fas fa-trash-alt"></i>
+				</button>
+				<button type="button" class="btn-minimize" title="Thu nhỏ">
+					<i class="fas fa-minus"></i>
+				</button>
+			</div>
+		</div>
+
+		<!-- Messages Container -->
+		<div class="chatbot-messages" id="chatbot-messages">
+			<!-- Welcome Message -->
+			<div class="message-item bot-message welcome-message">
+				<div class="message-avatar">
+					<i class="fas fa-robot"></i>
+				</div>
+				<div class="message-content">
+					<div class="message-text">
+						<p>👋 Xin chào! Tôi là trợ lý AI của cửa hàng.</p>
+						<p>Tôi có thể giúp bạn:</p>
+						<ul>
+							<li>🔍 Tìm kiếm sản phẩm phù hợp</li>
+							<li>💰 So sánh giá cả và tính năng</li>
+							<li>📱 Tư vấn lựa chọn điện thoại</li>
+							<li>❓ Trả lời các câu hỏi về sản phẩm</li>
+						</ul>
+						<p>Bạn đang tìm kiếm điện thoại như thế nào?</p>
+					</div>
+					<div class="message-time">Bây giờ</div>
+				</div>
+			</div>
+
+			<!-- Quick Suggestions -->
+			<div class="quick-suggestions" id="quick-suggestions">
+				<button type="button" class="quick-btn" data-question="Sản phẩm bán chạy nhất là gì?">
+					🔥 Sản phẩm bán chạy
+				</button>
+				<button type="button" class="quick-btn" data-question="Điện thoại giá rẻ dưới 5 triệu">
+					💰 Giá rẻ dưới 5 triệu
+				</button>
+				<button type="button" class="quick-btn" data-question="Điện thoại camera tốt">
+					📷 Camera tốt
+				</button>
+				<button type="button" class="quick-btn" data-question="iPhone mới nhất">
+					🍎 iPhone mới nhất
+				</button>
+			</div>
+		</div>
+
+		<!-- Product Recommendations -->
+		<div class="product-recommendations" id="product-recommendations" style="display: none;">
+			<!-- Will be populated dynamically -->
+		</div>
+
+		<!-- Input Area -->
+		<div class="chatbot-input-area">
+			<div class="input-wrapper">
+				<textarea 
+					id="chatbot-input" 
+					class="chatbot-input" 
+					placeholder="Nhập câu hỏi của bạn..." 
+					rows="1"
+					maxlength="500"></textarea>
+				<button type="button" id="send-message" class="btn-send" title="Gửi">
+					<i class="fas fa-paper-plane"></i>
+				</button>
+			</div>
+			<div class="input-footer">
+				<span class="char-count"><span id="char-count">0</span>/500</span>
+				<span class="powered-by">Powered by <strong>Google Gemini AI</strong></span>
+			</div>
+		</div>
+	</div>
+</div>

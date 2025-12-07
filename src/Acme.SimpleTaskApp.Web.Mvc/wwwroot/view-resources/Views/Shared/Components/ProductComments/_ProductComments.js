@@ -4,42 +4,112 @@
 	var _replyToCommentId = null;
 	var _replyToUserName = '';
 	var _commentHubConnection = null;
+	
+	// ✅ NEW: Pagination variables
+	var _allComments = [];
+	var _displayedCount = 10;
+	var _pageSize = 10;
 
 	$(document).ready(function () {
 		initializeCommentForm();
 		initializeCommentActions();
-		// ✅ NEW: Initialize SignalR
 		initializeSignalR();
+		
+		// ✅ NEW: Initialize pagination
+		initializePagination();
 	});
 
-	// ✅ NEW: Initialize SignalR connection
+	// ✅ NEW: Initialize pagination system
+	function initializePagination() {
+		// Load all comments data from hidden script tag
+		try {
+			var commentsJson = $('#allCommentsData').text();
+			_allComments = JSON.parse(commentsJson) || [];
+			
+			console.log('[Pagination] Loaded', _allComments.length, 'total comments');
+			
+			// Initialize Load More button
+			$('#btnLoadMore').on('click', loadMoreComments);
+			
+			// Update displayed count
+			updateDisplayedStats();
+		} catch (error) {
+			console.error('[Pagination] Error loading comments data:', error);
+		}
+	}
+
+	// ✅ NEW: Load more comments
+	function loadMoreComments() {
+		var $btn = $('#btnLoadMore');
+		var $container = $('#comments-list');
+		
+		// Show loading state
+		$btn.prop('disabled', true);
+		$btn.html('<i class="fas fa-spinner fa-spin"></i> Đang tải...');
+		
+		// Calculate next batch
+		var nextBatch = _allComments.slice(_displayedCount, _displayedCount + _pageSize);
+		
+		if (nextBatch.length === 0) {
+			$('#loadMoreContainer').hide();
+			return;
+		}
+		
+		// Render next batch
+		setTimeout(function() {
+			nextBatch.forEach(function(comment) {
+				var html = buildCommentHtml(comment);
+				$container.append(html);
+				
+				// Animate new comment
+				var $newComment = $(`.comment-item[data-comment-id="${comment.id}"]`);
+				$newComment.hide().fadeIn(300);
+			});
+			
+			// Update counter
+			_displayedCount += nextBatch.length;
+			updateDisplayedStats();
+			
+			// Check if there are more comments
+			if (_displayedCount >= _allComments.length) {
+				$('#loadMoreContainer').hide();
+			} else {
+				var remaining = _allComments.length - _displayedCount;
+				$btn.html(`<i class="fas fa-chevron-down"></i> Xem thêm bình luận (${remaining})`);
+				$btn.prop('disabled', false);
+			}
+		}, 300);
+	}
+
+	// ✅ NEW: Update displayed stats
+	function updateDisplayedStats() {
+		$('#displayedCount').text(_displayedCount);
+		$('#totalCommentCount').text(_allComments.length);
+	}
+
+	// Initialize SignalR connection
 	function initializeSignalR() {
 		try {
-			// Create SignalR connection
 			_commentHubConnection = new signalR.HubConnectionBuilder()
 				.withUrl("/signalr-productCommentHub")
 				.withAutomaticReconnect()
 				.build();
 
-			// Handle new comment received
 			_commentHubConnection.on("ReceiveComment", function (data) {
 				console.log('[SignalR] Received new comment:', data);
 				handleNewCommentReceived(data.comment);
 			});
 
-			// Handle comment updated
 			_commentHubConnection.on("CommentUpdated", function (data) {
 				console.log('[SignalR] Comment updated:', data);
 				handleCommentUpdated(data.commentId, data.comment);
 			});
 
-			// Handle comment deleted
 			_commentHubConnection.on("CommentDeleted", function (data) {
 				console.log('[SignalR] Comment deleted:', data);
 				handleCommentDeleted(data.commentId);
 			});
 
-			// Handle user typing (optional)
 			_commentHubConnection.on("UserTyping", function (userName) {
 				showUserTyping(userName);
 			});
@@ -48,11 +118,9 @@
 				hideUserTyping(userName);
 			});
 
-			// Start connection and join product group
 			_commentHubConnection.start()
 				.then(function () {
 					console.log('[SignalR] Connected successfully');
-					// Join product comment group
 					return _commentHubConnection.invoke("JoinProductGroup", parseInt(_productId));
 				})
 				.then(function () {
@@ -62,7 +130,6 @@
 					console.error('[SignalR] Connection error:', err);
 				});
 
-			// Handle reconnection
 			_commentHubConnection.onreconnected(function () {
 				console.log('[SignalR] Reconnected');
 				_commentHubConnection.invoke("JoinProductGroup", parseInt(_productId));
@@ -73,72 +140,108 @@
 		}
 	}
 
-	// ✅ NEW: Handle new comment received via SignalR
+	// ✅ IMPROVED: Handle new comment received via SignalR
 	function handleNewCommentReceived(comment) {
-		// Check if comment already exists (to avoid duplicates)
 		if ($(`[data-comment-id="${comment.id}"]`).length > 0) {
 			return;
 		}
 
-		// ✅ NEW: Kiểm tra xem comment có phải của chính mình không
 		var isOwnComment = abp.session.userId && comment.userId == abp.session.userId;
 
-		// Render new comment
+		// ✅ Add to allComments array at the beginning (newest first)
+		_allComments.unshift(comment);
+		_displayedCount++;
+
+		// Render new comment at the top
 		renderComment(comment);
 
-		// Update count
-		updateCommentCount(1);
+		// Update stats
+		updateDisplayedStats();
 
-		// ✅ FIXED: Chỉ hiển thị notification nếu KHÔNG phải comment của chính mình
+		// Show stats bar if it was hidden
+		if ($('.comments-stats').length === 0 && _allComments.length > 0) {
+			var statsHtml = `
+				<div class="comments-stats">
+					<span class="stats-text">
+						Hiển thị <strong id="displayedCount">${_displayedCount}</strong> / <strong>${_allComments.length}</strong> bình luận
+					</span>
+					<span class="stats-badge">Mới nhất</span>
+				</div>
+			`;
+			$('#comments-list').before(statsHtml);
+		}
+
+		// Remove empty state if exists
+		$('.empty-state').remove();
+
 		if (!isOwnComment) {
-			abp.notify.info('Có bình luận mới');
+			console.log('[Comment] New comment received from another user via SignalR');
 		} else {
 			console.log('[Comment] Own comment received via SignalR - notification skipped');
 		}
 	}
 
-	// ✅ NEW: Handle comment updated via SignalR
+	// Handle comment updated via SignalR
 	function handleCommentUpdated(commentId, comment) {
 		var $commentItem = $(`.comment-item[data-comment-id="${commentId}"]`);
 		if ($commentItem.length > 0) {
-			// Update content
 			$commentItem.find('.comment-text').first().text(comment.content);
 
-			// Show edited badge if not exists
 			var $commentTime = $commentItem.find('.comment-time');
 			if (!$commentTime.find('.edited-badge').length) {
 				$commentTime.append('<span class="edited-badge">• đã sửa</span>');
 			}
 		}
+		
+		// ✅ Update in allComments array
+		var index = _allComments.findIndex(c => c.id === commentId);
+		if (index !== -1) {
+			_allComments[index] = comment;
+		}
 	}
 
-	// ✅ NEW: Handle comment deleted via SignalR
+	// ✅ IMPROVED: Handle comment deleted via SignalR
 	function handleCommentDeleted(commentId) {
 		var $commentItem = $(`.comment-item[data-comment-id="${commentId}"]`);
 		if ($commentItem.length > 0) {
 			$commentItem.fadeOut(300, function () {
 				$(this).remove();
-				updateCommentCount(-1);
+				
+				// ✅ Remove from allComments array
+				_allComments = _allComments.filter(c => c.id !== commentId);
+				_displayedCount = Math.max(0, _displayedCount - 1);
+				
+				// Update stats
+				updateDisplayedStats();
+				
+				// Show empty state if no comments left
+				if (_allComments.length === 0) {
+					$('#comments-list').html(`
+						<div class="empty-state">
+							<i class="fas fa-comment-dots"></i>
+							<p>Chưa có bình luận nào</p>
+							<small>Hãy là người đầu tiên bình luận!</small>
+						</div>
+					`);
+					$('.comments-stats').remove();
+					$('#loadMoreContainer').hide();
+				}
 			});
 		}
 	}
 
-	// ✅ NEW: Render new comment to DOM
+	// Render new comment to DOM
 	function renderComment(comment) {
-		// Check if comment already exists (to avoid duplicates)
 		if ($(`[data-comment-id="${comment.id}"]`).length > 0) {
 			return;
 		}
 
-		// Build comment HTML
 		var html = buildCommentHtml(comment);
 
 		if (comment.parentCommentId) {
-			// This is a reply
 			var $parentComment = $(`.comment-item[data-comment-id="${comment.parentCommentId}"]`);
 			var $repliesContainer = $parentComment.next('.replies-container');
 
-			// If replies container doesn't exist, create one
 			if ($repliesContainer.length === 0) {
 				$repliesContainer = $('<div class="replies-container"></div>');
 				$parentComment.after($repliesContainer);
@@ -146,17 +249,14 @@
 
 			$repliesContainer.append(html);
 		} else {
-			// Root comment
 			$('#comments-list').prepend(html);
 		}
 
-		// Animate in
 		var $newComment = $(`.comment-item[data-comment-id="${comment.id}"]`);
 		$newComment.hide().fadeIn(500);
 	}
 
-
-	// ✅ NEW: Build comment HTML
+	// Build comment HTML
 	function buildCommentHtml(comment) {
 		var isOwner = abp.session.userId && comment.userId == abp.session.userId;
 		var isEdited = comment.isEdited;
@@ -174,9 +274,7 @@
                     <span class="comment-time">
                         ${formatCommentTime(comment.creationTime)}
                         ${isEdited ? '<span class="edited-badge">• đã sửa</span>' : ''}
-                    </span>
-
-        `;
+                    </span>`;
 
 		if (isOwner) {
 			html += `
@@ -187,29 +285,21 @@
                         <button class="btn-delete-comment" type="button" data-comment-id="${comment.id}">
                             <i class="fas fa-trash"></i>
                         </button>
-                    </div>
-        `;
+                    </div>`;
 		}
 
 		html += `
                 </div>
-
-                <!-- Content -->
                 <div class="comment-content" data-comment-id="${comment.id}">
                     <p class="comment-text">${comment.content}</p>
                 </div>
-
-                <!-- Edit Form -->
                 <div class="comment-edit-form" style="display: none;">
                     <textarea class="edit-textarea" rows="2" maxlength="1000">${comment.content}</textarea>
                     <div class="edit-actions">
                         <button class="btn-save-edit" data-comment-id="${comment.id}">Lưu</button>
                         <button class="btn-cancel-edit">Hủy</button>
                     </div>
-                </div>
-
-                <!-- Actions -->
-        `;
+                </div>`;
 
 		if (abp.session.userId) {
 			html += `
@@ -217,19 +307,17 @@
                     <button class="btn-reply" data-comment-id="${comment.id}" data-user-name="${comment.userFullName}">
                         <i class="fas fa-reply"></i> Trả lời
                     </button>
-                </div>
-        `;
+                </div>`;
 		}
 
 		html += `
             </div>
-        </div>
-    `;
+        </div>`;
 
 		return html;
 	}
 
-	// ✅ NEW: Format comment time
+	// Format comment time
 	function formatCommentTime(dateString) {
 		var date = new Date(dateString);
 		var day = ('0' + date.getDate()).slice(-2);
@@ -240,15 +328,7 @@
 		return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
 	}
 
-
-	// ✅ NEW: Update comment count
-	function updateCommentCount(delta) {
-		var $badge = $('#product-comments-section h4 .badge');
-		var currentCount = parseInt($badge.text()) || 0;
-		$badge.text(currentCount + delta);
-	}
-
-	// ✅ NEW: Show user typing indicator
+	// Show user typing indicator
 	function showUserTyping(userName) {
 		var $indicator = $('#typing-indicator');
 		if ($indicator.length === 0) {
@@ -259,7 +339,7 @@
 		$indicator.show();
 	}
 
-	// ✅ NEW: Hide user typing indicator
+	// Hide user typing indicator
 	function hideUserTyping(userName) {
 		var $indicator = $('#typing-indicator');
 		if ($indicator.find('.typing-user').text() === userName) {
@@ -269,24 +349,19 @@
 
 	// Initialize comment form
 	function initializeCommentForm() {
-		// Character counter
 		$('#CommentContent').on('input', function () {
 			var length = $(this).val().length;
 			$('#charCount').text(length);
 
-			// ✅ Optional: Send typing indicator via SignalR
 			if (_commentHubConnection && _commentHubConnection.state === signalR.HubConnectionState.Connected) {
 				_commentHubConnection.invoke("UserTyping", parseInt(_productId), abp.session.userName);
 			}
 		});
 
-		// Submit comment
 		$('#submitComment').on('click', function () {
 			submitComment();
 		});
 
-
-		// Cancel reply
 		$('#btnCancelReply').on('click', function () {
 			cancelReply();
 		});
@@ -294,32 +369,27 @@
 
 	// Initialize comment actions (reply, edit, delete)
 	function initializeCommentActions() {
-		// Reply button
 		$(document).on('click', '.btn-reply', function () {
 			var commentId = $(this).data('comment-id');
 			var userName = $(this).data('user-name');
 			setReplyTo(commentId, userName);
 		});
 
-		// Edit button
 		$(document).on('click', '.btn-edit-comment', function () {
 			var commentId = $(this).data('comment-id');
 			showEditForm(commentId);
 		});
 
-		// Save edit
 		$(document).on('click', '.btn-save-edit', function () {
 			var commentId = $(this).data('comment-id');
 			saveEditComment(commentId);
 		});
 
-		// Cancel edit
 		$(document).on('click', '.btn-cancel-edit', function () {
 			var commentId = $(this).closest('.comment-item').data('comment-id');
 			hideEditForm(commentId);
 		});
 
-		// Delete button
 		$(document).on('click', '.btn-delete-comment', function () {
 			var commentId = $(this).data('comment-id');
 			deleteComment(commentId);
@@ -354,9 +424,6 @@
 				$('#CommentContent').val('');
 				$('#charCount').text('0');
 				cancelReply();
-
-				// ✅ SignalR will handle displaying the comment, no need to reload
-				// The comment will appear via SignalR broadcast
 			})
 			.fail(function (error) {
 				abp.notify.error(error.message || 'Có lỗi xảy ra khi gửi bình luận');
@@ -376,7 +443,6 @@
 		$('#CommentContent').focus();
 		$('#btnCancelReply').show();
 
-		// Scroll to form
 		$('html, body').animate({
 			scrollTop: $('#commentForm').offset().top - 100
 		}, 500);
@@ -388,7 +454,7 @@
 		_replyToUserName = '';
 
 		$('#ParentCommentId').val('');
-		$('#CommentContent').attr('placeholder', 'Nhập bình luận của bạn...');
+		$('#CommentContent').attr('placeholder', 'Viết bình luận của bạn...');
 		$('#btnCancelReply').hide();
 	}
 
@@ -440,7 +506,6 @@
 			.done(function (result) {
 				abp.notify.success('Đã cập nhật bình luận');
 				hideEditForm(commentId);
-				// ✅ SignalR will handle updating for other users
 			})
 			.fail(function (error) {
 				abp.notify.error(error.message || 'Có lỗi khi cập nhật bình luận');
@@ -462,7 +527,6 @@
 					_commentService.deleteComment(commentId)
 						.done(function () {
 							abp.notify.success('Đã xóa bình luận');
-							// ✅ SignalR will handle removing for other users
 						})
 						.fail(function (error) {
 							abp.notify.error(error.message || 'Có lỗi khi xóa bình luận');

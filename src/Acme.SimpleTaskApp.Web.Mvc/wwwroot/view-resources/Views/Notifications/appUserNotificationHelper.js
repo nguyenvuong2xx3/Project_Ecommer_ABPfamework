@@ -3,46 +3,104 @@
   app.UserNotificationHelper = (function () {
     return function () {
 
-      /* 1. ĐĂNG KÝ FORMATTER CHO THÔNG BÁO MỚI ********/
-      // Đây là phần bạn còn thiếu để hiển thị text đúng
+      /* ✅ 1. ĐĂNG KÝ FORMATTER CHO TẤT CẢ LOẠI THÔNG BÁO ********/
+      
+      // ✅ Order notifications
       abp.notifications.messageFormatters['App.NewOrder'] = function (userNotification) {
-        // Lấy dữ liệu từ property "Message" mà ta đã gửi từ Backend
-        return userNotification.notification.data.properties['Message'];
+        return userNotification.notification.data.properties['Message'] || 
+               'Có đơn hàng mới';
       };
 
+      abp.notifications.messageFormatters['App.OrderStatusChanged'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Trạng thái đơn hàng đã thay đổi';
+      };
+
+      abp.notifications.messageFormatters['App.OrderApproved'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Đơn hàng đã được duyệt';
+      };
+
+      abp.notifications.messageFormatters['App.OrderRejected'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Đơn hàng đã bị từ chối';
+      };
+
+      abp.notifications.messageFormatters['App.OrderCompleted'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Đơn hàng đã hoàn thành';
+      };
+
+      // ✅ Comment notifications
+      abp.notifications.messageFormatters['App.NewProductComment'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Có bình luận mới về sản phẩm';
+      };
+
+      abp.notifications.messageFormatters['App.CommentReply'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Có người trả lời bình luận của bạn';
+      };
+
+      // ✅ Other notifications
+      abp.notifications.messageFormatters['App.LowStock'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Sản phẩm sắp hết hàng';
+      };
+
+      abp.notifications.messageFormatters['App.NewProduct'] = function (userNotification) {
+        return userNotification.notification.data.properties['Message'] || 
+               'Có sản phẩm mới';
+      };
+
+      // ✅ Legacy support
       abp.notifications.messageFormatters['Đơn hàng mới'] = function (userNotification) {
-        return userNotification.notification.data.properties['Message'];
+        return userNotification.notification.data.properties['Message'] || 
+               'Có đơn hàng mới';
       };
 
       var _notificationService = abp.services.app.notification;
 
       /* Converter functions ***************************************/
       function getUrl(userNotification) {
+        var data = userNotification.notification.data.properties;
+        
         switch (userNotification.notification.notificationName) {
           case 'App.NewUserRegistered':
-            return '/AppAreaName/users?filterText=' + userNotification.notification.data.properties.emailAddress;
+            return '/AppAreaName/users?filterText=' + data.emailAddress;
 
-          // 2. Thêm URL điều hướng cho đơn hàng mới
+          // ✅ Order notifications
           case 'App.NewOrder':
-            // Giả sử bạn có trang chi tiết đơn hàng, thay đổi link này cho đúng
-            // Ví dụ: /Admin/Orders/Detail?code=...
-            return '/App/Orders/Detail?code=' + userNotification.notification.data.properties['Code'];
+          case 'App.OrderStatusChanged':
+          case 'App.OrderApproved':
+          case 'App.OrderRejected':
+          case 'App.OrderCompleted':
+            // Sử dụng URL từ backend hoặc fallback
+            return data['Url'] || '/App/Orders/Detail?code=' + data['Code'];
+
+          // ✅ Comment notifications
+          case 'App.NewProductComment':
+          case 'App.CommentReply':
+            // Sử dụng URL từ backend
+            return data['Url'] || '/HomeCustomer/DetailProductCustomer?id=' + data['ProductId'];
 
           case 'App.GdprDataPrepared':
             return (
               '/File/DownloadBinaryFile?id=' +
-              userNotification.notification.data.properties.binaryObjectId +
+              data.binaryObjectId +
               '&contentType=application/zip&fileName=collectedData.zip'
             );
         }
-        return '';
+        
+        // ✅ Fallback: Nếu có URL trong data thì dùng
+        return data['Url'] || '';
       }
 
       /* PUBLIC functions ******************************************/
       var format = function (userNotification, truncateText) {
         var formatted = {
           userNotificationId: userNotification.id,
-          // Dòng này sẽ gọi cái formatter ta vừa đăng ký ở trên
+          // ✅ Dòng này sẽ gọi formatter đã đăng ký ở trên
           text: abp.notifications.getFormattedMessageFromUserNotification(userNotification),
           time: moment(userNotification.notification.creationTime).format('YYYY-MM-DD HH:mm:ss'),
           icon: app.notification.getUiIconBySeverity(userNotification.notification.severity),
@@ -55,17 +113,17 @@
         };
 
         if (truncateText || truncateText === undefined) {
-          formatted.text = abp.utils.truncateStringWithPostfix(formatted.text, 50);
+          formatted.text = abp.utils.truncateStringWithPostfix(formatted.text, 100); // ✅ Tăng từ 50 lên 100 ký tự
         }
 
         return formatted;
       };
 
       var show = function (userNotification) {
-        //Application notification
+        // ✅ Application notification (toast)
         abp.notifications.showUiNotifyForUserNotification(userNotification, {
           onclick: function () {
-            //Take action when user clicks to live toastr notification
+            // Take action when user clicks to live toastr notification
             var url = getUrl(userNotification);
             if (url) {
               location.href = url;
@@ -73,14 +131,20 @@
           },
         });
 
-        //Desktop notification
-        Push.create('SaaS', {
+        // ✅ Desktop notification (Push)
+        Push.create('SimpleTaskApp', {
           body: format(userNotification).text,
           icon: abp.appPath + 'Common/Images/app-logo-small.svg',
           timeout: 6000,
           onClick: function () {
             window.focus();
             this.close();
+            
+            // ✅ Navigate to URL when clicking desktop notification
+            var url = getUrl(userNotification);
+            if (url) {
+              location.href = url;
+            }
           },
         });
       };
