@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
 		<PackageReference Include="Abp.MailKit" Version="8.4.0" />
+		<PackageReference Include="AutoGen.Gemini" Version="0.2.3" />
 		<PackageReference Include="EPPlus" Version="8.2.1" />
 		<PackageReference Include="System.Drawing.Common" Version="9.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.LiveShare" Version="1.1.57" />

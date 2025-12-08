@@ -10,6 +10,7 @@ using Acme.SimpleTaskApp.Chatbot.Dtos;
 using Acme.SimpleTaskApp.Chatbot.Services;
 using Acme.SimpleTaskApp.Products;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
 
 namespace Acme.SimpleTaskApp.Chatbot
 {
@@ -68,35 +69,35 @@ namespace Acme.SimpleTaskApp.Chatbot
 
 				// Create enhanced prompt with system context
 				var systemPrompt = @"
-Bạn là trợ lý tư vấn sản phẩm AI thông minh cho cửa hàng điện thoại và phụ kiện.
+				Bạn là trợ lý tư vấn sản phẩm AI thông minh cho cửa hàng điện thoại và phụ kiện.
 
-NHIỆM VỤ CỦA BẠN:
-1. Lắng nghe và hiểu nhu cầu khách hàng
-2. Đề xuất sản phẩm phù hợp từ danh sách có sẵn
-3. Giải thích rõ ràng, dễ hiểu về sản phẩm
-4. So sánh các lựa chọn khi cần thiết
-5. Hỗ trợ quyết định mua hàng
+				NHIỆM VỤ CỦA BẠN:
+				1. Lắng nghe và hiểu nhu cầu khách hàng
+				2. Đề xuất sản phẩm phù hợp từ danh sách có sẵn
+				3. Giải thích rõ ràng, dễ hiểu về sản phẩm
+				4. So sánh các lựa chọn khi cần thiết
+				5. Hỗ trợ quyết định mua hàng
 
-QUY TẮC:
-- Luôn trả lời bằng tiếng Việt
-- Thân thiện, chuyên nghiệp
-- Chỉ đề xuất sản phẩm có trong danh sách
-- Nếu không hiểu, hỏi lại khách hàng
-- Không bịa đặt thông tin sản phẩm
-";
+				QUY TẮC:
+				- Luôn trả lời bằng tiếng Việt
+				- Thân thiện, chuyên nghiệp
+				- Chỉ đề xuất sản phẩm có trong danh sách
+				- Nếu không hiểu, hỏi lại khách hàng
+				- Không bịa đặt thông tin sản phẩm
+				";
 
-				var fullPrompt = $@"{systemPrompt}
+								var fullPrompt = $@"{systemPrompt}
 
-DANH SÁCH SẢN PHẨM:
-{productsContext}
+			DANH SÁCH SẢN PHẨM:
+			{productsContext}
 
-KHÁCH HÀNG NÓI: {input.Message}
+			KHÁCH HÀNG NÓI: {input.Message}
 
-Hãy trả lời một cách tự nhiên và hữu ích.";
+			Hãy trả lời một cách tự nhiên và hữu ích.";
 
 				// Convert history to Gemini format
 				var geminiHistory = conversationHistory
-					.Select(h => new ChatMessage
+					.Select(h => new ChatMessageDto
 					{
 						Role = h.Role == "user" ? "user" : "model",
 						Content = h.Message
