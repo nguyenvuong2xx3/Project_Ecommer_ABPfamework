@@ -1,4 +1,5 @@
-﻿@using Acme.SimpleTaskApp.Web.Models.ProductVariants
+﻿@using Acme.SimpleTaskApp.Authorization
+@using Acme.SimpleTaskApp.Web.Models.ProductVariants
 ﻿@using Acme.SimpleTaskApp.Web.Startup
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
@@ -24,21 +25,15 @@
       <div class="col-sm-6">
         <h1>@L("ProductVariants")</h1>
       </div>
-      <div class="col-sm-6">
-        @* <div class="btn-group float-sm-right">
-          <button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-file-excel"></i> Excel
+       @if (IsGranted(PermissionNames.Pages_ProductVariants_Create))
+        {
+        <div class="col-sm-6">
+          <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
+            <i class="fa fa-plus-square"></i>
+            @L("Create")
           </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
-            <a class="dropdown-item" href="javascript:;" data-toggle="modal" data-target="#ImportExcelModal">Nhập Excel</a>
-          </div>
-        </div> *@
-        <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
-          <i class="fa fa-plus-square"></i>
-          @L("Create")
-        </button>
-      </div>
+        </div>
+        }
     </div>
   </div>
 </section>

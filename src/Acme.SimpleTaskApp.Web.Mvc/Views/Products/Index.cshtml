@@ -1,4 +1,5 @@
-﻿﻿@using Acme.SimpleTaskApp.Web.Startup
+﻿@using Acme.SimpleTaskApp.Authorization
+﻿@using Acme.SimpleTaskApp.Web.Startup
 @using Acme.SimpleTaskApp.Products;
 @using Acme.SimpleTaskApp.Web.Models.Products
 @using static Acme.SimpleTaskApp.Products.Product
@@ -26,18 +27,30 @@
       </div>
       <div class="col-sm-6">
         <div class="btn-group float-sm-right">
-          <button type="button" class="btn bg-green dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-file-excel"></i> Excel
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
-            <a class="dropdown-item" href="javascript:;" id="ImportExcelBtn">Nhập Excel</a>
-          </div>
-        </div>
-        <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
-          <i class="fa fa-plus-square"></i>
-          @L("Create")
-        </button>
+          @if (IsGranted(PermissionNames.Pages_Products_Export) || IsGranted(PermissionNames.Pages_Products_Import))
+          {
+            <button type="button" class="btn bg-green dropdown-toggle me-2" data-toggle="dropdown">
+              <i class="fa fa-file-excel"></i> Excel
+            </button>
+            <div class="dropdown-menu">
+              @if (IsGranted(PermissionNames.Pages_Products_Export))
+              {
+                <a class="dropdown-item" href="javascript:;" id="ExportExcelBtn">Xuất Excel</a>
+              }
+              @if (IsGranted(PermissionNames.Pages_Products_Import))
+              {
+                <a class="dropdown-item" href="javascript:;" id="ImportExcelBtn">Nhập Excel</a>
+              }
+            </div>
+          }
+
+          @if (IsGranted(PermissionNames.Pages_Products_Create))
+          {
+            <button type="button" id="CreateNewButton" class="btn bg-blue float-sm-right">
+              <i class="fa fa-plus-square"></i>
+              @L("Create")
+            </button>
+          }
       </div>
     </div>
   </div>
