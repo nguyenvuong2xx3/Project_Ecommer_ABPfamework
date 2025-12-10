@@ -249,8 +249,8 @@
       1: 'Đang xử lý',
       2: 'Đang giao hàng',
       3: 'Thành công',
-      4: 'Đã hủy',
-      5: 'Hoàn trả'
+      4: 'Đã hủy bởi hệ thống',
+      5: 'Đã hủy'
     };
     return statusMap[status] || 'Không xác định';
   }
