@@ -132,14 +132,6 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					icon: "fas fa-shopping-cart"
 				).AddItem(
 					new MenuItemDefinition(
-						"HomeCustomer",
-						L("HomeCustomer"),
-						url: "HomeCustomer",
-						icon: "fas fa-home",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_HomeCustomer)
-					)
-				).AddItem(
-					new MenuItemDefinition(
 						"Orders",
 						L("Orders"),
 						url: "Orders",
@@ -167,6 +159,15 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Notifications)
 				)
 			);
+			menu.AddItem(
+					new MenuItemDefinition(
+						"HomeCustomer",
+						L("HomeCustomer"),
+						url: "HomeCustomer",
+						icon: "fas fa-home",
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_HomeCustomer)
+					)
+				);
 		}
 
 		private static ILocalizableString L(string name)
