@@ -112,10 +112,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			// Mặc định chuyển hướng về trang người dùng
 			returnUrl = "/HomeCustomer";
 
-			// Kiểm tra role
-			if (getRoles.Contains("Admin"))
+			// Kiểm tra role có quyền vào trang chủ quản trị không?
+
+			if (!await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Dashboard))
 			{
-				returnUrl = "/Users";
+				returnUrl = "/Home";
 			}
 			else if (getRoles.Contains("User"))
 			{

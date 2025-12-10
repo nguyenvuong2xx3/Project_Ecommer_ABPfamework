@@ -9,7 +9,6 @@ using Acme.SimpleTaskApp.Web.Models.Users;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-    [AbpMvcAuthorize(PermissionNames.Pages_Users)]
     public class UsersController : SimpleTaskAppControllerBase
     {
         private readonly IUserAppService _userAppService;

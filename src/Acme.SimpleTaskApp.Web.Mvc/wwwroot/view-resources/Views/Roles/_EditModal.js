@@ -171,9 +171,45 @@
 			}).on('check_node.jstree', function (e, data) {
 				if (_isStaticRole) return;
 
+				var tree = data.instance;
+
+				// Tick toàn bộ con
+				tree.get_children_dom(data.node).each(function () {
+					tree.check_node(this.id);
+				});
+
+				// Tick tất cả cha nếu tất cả con đều tick
+				var parent = tree.get_parent(data.node);
+				while (parent) {
+					var parentNode = tree.get_node(parent);
+					var allChecked = parentNode.children.every(function (childId) {
+						return tree.is_checked(childId);
+					});
+
+					if (allChecked) {
+						tree.check_node(parent);
+					}
+
+					parent = tree.get_parent(parentNode);
+				}
+
 				updateSelectedCount();
 			}).on('uncheck_node.jstree', function (e, data) {
 				if (_isStaticRole) return;
+
+				var tree = data.instance;
+
+				// Bỏ tick toàn bộ con
+				tree.get_children_dom(data.node).each(function () {
+					tree.uncheck_node(this.id);
+				});
+
+				// Bỏ tick cha
+				var parent = tree.get_parent(data.node);
+				while (parent) {
+					tree.uncheck_node(parent);
+					parent = tree.get_parent(parent);
+				}
 
 				updateSelectedCount();
 			}).on('changed.jstree', function (e, data) {
@@ -292,18 +328,11 @@
 								console.log('[EditModal] Static role - auto granted all permissions');
 							}
 
-							console.log('[EditModal] Role:', data.role.name);
-							console.log('[EditModal] isStatic:', _isStaticRole);
-							console.log('[EditModal] Permissions count:', data.permissions.length);
-							console.log('[EditModal] Granted permissions:', grantedPermissionNames);
-
 							renderPermissionTree(data.permissions, grantedPermissionNames);
 						} else {
-							console.error('[EditModal] Invalid data structure:', data);
 							$loading.html('<div class="alert alert-warning">Không có dữ liệu quyền.</div>');
 						}
 					} else {
-						console.error('[EditModal] Response is not an array or empty:', response);
 						$loading.html('<div class="alert alert-warning">Không có dữ liệu quyền.</div>');
 					}
 				})

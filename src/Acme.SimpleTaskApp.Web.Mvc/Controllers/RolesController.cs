@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Roles)]
 	public class RolesController : SimpleTaskAppControllerBase
 	{
 		private readonly IRoleAppService _roleAppService;

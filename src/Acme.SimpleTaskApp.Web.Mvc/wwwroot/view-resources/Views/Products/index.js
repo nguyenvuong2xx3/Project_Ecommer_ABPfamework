@@ -5,6 +5,12 @@
     _$form = _$modal.find('form'),
     _$table = $('#ProductsTable');
 
+  var _permissions = {
+    view: abp.auth.hasPermission('Pages.Products.View'),
+    create: abp.auth.hasPermission('Pages.Products.Create'),
+    edit: abp.auth.hasPermission('Pages.Products.Edit'),
+    delete: abp.auth.hasPermission('Pages.Products.Delete'),
+  };
   
   var _importExcelModal = new app.ModalManager({
     viewUrl: abp.appPath + 'Products/ImportModal',
@@ -196,18 +202,33 @@
         autoWidth: true,
         defaultContent: '',
         render: (data, type, row, meta) => {
-          return [
-            `   <button type="button" class="btn btn-sm bg-secondary edit-product" data-product-id="${row.id}" data-toggle="modal" data-target="#ProductEditModal">`,
-            `       <i class="fas fa-pencil-alt"></i> ${l('Edit')}`,
-            '   </button>',
-            `   <button type="button" class="btn btn-sm bg-danger delete-product" data-product-id="${row.id}" data-product-name="${row.name}">`,
-            `       <i class="fas fa-trash"></i> ${l('Delete')}`,
-            '   </button>',
-            `   <button type="button" class="btn btn-sm bg-info detail-product" style="margin-top: 5px;" data-product-id="${row.id}" data-toggle="modal" >`,
-            `       <i class="fas fa-eye"></i> ${l('Details')}`,
-            '   </button>'
+          let buttons = [];
 
-          ].join('');
+          if (_permissions.edit) {
+            buttons.push(
+              `<button type="button" class="btn btn-sm bg-secondary edit-product me-2" data-product-id="${row.id}" data-toggle="modal" data-target="#ProductEditModal">` +
+              `   <i class="fas fa-pencil-alt"></i> ${l('Edit')}` +
+              '</button>'
+            );
+          }
+
+          if (_permissions.delete) {
+            buttons.push(
+              `<button type="button" class="btn btn-sm bg-danger delete-product me-2" data-product-id="${row.id}" data-product-name="${row.name}">` +
+              `   <i class="fas fa-trash"></i> ${l('Delete')}` +
+              '</button>'
+            );
+          }
+
+          if (_permissions.view) {
+            buttons.push(
+              `<button type="button" class="btn btn-sm bg-info detail-product" data-product-id="${row.id}" data-toggle="modal">` +
+              `   <i class="fas fa-eye"></i> ${l('Details')}` +
+              '</button>'
+            );
+          }
+
+          return `<div class="d-flex justify-content-center">${buttons.join('')}</div>`;
         }
       }
     ],

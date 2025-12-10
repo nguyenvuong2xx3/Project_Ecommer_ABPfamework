@@ -31,7 +31,6 @@ using static Acme.SimpleTaskApp.Orders.OrderNotificationJob;
 
 namespace Acme.SimpleTaskApp.Orders
 {
-	[AbpAuthorize(PermissionNames.Pages_Orders)]
 	public class OrdersAppService : ApplicationService, IOrdersAppService
 	{
 		private readonly IBackgroundJobManager _backgroundJobManager;

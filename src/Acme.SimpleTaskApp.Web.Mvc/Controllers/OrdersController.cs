@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Orders)]
 	public class OrdersController : SimpleTaskAppControllerBase
 	{
 		private readonly ICartAppService _cartAppService;

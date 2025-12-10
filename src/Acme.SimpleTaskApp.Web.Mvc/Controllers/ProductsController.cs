@@ -27,7 +27,6 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Products)]
 	public class ProductsController : SimpleTaskAppControllerBase
 	{
 		private readonly IProductImportExportAppService _productImportExportAppService;

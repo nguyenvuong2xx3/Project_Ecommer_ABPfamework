@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Settings)]
 	public class SettingsController : SimpleTaskAppControllerBase
 	{
 		private readonly ISettingAppService _settingAppService;
@@ -18,6 +17,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_settingAppService = settingAppService;
 		}
 
+		[AbpMvcAuthorize(PermissionNames.Pages_Settings)]
 		public async Task<IActionResult> Index()
 		{
 			var getAll = await _settingAppService.GetAllSetting();

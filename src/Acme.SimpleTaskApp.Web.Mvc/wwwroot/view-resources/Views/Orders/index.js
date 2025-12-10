@@ -3,6 +3,17 @@
 		l = abp.localization.getSource('SimpleTaskApp'),
 		_$table = $('#OrdersTable');
 
+	var _permissions = {
+		view: abp.auth.hasPermission('Pages.Orders.View'),
+		create: abp.auth.hasPermission('Pages.Orders.Create'),
+		edit: abp.auth.hasPermission('Pages.Orders.Edit'),
+		delete: abp.auth.hasPermission('Pages.Orders.Delete'),
+		confirm: abp.auth.hasPermission('Pages.Orders.Confirm'),
+		cancel: abp.auth.hasPermission('Pages.Orders.Cancel'),
+		ship: abp.auth.hasPermission('Pages.Orders.Ship'),
+		complete: abp.auth.hasPermission('Pages.Orders.Complete'),
+	};
+
 	var _detailModal = new app.ModalManager({
 		viewUrl: abp.appPath + 'Orders/DetailModal',
 		scriptUrl: abp.appPath + 'view-resources/Views/Orders/_DetailModal.js',
@@ -117,40 +128,42 @@
 				render: function (data, type, row) {
 					let buttons = [];
 
-					if (row.status === 0) { // Chờ xác nhận
+					if (_permissions.confirm && row.status === 0) { // Chờ xác nhận
 						buttons.push(
 							`<button type="button" class="btn btn-sm btn-primary xuly-order mr-2" data-order-id="${row.id}">
-          <i class="fas fa-check"></i> ${l('Xác nhận')}
-        </button>`,
+                      <i class="fas fa-check"></i> ${l('Xác nhận')}
+                    </button>`,
 
-							`<button type="button" class="btn btn-sm btn-danger huydon-order mr-2" data-order-id="${row.id}">
-          <i class="fas fa-times"></i> ${l('Hủy đơn')}
-        </button>`
+							_permissions.cancel ? `<button type="button" class="btn btn-sm btn-danger huydon-order mr-2" data-order-id="${row.id}">
+                      <i class="fas fa-times"></i> ${l('Hủy đơn')}
+                    </button>` : ''
 						);
 					}
 
-					if (row.status === 1) { // Đang xử lý
+					if (_permissions.ship && row.status === 1) { // Đang xử lý
 						buttons.push(
 							`<button type="button" class="btn btn-sm btn-success danggiao-order mr-2" data-order-id="${row.id}">
-          <i class="fas fa-truck"></i> ${l('Đang giao')}
-        </button>`
+                      <i class="fas fa-truck"></i> ${l('Đang giao')}
+                    </button>`
 						);
 					}
 
-					if (row.status === 2) { // Đang giao
+					if (_permissions.complete && row.status === 2) { // Đang giao
 						buttons.push(
 							`<button type="button" class="btn btn-sm btn-success thanhcong-order mr-2" data-order-id="${row.id}">
-          <i class="fas fa-check-circle"></i> ${l('Thành công')}
-        </button>`
+                      <i class="fas fa-check-circle"></i> ${l('Thành công')}
+                    </button>`
 						);
 					}
 
 					// Nút chi tiết luôn hiển thị
-					buttons.push(
-						`<button type="button" class="btn btn-sm btn-info detail-order mt-2" data-order-id="${row.id}">
-        <i class="fas fa-eye"></i> ${l('Chi tiết')}
-      </button>`
-					);
+					if (_permissions.view) {
+						buttons.push(
+							`<button type="button" class="btn btn-sm btn-info detail-order mt-2" data-order-id="${row.id}">
+                    <i class="fas fa-eye"></i> ${l('Chi tiết')}
+                  </button>`
+						);
+					}
 
 					return buttons.join('');
 				}

@@ -13,7 +13,6 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Banners)]
 	public class BannersController : SimpleTaskAppControllerBase
 	{
 		private readonly IBannerAppService _bannerAppService;

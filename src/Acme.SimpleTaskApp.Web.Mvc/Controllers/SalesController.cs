@@ -12,7 +12,6 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Sales)]
 	public class SalesController : SimpleTaskAppControllerBase
 	{
 		private readonly ISaleAppService _saleAppService;

@@ -45,7 +45,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Users"),
 						url: "Users",
 						icon: "fas fa-users",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Users)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Users_View)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -53,7 +53,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Roles"),
 						url: "Roles",
 						icon: "fas fa-theater-masks",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles_View)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -61,7 +61,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Settings"),
 						url: "Settings",
 						icon: "fas fa-cog",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Settings)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Settings_View)
 					)
 				)
 			);
@@ -78,7 +78,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Banners"),
 						url: "Banners",
 						icon: "fas fa-images",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Banners)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Banners_View)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -86,7 +86,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Sales"),
 						url: "Sales",
 						icon: "fas fa-tag",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Sales)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Sales_View)
 					)
 				)
 			);
@@ -103,7 +103,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 							L("Categories"),
 							url: "Categories",
 							icon: "fas fa-list",
-							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Categories)
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Categories_View)
 						)
 			).AddItem(
 						new MenuItemDefinition(
@@ -111,7 +111,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 							L("Products"),
 							url: "Products",
 							icon: "fas fa-cube",
-							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Products)
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Products_View)
 						)
 			).AddItem(
 						new MenuItemDefinition(
@@ -119,7 +119,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 							L("ProductVariants"),
 							url: "ProductVariants",
 							icon: "fas fa-cubes",
-							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_ProductVariants)
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_ProductVariants_View)
 						)
 			)
 			);
@@ -136,7 +136,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Orders"),
 						url: "Orders",
 						icon: "fas fa-box-open",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Orders)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Orders_View)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -144,7 +144,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Carts"),
 						url: "Carts",
 						icon: "fas fa-shopping-cart",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Carts)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Carts_View)
 					)
 				)
 			);
@@ -156,7 +156,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					L("Notifications"),
 					url: "Notifications",
 					icon: "fas fa-bell",
-					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Notifications)
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Notifications_View)
 				)
 			);
 			menu.AddItem(

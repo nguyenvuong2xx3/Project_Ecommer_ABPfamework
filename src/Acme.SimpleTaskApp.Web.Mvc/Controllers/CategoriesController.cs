@@ -13,7 +13,6 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_Categories)]
 	public class CategoriesController : SimpleTaskAppControllerBase
 	{
 		private readonly ICategoryAppService _categoryAppService;
