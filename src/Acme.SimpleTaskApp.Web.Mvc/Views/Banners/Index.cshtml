@@ -20,14 +20,14 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1><i class="fas fa-image"></i> Quản lý Banner</h1>
+                <h1>Quản lý biển quảng cáo</h1>
             </div>
             <div class="col-sm-6">
                 @if (await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Banners_Create))
                 {
                     <button type="button" id="CreateNewBannerButton" class="btn bg-blue float-sm-right">
                         <i class="fa fa-plus-square"></i>
-                        Tạo mới Banner
+                        Tạo mới
                     </button>
                 }
             </div>

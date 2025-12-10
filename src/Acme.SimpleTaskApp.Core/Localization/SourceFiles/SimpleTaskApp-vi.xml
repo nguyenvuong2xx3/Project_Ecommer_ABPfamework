@@ -394,6 +394,7 @@
 		<text name="SetNotificationsAsRead" value="Đánh dấu đã đọc" />
 		<text name="DeleteNotifications" value="Xóa thông báo" />
 		<text name="NotificationSettings" value="Cài đặt thông báo" />
+		<text name="BannerManagement" value="Quản lý biển quảng cáo" />
 
 	</texts>
 </localizationDictionary>

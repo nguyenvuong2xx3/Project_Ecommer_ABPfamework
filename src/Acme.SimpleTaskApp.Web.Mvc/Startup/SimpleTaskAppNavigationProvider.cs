@@ -74,8 +74,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					icon: "fas fa-image"
 				).AddItem(
 					new MenuItemDefinition(
-						PageNames.Banners,
-						L("Banners"),
+						"BannerManagement",
+						L("BannerManagement"),
 						url: "Banners",
 						icon: "fas fa-images",
 						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Banners_View)
