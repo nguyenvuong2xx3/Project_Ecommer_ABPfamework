@@ -17,7 +17,7 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Banners
 {
-	//[AbpAuthorize(PermissionNames.Pages_Banners)]
+	[AbpAuthorize(PermissionNames.Pages_Banners)]
 	public class BannerAppService : ApplicationService, IBannerAppService
 	{
 		private readonly IRepository<Banner, int> _bannerRepository;
@@ -29,7 +29,6 @@ namespace Acme.SimpleTaskApp.Banners
 			_uploadFileAppService = uploadFileAppService;
 		}
 
-		// 🟢 Tạo mới Banner
 		[AbpAuthorize(PermissionNames.Pages_Banners_Create)]
 		public async Task<Banner> CreateBanner(CreateBannerDto input)
 		{
@@ -61,7 +60,6 @@ namespace Acme.SimpleTaskApp.Banners
 			return result;
 		}
 
-		// 🟢 Cập nhật Banner
 		[AbpAuthorize(PermissionNames.Pages_Banners_Edit)]
 		public async Task<Banner> UpdateBanner(Banner input)
 		{
@@ -97,7 +95,6 @@ namespace Acme.SimpleTaskApp.Banners
 			return banner;
 		}
 
-		// 🟢 Xóa Banner
 		[AbpAuthorize(PermissionNames.Pages_Banners_Delete)]
 		public async Task DeleteBanner(int id)
 		{
@@ -108,7 +105,7 @@ namespace Acme.SimpleTaskApp.Banners
 			await _bannerRepository.DeleteAsync(banner);
 		}
 
-		// 🟢 Lấy danh sách Banner có phân trang và lọc
+		[AbpAuthorize(PermissionNames.Pages_Banners_View)]
 		public async Task<PagedResultDto<Banner>> GetAllBanners(GetAllBannerDto input)
 		{
 			var query = _bannerRepository.GetAll();
@@ -139,6 +136,7 @@ namespace Acme.SimpleTaskApp.Banners
 		}
 
 		[UnitOfWork]
+		[AbpAllowAnonymous]
 		public async Task<List<Banner>> GetListBanners(GetAllBannerDto input)
 		{
 			var query = _bannerRepository.GetAll();
@@ -167,6 +165,7 @@ namespace Acme.SimpleTaskApp.Banners
 			return new List<Banner>(result);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Banners_View)]
 		public Task<Banner> GetBannerById(int id)
 		{
 			if (id <= 0)

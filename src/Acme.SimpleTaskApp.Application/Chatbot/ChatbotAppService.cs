@@ -53,105 +53,44 @@ namespace Acme.SimpleTaskApp.Chatbot
 		{
 			try
 			{
+				Console.WriteLine($"🟢 ChatbotAppService.SendMessage started");
+				Console.WriteLine($"📩 User message: {input.Message}");
+
 				// Generate conversation ID if not exists
 				if (string.IsNullOrEmpty(input.ConversationId))
 				{
 					input.ConversationId = Guid.NewGuid().ToString();
 				}
 
-				// Get conversation history from cache
-				var historyCache = _cacheManager.GetCache("ChatHistory");
-				var history = await historyCache.GetOrDefaultAsync(input.ConversationId);
-				var conversationHistory = history as List<ChatHistoryDto> ?? new List<ChatHistoryDto>();
-
-				// Build product context
-				var productsContext = await BuildProductContext(input);
-
-				// Create enhanced prompt with system context
-				var systemPrompt = @"
-				Bạn là trợ lý tư vấn sản phẩm AI thông minh cho cửa hàng điện thoại và phụ kiện.
-
-				NHIỆM VỤ CỦA BẠN:
-				1. Lắng nghe và hiểu nhu cầu khách hàng
-				2. Đề xuất sản phẩm phù hợp từ danh sách có sẵn
-				3. Giải thích rõ ràng, dễ hiểu về sản phẩm
-				4. So sánh các lựa chọn khi cần thiết
-				5. Hỗ trợ quyết định mua hàng
-
-				QUY TẮC:
-				- Luôn trả lời bằng tiếng Việt
-				- Thân thiện, chuyên nghiệp
-				- Chỉ đề xuất sản phẩm có trong danh sách
-				- Nếu không hiểu, hỏi lại khách hàng
-				- Không bịa đặt thông tin sản phẩm
-				";
-
-								var fullPrompt = $@"{systemPrompt}
-
-			DANH SÁCH SẢN PHẨM:
-			{productsContext}
-
-			KHÁCH HÀNG NÓI: {input.Message}
-
-			Hãy trả lời một cách tự nhiên và hữu ích.";
-
-				// Convert history to Gemini format
-				var geminiHistory = conversationHistory
-					.Select(h => new ChatMessageDto
-					{
-						Role = h.Role == "user" ? "user" : "model",
-						Content = h.Message
-					})
-					.ToList();
-
-				// Get AI response
-				var aiResponse = await _geminiAIService.GenerateResponse(fullPrompt, geminiHistory);
-
-				// Extract product recommendations from response
-				var recommendedProducts = await ExtractProductRecommendations(aiResponse, input);
-
-				// Save to history
-				conversationHistory.Add(new ChatHistoryDto
-				{
-					Role = "user",
-					Message = input.Message,
-					Timestamp = DateTime.Now
-				});
-
-				conversationHistory.Add(new ChatHistoryDto
-				{
-					Role = "assistant",
-					Message = aiResponse,
-					Timestamp = DateTime.Now,
-					Products = recommendedProducts
-				});
-
-				// Update cache (expire after 30 minutes)
-				await historyCache.SetAsync(
-					input.ConversationId,
-					conversationHistory,
-					TimeSpan.FromMinutes(30)
-				);
-
-				// Generate suggested questions
-				var suggestedQuestions = GenerateSuggestedQuestions(input.Message);
+				// ✅ TEST ĐƠN GIẢN: Chỉ gửi message trực tiếp
+				var simplePrompt = $"Người dùng hỏi: {input.Message}\nHãy trả lời ngắn gọn bằng tiếng Việt.";
+				
+				Console.WriteLine($"📤 Calling GeminiAIService.GenerateResponse...");
+				var aiResponse = await _geminiAIService.GenerateResponse(simplePrompt);
+				Console.WriteLine($"📥 Received AI response: {aiResponse?.Substring(0, Math.Min(100, aiResponse?.Length ?? 0))}...");
 
 				return new ChatbotResponseDto
 				{
 					Message = aiResponse,
-					RecommendedProducts = recommendedProducts,
-					SuggestedQuestions = suggestedQuestions,
+					RecommendedProducts = new List<ProductRecommendationDto>(),
+					SuggestedQuestions = new List<string>
+					{
+						"Sản phẩm bán chạy nhất là gì?",
+						"Có sản phẩm nào đang giảm giá không?"
+					},
 					ConversationId = input.ConversationId,
 					Timestamp = DateTime.Now
 				};
 			}
 			catch (Exception ex)
 			{
+				Console.WriteLine($"❌ Error in ChatbotAppService.SendMessage: {ex.Message}");
+				Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
 				Logger.Error("Error in ChatbotAppService.SendMessage", ex);
 				
 				return new ChatbotResponseDto
 				{
-					Message = "Xin lỗi, tôi đang gặp chút vấn đề kỹ thuật. Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ.",
+					Message = $"❌ Lỗi: {ex.Message}",
 					ConversationId = input.ConversationId,
 					Timestamp = DateTime.Now
 				};

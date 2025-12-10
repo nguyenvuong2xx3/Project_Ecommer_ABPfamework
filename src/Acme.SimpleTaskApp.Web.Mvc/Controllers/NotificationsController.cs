@@ -8,7 +8,7 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_notifications)]
+	[AbpMvcAuthorize(PermissionNames.Pages_Notifications)]
 	public class NotificationsController : SimpleTaskAppControllerBase
 	{
 		private readonly INotificationAppService _notificationAppService;

@@ -315,7 +315,9 @@
 		<text name="Close" value="Đóng" />
 		<text name="Dashboard" value="Bảng điều khiển" />
 
+		<!-- Users -->
 		<text name="Users" value="Người dùng" />
+		<text name="ViewUsers" value="Xem người dùng" />
 		<text name="CreateNewUser" value="Tạo người dùng mới" />
 		<text name="EditUser" value="Chỉnh sửa người dùng" />
 		<text name="DeleteUser" value="Xóa người dùng" />
@@ -323,37 +325,52 @@
 		<text name="LoginForUsers" value="Đăng nhập thay người dùng" />
 		<text name="ChangePermissions" value="Thay đổi quyền" />
 
+		<!-- Roles -->
+		<text name="ViewRoles" value="Xem vai trò" />
 		<text name="CreateNewRole" value="Tạo vai trò mới" />
 		<text name="EditRole" value="Chỉnh sửa vai trò" />
 		<text name="DeleteRole" value="Xóa vai trò" />
 
+		<!-- Settings -->
 		<text name="Settings" value="Cài đặt" />
+		<text name="ViewSettings" value="Xem cài đặt" />
 		<text name="EditSettings" value="Chỉnh sửa cài đặt" />
 
+		<!-- Banners -->
 		<text name="Banners" value="Banner" />
+		<text name="ViewBanners" value="Xem banner" />
 		<text name="CreateBanner" value="Tạo banner" />
 		<text name="EditBanner" value="Chỉnh sửa banner" />
 		<text name="DeleteBanner" value="Xóa banner" />
 
+		<!-- Sales -->
+		<text name="ViewSales" value="Xem khuyến mãi" />
 		<text name="CreateSale" value="Tạo khuyến mãi" />
 		<text name="EditSale" value="Chỉnh sửa khuyến mãi" />
 		<text name="DeleteSale" value="Xóa khuyến mãi" />
 		<text name="ToggleActiveSale" value="Bật/tắt khuyến mãi" />
 
+		<!-- Categories -->
 		<text name="Categories" value="Danh mục" />
+		<text name="ViewCategories" value="Xem danh mục" />
 		<text name="CreateCategory" value="Tạo danh mục" />
 		<text name="UpdateCategory" value="Cập nhật danh mục" />
 		<text name="DeleteCategory" value="Xóa danh mục" />
 
+		<!-- Products -->
+		<text name="ViewProducts" value="Xem sản phẩm" />
 		<text name="ViewProduct" value="Xem sản phẩm" />
 		<text name="ImportProduct" value="Nhập sản phẩm" />
 		<text name="ExportProduct" value="Xuất sản phẩm" />
 
+		<!-- Product Variants -->
+		<text name="ViewProductVariants" value="Xem biến thể sản phẩm" />
 		<text name="CreateProductVariant" value="Tạo biến thể sản phẩm" />
 		<text name="UpdateProductVariant" value="Cập nhật biến thể sản phẩm" />
 		<text name="DeleteProductVariant" value="Xóa biến thể sản phẩm" />
-		<text name="ViewProductVariant" value="Xem biến thể sản phẩm" />
 
+		<!-- Orders -->
+		<text name="ViewOrders" value="Xem đơn hàng" />
 		<text name="CreateOrder" value="Tạo đơn hàng" />
 		<text name="ViewOrder" value="Xem đơn hàng" />
 		<text name="EditOrder" value="Chỉnh sửa đơn hàng" />
@@ -363,12 +380,15 @@
 		<text name="ShipOrder" value="Giao hàng" />
 		<text name="CompleteOrder" value="Hoàn thành đơn hàng" />
 
+		<!-- Carts -->
 		<text name="Carts" value="Giỏ hàng" />
+		<text name="ViewCarts" value="Xem giỏ hàng" />
 		<text name="AddToCart" value="Thêm vào giỏ" />
 		<text name="RemoveFromCart" value="Xóa khỏi giỏ" />
 		<text name="ViewCart" value="Xem giỏ hàng" />
 		<text name="ClearCart" value="Xóa toàn bộ giỏ" />
 
+		<!-- Notifications -->
 		<text name="Notifications" value="Thông báo" />
 		<text name="ViewNotifications" value="Xem thông báo" />
 		<text name="SetNotificationsAsRead" value="Đánh dấu đã đọc" />

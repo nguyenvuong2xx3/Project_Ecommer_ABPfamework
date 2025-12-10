@@ -1,13 +1,11 @@
-﻿using Acme.SimpleTaskApp.Configuration;
+﻿using Abp.AspNetCore.Mvc.Authorization;
+using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Controllers;
 using Acme.SimpleTaskApp.Settings;
 using Acme.SimpleTaskApp.Settings.Dtos;
 using Acme.SimpleTaskApp.Web.Models.Settings;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Abp.AspNetCore.Mvc.Authorization;
-using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
@@ -19,7 +17,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		{
 			_settingAppService = settingAppService;
 		}
-		
+
 		public async Task<IActionResult> Index()
 		{
 			var getAll = await _settingAppService.GetAllSetting();

@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	[AbpMvcAuthorize(PermissionNames.Pages_products)]
+	[AbpMvcAuthorize(PermissionNames.Pages_Products)]
 	public class ProductsController : SimpleTaskAppControllerBase
 	{
 		private readonly IProductImportExportAppService _productImportExportAppService;
@@ -48,7 +48,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			_categoryAppService = categoryAppService;
 			_webHostEnvironment = webHostEnvironment;
 		}
-		
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_View)]
 		public async Task<ActionResult> Index()
 		{
 			var query = _categoryRepository.GetAll();
@@ -59,7 +60,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return View(model);
 		}
 
-		[AbpMvcAuthorize(PermissionNames.Pages_products_create)]
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Create)]
 		public async Task<PartialViewResult> CreateModal()
 		{
 			var categories = await _categoryRepository.GetAllListAsync();
@@ -72,8 +73,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_CreateProductModal", model);
 		}
 
-		[AbpMvcAuthorize(PermissionNames.Pages_products_create)]
-		public IActionResult CreateProduct(CreateProductDto model)
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Create)]
+		public async Task<IActionResult> Create(CreateProductDto model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -88,7 +89,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return View("Create");
 		}
 
-		[AbpMvcAuthorize(PermissionNames.Pages_products_update)]
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Update)]
 		public async Task<PartialViewResult> EditModal(int productId)
 		{
 			var categories = await _categoryRepository.GetAllAsync();
@@ -101,20 +102,33 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return PartialView("_EditProductModal", model);
 		}
-		
-		[AbpMvcAuthorize(PermissionNames.Pages_products_update)]
-		public async Task EditProduct(Product model)
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Update)]
+		public async Task<IActionResult> Update(Product model)
 		{
 			var product = await _productAppService.EditProduct(model);
+			return Json(new { success = true });
 		}
-		
-		[AbpMvcAuthorize(PermissionNames.Pages_products_delete)]
-		public async Task Delete(int id)
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_View)]
+		public async Task<PartialViewResult> DetailProduct(int productId)
 		{
-			await _productAppService.DeleteProduct(id);
+			var product = await _productAppService.GetProductById(productId);
+
+			var model = new ProductViewModel()
+			{
+				Product = product
+			};
+			return PartialView("_DetailProductModal", model);
 		}
-		
-		[AbpMvcAuthorize(PermissionNames.Pages_products_export)]
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Delete)]
+		public async Task Delete(EntityDto<int> input)
+		{
+			await _productAppService.DeleteProduct(input.Id);
+		}
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Export)]
 		public async Task<PartialViewResult> ExportModal()
 		{
 			var query = await _categoryRepository.GetAllListAsync();
@@ -124,14 +138,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			};
 			return PartialView("_ExportProductModal", model);
 		}
-		
-		[AbpMvcAuthorize(PermissionNames.Pages_products_import)]
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Import)]
 		public async Task<PartialViewResult> ImportModal()
 		{
 			return PartialView("_ImportDataModal");
 		}
 
-		[AbpMvcAuthorize(PermissionNames.Pages_products_import)]
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Import)]
 		public async Task<ImportResult> ImportData(IFormFile file)
 		{
 			ExcelPackage.License.SetNonCommercialPersonal("ImportForDoAn");

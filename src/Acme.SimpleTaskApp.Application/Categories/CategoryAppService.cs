@@ -1,8 +1,10 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.UI;
+using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Categories.Dtos;
 using Acme.SimpleTaskApp.Products;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Categories
 {
+	[AbpAuthorize(PermissionNames.Pages_Categories)]
 	public class CategoryAppService : ApplicationService, ICategoryAppService
 	{
 		private readonly IRepository<Product> _productRepository;
@@ -22,6 +25,7 @@ namespace Acme.SimpleTaskApp.Categories
 			_categoryRepository = categoryRepository;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_Create)]
 		public async Task<Category> CreateCategory(Category input)
 		{
 			var check = await _categoryRepository.FirstOrDefaultAsync(x => x.Name == input.Name);
@@ -33,6 +37,7 @@ namespace Acme.SimpleTaskApp.Categories
 			return category;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_Delete)]
 		public async Task DeleteCategory(EntityDto<int> input)
 		{
 			var category = await _categoryRepository.GetAsync(input.Id);
@@ -55,6 +60,7 @@ namespace Acme.SimpleTaskApp.Categories
 			await _categoryRepository.DeleteAsync(input.Id);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_View)]
 		public async Task<PagedResultDto<Category>> GetAllCategories(GetAllCategoryDto input)
 		{
 			var query = _categoryRepository.GetAll()
@@ -88,6 +94,7 @@ namespace Acme.SimpleTaskApp.Categories
 			}).ToList();
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_View)]
 		public async Task<Category> GetByIdCategory(EntityDto<int> input)
 		{
 			var category = await _categoryRepository.GetAsync(input.Id);
@@ -102,6 +109,7 @@ namespace Acme.SimpleTaskApp.Categories
 			return category;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_View)]
 		public async Task<PagedResultDto<CategoryListDto>> SearchCategory(GetAllCategoryDto input)
 		{
 			var query = _categoryRepository.GetAll()
@@ -126,6 +134,7 @@ namespace Acme.SimpleTaskApp.Categories
 			return new PagedResultDto<CategoryListDto>(totalCount, categoryDtos);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Categories_Update)]
 		public async Task<Category> UpdateCategory(Category input)
 		{
 			var category = await _categoryRepository.GetAsync(input.Id);

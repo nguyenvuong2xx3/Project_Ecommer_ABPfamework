@@ -93,35 +93,35 @@ namespace Acme.SimpleTaskApp.Web.Startup
 
 			// ===== QUẢN LÝ SẢN PHẨM =====
 			menu.AddItem(
-				new MenuItemDefinition(
-					"ProductManagement",
-					L("ProductManagement"),
-					icon: "fas fa-boxes"
-				).AddItem(
-					new MenuItemDefinition(
-						"Categories",
-						L("Categories"),
-						url: "Categories",
-						icon: "fas fa-list",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_categories)
-					)
-				).AddItem(
-					new MenuItemDefinition(
-						"Products",
-						L("Products"),
-						url: "Products",
-						icon: "fas fa-cube",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_products)
-					)
-				).AddItem(
-					new MenuItemDefinition(
-						"ProductVariants",
-						L("ProductVariants"),
-						url: "ProductVariants",
-						icon: "fas fa-cubes",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_productVariants)
-					)
-				)
+			new MenuItemDefinition(
+						"ProductManagement",
+						L("ProductManagement"),
+						icon: "fas fa-boxes"
+			).AddItem(
+						new MenuItemDefinition(
+							"Categories",
+							L("Categories"),
+							url: "Categories",
+							icon: "fas fa-list",
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Categories)
+						)
+			).AddItem(
+						new MenuItemDefinition(
+							"Products",
+							L("Products"),
+							url: "Products",
+							icon: "fas fa-cube",
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Products)
+						)
+			).AddItem(
+						new MenuItemDefinition(
+							"ProductVariants",
+							L("ProductVariants"),
+							url: "ProductVariants",
+							icon: "fas fa-cubes",
+							permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_ProductVariants)
+						)
+			)
 			);
 
 			// ===== QUẢN LÝ BÁN HÀNG =====
@@ -136,7 +136,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("HomeCustomer"),
 						url: "HomeCustomer",
 						icon: "fas fa-home",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_homeCustomer)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_HomeCustomer)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -144,7 +144,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Orders"),
 						url: "Orders",
 						icon: "fas fa-box-open",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_orders)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Orders)
 					)
 				).AddItem(
 					new MenuItemDefinition(
@@ -152,7 +152,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						L("Carts"),
 						url: "Carts",
 						icon: "fas fa-shopping-cart",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_carts)
+						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Carts)
 					)
 				)
 			);
@@ -164,7 +164,7 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					L("Notifications"),
 					url: "Notifications",
 					icon: "fas fa-bell",
-					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_notifications)
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Notifications)
 				)
 			);
 		}

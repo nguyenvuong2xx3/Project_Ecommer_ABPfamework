@@ -18,7 +18,7 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Sales
 {
-	//[AbpAuthorize(PermissionNames.Pages_Sales)]
+	[AbpAuthorize(PermissionNames.Pages_Sales)]
 	public class SaleAppService : ApplicationService, ISaleAppService
 	{
 		private readonly IRepository<Sale, int> _saleRepository;
@@ -173,6 +173,7 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Lấy Sale theo ID
+		[AbpAuthorize(PermissionNames.Pages_Sales_View)]
 		public async Task<SaleDto> GetSaleById(int id)
 		{
 			if (id <= 0)
@@ -190,6 +191,7 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Lấy danh sách Sale có phân trang và lọc
+		[AbpAuthorize(PermissionNames.Pages_Sales_View)]
 		public async Task<PagedResultDto<SaleDto>> GetAllSales(GetAllSaleDto input)
 		{
 			var query = _saleRepository.GetAll();
@@ -259,6 +261,7 @@ namespace Acme.SimpleTaskApp.Sales
 		#endregion
 
 		#region Voucher Operations
+		[AbpAuthorize(PermissionNames.Pages_Sales_ToggleActive)]
 		public async Task<Sale> ActiveOrInActive(int id)
 		{
 			if (id <= 0)
@@ -512,6 +515,7 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Lấy sale tốt nhất cho product variant
+		[AbpAllowAnonymous]
 		public async Task<SaleDto> GetBestSaleForProductVariant(int productVariantId, int productId, int? categoryId)
 		{
 			var now = DateTime.Now;

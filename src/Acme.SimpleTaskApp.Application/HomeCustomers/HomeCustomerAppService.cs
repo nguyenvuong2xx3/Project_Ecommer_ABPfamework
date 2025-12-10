@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Linq.Extensions;
@@ -47,7 +48,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	}
 	
 	[UnitOfWork]
-	[AllowAnonymous]
+	[AbpAllowAnonymous]
 	public async Task<PagedResultDto<Product>> GetAllProductHomeCustomers(SearchHomeCustomerDto input)
 	{
 		input.MaxResultCount = 12;

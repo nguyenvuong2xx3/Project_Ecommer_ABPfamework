@@ -76,50 +76,50 @@
     <text name="UnknownTenantId{0}">Unknown tenantId {0}</text>
     <text name="ThisFieldIsRequired">This field is required</text>
     <text name="PleaseWait">Please wait...</text>
-    <text name="Administration">Administration</text>
-    <text name="ClearAll">Clear all</text>
-    <text name="ClearOthers">Clear others</text>
-    <text name="LabelOptions">Label options</text>
-    <text name="Permissions">Permissions</text>
-    <text name="RoleDescription">Role description</text>
-    <text name="Refresh">Refresh</text>
-    <text name="Create">Create</text>
-    <text name="UserDetails">User details</text>
-    <text name="UserRoles">User roles</text>
-    <text name="ConfirmPassword">Confirm password</text>
-    <text name="Version">Version</text>
-    <text name="On">On</text>
-    <text name="Off">Off</text>
+    <text name="Administration" value="Administration" />
+    <text name="ClearAll" value="Clear all" />
+    <text name="ClearOthers" value="Clear others" />
+    <text name="LabelOptions" value="Label options" />
+    <text name="Permissions" value="Permissions" />
+    <text name="RoleDescription" value="Role description" />
+    <text name="Refresh" value="Refresh" />
+    <text name="Create" value="Create" />
+    <text name="UserDetails" value="User details" />
+    <text name="UserRoles" value="User roles" />
+    <text name="ConfirmPassword" value="Confirm password" />
+    <text name="Version" value="Version" />
+    <text name="On" value="On" />
+    <text name="Off" value="Off" />
     <text name="AreYouSureWantToDelete">Are you sure want to delete {0}?</text>
     <text name="SuccessfullyDeleted" value="Successfully deleted" />
-    <text name="StartTyping">Start Typing</text>
-    <text name="Skins">Skins</text>
-    <text name="Settings">Settings</text>
-    <text name="Filter">Filter</text>
-    <text name="CurrentPassword">Current Password</text>
-    <text name="NewPassword">New Password</text>
-    <text name="ConfirmNewPassword">Confirm New Password</text>
-    <text name="PasswordsDoNotMatch">Passwords do not match</text>
-    <text name="PasswordsMustBeAtLeast8CharactersContainLowercaseUppercaseNumber">Passwords must be at least 8 characters, contain a lowercase, uppercase, and number</text>
-    <text name="UserDeleteWarningMessage">User {0} will be deleted.</text>
-    <text name="RoleDeleteWarningMessage">Role {0} will be deleted and unassigned from all assigned users.</text>
-    <text name="TenantDeleteWarningMessage">Tenant {0} will be deleted.</text>
-    <text name="SearchWithThreeDot">Search...</text>
-    <text name="PleaseEnterAtLeastNCharacter">Please enter at least {0} characters</text>
-    <text name="PleaseEnterNoMoreThanNCharacter">Please enter no more than {0} characters</text>
-    <text name="InvalidEmailAddress">Invalid email address</text>
-    <text name="InvalidPattern">Invalid</text>
-    <text name="PairsDoNotMatch">Do not match</text>
-    <text name="All">All</text>
-    <text name="TotalRecordsCount">Total: {0}</text>
-    <text name="Search">Search</text>
-    <text name="Clear">Clear</text>
-    <text name="ResetPasswordStepOneInfo">1. Enter your administrator password</text>
-    <text name="ResetPasswordStepTwoInfo">2. Copy this random password so you can send it to the user</text>
-    <text name="UsersActivation">Users activation</text>
-    <text name="403PageHeader">Forbidden</text>
-    <text name="403PageDescription">You don't have permission to access this resource. Please contact your administrator.</text>
-    <text name="403PageButton">Go back to Dashboard</text>
+    <text name="StartTyping" value="Start Typing" />
+    <text name="Skins" value="Skins" />
+    <text name="Settings" value="Settings" />
+    <text name="Filter" value="Filter" />
+    <text name="CurrentPassword" value="Current Password" />
+    <text name="NewPassword" value="New Password" />
+    <text name="ConfirmNewPassword" value="Confirm New Password" />
+    <text name="PasswordsDoNotMatch" value="Passwords do not match" />
+    <text name="PasswordsMustBeAtLeast8CharactersContainLowercaseUppercaseNumber" value="Passwords must be at least 8 characters, contain a lowercase, uppercase, and number" />
+    <text name="UserDeleteWarningMessage" value="User {0} will be deleted." />
+    <text name="RoleDeleteWarningMessage" value="Role {0} will be deleted and unassigned from all assigned users." />
+    <text name="TenantDeleteWarningMessage" value="Tenant {0} will be deleted." />
+    <text name="SearchWithThreeDot" value="Search..." />
+    <text name="PleaseEnterAtLeastNCharacter" value="Please enter at least {0} characters" />
+    <text name="PleaseEnterNoMoreThanNCharacter" value="Please enter no more than {0} characters" />
+    <text name="InvalidEmailAddress" value="Invalid email address" />
+    <text name="InvalidPattern" value="Invalid" />
+    <text name="PairsDoNotMatch" value="Do not match" />
+    <text name="All" value="All" />
+    <text name="TotalRecordsCount" value="Total: {0}" />
+    <text name="Search" value="Search" />
+    <text name="Clear" value="Clear" />
+    <text name="ResetPasswordStepOneInfo" value="1. Enter your administrator password" />
+    <text name="ResetPasswordStepTwoInfo" value="2. Copy this random password so you can send it to the user" />
+    <text name="UsersActivation" value="Users activation" />
+    <text name="403PageHeader" value="Forbidden" />
+    <text name="403PageDescription" value="You don't have permission to access this resource. Please contact your administrator." />
+    <text name="403PageButton" value="Go back to Dashboard" />
 	
     <!-- Menu Groups -->
     <text name="ContentManagement" value="Content Management" />
@@ -138,34 +138,44 @@
     <text name="Carts" value="Shopping Carts" />
     <text name="Notifications" value="Notifications" />
 
+    <!-- Permission Names - Tenants -->
+    <text name="ViewTenants" value="View Tenants" />
+
     <!-- Permission Names - Users -->
+    <text name="ViewUsers" value="View Users" />
     <text name="DeleteUser" value="Delete User" />
     <text name="LoginForUsers" value="Login for Users" />
     <text name="ChangePermissions" value="Change Permissions" />
 
     <!-- Permission Names - Roles -->
+    <text name="ViewRoles" value="View Roles" />
     <text name="DeleteRole" value="Delete Role" />
 
     <!-- Permission Names - Settings -->
+    <text name="ViewSettings" value="View Settings" />
     <text name="EditSettings" value="Edit Settings" />
 
     <!-- Permission Names - Banners -->
+    <text name="ViewBanners" value="View Banners" />
     <text name="CreateBanner" value="Create Banner" />
     <text name="EditBanner" value="Edit Banner" />
     <text name="DeleteBanner" value="Delete Banner" />
 
     <!-- Permission Names - Sales/Promotions -->
+    <text name="ViewSales" value="View Promotions" />
     <text name="CreateSale" value="Create Promotion" />
     <text name="EditSale" value="Edit Promotion" />
     <text name="DeleteSale" value="Delete Promotion" />
     <text name="ToggleActiveSale" value="Toggle Active Promotion" />
 
     <!-- Permission Names - Categories -->
+    <text name="ViewCategories" value="View Categories" />
     <text name="CreateCategory" value="Create Category" />
     <text name="UpdateCategory" value="Update Category" />
     <text name="DeleteCategory" value="Delete Category" />
 
     <!-- Permission Names - Products -->
+    <text name="ViewProducts" value="View Products" />
     <text name="CreateProduct" value="Create Product" />
     <text name="UpdateProduct" value="Update Product" />
     <text name="DeleteProduct" value="Delete Product" />
@@ -175,12 +185,13 @@
     <text name="ExportProduct" value="Export Product" />
 
     <!-- Permission Names - Product Variants -->
+    <text name="ViewProductVariants" value="View Product Variants" />
     <text name="CreateProductVariant" value="Create Product Variant" />
     <text name="UpdateProductVariant" value="Update Product Variant" />
     <text name="DeleteProductVariant" value="Delete Product Variant" />
-    <text name="ViewProductVariant" value="View Product Variant" />
 
     <!-- Permission Names - Orders -->
+    <text name="ViewOrders" value="View Orders" />
     <text name="CreateOrder" value="Create Order" />
     <text name="ViewOrder" value="View Order" />
     <text name="EditOrder" value="Edit Order" />
@@ -191,6 +202,7 @@
     <text name="CompleteOrder" value="Complete Order" />
 
     <!-- Permission Names - Carts -->
+    <text name="ViewCarts" value="View Carts" />
     <text name="AddToCart" value="Add to Cart" />
     <text name="RemoveFromCart" value="Remove from Cart" />
     <text name="ViewCart" value="View Cart" />

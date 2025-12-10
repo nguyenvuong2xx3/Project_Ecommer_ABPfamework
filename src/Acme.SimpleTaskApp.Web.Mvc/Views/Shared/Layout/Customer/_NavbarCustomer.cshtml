@@ -83,13 +83,15 @@
 
       <!-- Giỏ hàng và Đăng nhập -->
       <div class="d-flex align-items-center cart-login" style="padding-right: 192px">
-        <!-- Giỏ hàng -->
-        <!-- Đăng nhập -->
+        @* thông báo *@
         @await Component.InvokeAsync(typeof(AppTrezoRecentNotificationsViewComponent), new
         {
           cssClass = "btn btn-icon btn-active-light-primary position-relative w-30px h-30px w-md-40px h-md-40px"
         })
-        @await Component.InvokeAsync("CartMenu")
+        @if (AbpSession.UserId.HasValue)
+        {
+          @await Component.InvokeAsync("CartMenu")
+        }
         @await Component.InvokeAsync("User")
       </div>
     </div>
@@ -131,14 +133,14 @@
 
 
   @@keyframes pulse-badge {
-      0%, 100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.1);
-      }
+    0%, 100% {
+      transform: scale(1);
     }
+
+    50% {
+      transform: scale(1.1);
+    }
+  }
 
   50% {
     transform: scale(1.1);

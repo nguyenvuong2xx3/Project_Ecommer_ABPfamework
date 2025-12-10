@@ -148,23 +148,21 @@
 				},
 				'plugins': ['checkbox', 'search'],
 				'checkbox': {
-					'three_state': true,
-					'cascade': 'up+down', // Cascade lên cha và xuống con
+					'three_state': false,
+					'cascade': '',
 					'tie_selection': false
 				}
 			}).on('ready.jstree', function (e, data) {
-				data.instance.open_all();
 				_permissionTree = data.instance;
+				_permissionTree.open_all();
 
-				// Auto-check các permissions đã được granted
-				grantedPermissionNames.forEach(function (permissionName) {
-					var node = _permissionTree.get_node(permissionName);
-					if (node) {
-						_permissionTree.check_node(node);
-					}
+				var rootNodes = _permissionTree.get_json('#', { no_state: true });
+
+				rootNodes.forEach(function (root) {
+					var rootNode = _permissionTree.get_node(root.id);
+					checkGrantedPermissions(_permissionTree, rootNode, grantedPermissionNames);
 				});
 
-				// Disable tree nếu là static role
 				if (_isStaticRole) {
 					_permissionTree.disable_all();
 				}
@@ -173,33 +171,32 @@
 			}).on('check_node.jstree', function (e, data) {
 				if (_isStaticRole) return;
 
-				// Khi check một node, tự động check tất cả children
-				if (data.node.children && data.node.children.length > 0) {
-					data.node.children.forEach(function (childId) {
-						_permissionTree.check_node(childId);
-					});
-				}
-
-				// Tự động check parent nếu có
-				if (data.node.parent && data.node.parent !== '#') {
-					_permissionTree.check_node(data.node.parent);
-				}
-
 				updateSelectedCount();
 			}).on('uncheck_node.jstree', function (e, data) {
 				if (_isStaticRole) return;
-
-				// Khi uncheck một node cha, tự động uncheck tất cả children
-				if (data.node.children && data.node.children.length > 0) {
-					data.node.children.forEach(function (childId) {
-						_permissionTree.uncheck_node(childId);
-					});
-				}
 
 				updateSelectedCount();
 			}).on('changed.jstree', function (e, data) {
 				updateSelectedCount();
 			});
+		}
+
+		// kiểm tra quyền được gán
+		function checkGrantedPermissions(treeInstance, node, grantedPermissionNames) {
+			if (!node) return;
+
+			// Nếu node.id thuộc granted → check
+			if (grantedPermissionNames.includes(node.id)) {
+				treeInstance.check_node(node.id);
+			}
+
+			// Duyệt children đệ quy
+			if (node.children) {
+				node.children.forEach(function (childId) {
+					var childNode = treeInstance.get_node(childId);
+					checkGrantedPermissions(treeInstance, childNode, grantedPermissionNames);
+				});
+			}
 		}
 
 		// Cập nhật số lượng permissions đã chọn
@@ -281,7 +278,6 @@
 					// Response trả về là array với 1 phần tử
 					if (response && Array.isArray(response) && response.length > 0) {
 						var data = response[0];
-
 						console.log('[EditModal] Extracted data:', data);
 
 						if (data && data.permissions && data.grantedPermissionNames && data.role) {

@@ -1,6 +1,7 @@
 ﻿using Abp;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.BackgroundJobs;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
@@ -8,6 +9,7 @@ using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Notifications;
 using Abp.UI;
+using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Email;
@@ -29,6 +31,7 @@ using static Acme.SimpleTaskApp.Orders.OrderNotificationJob;
 
 namespace Acme.SimpleTaskApp.Orders
 {
+	[AbpAuthorize(PermissionNames.Pages_Orders)]
 	public class OrdersAppService : ApplicationService, IOrdersAppService
 	{
 		private readonly IBackgroundJobManager _backgroundJobManager;
@@ -75,6 +78,7 @@ namespace Acme.SimpleTaskApp.Orders
 			_saleAppService = saleAppService;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Orders_Create)]
 		public async Task<int> CreateOrder(CreateOrderInput input)
 		{
 			decimal totalPrice = 0;
@@ -216,6 +220,7 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Orders_View)]
 		[HttpPost]
 		public async Task<List<Order>> GetOrderByCurrentUser(GetAllOrderInput input)
 		{
@@ -288,6 +293,7 @@ namespace Acme.SimpleTaskApp.Orders
 			return orders;
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Orders_View)]
 		[HttpPost]
 		public async Task<PagedResultDto<Order>> GetAllOrder(GetAllOrderInput input)
 		{
@@ -345,6 +351,7 @@ namespace Acme.SimpleTaskApp.Orders
 			return new PagedResultDto<Order>(count, orders);
 		}
 
+		[AbpAuthorize(PermissionNames.Pages_Orders_View)]
 		public async Task<Order> GetOrder(int orderId)
 		{
 			var order = await _ordersRepository.FirstOrDefaultAsync(o => o.Id == orderId);
@@ -403,6 +410,7 @@ namespace Acme.SimpleTaskApp.Orders
 
 
 		// đang xử lý - admin
+		[AbpAuthorize(PermissionNames.Pages_Orders_Confirm)]
 		public async Task XuLyOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
@@ -431,6 +439,7 @@ namespace Acme.SimpleTaskApp.Orders
 		}
 
 		// hủy đơn - admin
+		[AbpAuthorize(PermissionNames.Pages_Orders_Cancel)]
 		public async Task HuyAdminOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
@@ -474,6 +483,7 @@ namespace Acme.SimpleTaskApp.Orders
 			 });
 		}
 		// hủy đơn - user, 
+		[AbpAuthorize(PermissionNames.Pages_Orders_Cancel)]
 		public async Task HuyUserOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
@@ -500,6 +510,7 @@ namespace Acme.SimpleTaskApp.Orders
 		}
 
 		/// đang giao - admin
+		[AbpAuthorize(PermissionNames.Pages_Orders_Ship)]
 		public async Task DangGiaoOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
@@ -527,6 +538,7 @@ namespace Acme.SimpleTaskApp.Orders
 		}
 
 		/// thành công - admin
+		[AbpAuthorize(PermissionNames.Pages_Orders_Complete)]
 		public async Task ThanhCongOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);

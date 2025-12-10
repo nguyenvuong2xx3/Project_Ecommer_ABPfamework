@@ -12,25 +12,28 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using Abp.AspNetCore.Mvc.Authorization;
 using Acme.SimpleTaskApp.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
-	//[AbpMvcAuthorize(PermissionNames.Pages_orders)]
+	[AbpMvcAuthorize(PermissionNames.Pages_Orders)]
 	public class OrdersController : SimpleTaskAppControllerBase
 	{
 		private readonly ICartAppService _cartAppService;
 		private readonly IOrdersAppService _ordersAppService;
+
 		public OrdersController(ICartAppService cartAppService, IOrdersAppService ordersAppService)
 		{
 			_cartAppService = cartAppService;
 			_ordersAppService = ordersAppService;
 		}
-		
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Orders_View)]
 		public IActionResult Index()
 		{
 			return View();
 		}
-		
+
 		public IActionResult IndexForCustomer()
 		{
 			return View();
@@ -98,7 +101,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		//	}
 		//}
 
-		[AbpMvcAuthorize(PermissionNames.Pages_orders_view)]
+		[AbpMvcAuthorize(PermissionNames.Pages_Orders_View)]
 		public async Task<IActionResult> DetailModal(int orderId)
 		{
 			var order = await _ordersAppService.GetOrder(orderId);
@@ -110,6 +113,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			return PartialView("_DetailOrderModal", model);
 		}
 
+		[Authorize]
 		public async Task<IActionResult> OrderConfirmation(int orderId)
 		{
 			var order = await _ordersAppService.GetOrder(orderId);

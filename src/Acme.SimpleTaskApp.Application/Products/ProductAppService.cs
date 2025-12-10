@@ -45,7 +45,7 @@ namespace Acme.SimpleTaskApp.Products
 		}
 
 		#region tạo mới
-		[AbpAuthorize(PermissionNames.Pages_products_create)]
+		[AbpAuthorize(PermissionNames.Pages_Products_Create)]
 		public Product CreateProducts(CreateProductDto input)
 		{
 			// Tạo mới sản phẩm
@@ -140,30 +140,30 @@ namespace Acme.SimpleTaskApp.Products
 		}
 		#endregion
 
-		[AbpAuthorize(PermissionNames.Pages_products_view)]
+		[AbpAuthorize(PermissionNames.Pages_Products_View)]
 		public async Task<PagedResultDto<Product>> GetAllProduct(SearchProductDto input)
 		{
 			var query = _productRepository.GetAll()
-					.WhereIf(!string.IsNullOrWhiteSpace(input.SearchTerm), p =>
-							p.Name.Contains(input.SearchTerm))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.Name), p => p.Name.Contains(input.Name))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.Description), p => p.Description.Contains(input.Description))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.Screen), p => p.Screen.Contains(input.Screen))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.Processor), p => p.Processor.Contains(input.Processor))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.CameraSystem), p => p.CameraSystem.Contains(input.CameraSystem))
-					.WhereIf(!string.IsNullOrWhiteSpace(input.Battery), p => p.Battery.Contains(input.Battery))
-					.WhereIf(input.CategoryId.HasValue, p => p.CategoryId == input.CategoryId)
-					.WhereIf(input.StockQuantityFrom.HasValue, p => p.StockQuantity >= input.StockQuantityFrom.Value)
-					.WhereIf(input.StockQuantityTo.HasValue, p => p.StockQuantity <= input.StockQuantityTo.Value)
-					.WhereIf(input.StartTime.HasValue, p => p.CreationTime >= input.StartTime.Value)
-					.WhereIf(input.EndTime.HasValue, p => p.CreationTime <= input.EndTime.Value);
+			.WhereIf(!string.IsNullOrWhiteSpace(input.SearchTerm), p =>
+			p.Name.Contains(input.SearchTerm))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.Name), p => p.Name.Contains(input.Name))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.Description), p => p.Description.Contains(input.Description))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.Screen), p => p.Screen.Contains(input.Screen))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.Processor), p => p.Processor.Contains(input.Processor))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.CameraSystem), p => p.CameraSystem.Contains(input.CameraSystem))
+			.WhereIf(!string.IsNullOrWhiteSpace(input.Battery), p => p.Battery.Contains(input.Battery))
+			.WhereIf(input.CategoryId.HasValue, p => p.CategoryId == input.CategoryId)
+			.WhereIf(input.StockQuantityFrom.HasValue, p => p.StockQuantity >= input.StockQuantityFrom.Value)
+			.WhereIf(input.StockQuantityTo.HasValue, p => p.StockQuantity <= input.StockQuantityTo.Value)
+			.WhereIf(input.StartTime.HasValue, p => p.CreationTime >= input.StartTime.Value)
+			.WhereIf(input.EndTime.HasValue, p => p.CreationTime <= input.EndTime.Value);
 
 			var totalCount = await query.CountAsync();
 
 			var products = await query
-					.OrderByDescending(p => p.CreationTime)
-					.PageBy(input)
-					.ToListAsync();
+			.OrderByDescending(p => p.CreationTime)
+			.PageBy(input)
+			.ToListAsync();
 
 			// Get product images
 			var productIds = products.Select(p => p.Id).ToList();
@@ -174,8 +174,8 @@ namespace Acme.SimpleTaskApp.Products
 
 			// Group images by product and take the first one for each product
 			var defaultImages = productImages
-					.GroupBy(pi => pi.ProductId)
-					.ToDictionary(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
+			.GroupBy(pi => pi.ProductId)
+			.ToDictionary(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
 
 			// Set the default image and category name for each product
 			foreach (var product in products)
@@ -186,7 +186,7 @@ namespace Acme.SimpleTaskApp.Products
 			return new PagedResultDto<Product>(totalCount, products);
 		}
 
-		[AbpAuthorize(PermissionNames.Pages_products_view)]
+		[AbpAuthorize(PermissionNames.Pages_Products_View)]
 		public async Task<Product> GetProductById(int id)
 		{
 			if (id <= 0)
@@ -196,7 +196,7 @@ namespace Acme.SimpleTaskApp.Products
 			return item;
 		}
 
-		[AbpAuthorize(PermissionNames.Pages_products_update)]
+		[AbpAuthorize(PermissionNames.Pages_Products_Update)]
 		public async Task<Product> EditProduct(Product input)
 		{
 			var product = _productRepository.FirstOrDefault(input.Id);
@@ -248,7 +248,7 @@ namespace Acme.SimpleTaskApp.Products
 			return product;
 		}
 
-		[AbpAuthorize(PermissionNames.Pages_products_delete)]
+		[AbpAuthorize(PermissionNames.Pages_Products_Delete)]
 		public async Task<Product> DeleteProduct(int id)
 		{
 			var item = await _productRepository.GetAsync(id);
@@ -289,8 +289,8 @@ namespace Acme.SimpleTaskApp.Products
 		public async Task<List<ProductListDto>> GetAllProductsForSelect()
 		{
 			var products = await _productRepository.GetAll()
-				.OrderBy(p => p.Name)
-				.ToListAsync();
+			.OrderBy(p => p.Name)
+			.ToListAsync();
 
 			return products.Select(p => new ProductListDto
 			{

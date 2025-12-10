@@ -5,6 +5,12 @@
     $details = $('#categoryDetails'),
     selectedNode = null;
 
+  var _permissions = {
+    create: abp.auth.hasPermission('Pages.category.create'),
+    edit: abp.auth.hasPermission('Pages.category.edit'),
+    delete: abp.auth.hasPermission('Pages.category.delete'),
+  };
+
   function convertToJsTreeFormat(categories) {
     return categories.map(function (category) {
       var node = {

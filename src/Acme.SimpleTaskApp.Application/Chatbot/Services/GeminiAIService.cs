@@ -38,20 +38,10 @@ namespace Acme.SimpleTaskApp.Chatbot.Services
 				throw new Exception("❌ Chưa cấu hình GeminiAI:ApiKey trong appsettings.json");
 			}
 
-			// ✅ SỬ DỤNG MODEL ĐÚNG THEO GOOGLE API DOCS
-			// Danh sách model hợp lệ (tháng 12/2024):
-			// - "gemini-1.5-flash" ← Nhanh, ổn định cho free tier (15 RPM)
-			// - "gemini-1.5-pro" ← Mạnh hơn nhưng rate limit thấp (2 RPM free)
-			// - "gemini-pro" ← KHÔNG CÒN HỖ TRỢ, sẽ lỗi NotFound!
-			
+			// ✅ Đọc model từ config (không validate để test)
 			_model = _configuration["GeminiAI:Model"] ?? "gemini-1.5-flash";
 
-			// ⚠️ Validate model name
-			//var validModels = new[] { "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest" };
-			//if (!validModels.Contains(_model))
-			//{
-			//	throw new Exception($"❌ Model '{_model}' không hợp lệ. Dùng: gemini-1.5-flash hoặc gemini-1.5-pro");
-			//}
+			Console.WriteLine($"✅ GeminiAIService initialized with model: {_model}");
 
 			// Khởi tạo agent
 			InitializeAgent();
@@ -84,60 +74,52 @@ QUY TẮC:
 						apiKey: _apiKey,
 						systemMessage: systemMessage)
 					.RegisterMessageConnector(); // ✅ Bắt buộc để xử lý message format
+
+				Console.WriteLine("✅ GeminiChatAgent initialized successfully");
 			}
 			catch (Exception ex)
 			{
+				Console.WriteLine($"❌ Error initializing GeminiChatAgent: {ex.Message}");
 				throw new Exception($"❌ Lỗi khởi tạo GeminiChatAgent: {ex.Message}", ex);
 			}
 		}
 
 		/// <summary>
-		/// Generate response với retry logic và error handling
+		/// Generate response - SIMPLIFIED VERSION FOR TESTING
 		/// </summary>
 		public async Task<string> GenerateResponse(string prompt, List<ChatMessageDto> conversationHistory = null)
 		{
-			// ✅ CƠ CHẾ RETRY CHO RATE LIMIT
-			int maxRetries = 3;
-			int baseDelayMs = 2000; // Chờ 2 giây giữa các lần retry
-
-			for (int attempt = 0; attempt < maxRetries; attempt++)
+			try
 			{
-				try
-				{
-					// ✅ Build full prompt với history
-					var fullPrompt = BuildPromptWithHistory(prompt, conversationHistory);
+				Console.WriteLine($"📤 Sending to Gemini: {prompt?.Substring(0, Math.Min(100, prompt?.Length ?? 0))}...");
 
-					// ✅ Tạo message theo AutoGen format
-					var userMessage = new TextMessage(Role.User, fullPrompt);
+				// ✅ Tạo message đơn giản
+				var userMessage = new TextMessage(Role.User, prompt);
 
-					// ✅ Gửi request qua AutoGen
-					var response = await _geminiAgent.SendAsync(userMessage);
+				// ✅ Gửi request qua AutoGen
+				var response = await _geminiAgent.SendAsync(userMessage);
 
-					// ✅ Extract text từ response
-					return ExtractTextFromResponse(response);
-				}
-				catch (Exception ex)
-				{
-					// ✅ Xử lý các loại lỗi khác nhau
-					var errorType = ClassifyError(ex);
+				Console.WriteLine($"📥 Received response from Gemini");
 
-					// Log lỗi (có thể thêm ILogger nếu cần)
-					Console.WriteLine($"⚠️ Gemini Error (Attempt {attempt + 1}/{maxRetries}): {ex.Message}");
+				// ✅ Extract text từ response
+				var result = ExtractTextFromResponse(response);
+				
+				Console.WriteLine($"✅ Extracted text: {result?.Substring(0, Math.Min(100, result?.Length ?? 0))}...");
 
-					// Nếu là lỗi không thể retry hoặc hết lượt thử
-					if (errorType != ErrorType.RateLimit || attempt == maxRetries - 1)
-					{
-						return HandleFinalError(errorType, ex);
-					}
-
-					// ✅ Exponential backoff cho rate limit
-					int delayMs = baseDelayMs * (int)Math.Pow(2, attempt);
-					Console.WriteLine($"⏳ Chờ {delayMs}ms trước khi retry...");
-					await Task.Delay(delayMs);
-				}
+				return result;
 			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"❌ Error in GenerateResponse: {ex.Message}");
+				Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
+				
+				if (ex.InnerException != null)
+				{
+					Console.WriteLine($"❌ Inner exception: {ex.InnerException.Message}");
+				}
 
-			return "❌ Hệ thống đang bận, vui lòng thử lại sau.";
+				return $"❌ Lỗi kết nối Gemini API: {ex.Message}";
+			}
 		}
 
 		/// <summary>
@@ -161,139 +143,45 @@ Hãy tư vấn 2-3 sản phẩm phù hợp nhất. Giải thích ngắn gọn l�
 		// ==================== HELPER METHODS ====================
 
 		/// <summary>
-		/// Build prompt kèm history
-		/// </summary>
-		private string BuildPromptWithHistory(string prompt, List<ChatMessageDto> history)
-		{
-			if (history == null || !history.Any())
-				return prompt;
-
-			var historyText = string.Join("\n", history.Select(msg =>
-				$"{(msg.Role == "user" ? "Khách hàng" : "Trợ lý")}: {msg.Content}"
-			));
-
-			return $@"
-=== LỊCH SỬ HỘI THOẠI ===
-{historyText}
-
-=== CÂU HỎI MỚI ===
-{prompt}
-";
-		}
-
-		/// <summary>
 		/// Extract text từ IMessage response
 		/// </summary>
 		private string ExtractTextFromResponse(IMessage response)
 		{
 			if (response == null)
+			{
+				Console.WriteLine("⚠️ Response is null");
 				return "Xin lỗi, tôi không nhận được phản hồi.";
+			}
+
+			Console.WriteLine($"📋 Response type: {response.GetType().Name}");
 
 			// Case 1: TextMessage
 			if (response is TextMessage textMessage)
 			{
+				Console.WriteLine("✅ Response is TextMessage");
 				return textMessage.Content ?? "Xin lỗi, tôi không có câu trả lời.";
 			}
 
 			// Case 2: IMessage<string>
 			if (response is IMessage<string> stringMessage)
 			{
+				Console.WriteLine("✅ Response is IMessage<string>");
 				return stringMessage.Content ?? "Xin lỗi, tôi không có câu trả lời.";
 			}
 
 			// Case 3: Fallback - try GetContent()
 			try
 			{
+				Console.WriteLine("⚠️ Trying GetContent()");
 				var content = response.GetContent();
-				return content ?? "Xin lỗi, tôi không có câu trả lời.";
+				Console.WriteLine($"✅ GetContent() returned: {content?.GetType().Name}");
+				return content?.ToString() ?? "Xin lỗi, tôi không có câu trả lời.";
 			}
-			catch
+			catch (Exception ex)
 			{
+				Console.WriteLine($"❌ GetContent() failed: {ex.Message}");
 				return "Xin lỗi, tôi không thể xử lý câu trả lời.";
 			}
-		}
-
-		/// <summary>
-		/// Phân loại lỗi để xử lý phù hợp
-		/// </summary>
-		private ErrorType ClassifyError(Exception ex)
-		{
-			var message = ex.Message.ToLower();
-			var innerMessage = ex.InnerException?.Message?.ToLower() ?? "";
-
-			// ✅ Rate Limit (429, TooManyRequests, Resource exhausted)
-			if (message.Contains("429") ||
-			    message.Contains("toomanyrequests") ||
-			    message.Contains("rate limit") ||
-			    message.Contains("resource has been exhausted") ||
-			    innerMessage.Contains("429"))
-			{
-				return ErrorType.RateLimit;
-			}
-
-			// ✅ Not Found (model không tồn tại)
-			if (message.Contains("notfound") ||
-			    message.Contains("404") ||
-			    message.Contains("model not found") ||
-			    innerMessage.Contains("notfound"))
-			{
-				return ErrorType.NotFound;
-			}
-
-			// ✅ Authentication (API key sai)
-			if (message.Contains("unauthorized") ||
-			    message.Contains("401") ||
-			    message.Contains("invalid api key") ||
-			    message.Contains("api key not valid"))
-			{
-				return ErrorType.Authentication;
-			}
-
-			// ✅ Network/Timeout
-			if (message.Contains("timeout") ||
-			    message.Contains("network") ||
-			    message.Contains("connection"))
-			{
-				return ErrorType.Network;
-			}
-
-			return ErrorType.Unknown;
-		}
-
-		/// <summary>
-		/// Xử lý lỗi cuối cùng (không retry được nữa)
-		/// </summary>
-		private string HandleFinalError(ErrorType errorType, Exception ex)
-		{
-			switch (errorType)
-			{
-				case ErrorType.NotFound:
-					return $"❌ Lỗi hệ thống: Model AI không tồn tại. Vui lòng kiểm tra cấu hình model trong appsettings.json (hiện tại: {_model})";
-
-				case ErrorType.Authentication:
-					return "❌ Lỗi xác thực API Key. Vui lòng kiểm tra cấu hình GeminiAI:ApiKey";
-
-				case ErrorType.RateLimit:
-					return "⏳ Hệ thống AI đang quá tải. Vui lòng chờ 1 phút và thử lại.";
-
-				case ErrorType.Network:
-					return "🌐 Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.";
-
-				default:
-					return $"❌ Lỗi không xác định: {ex.Message}. Vui lòng liên hệ quản trị viên.";
-			}
-		}
-
-		/// <summary>
-		/// Enum phân loại lỗi
-		/// </summary>
-		private enum ErrorType
-		{
-			RateLimit,
-			NotFound,
-			Authentication,
-			Network,
-			Unknown
 		}
 	}
 
