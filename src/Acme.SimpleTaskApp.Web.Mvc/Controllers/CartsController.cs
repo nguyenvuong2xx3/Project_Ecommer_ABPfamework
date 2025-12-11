@@ -50,7 +50,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					{
 						User = user,
 						TenTinhThanh = tenTinhThanh,
-						TenPhuongXa = tenPhuongXa
+						TenPhuongXa = tenPhuongXa,
+						//TinhThanhDto = getDiaChinh
 					};
 					return PartialView("_OrderInfoModal", model);
 				}

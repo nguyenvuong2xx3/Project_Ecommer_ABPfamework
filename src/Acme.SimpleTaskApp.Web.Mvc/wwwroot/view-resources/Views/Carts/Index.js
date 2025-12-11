@@ -225,12 +225,12 @@
 
 	function applyVoucher() {
 		var voucherCode = $('#voucherCodeInput').val().trim();
+
 		if (!voucherCode) {
-			showVoucherMessage('Vui lòng nhập mã voucher.', 'error');
+			showVoucherMessage('Vui lòng nhập mã voucher. ', 'error');
 			return;
 		}
 
-		// Thu thập danh sách sản phẩm trong giỏ hàng
 		var cartItems = collectCartItemsForDiscount();
 
 		if (cartItems.length === 0) {
@@ -238,28 +238,126 @@
 			return;
 		}
 
+		// Ẩn message cũ và đợi animation xong
+		var $message = $('#VoucherMessage');
+		$message.stop(true, true).hide();
+
 		abp.ui.setBusy();
+
 		_saleService.calculateCartDiscount({
 			cartItems: cartItems,
 			voucherCode: voucherCode
 		}).done(function (result) {
-			if (result.success) {
-				showVoucherMessage(result.message, 'success');
-				updateOrderSummary(result);
-				// Lưu thông tin voucher đã áp dụng để sử dụng khi đặt hàng
-				$('#VoucherCodeInput').data('applied-voucher', voucherCode);
-				$('#ApplyVoucherBtn').prop('disabled', true);
+			var data = result.result !== undefined ? result.result : result;
+
+			if (data.isSuccess === true) {
+				showVoucherMessage(data.message, 'success');
+				updateOrderSummary(data);
+				$('#voucherCodeInput').data('applied-voucher', voucherCode);
+				$('#applyVoucherBtn').prop('disabled', true);
 			} else {
-				showVoucherMessage(result.message, 'error');
-				resetVoucher();
+				showVoucherMessage(data.message || 'Voucher không hợp lệ', 'error');
+				clearVoucherData();
 			}
 		}).fail(function (error) {
-			showVoucherMessage('Có lỗi xảy ra khi áp dụng voucher: ' + (error.message || 'Vui lòng thử lại'), 'error');
-			resetVoucher();
+			var errorMsg = 'Có lỗi xảy ra khi áp dụng voucher';
+			if (error && error.message) {
+				errorMsg += ':  ' + error.message;
+			}
+			showVoucherMessage(errorMsg, 'error');
+			clearVoucherData();
 		}).always(function () {
 			abp.ui.clearBusy();
 		});
 	}
+
+	function showVoucherMessage(message, type) {
+		var $message = $('#VoucherMessage');
+
+		// Dừng mọi animation và reset về trạng thái ẩn
+		$message.stop(true, true).hide();
+
+		// Reset classes
+		$message.removeClass('alert alert-success alert-danger alert-warning');
+
+		// Add appropriate classes
+		if (type === 'success') {
+			$message.addClass('alert alert-success');
+		} else {
+			$message.addClass('alert alert-danger');
+		}
+
+		// Set content
+		$message.html(message);
+
+		// Hiển thị ngay lập tức bằng show(), không dùng fadeIn
+		$message.show();
+	}
+
+	function clearVoucherData() {
+		$('#voucherCodeInput').removeData('applied-voucher');
+		$('#applyVoucherBtn').prop('disabled', false);
+	}
+
+	function resetVoucher() {
+		clearVoucherData();
+		$('#VoucherMessage').stop(true, true).hide();
+	}
+
+	function showVoucherMessage(message, type) {
+		var $message = $('#VoucherMessage');
+
+		// Reset classes
+		$message.removeClass('alert alert-success alert-danger alert-warning');
+
+		// Add appropriate classes
+		if (type === 'success') {
+			$message.addClass('alert alert-success');
+		} else if (type === 'error') {
+			$message.addClass('alert alert-danger');
+		} else {
+			$message.addClass('alert alert-warning');
+		}
+
+		// Set content và hiển thị
+		$message.html(message);
+		$message.stop(true, true).fadeIn(300);
+	}
+
+	function hideVoucherMessage() {
+		$('#VoucherMessage').stop(true, true).fadeOut(200);
+	}
+
+	// Chỉ clear data, không ẩn message
+	function clearVoucherData() {
+		$('#voucherCodeInput').removeData('applied-voucher');
+		$('#applyVoucherBtn').prop('disabled', false);
+	}
+
+	// Reset toàn bộ (dùng khi cần clear cả message)
+	function resetVoucher() {
+		clearVoucherData();
+		// Nếu muốn ẩn message khi reset, uncomment dòng dưới
+		// hideVoucherMessage();
+	}
+
+	function updateOrderSummary(data) {
+		// Update UI với discount data
+		if (data.discountAmount > 0) {
+			// Hiển thị số tiền giảm
+			$('. discount-amount').text('-' + formatCurrency(data.discountAmount));
+			$('.discount-row').show();
+		}
+
+		// Update tổng tiền cuối cùng
+		$('. final-amount').text(formatCurrency(data.finalAmount));
+	}
+
+	// Helper function format tiền VNĐ
+	function formatCurrency(amount) {
+		return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+	}
+
 	// Hàm thu thập danh sách sản phẩm trong giỏ hàng để tính discount
 	function collectCartItemsForDiscount() {
 		var cartItems = [];
@@ -296,6 +394,8 @@
 	// Hàm hiển thị thông báo voucher
 	function showVoucherMessage(message, type) {
 		var $message = $('#VoucherMessage');
+
+
 		$message.removeClass('alert-success alert-danger');
 		$message.addClass(type === 'success' ? 'alert alert-success' : 'alert alert-danger');
 		$message.html(message).show();

@@ -93,7 +93,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				var product = await _homeCustomerAppService.GetProductById(id);
 				
 				// Load comments for product
-				var comments = await _productCommentAppService.GetProductCommentsTree(product.Id);
+				var comments = await _productCommentAppService.GetProductVariantCommentsTree(id);
 
 				// ✅ NEW: Load ratings for product
 				var ratingsResult = await _productRatingAppService.GetAllRatings(new GetProductRatingsInput
@@ -137,11 +137,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			/// Load comments partial view - AJAX call to refresh only comment section
 			/// </summary>
 			[HttpGet]
-			public async Task<IActionResult> LoadCommentsPartial(int productId)
+			public async Task<IActionResult> LoadCommentsPartial(int productVariantId)
 			{
-				var comments = await _productCommentAppService.GetProductCommentsTree(productId);
+				var comments = await _productCommentAppService.GetProductVariantCommentsTree(productVariantId);
 				
-				ViewBag.ProductId = productId;
+				ViewBag.ProductVariantId = productVariantId;
 				
 				return PartialView("Components/ProductComments/_CommentsList", comments);
 			}
@@ -149,7 +149,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			/// <summary>
 			/// Send notification to admin when new comment is created
 			/// </summary>
-			private async Task SendCommentNotificationToAdmin(int productId, string productName, string userName, string commentContent)
+			private async Task SendCommentNotificationToAdmin(int productVariantId, string productName, string userName, string commentContent)
 			{
 				// Get all admin users
 				var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
@@ -160,13 +160,13 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					{
 						// Create notification data
 						var notificationData = new Abp.Notifications.NotificationData();
-						notificationData["ProductId"] = productId;
+						notificationData["ProductVariantId"] = productVariantId;
 						notificationData["ProductName"] = productName;
 						notificationData["UserName"] = userName;
 						notificationData["CommentContent"] = commentContent.Length > 50 
 							? commentContent.Substring(0, 50) + "..." 
 							: commentContent;
-						notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}";
+						notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}";
 						
 						// Publish notification
 						await _notificationPublisher.PublishAsync(

@@ -2,14 +2,14 @@
 @model List<ProductRatingDto>
 
 @{
-  var productId = ViewBag.ProductId ?? 0;
+  var productVariantId = ViewBag.ProductVariantId ?? 0;
   var statistics = ViewBag.RatingStatistics as ProductRatingStatisticsDto;
   var canRate = ViewBag.CanRate ?? false;
   var userRating = ViewBag.UserRating as ProductRatingDto;
   var avgRating = statistics?.AverageRating ?? 0;
 }
 
-<input type="hidden" id="ProductIdForRating" value="@productId" />
+<input type="hidden" id="ProductVariantIdForRating" value="@productVariantId" />
 
 <div class="ratings-section" id="product-rating-section">
   <!-- Header -->

@@ -19,71 +19,71 @@ namespace Acme.SimpleTaskApp.Web.Realtime
         }
 
         /// <summary>
-        /// Join a product's comment group to receive real-time updates
+        /// Join a product variant's comment group to receive real-time updates
         /// </summary>
-        public async Task JoinProductGroup(int productId)
+        public async Task JoinProductGroup(int productVariantId)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
         /// <summary>
-        /// Leave a product's comment group
+        /// Leave a product variant's comment group
         /// </summary>
-        public async Task LeaveProductGroup(int productId)
+        public async Task LeaveProductGroup(int productVariantId)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
 
         /// <summary>
-        /// Send new comment to all clients in the product group
+        /// Send new comment to all clients in the product variant group
         /// </summary>
-        public async Task SendCommentToProduct(int productId, object commentData)
+        public async Task SendCommentToProduct(int productVariantId, object commentData)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("ReceiveComment", commentData);
         }
 
         /// <summary>
         /// Send comment update to all clients
         /// </summary>
-        public async Task SendCommentUpdate(int productId, int commentId, object commentData)
+        public async Task SendCommentUpdate(int productVariantId, int commentId, object commentData)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("CommentUpdated", commentId, commentData);
         }
 
         /// <summary>
         /// Send comment deletion notification
         /// </summary>
-        public async Task SendCommentDeleted(int productId, int commentId)
+        public async Task SendCommentDeleted(int productVariantId, int commentId)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("CommentDeleted", commentId);
         }
 
         /// <summary>
         /// User is typing indicator
         /// </summary>
-        public async Task UserTyping(int productId, string userName)
+        public async Task UserTyping(int productVariantId, string userName)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.OthersInGroup(groupName).SendAsync("UserTyping", userName);
         }
 
         /// <summary>
         /// User stopped typing
         /// </summary>
-        public async Task UserStoppedTyping(int productId, string userName)
+        public async Task UserStoppedTyping(int productVariantId, string userName)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.OthersInGroup(groupName).SendAsync("UserStoppedTyping", userName);
         }
 
-        private static string GetProductGroupName(int productId)
+        private static string GetProductVariantGroupName(int productVariantId)
         {
-            return $"Product_{productId}_Comments";
+            return $"ProductVariant_{productVariantId}_Comments";
         }
 
         public override async Task OnConnectedAsync()

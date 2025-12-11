@@ -18,9 +18,9 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             _hubContext = hubContext;
         }
 
-        public async Task BroadcastNewComment(int productId, object commentData)
+        public async Task BroadcastNewComment(int productVariantId, object commentData)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await _hubContext.Clients.Group(groupName).SendAsync("ReceiveComment", new
             {
                 comment = commentData,
@@ -30,7 +30,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 
         public async Task BroadcastCommentUpdate(int productVariantId, int commentId, object commentData)
         {
-            var groupName = GetProductGroupName(productVariantId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await _hubContext.Clients.Group(groupName).SendAsync("CommentUpdated", new
             {
                 commentId = commentId,
@@ -39,9 +39,9 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             });
         }
 
-        public async Task BroadcastCommentDelete(int productId, int commentId)
+        public async Task BroadcastCommentDelete(int productVariantId, int commentId)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductVariantGroupName(productVariantId);
             await _hubContext.Clients.Group(groupName).SendAsync("CommentDeleted", new
             {
                 commentId = commentId,
@@ -49,9 +49,9 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             });
         }
 
-        private static string GetProductGroupName(int productVariantId)
+        private static string GetProductVariantGroupName(int productVariantId)
         {
-            return $"roductVariantId_{productVariantId}_Comments";
+            return $"ProductVariant_{productVariantId}_Comments";
         }
     }
 }

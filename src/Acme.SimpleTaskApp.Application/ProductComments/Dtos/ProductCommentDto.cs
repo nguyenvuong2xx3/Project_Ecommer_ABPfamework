@@ -14,7 +14,7 @@ namespace Acme.SimpleTaskApp.ProductComments.Dtos
 		public string UserFullName { get; set; } // Gán từ code, không tính toán
 		public string UserEmail { get; set; }
 		
-		public int ProductId { get; set; }
+		public int ProductVariantId { get; set; }
 		public string Content { get; set; }
 		
 		public int? ParentCommentId { get; set; }

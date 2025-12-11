@@ -45,7 +45,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		public async Task<PagedResultDto<ProductRatingDto>> GetAllRatings(GetProductRatingsInput input)
 		{
 			var query = _ratingRepository.GetAll()
-					.WhereIf(input.ProductId.HasValue, r => r.ProductId == input.ProductId.Value)
+					.WhereIf(input.ProductVariantId.HasValue, r => r.ProductVariantId == input.ProductVariantId.Value)
 					.WhereIf(input.UserId.HasValue, r => r.UserId == input.UserId.Value)
 					.WhereIf(input.Rating.HasValue, r => r.Rating == input.Rating.Value)
 					.WhereIf(input.IsVerifiedPurchase.HasValue, r => r.IsVerifiedPurchase == input.IsVerifiedPurchase.Value)
@@ -63,17 +63,17 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			return new PagedResultDto<ProductRatingDto>(totalCount, ratingDtos);
 		}
 
-		public async Task<ProductRatingStatisticsDto> GetProductRatingStatistics(int productId)
+		public async Task<ProductRatingStatisticsDto> GetProductRatingStatistics(int productVariantId)
 		{
 			var ratings = await _ratingRepository.GetAll()
-					.Where(r => r.ProductId == productId && r.IsApproved)
+					.Where(r => r.ProductVariantId == productVariantId && r.IsApproved)
 					.ToListAsync();
 
 			if (!ratings.Any())
 			{
 				return new ProductRatingStatisticsDto
 				{
-					ProductId = productId,
+					ProductVariantId = productVariantId,
 					TotalRatings = 0,
 					AverageRating = 0,
 					VerifiedPurchaseCount = 0,
@@ -93,7 +93,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 			return new ProductRatingStatisticsDto
 			{
-				ProductId = productId,
+				ProductVariantId = productVariantId,
 				TotalRatings = totalRatings,
 				AverageRating = Math.Round(averageRating, 1),
 				VerifiedPurchaseCount = verifiedCount,
@@ -122,29 +122,29 @@ namespace Acme.SimpleTaskApp.ProductRatings
 				throw new UserFriendlyException("Bạn cần đăng nhập để đánh giá sản phẩm");
 			}
 
-			// Check if product exists
-			var product = await _productRepository.GetAsync(input.ProductId);
-			if (product == null)
+			// Check if product variant exists
+			var productVariant = await _productVariantRepository.GetAsync(input.ProductVariantId);
+			if (productVariant == null)
 			{
-				throw new UserFriendlyException("Sản phẩm không tồn tại");
+				throw new UserFriendlyException("Biến thể sản phẩm không tồn tại");
 			}
 
-			// Check if user already rated this product
+			// Check if user already rated this product variant
 			var existingRating = await _ratingRepository.FirstOrDefaultAsync(
-					r => r.UserId == currentUserId.Value && r.ProductId == input.ProductId);
+					r => r.UserId == currentUserId.Value && r.ProductVariantId == input.ProductVariantId);
 
 			if (existingRating != null)
 			{
-				throw new UserFriendlyException("Bạn đã đánh giá sản phẩm này rồi. Bạn có thể chỉnh sửa đánh giá của mình.");
+				throw new UserFriendlyException("Bạn đã đánh giá biến thể sản phẩm này rồi. Bạn có thể chỉnh sửa đánh giá của mình.");
 			}
 
-			// Check if user purchased this product
-			var hasPurchased = await HasUserPurchasedProduct(currentUserId.Value, input.ProductId);
+			// Check if user purchased this product variant
+			var hasPurchased = await HasUserPurchasedProductVariant(currentUserId.Value, input.ProductVariantId);
 
 			var rating = new ProductRating
 			{
 				UserId = currentUserId.Value,
-				ProductId = input.ProductId,
+				ProductVariantId = input.ProductVariantId,
 				OrderId = input.OrderId,
 				Rating = input.Rating,
 				Title = input.Title?.Trim(),
@@ -288,7 +288,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		}
 
 		[AbpAuthorize]
-		public async Task<bool> CanUserRateProduct(int productId)
+		public async Task<bool> CanUserRateProduct(int productVariantId)
 		{
 			var currentUserId = AbpSession.UserId;
 			if (!currentUserId.HasValue)
@@ -298,7 +298,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 			// Check if already rated
 			var existingRating = await _ratingRepository.FirstOrDefaultAsync(
-					r => r.UserId == currentUserId.Value && r.ProductId == productId);
+					r => r.UserId == currentUserId.Value && r.ProductVariantId == productVariantId);
 
 			if (existingRating != null)
 			{
@@ -306,7 +306,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			}
 
 			// Check if purchased
-			return await HasUserPurchasedProduct(currentUserId.Value, productId);
+			return await HasUserPurchasedProductVariant(currentUserId.Value, productVariantId);
 		}
 
 		[AbpAuthorize(PermissionNames.Pages_Roles)]
@@ -336,7 +336,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 		// Helper methods
 
-		private async Task<bool> HasUserPurchasedProduct(long userId, int productId)
+		private async Task<bool> HasUserPurchasedProductVariant(long userId, int productVariantId)
 		{
 			// Since OrderDetails is stored as JSON in Order.OrderDetailJson,
 			// we need to deserialize and check
@@ -350,21 +350,13 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 				if (order.OrderDetails != null && order.OrderDetails.Any())
 				{
-					var variantIds = order.OrderDetails
-							.Where(od => od.ProductVariantId.HasValue)
-							.Select(od => od.ProductVariantId.Value)
-							.ToList();
+					// Check if the specific product variant was purchased
+					var hasPurchased = order.OrderDetails
+							.Any(od => od.ProductVariantId.HasValue && od.ProductVariantId.Value == productVariantId);
 
-					if (variantIds.Any())
+					if (hasPurchased)
 					{
-						// Check if any of these variants belong to the product
-						var hasProduct = await _productVariantRepository.GetAll()
-								.AnyAsync(pv => variantIds.Contains(pv.Id) && pv.ProductId == productId);
-
-						if (hasProduct)
-						{
-							return true;
-						}
+						return true;
 					}
 				}
 			}
@@ -384,8 +376,16 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					.ToListAsync();
 			var userDict = users.ToDictionary(u => u.Id);
 
-			// Batch load products
-			var productIds = ratings.Select(r => r.ProductId).Distinct().ToList();
+			// Batch load product variants
+			var productVariantIds = ratings.Select(r => r.ProductVariantId).Distinct().ToList();
+			var productVariants = await _productVariantRepository.GetAll()
+					.Where(pv => productVariantIds.Contains(pv.Id))
+					.Select(pv => new { pv.Id, pv.Ram, pv.Storage, pv.Color, pv.ProductId })
+					.ToListAsync();
+			var productVariantDict = productVariants.ToDictionary(pv => pv.Id);
+
+			// Batch load products for variant names
+			var productIds = productVariants.Select(pv => pv.ProductId).Distinct().ToList();
 			var products = await _productRepository.GetAll()
 					.Where(p => productIds.Contains(p.Id))
 					.Select(p => new { p.Id, p.Name })
@@ -406,15 +406,15 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 			foreach (var rating in ratings)
 			{
-				// ✅ Manual mapping from ProductRating to ProductRatingDto (NO AutoMapper)
+				// Manual mapping from ProductRating to ProductRatingDto (NO AutoMapper)
 				var dto = new ProductRatingDto
 				{
 					Id = rating.Id,
 					UserId = rating.UserId,
-					ProductId = rating.ProductId,
+					ProductVariantId = rating.ProductVariantId,
 					OrderId = rating.OrderId,
 					Rating = rating.Rating,
-					Title = rating.Title, // ✅ FIXED: Added Title mapping
+					Title = rating.Title,
 					ReviewText = rating.ReviewText,
 					IsVerifiedPurchase = rating.IsVerifiedPurchase,
 					IsApproved = rating.IsApproved,
@@ -435,10 +435,11 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					dto.UserEmail = user.EmailAddress;
 				}
 
-				// Map product info
-				if (productDict.TryGetValue(rating.ProductId, out var product))
+				// Map product variant info
+				if (productVariantDict.TryGetValue(rating.ProductVariantId, out var productVariant))
 				{
-					dto.ProductName = product.Name;
+					var productName = productDict.TryGetValue(productVariant.ProductId, out var product) ? product.Name : "";
+					dto.ProductVariantName = $"{productName} - {productVariant.Color} {productVariant.Ram}/{productVariant.Storage}".Trim();
 				}
 
 				// Map image URLs (split comma-separated string)

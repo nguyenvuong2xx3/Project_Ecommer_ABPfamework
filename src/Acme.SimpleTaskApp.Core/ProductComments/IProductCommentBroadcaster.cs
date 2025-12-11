@@ -8,9 +8,9 @@ namespace Acme.SimpleTaskApp.ProductComments
     public interface IProductCommentBroadcaster
     {
         /// <summary>
-        /// Broadcast new comment to all clients in product group
+        /// Broadcast new comment to all clients in product variant group
         /// </summary>
-        Task BroadcastNewComment(int productId, object commentData);
+        Task BroadcastNewComment(int productVariantId, object commentData);
 
         /// <summary>
         /// Broadcast comment update to all clients
@@ -20,6 +20,6 @@ namespace Acme.SimpleTaskApp.ProductComments
         /// <summary>
         /// Broadcast comment deletion to all clients
         /// </summary>
-        Task BroadcastCommentDelete(int productId, int commentId);
+        Task BroadcastCommentDelete(int productVariantId, int commentId);
     }
 }

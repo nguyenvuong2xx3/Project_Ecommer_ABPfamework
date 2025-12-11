@@ -18,7 +18,6 @@ using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Sales
 {
-	[AbpAuthorize(PermissionNames.Pages_Sales)]
 	public class SaleAppService : ApplicationService, ISaleAppService
 	{
 		private readonly IRepository<Sale, int> _saleRepository;
@@ -554,13 +553,12 @@ namespace Acme.SimpleTaskApp.Sales
 		}
 
 		// Tính discount cho giỏ hàng
-		[HttpPost]
 		public async Task<DiscountCalculationResultDto> CalculateCartDiscount(RequestDisCountVoucherCart request)
 		{
 			var result = new DiscountCalculationResultDto
 			{
 				ItemDiscounts = new List<ItemDiscountDetailDto>(),
-				Success = true
+				IsSuccess = true
 			};
 
 			decimal totalAmount = 0;
@@ -610,7 +608,7 @@ namespace Acme.SimpleTaskApp.Sales
 
 					if (voucher == null)
 					{
-						result.Success = false;
+						result.IsSuccess = false;
 						result.Message = "Mã voucher không tồn tại hoặc đã hết hạn";
 						result.FinalAmount = totalAmount - totalDiscount;
 						return result;
@@ -620,7 +618,7 @@ namespace Acme.SimpleTaskApp.Sales
 					var now = DateTime.Now;
 					if (now < voucher.StartDate || now > voucher.EndDate)
 					{
-						result.Success = false;
+						result.IsSuccess = false;
 						result.Message = $"Mã voucher chỉ có hiệu lực từ {voucher.StartDate:dd/MM/yyyy} đến {voucher.EndDate:dd/MM/yyyy}";
 						result.FinalAmount = totalAmount - totalDiscount;
 						return result;
@@ -628,7 +626,7 @@ namespace Acme.SimpleTaskApp.Sales
 
 					if (voucher.UsageLimit.HasValue && voucher.UsedCount >= voucher.UsageLimit.Value)
 					{
-						result.Success = false;
+						result.IsSuccess = false;
 						result.Message = "Mã voucher đã hết lượt sử dụng";
 						result.FinalAmount = totalAmount - totalDiscount;
 						return result;
@@ -636,7 +634,7 @@ namespace Acme.SimpleTaskApp.Sales
 
 					if (voucher.MinimumOrderValue.HasValue && totalAmount < voucher.MinimumOrderValue.Value)
 					{
-						result.Success = false;
+						result.IsSuccess = false;
 						result.Message = $"Đơn hàng tối thiểu phải từ {voucher.MinimumOrderValue.Value:N0}đ để áp dụng voucher này";
 						result.FinalAmount = totalAmount - totalDiscount;
 						return result;
@@ -669,7 +667,7 @@ namespace Acme.SimpleTaskApp.Sales
 
 					if (!voucherApplies)
 					{
-						result.Success = false;
+						result.IsSuccess = false;
 						result.Message = "Mã voucher không áp dụng cho sản phẩm trong giỏ hàng";
 						result.FinalAmount = totalAmount - totalDiscount;
 						return result;
@@ -732,7 +730,7 @@ namespace Acme.SimpleTaskApp.Sales
 				}
 				catch (Exception ex)
 				{
-					result.Success = false;
+					result.IsSuccess = false;
 					result.Message = "Có lỗi khi áp dụng voucher: " + ex.Message;
 				}
 			}

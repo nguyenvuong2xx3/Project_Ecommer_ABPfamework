@@ -1,4 +1,4 @@
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Acme.SimpleTaskApp.ProductComments.Dtos;
 using System.Collections.Generic;
@@ -9,27 +9,27 @@ namespace Acme.SimpleTaskApp.ProductComments
 	public interface IProductCommentAppService : IApplicationService
 	{
 		/// <summary>
-		/// L?y t?t c? comments c?a m?t s?n ph?m (c� ph�n trang)
+		/// lấy tất cả cmt của một sản phẩm có phân trang
 		/// </summary>
 		Task<PagedResultDto<ProductCommentDto>> GetAllComments(GetAllProductCommentsInput input);
 
 		/// <summary>
-		/// L?y t?t c? comments c?a m?t s?n ph?m (d?ng tree - c� replies)
+		/// lấy tất cả cmt của một sản phẩm theo tree - có replies
 		/// </summary>
-		Task<List<ProductCommentDto>> GetProductCommentsTree(int productId);
+		Task<List<ProductCommentDto>> GetProductVariantCommentsTree(int productVariantId);
 
 		/// <summary>
-		/// T?o comment m?i
+		/// tạo mới
 		/// </summary>
 		Task<ProductCommentDto> CreateComment(CreateProductCommentDto input);
 
 		/// <summary>
-		/// C?p nh?t comment
+		/// update
 		/// </summary>
 		Task<ProductCommentDto> UpdateComment(UpdateProductCommentDto input);
 
 		/// <summary>
-		/// X�a comment
+		/// Xóa comment
 		/// </summary>
 		Task DeleteComment(int id);
 

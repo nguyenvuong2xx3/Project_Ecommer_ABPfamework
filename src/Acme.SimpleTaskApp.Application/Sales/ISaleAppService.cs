@@ -63,7 +63,7 @@ namespace Acme.SimpleTaskApp.Sales
 		public List<ItemDiscountDetailDto> ItemDiscounts { get; set; }
 		public SaleDto AppliedVoucher { get; set; }
 		public string Message { get; set; }
-		public bool Success { get; set; }
+		public bool IsSuccess { get; set; }
 	}
 
 	public class ItemDiscountDetailDto

@@ -119,7 +119,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 					recipientUserId: parentComment.UserId,
 					replierName: userName,
 					productVariantId: productVariant.Id,
-					productName: product.Name,
+					productName: product.Name + " " + productVariant.Ram + " " + productVariant.Color + " " + productVariant.Storage,
 					commentContent: input.Content,
 					commentId: comment.Id
 				);
@@ -129,7 +129,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 				// User bình thường comment → Gửi thông báo cho admin
 				await SendCommentNotificationToAdmins(
 					productVariantId: productVariant.Id,
-					productName: product.Name,
+					productName: product.Name + " " + productVariant.Ram + " " + productVariant.Color + " " + productVariant.Storage,
 					userName: userName,
 					commentContent: input.Content
 				);
@@ -141,8 +141,8 @@ namespace Acme.SimpleTaskApp.ProductComments
 			var result = await MapCommentsToDto(new List<ProductComment> { createdComment });
 			var commentDto = result.FirstOrDefault();
 
-			// ✅ Broadcast qua SignalR để real-time
-			await BroadcastNewComment(product.Id, commentDto);
+			// ✅ Broadcast qua SignalR để real-time - SỬA: dùng productVariant.Id thay vì product.Id
+			await BroadcastNewComment(productVariant.Id, commentDto);
 
 			return commentDto;
 		}
@@ -150,12 +150,12 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// ✅ Broadcast new comment via SignalR
 		/// </summary>
-		private async Task BroadcastNewComment(int productId, ProductCommentDto commentDto)
+		private async Task BroadcastNewComment(int productVariantId, ProductCommentDto commentDto)
 		{
 			try
 			{
-				await _commentBroadcaster.BroadcastNewComment(productId, commentDto);
-				Logger.Info($"Broadcasted new comment {commentDto.Id} to product {productId}");
+				await _commentBroadcaster.BroadcastNewComment(productVariantId, commentDto);
+				Logger.Info($"Broadcasted new comment {commentDto.Id} to product variant {productVariantId}");
 			}
 			catch (Exception ex)
 			{
@@ -287,7 +287,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Lấy comments dạng tree structure
 		/// </summary>
-		public async Task<List<ProductCommentDto>> GetProductCommentsTree(int productVariantId)
+		public async Task<List<ProductCommentDto>> GetProductVariantCommentsTree(int productVariantId)
 		{
 			var allComments = await _commentRepository.GetAll()
 				.Where(c => c.ProductVariantId == productVariantId && c.IsApproved)
@@ -424,7 +424,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		public async Task DeleteComment(int id)
 		{
 			var comment = await _commentRepository.GetAsync(id);
-			var productId = comment.ProductVariantId;
+			var productVariantId = comment.ProductVariantId;
 
 			// Kiểm tra quyền: người tạo hoặc admin mới được xóa
 			var isAdmin = await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Roles);
@@ -447,18 +447,18 @@ namespace Acme.SimpleTaskApp.ProductComments
 			await _commentRepository.DeleteAsync(comment);
 
 			// ✅ Broadcast delete via SignalR
-			await BroadcastCommentDelete(productId, id);
+			await BroadcastCommentDelete(productVariantId, id);
 		}
 
 		/// <summary>
 		/// ✅ Broadcast comment deletion via SignalR
 		/// </summary>
-		private async Task BroadcastCommentDelete(int productId, int commentId)
+		private async Task BroadcastCommentDelete(int productVariantId, int commentId)
 		{
 			try
 			{
-				await _commentBroadcaster.BroadcastCommentDelete(productId, commentId);
-				Logger.Info($"Broadcasted comment deletion {commentId} from product {productId}");
+				await _commentBroadcaster.BroadcastCommentDelete(productVariantId, commentId);
+				Logger.Info($"Broadcasted comment deletion {commentId} from product {productVariantId}");
 			}
 			catch (Exception ex)
 			{

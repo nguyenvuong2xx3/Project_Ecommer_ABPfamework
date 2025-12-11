@@ -141,7 +141,7 @@ namespace Acme.SimpleTaskApp.Orders
 
 					var discountResult = await _saleAppService.CalculateCartDiscount(request);
 
-					if (!discountResult.Success)
+					if (!discountResult.IsSuccess)
 					{
 						throw new UserFriendlyException($"Mã voucher không hợp lệ: {discountResult.Message}");
 					}

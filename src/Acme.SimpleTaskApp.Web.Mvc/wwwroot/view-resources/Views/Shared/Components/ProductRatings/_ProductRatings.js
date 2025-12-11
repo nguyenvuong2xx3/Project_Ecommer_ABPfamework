@@ -1,6 +1,6 @@
 ﻿(function ($) {
 	var _ratingService = abp.services.app.productRating;
-	var _productId = $('#ProductIdForRating').val();
+	var _productVariantId = $('#ProductVariantIdForRating').val();
 	var _uploadedImages = [];
 	var _maxImages = 5;
 	var _maxImageSize = 5 * 1024 * 1024; // 5MB
@@ -241,7 +241,7 @@
 		}
 
 		var input = {
-			productId: parseInt(_productId),
+			productVariantId: parseInt(_productVariantId),
 			rating: rating,
 			title: $('#RatingTitle').val().trim(),
 			reviewText: $('#ReviewText').val().trim(),
@@ -398,7 +398,7 @@
 
 	function filterRatings(filter) {
 		var input = {
-			productId: parseInt(_productId),
+			productVariantId: parseInt(_productVariantId),
 			maxResultCount: 10,
 			skipCount: 0
 		};
