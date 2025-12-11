@@ -35,10 +35,19 @@
 						required: true
 					},
 					Ram: {
-						maxlength: 50
+						required: true,
+						maxlength: 50,
+						minlength: 3
 					},
 					Color: {
-						maxlength: 50
+						required: true,
+						maxlength: 50,
+						minlength: 3
+					},
+					Storage: {
+						required: true,
+						maxlength: 50,
+						minlength: 2
 					},
 					Price: {
 						required: true,
@@ -56,15 +65,24 @@
 						required: 'Vui lòng chọn sản phẩm'
 					},
 					Ram: {
-						maxlength: 'RAM không được vượt quá 50 ký tự'
+						required: 'RAM không được để trống',
+						maxlength: 'RAM không được vượt quá 50 ký tự',
+						minlength: 'RAM phải có ít nhất 3 ký tự'
 					},
 					Color: {
+						required: 'Màu sắc không được để trống',
+						minlength: 'Màu sắc phải có ít nhất 3 ký tự',
 						maxlength: 'Màu sắc không được vượt quá 50 ký tự'
 					},
 					Price: {
 						required: 'Giá bán không được để trống',
 						formattedNumber: 'Giá bán phải là số hợp lệ',
 						formattedMin: 'Giá bán phải lớn hơn hoặc bằng 0'
+					},
+					Storage: {
+						required: 'Bộ nhớ không được để trống',
+						maxlength: 'Bộ nhớ không được vượt quá 50 ký tự',
+						minlength: 'Bộ nhớ phải có ít nhất 2 ký tự'
 					},
 					StockQuantity: {
 						required: 'Số lượng tồn kho không được để trống',
