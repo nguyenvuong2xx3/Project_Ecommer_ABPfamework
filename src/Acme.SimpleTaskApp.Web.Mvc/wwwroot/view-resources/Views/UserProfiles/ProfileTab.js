@@ -1,12 +1,12 @@
 ﻿(function () {
-  var _userService = abp.services.app.user;
-  var _locationService = abp.services.app.location;
+  var _userService = abp.services. app.user;
+  var _locationService = abp.services. app.location;
   var _$form = null;
   var _locations = [];
 
   $(document).ready(function () {
     _$form = $('form[name=updateProfileForm]');
-
+    
     initializeValidation();
     initializeLocationData();
     bindEvents();
@@ -17,7 +17,7 @@
       return;
     }
 
-    $.validator.addMethod("vietnamPhone", function (value, element) {
+    $. validator.addMethod("vietnamPhone", function (value, element) {
       if (!value) return true;
       return /^(0[3|5|7|8|9])+([0-9]{8})$/.test(value);
     }, "Số điện thoại không hợp lệ");
@@ -37,11 +37,11 @@
           required: true,
           vietnamPhone: true
         },
-        TinhThanh: {
+        TinhThanh:  {
           selectRequired: true
         },
         PhuongXa: {
-          selectRequired: true
+          selectRequired:  true
         },
         DiaChiChiTiet: {
           required: true,
@@ -50,12 +50,12 @@
         }
       },
       messages: {
-        FullName: {
+        FullName:  {
           required: 'Họ tên không được để trống',
-          minlength: 'Họ tên phải có ít nhất 2 ký tự',
+          minlength:  'Họ tên phải có ít nhất 2 ký tự',
           maxlength: 'Họ tên không được quá 100 ký tự'
         },
-        PhoneNumber: {
+        PhoneNumber:  {
           required: 'Số điện thoại không được để trống',
           vietnamPhone: 'Số điện thoại không hợp lệ (VD:  0912345678)'
         },
@@ -65,7 +65,7 @@
         PhuongXa: {
           selectRequired: 'Vui lòng chọn Phường/Xã'
         },
-        DiaChiChiTiet: {
+        DiaChiChiTiet:  {
           required: 'Địa chỉ chi tiết không được để trống',
           minlength: 'Địa chỉ chi tiết phải có ít nhất 5 ký tự',
           maxlength: 'Địa chỉ chi tiết không được quá 200 ký tự'
@@ -150,7 +150,7 @@
     $.each(_locations, function (index, tinhThanh) {
       $tinhThanh.append($('<option>', {
         value: tinhThanh.matinhTMS,
-        text: tinhThanh.tentinhmoi,
+        text:  tinhThanh.tentinhmoi,
         'data-matinhBNV': tinhThanh.matinhBNV
       }));
     });
@@ -163,7 +163,7 @@
 
   function populatePhuongXa(tinhThanhCode) {
     var $phuongXa = $('#PhuongXa');
-    var currentValue = $phuongXa.val();
+    var currentValue = $phuongXa. val();
 
     $phuongXa.html('<option value="">Chọn Phường/Xã</option>');
 
@@ -186,7 +186,7 @@
       $phuongXa.prop('disabled', false);
 
       if (currentValue) {
-        $phuongXa.val(currentValue);
+        $phuongXa. val(currentValue);
       }
     } else {
       $phuongXa.html('<option value="">Không có dữ liệu phường/xã</option>');
@@ -205,8 +205,8 @@
     }
 
     var fullName = $('#FullName').val().trim();
-    var parts = fullName.split(' ');
-    var name = parts.length > 0 ? parts.pop() : '';
+    var parts = fullName. split(' ');
+    var name = parts.length > 0 ? parts. pop() : '';
     var surname = parts.length > 0 ? parts.join(' ') : '';
 
     var formData = {
@@ -216,7 +216,7 @@
       PhoneNumber: $('#PhoneNumber').val(),
       GioiTinh: $('input[name="GioiTinh"]:checked').val(),
       TinhThanh: $('#TinhThanh').val(),
-      PhuongXa: $('#PhuongXa').val(),
+      PhuongXa:  $('#PhuongXa').val(),
       DiaChiChiTiet: $('#DiaChiChiTiet').val(),
       IsDiaChiMacDinh: $('#IsDiaChiMacDinh').is(':checked') ? 1 : 0
     };
@@ -230,7 +230,7 @@
       })
       .fail(function (error) {
         console.error('API lỗi:', error);
-        abp.notify.error('Cập nhật thông tin thất bại:  ' + (error.message || ''));
+        abp.notify. error('Cập nhật thông tin thất bại:  ' + (error.message || ''));
       })
       .always(function () {
         abp.ui.clearBusy($formArea);
