@@ -1,6 +1,6 @@
 ﻿(function ($) {
 	var _commentService = abp.services.app.productComment;
-	var _productId = $('#ProductId').val();
+	var _productVariantId = $('#ProductVariantId').val();
 	var _replyToCommentId = null;
 	var _replyToUserName = '';
 	var _commentHubConnection = null;
@@ -121,10 +121,10 @@
 			_commentHubConnection.start()
 				.then(function () {
 					console.log('[SignalR] Connected successfully');
-					return _commentHubConnection.invoke("JoinProductGroup", parseInt(_productId));
+					return _commentHubConnection.invoke("JoinProductGroup", parseInt(_productVariantId));
 				})
 				.then(function () {
-					console.log('[SignalR] Joined product comment group:', _productId);
+					console.log('[SignalR] Joined product comment group:', _productVariantId);
 				})
 				.catch(function (err) {
 					console.error('[SignalR] Connection error:', err);
@@ -132,7 +132,7 @@
 
 			_commentHubConnection.onreconnected(function () {
 				console.log('[SignalR] Reconnected');
-				_commentHubConnection.invoke("JoinProductGroup", parseInt(_productId));
+				_commentHubConnection.invoke("JoinProductGroup", parseInt(_productVariantId));
 			});
 
 		} catch (error) {
@@ -354,7 +354,7 @@
 			$('#charCount').text(length);
 
 			if (_commentHubConnection && _commentHubConnection.state === signalR.HubConnectionState.Connected) {
-				_commentHubConnection.invoke("UserTyping", parseInt(_productId), abp.session.userName);
+				_commentHubConnection.invoke("UserTyping", parseInt(_productVariantId), abp.session.userName);
 			}
 		});
 
@@ -411,7 +411,7 @@
 		}
 
 		var input = {
-			productId: parseInt(_productId),
+			productVariantId: parseInt(_productVariantId),
 			content: content,
 			parentCommentId: _replyToCommentId
 		};
@@ -542,7 +542,7 @@
 	// Cleanup on page unload
 	$(window).on('beforeunload', function () {
 		if (_commentHubConnection) {
-			_commentHubConnection.invoke("LeaveProductGroup", parseInt(_productId));
+			_commentHubConnection.invoke("LeaveProductGroup", parseInt(_productVariantId));
 			_commentHubConnection.stop();
 		}
 	});

@@ -2,7 +2,7 @@
 @model List<ProductCommentDto>
 
 @{
-  var productId = ViewBag.ProductId as int? ?? 0;
+  var productVariantId = ViewBag.ProductVariantId as int? ?? 0;
   var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
   
   // ✅ NEW: Phân trang - Chỉ hiển thị 10 comments đầu tiên
@@ -25,7 +25,7 @@
     <!-- Comment Form -->
     <div class="comment-form-wrapper">
       <form id="commentForm">
-        <input type="hidden" id="ProductId" value="@productId" />
+        <input type="hidden" id="ProductVariantId" value="@productVariantId" />
         <input type="hidden" id="ParentCommentId" value="" />
 
         <div class="comment-input-group">

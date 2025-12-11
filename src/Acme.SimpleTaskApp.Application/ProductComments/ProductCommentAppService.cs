@@ -31,6 +31,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 
 		public ProductCommentAppService(
 			IRepository<ProductComment, int> commentRepository,
+			IRepository<ProductVariant, int> productVariantRepository,
 			IRepository<User, long> userRepository,
 			IRepository<Product, int> productRepository,
 			INotificationPublisher notificationPublisher,
@@ -38,6 +39,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			RoleManager roleManager,
 			IProductCommentBroadcaster commentBroadcaster)
 		{
+			_productVariantRepository = productVariantRepository;
 			_commentRepository = commentRepository;
 			_userRepository = userRepository;
 			_productRepository = productRepository;
@@ -82,7 +84,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			if (input.ParentCommentId.HasValue)
 			{
 				parentComment = await _commentRepository.FirstOrDefaultAsync(c => c.Id == input.ParentCommentId.Value);
-				
+
 				if (parentComment == null)
 				{
 					throw new UserFriendlyException("Comment cha không tồn tại");
@@ -105,7 +107,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			// Get current user info
 			var currentUser = await _userRepository.GetAsync(currentUserId.Value);
 			var userName = $"{currentUser.Name} {currentUser.Surname}".Trim();
-			
+
 			// Check if current user is admin
 			var isCurrentUserAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
 
@@ -178,22 +180,22 @@ namespace Acme.SimpleTaskApp.ProductComments
 				notificationData["productVariantId"] = productVariantId.ToString();
 				notificationData["ProductName"] = productName;
 				notificationData["ReplierName"] = replierName;
-				notificationData["CommentContent"] = commentContent.Length > 50 
-					? commentContent.Substring(0, 50) + "..." 
+				notificationData["CommentContent"] = commentContent.Length > 50
+					? commentContent.Substring(0, 50) + "..."
 					: commentContent;
 				notificationData["Message"] = $"{replierName} đã trả lời bình luận của bạn về sản phẩm '{productName}'";
 				notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}#comment-{commentId}";
-				
+
 				// Get recipient user info
 				var recipient = await _userRepository.GetAsync(recipientUserId);
-				
+
 				await _notificationPublisher.PublishAsync(
 					notificationName: "App.CommentReply",
 					data: notificationData,
 					severity: NotificationSeverity.Info,
 					userIds: new[] { new Abp.UserIdentifier(recipient.TenantId, recipient.Id) }
 				);
-				
+
 				Logger.Info($"Sent reply notification to user {recipientUserId}");
 			}
 			catch (Exception ex)
@@ -219,7 +221,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 
 				// Get all users in Admin role
 				var adminUsers = await _userManager.GetUsersInRoleAsync(adminRole.Name);
-				
+
 				if (adminUsers != null && adminUsers.Any())
 				{
 					// Create notification data
@@ -227,22 +229,22 @@ namespace Acme.SimpleTaskApp.ProductComments
 					notificationData["productVariantId"] = productVariantId.ToString();
 					notificationData["ProductName"] = productName;
 					notificationData["UserName"] = userName;
-					notificationData["CommentContent"] = commentContent.Length > 50 
-						? commentContent.Substring(0, 50) + "..." 
+					notificationData["CommentContent"] = commentContent.Length > 50
+						? commentContent.Substring(0, 50) + "..."
 						: commentContent;
 					notificationData["Message"] = $"{userName} đã bình luận về sản phẩm '{productName}'";
 					notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}";
-					
+
 					// Publish notification to all admins
 					var userIdentifiers = adminUsers.Select(u => new Abp.UserIdentifier(u.TenantId, u.Id)).ToArray();
-					
+
 					await _notificationPublisher.PublishAsync(
 						notificationName: "App.NewProductComment",
 						data: notificationData,
 						severity: NotificationSeverity.Info,
 						userIds: userIdentifiers
 					);
-					
+
 					Logger.Info($"Sent comment notification to {adminUsers.Count()} admin(s)");
 				}
 			}
@@ -332,22 +334,22 @@ namespace Acme.SimpleTaskApp.ProductComments
 		private async Task<List<ProductCommentDto>> MapCommentsToDto(List<ProductComment> comments)
 		{
 			var commentDtos = new List<ProductCommentDto>();
-			
+
 			// Lấy tất cả UserIds unique
 			var userIds = comments.Select(c => c.UserId).Distinct().ToList();
-			
+
 			// Load tất cả Users cùng lúc (batch loading để tối ưu performance)
 			var users = await _userRepository.GetAll()
 				.Where(u => userIds.Contains(u.Id))
 				.Select(u => new { u.Id, u.UserName, u.Name, u.Surname, u.EmailAddress })
 				.ToListAsync();
-			
+
 			var userDict = users.ToDictionary(u => u.Id);
 
 			foreach (var comment in comments)
 			{
 				var dto = ObjectMapper.Map<ProductCommentDto>(comment);
-				
+
 				// Gán thông tin User từ dictionary
 				if (userDict.TryGetValue(comment.UserId, out var user))
 				{
@@ -355,7 +357,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 					dto.UserFullName = $"{user.Name} {user.Surname}".Trim();
 					dto.UserEmail = user.EmailAddress;
 				}
-				
+
 				commentDtos.Add(dto);
 			}
 
@@ -443,7 +445,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 
 			// Xóa comment chính
 			await _commentRepository.DeleteAsync(comment);
-			
+
 			// ✅ Broadcast delete via SignalR
 			await BroadcastCommentDelete(productId, id);
 		}
