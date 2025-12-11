@@ -13,9 +13,9 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		Task<PagedResultDto<ProductRatingDto>> GetAllRatings(GetProductRatingsInput input);
 
 		/// <summary>
-		/// Get product rating statistics (average, distribution)
+		/// Get product variant rating statistics (average, distribution)
 		/// </summary>
-		Task<ProductRatingStatisticsDto> GetProductRatingStatistics(int productId);
+		Task<ProductRatingStatisticsDto> GetProductRatingStatistics(int productVariantId);
 
 		/// <summary>
 		/// Create new product rating
@@ -38,9 +38,9 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		Task<ProductRatingDto> VoteRatingHelpful(VoteRatingHelpfulDto input);
 
 		/// <summary>
-		/// Check if current user can rate this product (must have purchased)
+		/// Check if current user can rate this product variant (must have purchased)
 		/// </summary>
-		Task<bool> CanUserRateProduct(int productId);
+		Task<bool> CanUserRateProduct(int productVariantId);
 
 		/// <summary>
 		/// Admin: Add response to rating

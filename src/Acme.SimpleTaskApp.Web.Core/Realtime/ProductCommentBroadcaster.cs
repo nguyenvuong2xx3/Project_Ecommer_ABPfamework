@@ -1,5 +1,6 @@
 using Abp.Dependency;
 using Acme.SimpleTaskApp.ProductComments;
+using Acme.SimpleTaskApp.Products;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
@@ -27,9 +28,9 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             });
         }
 
-        public async Task BroadcastCommentUpdate(int productId, int commentId, object commentData)
+        public async Task BroadcastCommentUpdate(int productVariantId, int commentId, object commentData)
         {
-            var groupName = GetProductGroupName(productId);
+            var groupName = GetProductGroupName(productVariantId);
             await _hubContext.Clients.Group(groupName).SendAsync("CommentUpdated", new
             {
                 commentId = commentId,
@@ -48,9 +49,9 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             });
         }
 
-        private static string GetProductGroupName(int productId)
+        private static string GetProductGroupName(int productVariantId)
         {
-            return $"Product_{productId}_Comments";
+            return $"roductVariantId_{productVariantId}_Comments";
         }
     }
 }

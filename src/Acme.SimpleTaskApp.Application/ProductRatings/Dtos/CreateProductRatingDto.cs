@@ -6,7 +6,7 @@ namespace Acme.SimpleTaskApp.ProductRatings.Dtos
     public class CreateProductRatingDto
     {
         [Required]
-        public int ProductId { get; set; }
+        public int ProductVariantId { get; set; }
         
         public int? OrderId { get; set; }
         

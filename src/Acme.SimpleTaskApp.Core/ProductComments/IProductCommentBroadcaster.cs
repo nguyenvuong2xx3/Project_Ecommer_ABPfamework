@@ -15,7 +15,7 @@ namespace Acme.SimpleTaskApp.ProductComments
         /// <summary>
         /// Broadcast comment update to all clients
         /// </summary>
-        Task BroadcastCommentUpdate(int productId, int commentId, object commentData);
+        Task BroadcastCommentUpdate(int productVariantId, int commentId, object commentData);
 
         /// <summary>
         /// Broadcast comment deletion to all clients

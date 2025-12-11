@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Abp.Auditing;
 using Abp.Localization;
 using Abp.Notifications;
@@ -147,13 +148,34 @@ namespace Acme.SimpleTaskApp.Notifications
 		/// <summary>
 		/// Đánh dấu notification là đã đọc
 		/// </summary>
-		public async Task SetNotificationAsRead(Guid notificationId)
+		public async Task<SetNotificationAsReadOutput> SetNotificationAsRead(EntityDto<Guid> input)
 		{
 			var user = AbpSession.ToUserIdentifier();
+			var userNotification = await _userNotificationManager.GetUserNotificationAsync(
+				user.TenantId,
+				input.Id);
+			
+			if (userNotification == null)
+			{
+				return new SetNotificationAsReadOutput(false);
+			}
+			
+			if (userNotification.UserId != AbpSession.GetUserId())
+			{
+				return new SetNotificationAsReadOutput(false);
+			}
+			
+			if (userNotification.State == UserNotificationState.Read)
+			{
+				return new SetNotificationAsReadOutput(false);
+			}
+			
 			await _userNotificationManager.UpdateUserNotificationStateAsync(
 				user.TenantId,
-				notificationId,
+				input.Id,
 				UserNotificationState.Read);
+			
+			return new SetNotificationAsReadOutput(true);
 		}
 
 		/// <summary>
@@ -170,12 +192,19 @@ namespace Acme.SimpleTaskApp.Notifications
 		/// <summary>
 		/// Xóa notification
 		/// </summary>
-		public async Task DeleteNotification(Guid notificationId)
+		public async Task DeleteNotification(EntityDto<Guid> input)
 		{
 			var user = AbpSession.ToUserIdentifier();
-			await _userNotificationManager.DeleteUserNotificationAsync(
+			var notification = await _userNotificationManager.GetUserNotificationAsync(
 				user.TenantId,
-				notificationId);
+				input.Id);
+			
+			if (notification != null && notification.UserId == AbpSession.GetUserId())
+			{
+				await _userNotificationManager.DeleteUserNotificationAsync(
+					user.TenantId,
+					input.Id);
+			}
 		}
 	}
 }

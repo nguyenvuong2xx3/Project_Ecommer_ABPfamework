@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Abp.Notifications;
 using Acme.SimpleTaskApp.Notifications.Dtos;
 using System;
@@ -38,7 +39,7 @@ namespace Acme.SimpleTaskApp.Notifications
 		/// <summary>
 		/// Đánh dấu notification đã đọc
 		/// </summary>
-		Task SetNotificationAsRead(Guid notificationId);
+		Task<SetNotificationAsReadOutput> SetNotificationAsRead(EntityDto<Guid> input);
 
 		/// <summary>
 		/// Đánh dấu tất cả đã đọc
@@ -48,6 +49,6 @@ namespace Acme.SimpleTaskApp.Notifications
 		/// <summary>
 		/// Xóa notification
 		/// </summary>
-		Task DeleteNotification(Guid notificationId);
+		Task DeleteNotification(EntityDto<Guid> input);
 	}
 }

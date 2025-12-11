@@ -5,7 +5,7 @@ namespace Acme.SimpleTaskApp.ProductRatings.Dtos
     /// </summary>
     public class ProductRatingStatisticsDto
     {
-        public int ProductId { get; set; }
+        public int ProductVariantId { get; set; }
         
         /// <summary>
         /// Total number of ratings

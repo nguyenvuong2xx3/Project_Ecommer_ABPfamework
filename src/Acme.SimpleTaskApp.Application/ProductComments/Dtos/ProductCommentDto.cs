@@ -30,7 +30,7 @@ namespace Acme.SimpleTaskApp.ProductComments.Dtos
 
 	public class CreateProductCommentDto
 	{
-		public int ProductId { get; set; }
+		public int ProductVariantId { get; set; }
 		public string Content { get; set; }
 		public int? ParentCommentId { get; set; }
 	}
@@ -42,7 +42,7 @@ namespace Acme.SimpleTaskApp.ProductComments.Dtos
 
 	public class GetAllProductCommentsInput : PagedAndSortedResultRequestDto
 	{
-		public int? ProductId { get; set; }
+		public int? ProductVariantId { get; set; }
 		public long? UserId { get; set; }
 		public bool? IsApproved { get; set; }
 	}

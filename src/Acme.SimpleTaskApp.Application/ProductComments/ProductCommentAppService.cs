@@ -23,6 +23,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		private readonly IRepository<ProductComment, int> _commentRepository;
 		private readonly IRepository<User, long> _userRepository;
 		private readonly IRepository<Product, int> _productRepository;
+		private readonly IRepository<ProductVariant, int> _productVariantRepository;
 		private readonly INotificationPublisher _notificationPublisher;
 		private readonly UserManager _userManager;
 		private readonly RoleManager _roleManager;
@@ -69,11 +70,12 @@ namespace Acme.SimpleTaskApp.ProductComments
 			}
 
 			// Get product info
-			var product = await _productRepository.GetAsync(input.ProductId);
-			if (product == null)
+			var productVariant = await _productVariantRepository.GetAsync(input.ProductVariantId);
+			if (productVariant == null)
 			{
 				throw new UserFriendlyException("Sản phẩm không tồn tại");
 			}
+			var product = await _productRepository.FirstOrDefaultAsync(x => x.Id == productVariant.ProductId);
 
 			// Validate ParentCommentId nếu có
 			ProductComment parentComment = null;
@@ -90,7 +92,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			var comment = new ProductComment
 			{
 				UserId = currentUserId.Value,
-				ProductId = input.ProductId,
+				ProductVariantId = input.ProductVariantId,
 				Content = input.Content.Trim(),
 				ParentCommentId = input.ParentCommentId,
 				IsApproved = true, // Mặc định approve
@@ -114,7 +116,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 				await SendReplyNotification(
 					recipientUserId: parentComment.UserId,
 					replierName: userName,
-					productId: product.Id,
+					productVariantId: productVariant.Id,
 					productName: product.Name,
 					commentContent: input.Content,
 					commentId: comment.Id
@@ -124,7 +126,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			{
 				// User bình thường comment → Gửi thông báo cho admin
 				await SendCommentNotificationToAdmins(
-					productId: product.Id,
+					productVariantId: productVariant.Id,
 					productName: product.Name,
 					userName: userName,
 					commentContent: input.Content
@@ -162,7 +164,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// ✅ Send notification to specific user when someone replies to their comment
 		/// </summary>
-		private async Task SendReplyNotification(long recipientUserId, string replierName, int productId, string productName, string commentContent, int commentId)
+		private async Task SendReplyNotification(long recipientUserId, string replierName, int productVariantId, string productName, string commentContent, int commentId)
 		{
 			try
 			{
@@ -173,14 +175,14 @@ namespace Acme.SimpleTaskApp.ProductComments
 				}
 
 				var notificationData = new Abp.Notifications.NotificationData();
-				notificationData["ProductId"] = productId.ToString();
+				notificationData["productVariantId"] = productVariantId.ToString();
 				notificationData["ProductName"] = productName;
 				notificationData["ReplierName"] = replierName;
 				notificationData["CommentContent"] = commentContent.Length > 50 
 					? commentContent.Substring(0, 50) + "..." 
 					: commentContent;
 				notificationData["Message"] = $"{replierName} đã trả lời bình luận của bạn về sản phẩm '{productName}'";
-				notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}#comment-{commentId}";
+				notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}#comment-{commentId}";
 				
 				// Get recipient user info
 				var recipient = await _userRepository.GetAsync(recipientUserId);
@@ -203,7 +205,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Send notification to all admin users when new comment is created
 		/// </summary>
-		private async Task SendCommentNotificationToAdmins(int productId, string productName, string userName, string commentContent)
+		private async Task SendCommentNotificationToAdmins(int productVariantId, string productName, string userName, string commentContent)
 		{
 			try
 			{
@@ -222,14 +224,14 @@ namespace Acme.SimpleTaskApp.ProductComments
 				{
 					// Create notification data
 					var notificationData = new Abp.Notifications.NotificationData();
-					notificationData["ProductId"] = productId.ToString();
+					notificationData["productVariantId"] = productVariantId.ToString();
 					notificationData["ProductName"] = productName;
 					notificationData["UserName"] = userName;
 					notificationData["CommentContent"] = commentContent.Length > 50 
 						? commentContent.Substring(0, 50) + "..." 
 						: commentContent;
 					notificationData["Message"] = $"{userName} đã bình luận về sản phẩm '{productName}'";
-					notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}#product-comments-section";
+					notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}";
 					
 					// Publish notification to all admins
 					var userIdentifiers = adminUsers.Select(u => new Abp.UserIdentifier(u.TenantId, u.Id)).ToArray();
@@ -257,7 +259,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		public async Task<PagedResultDto<ProductCommentDto>> GetAllComments(GetAllProductCommentsInput input)
 		{
 			var query = _commentRepository.GetAll()
-				.WhereIf(input.ProductId.HasValue, c => c.ProductId == input.ProductId.Value)
+				.WhereIf(input.ProductVariantId.HasValue, c => c.ProductVariantId == input.ProductVariantId.Value)
 				.WhereIf(input.UserId.HasValue, c => c.UserId == input.UserId.Value)
 				.WhereIf(input.IsApproved.HasValue, c => c.IsApproved == input.IsApproved.Value)
 				.Where(c => c.ParentCommentId == null); // Chỉ lấy comments gốc
@@ -283,10 +285,10 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// Lấy comments dạng tree structure
 		/// </summary>
-		public async Task<List<ProductCommentDto>> GetProductCommentsTree(int productId)
+		public async Task<List<ProductCommentDto>> GetProductCommentsTree(int productVariantId)
 		{
 			var allComments = await _commentRepository.GetAll()
-				.Where(c => c.ProductId == productId && c.IsApproved)
+				.Where(c => c.ProductVariantId == productVariantId && c.IsApproved)
 				.OrderBy(c => c.CreationTime)
 				.ToListAsync();
 
@@ -392,7 +394,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			var commentDto = result.FirstOrDefault();
 
 			// ✅ Broadcast update via SignalR
-			await BroadcastCommentUpdate(comment.ProductId, commentDto);
+			await BroadcastCommentUpdate(comment.ProductVariantId, commentDto);
 
 			return commentDto;
 		}
@@ -400,12 +402,12 @@ namespace Acme.SimpleTaskApp.ProductComments
 		/// <summary>
 		/// ✅ Broadcast comment update via SignalR
 		/// </summary>
-		private async Task BroadcastCommentUpdate(int productId, ProductCommentDto commentDto)
+		private async Task BroadcastCommentUpdate(int productVariantId, ProductCommentDto commentDto)
 		{
 			try
 			{
-				await _commentBroadcaster.BroadcastCommentUpdate(productId, commentDto.Id, commentDto);
-				Logger.Info($"Broadcasted comment update {commentDto.Id} to product {productId}");
+				await _commentBroadcaster.BroadcastCommentUpdate(productVariantId, commentDto.Id, commentDto);
+				Logger.Info($"Broadcasted comment update {commentDto.Id} to product {productVariantId}");
 			}
 			catch (Exception ex)
 			{
@@ -420,7 +422,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		public async Task DeleteComment(int id)
 		{
 			var comment = await _commentRepository.GetAsync(id);
-			var productId = comment.ProductId;
+			var productId = comment.ProductVariantId;
 
 			// Kiểm tra quyền: người tạo hoặc admin mới được xóa
 			var isAdmin = await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Roles);

@@ -21,10 +21,10 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		public long UserId { get; set; }
 
 		/// <summary>
-		/// Product ID being rated (NO FK)
+		/// Product Variant ID being rated (NO FK)
 		/// </summary>
 		[Required]
-		public int ProductId { get; set; }
+		public int ProductVariantId { get; set; }
 
 		/// <summary>
 		/// Order ID - to verify user purchased this product (NO FK)

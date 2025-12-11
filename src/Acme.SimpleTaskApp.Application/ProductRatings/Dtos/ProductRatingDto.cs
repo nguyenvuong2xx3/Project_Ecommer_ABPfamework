@@ -14,8 +14,8 @@ namespace Acme.SimpleTaskApp.ProductRatings.Dtos
         public string UserFullName { get; set; }
         public string UserEmail { get; set; }
         
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
+        public int ProductVariantId { get; set; }
+        public string ProductVariantName { get; set; }
         
         public int? OrderId { get; set; }
         

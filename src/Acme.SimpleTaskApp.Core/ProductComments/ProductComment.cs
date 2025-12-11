@@ -10,7 +10,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 		public long UserId { get; set; }
 
 		// Sản phẩm được comment (chỉ lưu ID, không có navigation property)
-		public int ProductId { get; set; }
+		public int ProductVariantId { get; set; }
 
 		// Nội dung comment
 		[Required]

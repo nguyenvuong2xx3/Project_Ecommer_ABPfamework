@@ -142,8 +142,8 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 
 		// ✅ NEW: Load rating statistics for all products
 		var ratings = await _productRatingRepository.GetAll()
-			.Where(r => productIds.Contains(r.ProductId) && r.IsApproved)
-			.GroupBy(r => r.ProductId)
+			.Where(r => productIds.Contains(r.ProductVariantId) && r.IsApproved)
+			.GroupBy(r => r.ProductVariantId)
 			.Select(g => new
 			{
 				ProductId = g.Key,

@@ -98,7 +98,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				// ✅ NEW: Load ratings for product
 				var ratingsResult = await _productRatingAppService.GetAllRatings(new GetProductRatingsInput
 				{
-					ProductId = product.Id,
+					ProductVariantId = id,
 					MaxResultCount = 10,
 					IsApproved = true
 				});
@@ -120,12 +120,11 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				{
 					ProductInfo = product
 				};
-				
-				// Pass data to ViewBag for partial views
+
+				// ViewBag đến view _ProductComments.cshtml
 				ViewBag.ProductComments = comments;
-				ViewBag.ProductId = product.Id;
+				ViewBag.ProductVariantId = id;
 				
-				// ✅ NEW: Pass rating data to ViewBag
 				ViewBag.ProductRatings = ratingsResult.Items;
 				ViewBag.RatingStatistics = ratingStatistics;
 				ViewBag.CanRate = canRate;
@@ -167,7 +166,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 						notificationData["CommentContent"] = commentContent.Length > 50 
 							? commentContent.Substring(0, 50) + "..." 
 							: commentContent;
-						notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}#product-comments-section";
+						notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productId}";
 						
 						// Publish notification
 						await _notificationPublisher.PublishAsync(
