@@ -8,7 +8,10 @@
 @section scripts
 {
   <environment names="Development">
-    <script src="~/view-resources/Views/UserProfiles/Index.js" asp-append-version="true"></script>
+    @* <script src="~/view-resources/Views/UserProfiles/Index.js" asp-append-version="true"></script> *@
+    <script src="~/view-resources/Views/UserProfiles/ProfileTab.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/UserProfiles/OrderHistory.js" asp-append-version="true"></script>
+    <script src="~/view-resources/Views/UserProfiles/NotificationTab.js" asp-append-version="true"></script>
   </environment>
 }
 
@@ -145,7 +148,7 @@
           <!-- Form cập nhật thông tin cá nhân -->
           <div class="info-card">
             <h5 class="info-card-header">Thông tin cá nhân</h5>
-            <form id="updateProfileForm">
+            <form id="updateProfileForm" name="updateProfileForm">
               <input type="hidden" id="UserId" name="UserId" value="@Model.User.Id" />
 
               <div class="mb-3">
@@ -195,10 +198,14 @@
                 <div class="mb-3">
                   <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
                 </div>
-                <div class="col-md-12 mb-6 text-end cancel-save-links">
-                  <button type="button" id="cancelProfileEdit" class="btn btn-link text-decoration-none p-0">Hủy</button>
-                  <button type="button" id="saveProfile" class="btn btn-link text-decoration-none p-0">Lưu</button>
-                </div>
+                @* <div class="col-md-12 mb-6 text-end cancel-save-links"> *@
+                  @* <button type="button" id="cancelProfileEdit" class="btn btn-link text-decoration-none p-0">Hủy</button>
+                  <button type="button" id="saveProfile" class="btn btn-link text-decoration-none p-0">Lưu</button> *@
+                  <div class="col-md-12 mb-6 text-end cancel-save-links">
+                  <button type="button" id="cancelProfileEdit" class="btn btn-secondary" style="color: white;">Hủy</button>
+                  <button type="button" id="saveProfile" class="btn btn-primary" style="color: white;">Lưu</button>
+                  </div>
+                @* </div> *@
               </div>
               <div class="form-check mb-4">
                 <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
@@ -384,75 +391,75 @@
     background-color: #fff;
   }
 
-  .notification-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
+    .notification-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-  .notification-item.unread {
-    background-color: #f0f7ff;
-    border-left: 4px solid #0d6efd;
-  }
+    .notification-item.unread {
+      background-color: #f0f7ff;
+      border-left: 4px solid #0d6efd;
+    }
 
-  .notification-item .notification-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-  }
+    .notification-item .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+    }
 
-  .notification-item .notification-icon.success {
-    background-color: #d1e7dd;
-    color: #198754;
-  }
+      .notification-item .notification-icon.success {
+        background-color: #d1e7dd;
+        color: #198754;
+      }
 
-  .notification-item .notification-icon.info {
-    background-color: #cff4fc;
-    color: #0dcaf0;
-  }
+      .notification-item .notification-icon.info {
+        background-color: #cff4fc;
+        color: #0dcaf0;
+      }
 
-  .notification-item .notification-icon.warning {
-    background-color: #fff3cd;
-    color: #ffc107;
-  }
+      .notification-item .notification-icon.warning {
+        background-color: #fff3cd;
+        color: #ffc107;
+      }
 
-  .notification-item .notification-icon.error {
-    background-color: #f8d7da;
-    color: #dc3545;
-  }
+      .notification-item .notification-icon.error {
+        background-color: #f8d7da;
+        color: #dc3545;
+      }
 
-  .notification-item .notification-content {
-    flex: 1;
-  }
+    .notification-item .notification-content {
+      flex: 1;
+    }
 
-  .notification-item .notification-title {
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #333;
-  }
+    .notification-item .notification-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #333;
+    }
 
-  .notification-item .notification-message {
-    color: #666;
-    font-size: 0.9em;
-    margin-bottom: 4px;
-  }
+    .notification-item .notification-message {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 4px;
+    }
 
-  .notification-item .notification-time {
-    color: #999;
-    font-size: 0.8em;
-  }
+    .notification-item .notification-time {
+      color: #999;
+      font-size: 0.8em;
+    }
 
-  .notification-item .notification-actions {
-    display: flex;
-    gap: 8px;
-  }
+    .notification-item .notification-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-  .notification-item .notification-actions .btn {
-    padding: 4px 8px;
-    font-size: 0.8em;
-  }
+      .notification-item .notification-actions .btn {
+        padding: 4px 8px;
+        font-size: 0.8em;
+      }
 
   .empty-notifications-container {
     text-align: center;
@@ -461,16 +468,16 @@
     border-radius: 8px;
   }
 
-  .empty-notifications-container .icon {
-    font-size: 60px;
-    color: #6c757d;
-    margin-bottom: 20px;
-  }
+    .empty-notifications-container .icon {
+      font-size: 60px;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
 
-  .empty-notifications-container h4 {
-    font-weight: bold;
-    color: #333;
-  }
+    .empty-notifications-container h4 {
+      font-weight: bold;
+      color: #333;
+    }
 
   .notification-pagination .pagination .page-link {
     color: #0d6efd;
