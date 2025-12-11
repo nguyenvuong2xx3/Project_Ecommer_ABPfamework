@@ -87,7 +87,7 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="province" class="form-label">Tỉnh/Thành phố</label>
-            <select class="form-select" id="tinhThanh" name="TinhThanh">
+            <select class="form-select" id="tinhThanh" name="TinhThanh" data-current-value="@Model.User.TinhThanh">
               <option value="">Chọn Tỉnh/Thành phố</option>
               @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
               {
@@ -97,7 +97,7 @@
           </div>
           <div class="col-md-6 mb-3">
             <label for="ward" class="form-label">Phường/Xã</label>
-            <select class="form-select" id="phuongXa" name="PhuongXa">
+            <select class="form-select" id="phuongXa" name="PhuongXa" data-current-value="@Model.User.PhuongXa">
               <option value="">Chọn Phường/Xã</option>
               @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
               {

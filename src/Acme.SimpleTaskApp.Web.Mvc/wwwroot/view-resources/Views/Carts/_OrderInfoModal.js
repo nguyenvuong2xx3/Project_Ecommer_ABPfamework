@@ -43,6 +43,7 @@
     }
 
     function populatePhuongXa(tinhThanhCode) {
+      debugger
       var $phuongXa = $('#phuongXa');
       $phuongXa.html('<option value="">Chọn Phường/Xã</option>');
 
@@ -50,9 +51,9 @@
         $phuongXa.prop('disabled', true);
         return;
       }
-
+			console.log(_locations);
       var selectedTinhThanh = _locations.find(function (p) {
-        return p.matinhTMS === tinhThanhCode;
+        return p.matinhTMS === String(tinhThanhCode);
       });
 
       if (selectedTinhThanh && selectedTinhThanh.phuongxa && selectedTinhThanh.phuongxa.length > 0) {
