@@ -8,7 +8,7 @@
 	var _permissions = {
 		view: abp.auth.hasPermission('Pages.ProductVariants.View'),
 		create: abp.auth.hasPermission('Pages.ProductVariants.Create'),
-		edit: abp.auth.hasPermission('Pages.ProductVariants.Edit'),
+		update: abp.auth.hasPermission('Pages.ProductVariants.Update'),
 		delete: abp.auth.hasPermission('Pages.ProductVariants.Delete'),
 	};
 
@@ -209,8 +209,7 @@
 				defaultContent: '',
 				render: (data, type, row, meta) => {
 					let buttons = [];
-
-					if (_permissions.edit) {
+					if (_permissions.update) {
 						buttons.push(
 							`<button type="button" class="btn btn-sm bg-secondary edit-productvariant me-2" data-productvariant-id="${row.id}" data-toggle="modal" data-target="#ProductVariantEditModal">` +
 							`   <i class="fas fa-pencil-alt"></i> ${l('Edit')}` +

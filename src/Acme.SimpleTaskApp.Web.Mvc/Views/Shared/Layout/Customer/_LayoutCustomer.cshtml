@@ -44,7 +44,7 @@
 	@await Html.PartialAsync("~/Views/Shared/Layout/Customer/_FooterCustomer.cshtml")
 
 	@* ✅ AI Chatbot Widget *@
-	@await Html.PartialAsync("~/Views/Shared/Components/Chatbot/_ChatbotWidget.cshtml")
+	@* @await Html.PartialAsync("~/Views/Shared/Components/Chatbot/_ChatbotWidget.cshtml") *@
 
 	@await Html.PartialAsync("_Scripts.cshtml")
 	@RenderSection("scripts", required: false)
@@ -52,6 +52,6 @@
 	<a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up m-0"></i></a>
 	<script src="~/view-resources/Views/HomeCustomer/mainCustomer.js"></script>
 	@* ✅ Chatbot Widget Script *@
-	<script src="~/view-resources/Views/Shared/Components/Chatbot/_ChatbotWidget.js"></script>
+	@* <script src="~/view-resources/Views/Shared/Components/Chatbot/_ChatbotWidget.js"></script> *@
 </body>
 </html>
