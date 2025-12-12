@@ -145,7 +145,7 @@
           <label for="CategoryTags" class="control-label">
             Chọn danh mục <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="CategoryTags" name="CategoryTags" placeholder="Chọn danh mục..." />
+          <input type="text" class="form-control customtag" id="CategoryTags" name="CategoryTags" placeholder="Chọn danh mục..." />
         </div>
       </div>
 
@@ -155,7 +155,7 @@
           <label for="ProductTags" class="control-label">
             Chọn sản phẩm <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="ProductTags" name="ProductTags" placeholder="Chọn sản phẩm..." />
+          <input type="text" class="form-control customtag" id="ProductTags" name="ProductTags" placeholder="Chọn sản phẩm..." />
         </div>
       </div>
 
@@ -165,7 +165,7 @@
           <label for="ProductVariantTags" class="control-label">
             Chọn biến thể <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="ProductVariantTags" name="ProductVariantTags" placeholder="Chọn biến thể..." />
+          <input type="text" class="form-control customtag" id="ProductVariantTags" name="ProductVariantTags" placeholder="Chọn biến thể..." />
         </div>
       </div>
 
@@ -173,3 +173,18 @@
   </div>
   @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
 </form>
+<style>
+  tags.tagify.form-control.tagify--focus {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .customtag {
+    height: 85px;
+  }
+
+  .tagify__input {
+    width: 143px;
+  }
+</style>

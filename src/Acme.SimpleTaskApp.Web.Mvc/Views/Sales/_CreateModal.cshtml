@@ -5,6 +5,14 @@
 
 @await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Tạo chương trình giảm giá mới"))
 
+@section Scripts
+{
+  <script abp-src="/view-resources/App/_Bundles/dropzone.js" asp-append-version="true"></script>
+  <script abp-src="/view-resources/App/_Bundles/tagify.js" asp-append-version="true"></script>
+}
+@section Styles {
+  <link rel="stylesheet" abp-href="/view-resources/App/_Bundles/tagify.css" asp-append-version="true">
+}
 
 <form name="SaleCreateForm" role="form" class="form-horizontal">
   <div class="modal-body">
@@ -86,7 +94,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MaximumDiscountAmount" class="control-label">Giảm tối đa (VNĐ)</label>
-          <input type="text" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" placeholder="Không giới hạn"/>
+          <input type="text" class="form-control" id="MaximumDiscountAmount" name="MaximumDiscountAmount" placeholder="Không giới hạn" />
           <small class="text-muted">Để trống nếu không giới hạn</small>
         </div>
       </div>
@@ -95,7 +103,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <label for="MinimumOrderValue" class="control-label">Đơn hàng tối thiểu (VNĐ)</label>
-          <input type="text" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" placeholder="0"/>
+          <input type="text" class="form-control" id="MinimumOrderValue" name="MinimumOrderValue" placeholder="0" />
         </div>
       </div>
 
@@ -143,7 +151,7 @@
           <label for="CategoryTags" class="control-label">
             Chọn danh mục <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="CategoryTags" name="CategoryTags" placeholder="Chọn danh mục..." />
+          <input type="text" class="form-control customtag" id="CategoryTags" name="CategoryTags" placeholder="Chọn danh mục..." />
           <small class="text-muted">Chọn một hoặc nhiều danh mục</small>
         </div>
       </div>
@@ -154,7 +162,7 @@
           <label for="ProductTags" class="control-label">
             Chọn sản phẩm <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="ProductTags" name="ProductTags" placeholder="Chọn sản phẩm..." />
+          <input type="text" class="form-control customtag" id="ProductTags" name="ProductTags" placeholder="Chọn sản phẩm..." />
           <small class="text-muted">Chọn một hoặc nhiều sản phẩm</small>
         </div>
       </div>
@@ -165,7 +173,9 @@
           <label for="ProductVariantTags" class="control-label">
             Chọn biến thể <span class="text-danger">*</span>
           </label>
-          <input type="text" class="form-control" id="ProductVariantTags" name="ProductVariantTags" placeholder="Chọn biến thể sản phẩm..." />
+          <div class="input-group">
+            <input type="text" class="form-control customtag" id="ProductVariantTags" name="ProductVariantTags" placeholder="Chọn biến thể sản phẩm..." />
+          </div>
           <small class="text-muted">Chọn một hoặc nhiều biến thể</small>
         </div>
       </div>
@@ -174,3 +184,18 @@
   </div>
   @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
 </form>
+<style>
+  tags.tagify.form-control.tagify--focus {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .customtag {
+    height: 85px;
+  }
+
+  .tagify__input{
+    width: 143px;
+  }
+</style>
