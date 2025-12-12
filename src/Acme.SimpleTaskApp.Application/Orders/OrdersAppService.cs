@@ -358,7 +358,7 @@ namespace Acme.SimpleTaskApp.Orders
 			var user = await _userRepository.GetAsync(order.UserId.Value);
 			if (order == null)
 			{
-				throw new UserFriendlyException("Order not found.");
+				throw new UserFriendlyException("Không tìm thấy đơn hàng.");
 			}
 			order.Deserialize();
 			order.User = user;
@@ -415,7 +415,7 @@ namespace Acme.SimpleTaskApp.Orders
 			var order = await _ordersRepository.GetAsync(orderId);
 			if (order == null)
 			{
-				throw new UserFriendlyException("Order not found.");
+				throw new UserFriendlyException("Không tìm thấy đơn hàng.");
 			}
 			order.Status = 1;
 			await _ordersRepository.UpdateAsync(order);

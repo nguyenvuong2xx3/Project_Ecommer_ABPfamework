@@ -1,4 +1,4 @@
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.RealTime;
 using Abp.Runtime.Session;
 using Microsoft.AspNetCore.SignalR;
@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Realtime
 {
-    /// <summary>
-    /// SignalR Hub for real-time product comments
-    /// </summary>
     public class ProductCommentHub : Hub, ITransientDependency
     {
         public IAbpSession AbpSession { get; set; }
@@ -18,63 +15,49 @@ namespace Acme.SimpleTaskApp.Web.Realtime
             AbpSession = NullAbpSession.Instance;
         }
 
-        /// <summary>
-        /// Join a product variant's comment group to receive real-time updates
-        /// </summary>
+        // Tham gia nhóm bình luận của một biến thể sản phẩm để nhận cập nhật realtime
         public async Task JoinProductGroup(int productVariantId)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
-        /// <summary>
-        /// Leave a product variant's comment group
-        /// </summary>
+        // Rời nhóm bình luận của biến thể sản phẩm
         public async Task LeaveProductGroup(int productVariantId)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
 
-        /// <summary>
-        /// Send new comment to all clients in the product variant group
-        /// </summary>
+        // Gửi comment mới đến tất cả client trong nhóm
         public async Task SendCommentToProduct(int productVariantId, object commentData)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("ReceiveComment", commentData);
         }
 
-        /// <summary>
-        /// Send comment update to all clients
-        /// </summary>
+        // Gửi cập nhật comment đến tất cả client
         public async Task SendCommentUpdate(int productVariantId, int commentId, object commentData)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("CommentUpdated", commentId, commentData);
         }
 
-        /// <summary>
-        /// Send comment deletion notification
-        /// </summary>
+        // Gửi thông báo xóa comment
         public async Task SendCommentDeleted(int productVariantId, int commentId)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.Group(groupName).SendAsync("CommentDeleted", commentId);
         }
 
-        /// <summary>
-        /// User is typing indicator
-        /// </summary>
+        // Hiển thị chỉ báo người dùng đang gõ
         public async Task UserTyping(int productVariantId, string userName)
         {
             var groupName = GetProductVariantGroupName(productVariantId);
             await Clients.OthersInGroup(groupName).SendAsync("UserTyping", userName);
         }
 
-        /// <summary>
-        /// User stopped typing
-        /// </summary>
+        // Hiển thị chỉ báo người dùng dừng gõ
         public async Task UserStoppedTyping(int productVariantId, string userName)
         {
             var groupName = GetProductVariantGroupName(productVariantId);

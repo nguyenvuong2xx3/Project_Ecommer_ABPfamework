@@ -10,11 +10,11 @@ namespace Acme.SimpleTaskApp.Orders.Dtos
 	{
 		public int ProductId { get; set; }
 
-		public string ProductName { get; set; } // Name of the product
-		public string ImageUrl { get; set; } // URL of the product image
-		public decimal NewPrice { get; set; } // Price at the time of order
+		public string ProductName { get; set; } 
+		public string ImageUrl { get; set; } 
+		public decimal NewPrice { get; set; }
 
-		public int Quantity { get; set; } // Quantity ordered
+		public int Quantity { get; set; }
 
 		public decimal TotalUnit { get; set; }
 	}

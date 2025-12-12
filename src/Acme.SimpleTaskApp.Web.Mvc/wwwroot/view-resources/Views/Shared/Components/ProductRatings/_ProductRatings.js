@@ -13,10 +13,9 @@
 		initializeFilterTabs();
 	});
 
-	// ========== RATING FORM INITIALIZATION ==========
-
+	// ========== KHỞI TẠO FORM ĐÁNH GIÁ ==========
 	function initializeRatingForm() {
-		// Show rating form
+		// Hiển thị form đánh giá
 		$('#btnShowRatingForm, #btnEditRating').on('click', function () {
 			var ratingId = $(this).data('rating-id');
 			if (ratingId) {
@@ -30,19 +29,19 @@
 			}, 500);
 		});
 
-		// Cancel rating
+		// Hủy đánh giá
 		$('#btnCancelRating').on('click', function () {
 			$('#ratingFormContainer').slideUp();
 			resetRatingForm();
 		});
 
-		// Star rating input
+		// Nhập số sao
 		$('#starRatingInput i').on('click', function () {
 			var rating = $(this).data('rating');
 			setStarRating(rating);
 		});
 
-		// Star rating hover effect
+		// Hiệu ứng hover cho sao
 		$('#starRatingInput i').hover(
 			function () {
 				var rating = $(this).data('rating');
@@ -54,7 +53,7 @@
 			}
 		);
 
-		// Character counters
+		// Đếm ký tự
 		$('#RatingTitle').on('input', function () {
 			$('#titleCharCount').text($(this).val().length);
 		});
@@ -63,19 +62,13 @@
 			$('#reviewCharCount').text($(this).val().length);
 		});
 
-		// Submit rating form
-		//$('#ratingForm').on('submit', function (e) {
-		//	e.preventDefault();
-		//	submitRating();
-		//});
-
+		// Gửi form đánh giá
 		$('#btnSubmitRating').on('click', function () {
 			submitRating();
 		});
 	}
 
-	// ========== STAR RATING FUNCTIONS ==========
-
+	// ========== HÀM XỬ LÝ SỐ SAO ==========
 	function setStarRating(rating) {
 		$('#RatingValue').val(rating);
 		highlightStars(rating);
@@ -103,23 +96,22 @@
 		$('#ratingText').text(texts[rating] || 'Chọn số sao');
 	}
 
-	// ========== IMAGE UPLOAD ==========
-
+	// ========== TẢI ẢNH ==========
 	function initializeImageUpload() {
 		var $uploadArea = $('#imageUploadArea');
 		var $fileInput = $('#RatingImages');
 
-		// Click to upload
+		// Click để chọn ảnh
 		$uploadArea.on('click', function () {
 			$fileInput.click();
 		});
 
-		// File input change
+		// Thay đổi input file
 		$fileInput.on('change', function (e) {
 			handleFiles(e.target.files);
 		});
 
-		// Drag & Drop
+		// Kéo thả
 		$uploadArea.on('dragover', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -145,20 +137,20 @@
 	function handleFiles(files) {
 		if (!files || files.length === 0) return;
 
-		// Check max images
+		// Kiểm tra số ảnh tối đa
 		if (_uploadedImages.length + files.length > _maxImages) {
 			abp.notify.warn('Bạn chỉ được tải lên tối đa ' + _maxImages + ' ảnh');
 			return;
 		}
 
 		Array.from(files).forEach(file => {
-			// Validate file type
+			// Validate loại file
 			if (!file.type.match('image.*')) {
 				abp.notify.warn('File ' + file.name + ' không phải là ảnh');
 				return;
 			}
 
-			// Validate file size
+			// Kích thước
 			if (file.size > _maxImageSize) {
 				abp.notify.warn('Ảnh ' + file.name + ' quá lớn (tối đa 5MB)');
 				return;
@@ -230,8 +222,7 @@
 		$('#ImageUrls').val(_uploadedImages.join(','));
 	}
 
-	// ========== SUBMIT RATING ==========
-
+	// ========== GỬI ĐÁNH GIÁ ==========
 	function submitRating() {
 		var rating = parseInt($('#RatingValue').val());
 
@@ -267,7 +258,7 @@
 				resetRatingForm();
 				$('#ratingFormContainer').slideUp();
 
-				// Reload ratings
+				// Tải lại đánh giá
 				loadRatings();
 			})
 			.fail(function (error) {
@@ -287,7 +278,7 @@
 				resetRatingForm();
 				$('#ratingFormContainer').slideUp();
 
-				// Reload ratings
+				// Tải lại đánh giá
 				loadRatings();
 			})
 			.fail(function (error) {
@@ -298,22 +289,21 @@
 			});
 	}
 
-	// ========== RATING ACTIONS ==========
-
+	// ========== HÀNH ĐỘNG TRÊN ĐÁNH GIÁ ==========
 	function initializeRatingActions() {
-		// Edit rating
+		// Sửa đánh giá
 		$(document).on('click', '.btn-edit-rating', function () {
 			var ratingId = $(this).data('rating-id');
 			loadRatingForEdit(ratingId);
 		});
 
-		// Delete rating
+		// Xóa đánh giá
 		$(document).on('click', '.btn-delete-rating', function () {
 			var ratingId = $(this).data('rating-id');
 			deleteRating(ratingId);
 		});
 
-		// Vote helpful
+		// Bầu hữu ích
 		$(document).on('click', '.btn-vote-helpful', function () {
 			var ratingId = $(this).data('rating-id');
 			var isHelpful = $(this).data('helpful') === 'true' || $(this).data('helpful') === true;
@@ -322,11 +312,11 @@
 	}
 
 	function loadRatingForEdit(ratingId) {
-		// Find rating in current list or load from server
+		// Tìm rating trong danh sách hiện tại hoặc load từ server
 		var $ratingItem = $(`.rating-item[data-rating-id="${ratingId}"]`);
 
-		// For now, just show form with ID
-		// In production, you should load full rating data from server
+		// Hiện tại chỉ mở form với ID
+		// Trong môi trường production nên load đầy đủ dữ liệu đánh giá từ server
 		_currentRatingId = ratingId;
 
 		$('#ratingFormContainer').slideDown();
@@ -367,12 +357,12 @@
 
 		_ratingService.voteRatingHelpful(input)
 			.done(function (result) {
-				// Update vote counts in UI
+				// Cập nhật số lượt vote trong UI
 				var $ratingItem = $(`.rating-item[data-rating-id="${ratingId}"]`);
 				$ratingItem.find('.helpful-count').text(result.helpfulCount);
 				$ratingItem.find('.not-helpful-count').text(result.notHelpfulCount);
 
-				// Update active state
+				// Cập nhật trạng thái active
 				$ratingItem.find('.btn-vote-helpful').removeClass('active');
 				if (result.currentUserVote === true) {
 					$ratingItem.find('.btn-vote-helpful[data-helpful="true"]').addClass('active');
@@ -387,8 +377,7 @@
 			});
 	}
 
-	// ========== FILTER TABS ==========
-
+	// ========== TAB LỌC ==========
 	function initializeFilterTabs() {
 		$('#ratingFilterTabs button').on('click', function () {
 			var filter = $(this).data('filter');
@@ -423,10 +412,9 @@
 			});
 	}
 
-	// ========== LOAD & RENDER RATINGS ==========
-
+	// ========== TẢI & RENDER ĐÁNH GIÁ ==========
 	function loadRatings() {
-		// Reload current page
+		// Tải lại trang hiện tại
 		location.reload();
 	}
 
@@ -435,8 +423,8 @@
 		$list.empty();
 
 		if (ratings && ratings.length > 0) {
-			// In production, render ratings HTML here
-			// For now, just reload page
+			// Trong môi trường production, render HTML đánh giá tại đây
+			// Hiện tại tạm thời reload trang
 			location.reload();
 		} else {
 			$list.html(`
@@ -448,8 +436,8 @@
 		}
 	}
 
-	// ========== HELPER FUNCTIONS ==========
 
+	// ========== HÀM HỖ TRỢ ==========
 	function resetRatingForm() {
 		_currentRatingId = null;
 		$('#ratingForm')[0].reset();

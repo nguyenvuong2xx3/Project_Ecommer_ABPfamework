@@ -21,31 +21,27 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		[Range(1, 5)]
 		public int Rating { get; set; }
 
-		// tiêu đề
+		// Tiêu đề đánh giá
 		[MaxLength(200)]
 		public string Title { get; set; }
 
-		// mô tả
+		// Nội dung mô tả/đánh giá
 		[MaxLength(2000)]
 		public string ReviewText { get; set; }
 
-		/// // url ảnh
+		// Danh sách URL ảnh đánh giá (dạng chuỗi, phân tách bởi dấu phẩy)
 		[MaxLength(1000)]
 		public string ImageUrls { get; set; }
 
-		//kiểm tra người dùng thực sự mua sản phẩm không?
+		// Người đánh giá có phải là người đã mua sản phẩm không
 		public bool IsVerifiedPurchase { get; set; }
 
 		public bool IsApproved { get; set; }
 
-		/// <summary>
-		/// Số lượt hữu ích (người dùng thấy đánh giá này hữu ích)
-		/// </summary>
+		// Số lượt người dùng thấy đánh giá hữu ích
 		public int HelpfulCount { get; set; }
 
-		/// <summary>
-		///Số lượt không hữu ích (người dùng không thấy đánh giá này hữu ích)
-		/// </summary>
+		// Số lượt người dùng thấy đánh giá không hữu ích
 		public int NotHelpfulCount { get; set; }
 
 		[MaxLength(1000)]
@@ -58,7 +54,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 		public ProductRating()
 		{
-			IsApproved = true; // Auto-approve by default
+			IsApproved = true; // Tự động duyệt mặc định
 			HelpfulCount = 0;
 			NotHelpfulCount = 0;
 			IsEdited = false;

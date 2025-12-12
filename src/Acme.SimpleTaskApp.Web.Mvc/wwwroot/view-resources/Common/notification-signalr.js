@@ -1,4 +1,4 @@
-var abp = abp || {};
+﻿var abp = abp || {};
 (function () {
     // SignalR Notification Manager
     abp.signalr = abp.signalr || {};
@@ -9,52 +9,52 @@ var abp = abp || {};
 
     // Initialize notification hub
     abp.signalr.initNotificationHub = function () {
-        // Ki?m tra n?u ?� k?t n?i
+        // Kiểm tra nếu đã kết nối
         if (isConnected) {
-            console.log('Notification hub already connected');
+            console.log('Notification hub đã kết nối');
             return;
         }
 
-        // T?o connection
+        // Tạo connection
         notificationHub = new signalR.HubConnectionBuilder()
             .withUrl(abp.appPath + 'signalr-notification', {
                 accessTokenFactory: function () {
-                    // L?y token n?u d�ng JWT authentication
+                    // Lấy token nếu dùng JWT authentication
                     return abp.auth.getToken();
                 }
             })
-            .withAutomaticReconnect() // T? ??ng reconnect khi b? disconnect
+            .withAutomaticReconnect() // Tự động reconnect khi bị disconnect
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
-        // X? l� khi nh?n notification
+        // Xử lý khi nhận notification
         notificationHub.on('getNotification', function (notification) {
-            console.log('Received notification:', notification);
-            
-            // Trigger event ?? c�c module kh�c c� th? listen
+            console.log('Đã nhận notification:', notification);
+
+            // Trigger event để các module khác có thể lắng nghe
             abp.event.trigger('abp.notifications.received', notification);
-            
-            // Hi?n th? notification
+
+            // Hiển thị notification
             showNotification(notification);
-            
-            // C?p nh?t badge count
+
+            // Cập nhật badge count
             updateNotificationBadge();
         });
 
-        // X? l� khi k?t n?i th�nh c�ng
+        // Xử lý khi kết nối thành công lại
         notificationHub.onreconnected(function () {
-            console.log('Notification hub reconnected');
+            console.log('Notification hub đã kết nối lại');
             isConnected = true;
             abp.event.trigger('abp.signalr.connected');
         });
 
-        // X? l� khi b? disconnect
+        // Xử lý khi bị disconnect
         notificationHub.onclose(function () {
-            console.log('Notification hub disconnected');
+            console.log('Notification hub đã ngắt kết nối');
             isConnected = false;
             abp.event.trigger('abp.signalr.disconnected');
-            
-            // Th? k?t n?i l?i sau 5 gi�y
+
+            // Thử kết nối lại sau 5 giây
             setTimeout(function () {
                 startConnection();
             }, 5000);
@@ -68,28 +68,28 @@ var abp = abp || {};
     function startConnection() {
         notificationHub.start()
             .then(function () {
-                console.log('Notification hub connected successfully');
+                console.log('Notification hub đã kết nối thành công');
                 isConnected = true;
                 abp.event.trigger('abp.signalr.connected');
             })
             .catch(function (err) {
-                console.error('Error connecting to notification hub:', err);
+                console.error('Lỗi khi kết nối tới notification hub:', err);
                 isConnected = false;
-                
-                // Th? k?t n?i l?i sau 5 gi�y
+
+                // Thử kết nối lại sau 5 giây
                 setTimeout(function () {
                     startConnection();
                 }, 5000);
             });
     }
 
-    // Hi?n th? notification
+    // Hiển thị notification
     function showNotification(notification) {
         var severity = notification.severity || 0;
         var title = getNotificationTitle(notification.notificationName);
         var message = getNotificationMessage(notification);
 
-        // S? d?ng ABP notify
+        // Sử dụng ABP notify
         switch (severity) {
             case 0: // Info
                 abp.notify.info(message, title);
@@ -110,35 +110,35 @@ var abp = abp || {};
                 abp.notify.info(message, title);
         }
 
-        // Ph�t �m thanh th�ng b�o (t�y ch?n)
+        // Phát âm thanh thông báo (tùy chọn)
         playNotificationSound();
     }
 
-    // L?y title c?a notification
+    // Lấy title của notification
     function getNotificationTitle(notificationName) {
         // Map notification names to titles
         var titleMap = {
-            'App.NewOrder': '??n h�ng m?i',
-            'App.OrderStatusChanged': 'Tr?ng th�i ??n h�ng',
-            'App.LowStock': 'C?nh b�o t?n kho',
-            'App.OrderApproved': '??n h�ng ???c duy?t',
-            'App.OrderRejected': '??n h�ng b? t? ch?i',
-            'App.OrderCompleted': '??n h�ng ho�n th�nh'
+            'App.NewOrder': 'Đơn hàng mới',
+            'App.OrderStatusChanged': 'Trạng thái đơn hàng',
+            'App.LowStock': 'Cảnh báo tồn kho',
+            'App.OrderApproved': 'Đơn hàng đã được duyệt',
+            'App.OrderRejected': 'Đơn hàng bị từ chối',
+            'App.OrderCompleted': 'Đơn hàng hoàn thành'
         };
 
-        return titleMap[notificationName] || 'Th�ng b�o';
+        return titleMap[notificationName] || 'Thông báo';
     }
 
-    // L?y message t? notification data
+    // Lấy message từ notification data
     function getNotificationMessage(notification) {
         if (!notification.data) {
-            return 'B?n c� m?t th�ng b�o m?i';
+            return 'Bạn có một thông báo mới';
         }
 
         // Parse notification data
         var data = notification.data;
-        
-        // N?u data l� string, parse n�
+
+        // Nếu data là string, parse nó
         if (typeof data === 'string') {
             try {
                 data = JSON.parse(data);
@@ -147,43 +147,43 @@ var abp = abp || {};
             }
         }
 
-        // Tr? v? message t? data
-        return data.message || data.Message || 'B?n c� m?t th�ng b�o m?i';
+        // Trả về message từ data
+        return data.message || data.Message || 'Bạn có một thông báo mới';
     }
 
-    // C?p nh?t badge count
+    // Cập nhật badge count
     function updateNotificationBadge() {
-        // G?i API ?? l?y s? l??ng notification ch?a ??c
+        // Gọi API để lấy số lượng notification chưa đọc
         abp.services.app.notification.getUserNotifications({
             state: 0, // Unread
             maxResultCount: 1
         }).done(function (result) {
             var unreadCount = result.unreadCount || 0;
-            
-            // C?p nh?t badge
+
+            // Cập nhật badge
             var $badge = $('.notification-badge');
             if (unreadCount > 0) {
                 $badge.text(unreadCount).show();
             } else {
                 $badge.hide();
             }
-            
+
             // Trigger event
             abp.event.trigger('abp.notifications.badge.updated', unreadCount);
         });
     }
 
-    // Ph�t �m thanh th�ng b�o
+    // Phát âm thanh thông báo
     function playNotificationSound() {
         try {
-            // T?o audio element
+            // Tạo audio element
             var audio = new Audio(abp.appPath + 'sounds/notification.mp3');
             audio.volume = 0.5;
             audio.play().catch(function(err) {
-                console.log('Could not play notification sound:', err);
+                console.log('Không thể phát âm thanh thông báo:', err);
             });
         } catch (e) {
-            console.log('Notification sound not available');
+            console.log('Âm thanh thông báo không khả dụng');
         }
     }
 
@@ -198,7 +198,7 @@ var abp = abp || {};
 
     // Auto-initialize khi document ready
     $(function () {
-        // Ch? init n?u user ?� login
+        // Chỉ init nếu user đã login
         if (abp.session.userId) {
             abp.signalr.initNotificationHub();
         }

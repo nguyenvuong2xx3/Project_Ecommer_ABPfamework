@@ -8,34 +8,22 @@ namespace Acme.SimpleTaskApp.ProductComments
 {
 	public interface IProductCommentAppService : IApplicationService
 	{
-		/// <summary>
-		/// lấy tất cả cmt của một sản phẩm có phân trang
-		/// </summary>
+		// Lấy tất cả comment của một sản phẩm có phân trang
 		Task<PagedResultDto<ProductCommentDto>> GetAllComments(GetAllProductCommentsInput input);
 
-		/// <summary>
-		/// lấy tất cả cmt của một sản phẩm theo tree - có replies
-		/// </summary>
+		// Lấy tất cả comment của một biến thể sản phẩm theo cây (có replies)
 		Task<List<ProductCommentDto>> GetProductVariantCommentsTree(int productVariantId);
 
-		/// <summary>
-		/// tạo mới
-		/// </summary>
+		// Tạo comment mới
 		Task<ProductCommentDto> CreateComment(CreateProductCommentDto input);
 
-		/// <summary>
-		/// update
-		/// </summary>
+		// Cập nhật comment
 		Task<ProductCommentDto> UpdateComment(UpdateProductCommentDto input);
 
-		/// <summary>
-		/// Xóa comment
-		/// </summary>
+		// Xóa comment
 		Task DeleteComment(int id);
 
-		/// <summary>
-		/// Approve/Reject comment (cho admin)
-		/// </summary>
+		// Duyệt / từ chối comment (admin)
 		Task ApproveComment(int id, bool isApproved);
 	}
 }

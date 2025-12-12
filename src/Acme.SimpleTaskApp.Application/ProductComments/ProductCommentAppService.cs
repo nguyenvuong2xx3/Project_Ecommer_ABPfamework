@@ -49,10 +49,8 @@ namespace Acme.SimpleTaskApp.ProductComments
 			_commentBroadcaster = commentBroadcaster;
 		}
 
-		/// <summary>
-		/// Tạo comment mới
-		/// </summary>
-		[AbpAuthorize] // Yêu cầu đăng nhập để comment
+		// Tạo comment mới (yêu cầu đăng nhập)
+		[AbpAuthorize]
 		public async Task<ProductCommentDto> CreateComment(CreateProductCommentDto input)
 		{
 			if (string.IsNullOrWhiteSpace(input.Content))
@@ -71,7 +69,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 				throw new UserFriendlyException("Bạn cần đăng nhập để comment");
 			}
 
-			// Get product info
+			// Lấy thông tin biến thể sản phẩm
 			var productVariant = await _productVariantRepository.GetAsync(input.ProductVariantId);
 			if (productVariant == null)
 			{
@@ -104,14 +102,14 @@ namespace Acme.SimpleTaskApp.ProductComments
 			await _commentRepository.InsertAsync(comment);
 			await CurrentUnitOfWork.SaveChangesAsync();
 
-			// Get current user info
+			// Lấy thông tin user hiện tại
 			var currentUser = await _userRepository.GetAsync(currentUserId.Value);
 			var userName = $"{currentUser.Name} {currentUser.Surname}".Trim();
 
-			// Check if current user is admin
+			// Kiểm tra user hiện tại có phải admin không
 			var isCurrentUserAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
 
-			// ✅ Cross notifications
+			// Gửi thông báo chéo
 			if (parentComment != null)
 			{
 				// Đây là reply → Gửi thông báo cho người được reply
@@ -126,7 +124,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			}
 			else if (!isCurrentUserAdmin)
 			{
-				// User bình thường comment → Gửi thông báo cho admin
+				// User thường comment → Gửi thông báo cho admin
 				await SendCommentNotificationToAdmins(
 					productVariantId: productVariant.Id,
 					productName: product.Name + " " + productVariant.Ram + " " + productVariant.Color + " " + productVariant.Storage,
@@ -134,43 +132,38 @@ namespace Acme.SimpleTaskApp.ProductComments
 					commentContent: input.Content
 				);
 			}
-			// Nếu admin comment gốc thì không gửi notification
 
 			// Load lại để map sang DTO
 			var createdComment = await _commentRepository.GetAsync(comment.Id);
 			var result = await MapCommentsToDto(new List<ProductComment> { createdComment });
 			var commentDto = result.FirstOrDefault();
 
-			// ✅ Broadcast qua SignalR để real-time - SỬA: dùng productVariant.Id thay vì product.Id
+			// Phát qua SignalR để realtime - SỬA: dùng productVariant.Id thay vì product.Id
 			await BroadcastNewComment(productVariant.Id, commentDto);
 
 			return commentDto;
 		}
 
-		/// <summary>
-		/// ✅ Broadcast new comment via SignalR
-		/// </summary>
+		// Phát comment mới qua SignalR
 		private async Task BroadcastNewComment(int productVariantId, ProductCommentDto commentDto)
 		{
 			try
 			{
 				await _commentBroadcaster.BroadcastNewComment(productVariantId, commentDto);
-				Logger.Info($"Broadcasted new comment {commentDto.Id} to product variant {productVariantId}");
+				Logger.Info($"Đã phát bình luận mới {commentDto.Id} cho biến thể sản phẩm {productVariantId}");
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Failed to broadcast comment via SignalR", ex);
+				Logger.Error("Phát bình luận qua SignalR thất bại", ex);
 			}
 		}
 
-		/// <summary>
-		/// ✅ Send notification to specific user when someone replies to their comment
-		/// </summary>
+		// Gửi notification khi có reply tới người được reply
 		private async Task SendReplyNotification(long recipientUserId, string replierName, int productVariantId, string productName, string commentContent, int commentId)
 		{
 			try
 			{
-				// Don't send notification if replying to own comment
+				// Không gửi thông báo nếu reply cho chính mình
 				if (recipientUserId == AbpSession.UserId)
 				{
 					return;
@@ -186,7 +179,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 				notificationData["Message"] = $"{replierName} đã trả lời bình luận của bạn về sản phẩm '{productName}'";
 				notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}#comment-{commentId}";
 
-				// Get recipient user info
+				// Lấy thông tin recipient
 				var recipient = await _userRepository.GetAsync(recipientUserId);
 
 				await _notificationPublisher.PublishAsync(
@@ -196,35 +189,33 @@ namespace Acme.SimpleTaskApp.ProductComments
 					userIds: new[] { new Abp.UserIdentifier(recipient.TenantId, recipient.Id) }
 				);
 
-				Logger.Info($"Sent reply notification to user {recipientUserId}");
+				Logger.Info($"Đã gửi thông báo trả lời đến user {recipientUserId}");
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Failed to send reply notification", ex);
+				Logger.Error("Gửi thông báo trả lời thất bại", ex);
 			}
 		}
 
-		/// <summary>
-		/// Send notification to all admin users when new comment is created
-		/// </summary>
+		// Gửi notification cho tất cả admin khi có comment mới
 		private async Task SendCommentNotificationToAdmins(int productVariantId, string productName, string userName, string commentContent)
 		{
 			try
 			{
-				// Get admin role
+				// Lấy role admin
 				var adminRole = await _roleManager.GetRoleByNameAsync("Admin");
 				if (adminRole == null)
 				{
-					Logger.Warn("Admin role not found");
+					Logger.Warn("Không tìm thấy role Admin");
 					return;
 				}
 
-				// Get all users in Admin role
+				// Lấy tất cả user trong role Admin
 				var adminUsers = await _userManager.GetUsersInRoleAsync(adminRole.Name);
 
 				if (adminUsers != null && adminUsers.Any())
 				{
-					// Create notification data
+					// Tạo dữ liệu notification
 					var notificationData = new Abp.Notifications.NotificationData();
 					notificationData["productVariantId"] = productVariantId.ToString();
 					notificationData["ProductName"] = productName;
@@ -235,7 +226,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 					notificationData["Message"] = $"{userName} đã bình luận về sản phẩm '{productName}'";
 					notificationData["Url"] = $"/HomeCustomer/DetailProductCustomer?id={productVariantId}";
 
-					// Publish notification to all admins
+					// Gửi notification tới tất cả admin
 					var userIdentifiers = adminUsers.Select(u => new Abp.UserIdentifier(u.TenantId, u.Id)).ToArray();
 
 					await _notificationPublisher.PublishAsync(
@@ -245,19 +236,17 @@ namespace Acme.SimpleTaskApp.ProductComments
 						userIds: userIdentifiers
 					);
 
-					Logger.Info($"Sent comment notification to {adminUsers.Count()} admin(s)");
+					Logger.Info($"Đã gửi thông báo comment tới {adminUsers.Count()} admin");
 				}
 			}
 			catch (Exception ex)
 			{
-				// Log error but don't throw - notification failure shouldn't block comment creation
-				Logger.Error("Failed to send comment notification to admins", ex);
+				// Ghi log lỗi nhưng không ném ra ngoài - lỗi notification không làm ảnh hưởng đến việc tạo comment
+				Logger.Error("Gửi thông báo comment tới admin thất bại", ex);
 			}
 		}
 
-		/// <summary>
-		/// Lấy tất cả comments (có phân trang)
-		/// </summary>
+		// Lấy tất cả comments (có phân trang)
 		public async Task<PagedResultDto<ProductCommentDto>> GetAllComments(GetAllProductCommentsInput input)
 		{
 			var query = _commentRepository.GetAll()
@@ -284,9 +273,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			return new PagedResultDto<ProductCommentDto>(totalCount, commentDtos);
 		}
 
-		/// <summary>
-		/// Lấy comments dạng tree structure
-		/// </summary>
+		// Lấy comments dạng tree structure
 		public async Task<List<ProductCommentDto>> GetProductVariantCommentsTree(int productVariantId)
 		{
 			var allComments = await _commentRepository.GetAll()
@@ -328,9 +315,7 @@ namespace Acme.SimpleTaskApp.ProductComments
 			return await MapCommentsToDto(replies);
 		}
 
-		/// <summary>
-		/// Map comments to DTO và load thông tin User thủ công
-		/// </summary>
+		// Map comments to DTO và load thông tin User thủ công
 		private async Task<List<ProductCommentDto>> MapCommentsToDto(List<ProductComment> comments)
 		{
 			var commentDtos = new List<ProductCommentDto>();
@@ -364,10 +349,8 @@ namespace Acme.SimpleTaskApp.ProductComments
 			return commentDtos;
 		}
 
-		/// <summary>
-		/// Cập nhật comment
-		/// </summary>
-		[AbpAuthorize] // ✅ Yêu cầu đăng nhập để sửa comment
+		// Cập nhật comment (yêu cầu đăng nhập)
+		[AbpAuthorize]
 		public async Task<ProductCommentDto> UpdateComment(UpdateProductCommentDto input)
 		{
 			var comment = await _commentRepository.GetAsync(input.Id);
@@ -395,32 +378,28 @@ namespace Acme.SimpleTaskApp.ProductComments
 			var result = await MapCommentsToDto(new List<ProductComment> { updatedComment });
 			var commentDto = result.FirstOrDefault();
 
-			// ✅ Broadcast update via SignalR
+			// Phát update qua SignalR
 			await BroadcastCommentUpdate(comment.ProductVariantId, commentDto);
 
 			return commentDto;
 		}
 
-		/// <summary>
-		/// ✅ Broadcast comment update via SignalR
-		/// </summary>
+		// Phát update qua SignalR
 		private async Task BroadcastCommentUpdate(int productVariantId, ProductCommentDto commentDto)
 		{
 			try
 			{
 				await _commentBroadcaster.BroadcastCommentUpdate(productVariantId, commentDto.Id, commentDto);
-				Logger.Info($"Broadcasted comment update {commentDto.Id} to product {productVariantId}");
+				Logger.Info($"Đã phát cập nhật comment {commentDto.Id} tới sản phẩm {productVariantId}");
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Failed to broadcast comment update via SignalR", ex);
+				Logger.Error("Không thể phát cập nhật comment qua SignalR", ex);
 			}
 		}
 
-		/// <summary>
-		/// Xóa comment
-		/// </summary>
-		[AbpAuthorize] // ✅ Yêu cầu đăng nhập để xóa comment
+		// Xóa comment
+		[AbpAuthorize] // Yêu cầu đăng nhập để xóa comment
 		public async Task DeleteComment(int id)
 		{
 			var comment = await _commentRepository.GetAsync(id);
@@ -446,29 +425,25 @@ namespace Acme.SimpleTaskApp.ProductComments
 			// Xóa comment chính
 			await _commentRepository.DeleteAsync(comment);
 
-			// ✅ Broadcast delete via SignalR
+			// Phát xóa qua SignalR
 			await BroadcastCommentDelete(productVariantId, id);
 		}
 
-		/// <summary>
-		/// ✅ Broadcast comment deletion via SignalR
-		/// </summary>
+		// Phát xóa qua SignalR
 		private async Task BroadcastCommentDelete(int productVariantId, int commentId)
 		{
 			try
 			{
 				await _commentBroadcaster.BroadcastCommentDelete(productVariantId, commentId);
-				Logger.Info($"Broadcasted comment deletion {commentId} from product {productVariantId}");
+				Logger.Info($"Đã phát xóa comment {commentId} khỏi sản phẩm {productVariantId}");
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Failed to broadcast comment deletion via SignalR", ex);
+				Logger.Error("Không thể phát xóa comment qua SignalR", ex);
 			}
 		}
 
-		/// <summary>
-		/// Approve/Reject comment (Admin only)
-		/// </summary>
+		// duyệt hoặc từ chối comment - admin
 		[AbpAuthorize(PermissionNames.Pages_Roles)]
 		public async Task ApproveComment(int id, bool isApproved)
 		{

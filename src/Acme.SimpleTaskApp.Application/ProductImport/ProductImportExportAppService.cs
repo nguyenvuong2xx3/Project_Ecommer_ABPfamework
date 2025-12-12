@@ -1007,7 +1007,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 
 					if (!File.Exists(imagePath))
 					{
-						Logger.Warn($"Image not found: {imagePath}");
+						Logger.Warn($"Không tìm thấy ảnh: {imagePath}");
 						continue;
 					}
 
@@ -1029,7 +1029,7 @@ namespace Acme.SimpleTaskApp.ProductImport
 				catch (Exception ex)
 				{
 					// Log error nhưng tiếp tục với ảnh tiếp theo
-					Logger.Error($"Error adding image {image.ImageUrl}: {ex.Message}", ex);
+					Logger.Error($"Lỗi khi thêm ảnh {image.ImageUrl}: {ex.Message}", ex);
 				}
 			}
 

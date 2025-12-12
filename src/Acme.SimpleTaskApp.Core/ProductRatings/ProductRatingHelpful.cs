@@ -1,32 +1,24 @@
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations;
 
 namespace Acme.SimpleTaskApp.ProductRatings
 {
-	/// <summary>
-	/// Tracks which users voted a rating as helpful/not helpful
-	/// Prevents users from voting multiple times on the same rating
-	/// </summary>
+	// Lưu lại người dùng đã bầu hữu ích/không hữu ích cho từng đánh giá
+	// Ngăn người dùng bầu nhiều lần cho cùng một đánh giá
 	public class ProductRatingHelpful : CreationAuditedEntity<int>, IMayHaveTenant
 	{
 		public int? TenantId { get; set; }
 
-		/// <summary>
-		/// User ID who voted (NO FK)
-		/// </summary>
+		// ID người dùng đã bầu (không có FK)
 		[Required]
 		public long UserId { get; set; }
 
-		/// <summary>
-		/// Product Rating ID being voted (NO FK)
-		/// </summary>
+		// ID đánh giá được bầu (không có FK)
 		[Required]
 		public int ProductRatingId { get; set; }
 
-		/// <summary>
-		/// Is this a helpful vote (true) or not helpful (false)
-		/// </summary>
+		// true = hữu ích, false = không hữu ích
 		[Required]
 		public bool IsHelpful { get; set; }
 	}
