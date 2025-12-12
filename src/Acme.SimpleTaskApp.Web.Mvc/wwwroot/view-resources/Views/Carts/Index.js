@@ -497,7 +497,6 @@
 				// Gọi service VNPay để tạo payment URL
 				abp.services.app.vnpay.createPaymentUrl(paymentRequest)
 					.done(function (response) {
-						debugger
 						if (response.success && response.paymentUrl) {
 							// Redirect to VNPay
 							window.location.href = response.paymentUrl;

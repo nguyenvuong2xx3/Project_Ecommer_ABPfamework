@@ -1,4 +1,4 @@
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using System.ComponentModel.DataAnnotations;
 
 namespace Acme.SimpleTaskApp.ProductRatings.Dtos
@@ -11,7 +11,7 @@ namespace Acme.SimpleTaskApp.ProductRatings.Dtos
         public int? OrderId { get; set; }
         
         [Required]
-        [Range(1, 5, ErrorMessage = "Rating ph?i t? 1 ??n 5 sao")]
+        [Range(1, 5, ErrorMessage = "Đánh giá phải từ 1 đến 5 sao")]
         public int Rating { get; set; }
         
         [MaxLength(200)]

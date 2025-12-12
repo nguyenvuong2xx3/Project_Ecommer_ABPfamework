@@ -92,7 +92,7 @@ namespace Acme.SimpleTaskApp.Orders
 				throw new UserFriendlyException("Vui lòng cung cấp địa chỉ giao hàng (Tỉnh/Thành và Phường/Xã) trước khi đặt hàng.");
 			}
 
-			// Cố gắng khóa tất cả sản phẩm trong đơn hàng và validate stock
+			// Khoas tất cả sản phẩm trong đơn hàng và validate stock
 			if (!await _orderQueueService.TryLockProductsAsync(input))
 			{
 				throw new UserFriendlyException("Một số sản phẩm trong đơn hàng không còn đủ số lượng. Vui lòng thử lại.");

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 namespace Acme.SimpleTaskApp.ProductRatings.Dtos
 {
-    /// <summary>
-    /// ProductRatingDto - Manual mapping, no AutoMapper
-    /// </summary>
     public class ProductRatingDto : EntityDto<int>
     {
         public long UserId { get; set; }

@@ -13,22 +13,20 @@
 	$(document).ready(function () {
 		initializeCommentForm();
 		initializeCommentActions();
+		//Kết nối SignalR
 		initializeSignalR();
 		
-		// ✅ NEW: Initialize pagination
+		//Load comment ban đầu với phân trang
 		initializePagination();
 	});
 
-	// ✅ NEW: Initialize pagination system
+	//Load comment với phân trang dữ liệu ban đầu
 	function initializePagination() {
-		// Load all comments data from hidden script tag
 		try {
 			var commentsJson = $('#allCommentsData').text();
 			_allComments = JSON.parse(commentsJson) || [];
 			
-			console.log('[Pagination] Loaded', _allComments.length, 'total comments');
-			
-			// Initialize Load More button
+			// xử lý click xem thêm bình luận
 			$('#btnLoadMore').on('click', loadMoreComments);
 			
 			// Update displayed count
@@ -38,16 +36,16 @@
 		}
 	}
 
-	// ✅ NEW: Load more comments
+	//Xem thêm bình luận
 	function loadMoreComments() {
 		var $btn = $('#btnLoadMore');
 		var $container = $('#comments-list');
 		
-		// Show loading state
+		// hiển thị trạng thái đang tải
 		$btn.prop('disabled', true);
 		$btn.html('<i class="fas fa-spinner fa-spin"></i> Đang tải...');
-		
-		// Calculate next batch
+
+		// Lấy trang tiếp theo
 		var nextBatch = _allComments.slice(_displayedCount, _displayedCount + _pageSize);
 		
 		if (nextBatch.length === 0) {
@@ -55,7 +53,7 @@
 			return;
 		}
 		
-		// Render next batch
+		//Render trang tiep
 		setTimeout(function() {
 			nextBatch.forEach(function(comment) {
 				var html = buildCommentHtml(comment);
@@ -81,39 +79,37 @@
 		}, 300);
 	}
 
-	// ✅ NEW: Update displayed stats
+	// Cập nhật thống kê hiển thị
 	function updateDisplayedStats() {
 		$('#displayedCount').text(_displayedCount);
 		$('#totalCommentCount').text(_allComments.length);
 	}
 
-	// Initialize SignalR connection
+	// Kết nối SignalR để nhận bình luận mới, cập nhật và xóa
 	function initializeSignalR() {
 		try {
+
 			_commentHubConnection = new signalR.HubConnectionBuilder()
 				.withUrl("/signalr-productCommentHub")
 				.withAutomaticReconnect()
 				.build();
-
+			// nhận bình luận mới
 			_commentHubConnection.on("ReceiveComment", function (data) {
-				console.log('[SignalR] Received new comment:', data);
 				handleNewCommentReceived(data.comment);
 			});
-
+			// cập nhật
 			_commentHubConnection.on("CommentUpdated", function (data) {
-				console.log('[SignalR] Comment updated:', data);
 				handleCommentUpdated(data.commentId, data.comment);
 			});
-
+			// xóa
 			_commentHubConnection.on("CommentDeleted", function (data) {
-				console.log('[SignalR] Comment deleted:', data);
 				handleCommentDeleted(data.commentId);
 			});
-
+			// nhận biết người dùng đang nhập
 			_commentHubConnection.on("UserTyping", function (userName) {
 				showUserTyping(userName);
 			});
-
+			// nhận biết người dùng ngừng nhập
 			_commentHubConnection.on("UserStoppedTyping", function (userName) {
 				hideUserTyping(userName);
 			});
@@ -339,7 +335,7 @@
 		$indicator.show();
 	}
 
-	// Hide user typing indicator
+	// Nhận biết chỉ ẩn nếu đúng người dùng đang nhập
 	function hideUserTyping(userName) {
 		var $indicator = $('#typing-indicator');
 		if ($indicator.find('.typing-user').text() === userName) {
@@ -347,7 +343,7 @@
 		}
 	}
 
-	// Initialize comment form
+	// Gửi bình luận, đếm ký tự
 	function initializeCommentForm() {
 		$('#CommentContent').on('input', function () {
 			var length = $(this).val().length;
@@ -368,6 +364,7 @@
 	}
 
 	// Initialize comment actions (reply, edit, delete)
+	// 
 	function initializeCommentActions() {
 		$(document).on('click', '.btn-reply', function () {
 			var commentId = $(this).data('comment-id');
@@ -539,7 +536,7 @@
 		);
 	}
 
-	// Cleanup on page unload
+	// Ngắt kết nối SignalR khi rời trang
 	$(window).on('beforeunload', function () {
 		if (_commentHubConnection) {
 			_commentHubConnection.invoke("LeaveProductGroup", parseInt(_productVariantId));

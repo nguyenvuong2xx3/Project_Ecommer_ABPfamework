@@ -1,4 +1,4 @@
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Acme.SimpleTaskApp.ProductRatings.Dtos;
 using System.Threading.Tasks;
@@ -7,24 +7,14 @@ namespace Acme.SimpleTaskApp.ProductRatings
 {
 	public interface IProductRatingAppService : IApplicationService
 	{
-		/// <summary>
-		/// Get all ratings with pagination and filtering
-		/// </summary>
 		Task<PagedResultDto<ProductRatingDto>> GetAllRatings(GetProductRatingsInput input);
 
 		/// <summary>
-		/// Get product variant rating statistics (average, distribution)
+		/// Thống kê trung bình
 		/// </summary>
 		Task<ProductRatingStatisticsDto> GetProductRatingStatistics(int productVariantId);
 
-		/// <summary>
-		/// Create new product rating
-		/// </summary>
 		Task<ProductRatingDto> CreateRating(CreateProductRatingDto input);
-
-		/// <summary>
-		/// Update existing rating (only by creator)
-		/// </summary>
 		Task<ProductRatingDto> UpdateRating(UpdateProductRatingDto input);
 
 		/// <summary>
@@ -33,23 +23,18 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		Task DeleteRating(int id);
 
 		/// <summary>
-		/// Vote rating as helpful/not helpful
+		/// đánh giá có ích hay không
 		/// </summary>
 		Task<ProductRatingDto> VoteRatingHelpful(VoteRatingHelpfulDto input);
 
-		/// <summary>
-		/// Check if current user can rate this product variant (must have purchased)
-		/// </summary>
+// user hiện tại có quyền đánh giá không 
 		Task<bool> CanUserRateProduct(int productVariantId);
 
 		/// <summary>
-		/// Admin: Add response to rating
-		/// </summary>
+		/// Admin: trả lời đánh giá
 		Task<ProductRatingDto> AddAdminResponse(int ratingId, string response);
 
-		/// <summary>
 		/// Admin: Approve/Reject rating
-		/// </summary>
 		Task ApproveRating(int id, bool isApproved);
 	}
 }

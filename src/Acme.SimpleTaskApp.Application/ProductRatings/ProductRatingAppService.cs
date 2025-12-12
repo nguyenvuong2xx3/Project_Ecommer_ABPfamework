@@ -129,7 +129,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 				throw new UserFriendlyException("Biến thể sản phẩm không tồn tại");
 			}
 
-			// Check if user already rated this product variant
+			//user đánh giá chưa?
 			var existingRating = await _ratingRepository.FirstOrDefaultAsync(
 					r => r.UserId == currentUserId.Value && r.ProductVariantId == input.ProductVariantId);
 
@@ -138,7 +138,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 				throw new UserFriendlyException("Bạn đã đánh giá biến thể sản phẩm này rồi. Bạn có thể chỉnh sửa đánh giá của mình.");
 			}
 
-			// Check if user purchased this product variant
+			// user mua sản phẩm chưa?
 			var hasPurchased = await HasUserPurchasedProductVariant(currentUserId.Value, input.ProductVariantId);
 
 			var rating = new ProductRating
@@ -217,6 +217,8 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			await _ratingRepository.DeleteAsync(rating);
 		}
 
+
+		//HÀM VOTE ĐÁNH GIÁ CÓ ÍCH HAY KHÔNG
 		[AbpAuthorize]
 		public async Task<ProductRatingDto> VoteRatingHelpful(VoteRatingHelpfulDto input)
 		{
@@ -228,31 +230,26 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 			var rating = await _ratingRepository.GetAsync(input.ProductRatingId);
 
-			// Check if user already voted
 			var existingVote = await _helpfulRepository.FirstOrDefaultAsync(
 					h => h.UserId == currentUserId.Value && h.ProductRatingId == input.ProductRatingId);
 
+
+			// nếu tồn tại thì sửa, không thì tạo mới
 			if (existingVote != null)
 			{
-				// Update existing vote
 				var wasHelpful = existingVote.IsHelpful;
 				existingVote.IsHelpful = input.IsHelpful;
 
-				// Update counts
 				if (wasHelpful && !input.IsHelpful)
 				{
-					// Changed from helpful to not helpful
 					rating.HelpfulCount--;
 					rating.NotHelpfulCount++;
 				}
 				else if (!wasHelpful && input.IsHelpful)
 				{
-					// Changed from not helpful to helpful
 					rating.HelpfulCount++;
 					rating.NotHelpfulCount--;
 				}
-				// If same vote, no change needed
-
 				await _helpfulRepository.UpdateAsync(existingVote);
 			}
 			else
@@ -334,14 +331,11 @@ namespace Acme.SimpleTaskApp.ProductRatings
 			await _ratingRepository.UpdateAsync(rating);
 		}
 
-		// Helper methods
-
+		// check user đã mua sp
 		private async Task<bool> HasUserPurchasedProductVariant(long userId, int productVariantId)
 		{
-			// Since OrderDetails is stored as JSON in Order.OrderDetailJson,
-			// we need to deserialize and check
 			var userOrders = await _orderRepository.GetAll()
-					.Where(o => o.UserId == userId && o.Status == 3) // 3 = Completed
+					.Where(o => o.UserId == userId && o.Status == 3) // 3 = Completed - thành công
 					.ToListAsync();
 
 			foreach (var order in userOrders)
@@ -350,9 +344,8 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 				if (order.OrderDetails != null && order.OrderDetails.Any())
 				{
-					// Check if the specific product variant was purchased
-					var hasPurchased = order.OrderDetails
-							.Any(od => od.ProductVariantId.HasValue && od.ProductVariantId.Value == productVariantId);
+					
+					var hasPurchased = order.OrderDetails.Any(od => od.ProductVariantId.HasValue && od.ProductVariantId.Value == productVariantId);
 
 					if (hasPurchased)
 					{
@@ -368,7 +361,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 		{
 			var ratingDtos = new List<ProductRatingDto>();
 
-			// Batch load users
+			//lấy thông tin users
 			var userIds = ratings.Select(r => r.UserId).Distinct().ToList();
 			var users = await _userRepository.GetAll()
 					.Where(u => userIds.Contains(u.Id))
@@ -376,7 +369,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					.ToListAsync();
 			var userDict = users.ToDictionary(u => u.Id);
 
-			// Batch load product variants
+			// lấy thông tin biến thể
 			var productVariantIds = ratings.Select(r => r.ProductVariantId).Distinct().ToList();
 			var productVariants = await _productVariantRepository.GetAll()
 					.Where(pv => productVariantIds.Contains(pv.Id))
@@ -384,7 +377,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					.ToListAsync();
 			var productVariantDict = productVariants.ToDictionary(pv => pv.Id);
 
-			// Batch load products for variant names
+			//lấy tên thông ua sp
 			var productIds = productVariants.Select(pv => pv.ProductId).Distinct().ToList();
 			var products = await _productRepository.GetAll()
 					.Where(p => productIds.Contains(p.Id))
@@ -392,7 +385,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					.ToListAsync();
 			var productDict = products.ToDictionary(p => p.Id);
 
-			// Get current user's votes if logged in
+			//trả ra vote của currentUser
 			Dictionary<int, bool?> currentUserVotes = new Dictionary<int, bool?>();
 			if (AbpSession.UserId.HasValue)
 			{
@@ -406,7 +399,6 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 			foreach (var rating in ratings)
 			{
-				// Manual mapping from ProductRating to ProductRatingDto (NO AutoMapper)
 				var dto = new ProductRatingDto
 				{
 					Id = rating.Id,
@@ -427,7 +419,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					CreationTime = rating.CreationTime
 				};
 
-				// Map user info
+				//Thông tin user
 				if (userDict.TryGetValue(rating.UserId, out var user))
 				{
 					dto.UserName = user.UserName;
@@ -435,14 +427,14 @@ namespace Acme.SimpleTaskApp.ProductRatings
 					dto.UserEmail = user.EmailAddress;
 				}
 
-				// Map product variant info
+				//Thông tin biến thể
 				if (productVariantDict.TryGetValue(rating.ProductVariantId, out var productVariant))
 				{
 					var productName = productDict.TryGetValue(productVariant.ProductId, out var product) ? product.Name : "";
 					dto.ProductVariantName = $"{productName} - {productVariant.Color} {productVariant.Ram}/{productVariant.Storage}".Trim();
 				}
 
-				// Map image URLs (split comma-separated string)
+				//ảnh đánh giá
 				if (!string.IsNullOrEmpty(rating.ImageUrls))
 				{
 					dto.ImageUrls = rating.ImageUrls.Split(',', StringSplitOptions.RemoveEmptyEntries)

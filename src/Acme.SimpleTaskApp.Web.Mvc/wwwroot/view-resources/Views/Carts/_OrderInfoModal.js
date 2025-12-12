@@ -43,7 +43,6 @@
     }
 
     function populatePhuongXa(tinhThanhCode) {
-      debugger
       var $phuongXa = $('#phuongXa');
       $phuongXa.html('<option value="">Chọn Phường/Xã</option>');
 
@@ -51,7 +50,6 @@
         $phuongXa.prop('disabled', true);
         return;
       }
-			console.log(_locations);
       var selectedTinhThanh = _locations.find(function (p) {
         return p.matinhTMS === String(tinhThanhCode);
       });
@@ -100,6 +98,14 @@
     this.save = function () {
       var fullName = $('#fullName').val().trim();
       var phoneNumber = $('#phoneNumber').val().trim();
+
+      // Regex: chỉ số và đúng 10 ký tự
+      var phoneRegex = /^[0-9]{10}$/;
+
+      if (!phoneRegex.test(phoneNumber)) {
+        abp.notify.error("Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 số.");
+        return;
+      }
       var diaChiChiTiet = $('#addressDetail').val().trim();
       var tinhThanhCode = $('#tinhThanh').val();
       var phuongXaCode = $('#phuongXa').val();

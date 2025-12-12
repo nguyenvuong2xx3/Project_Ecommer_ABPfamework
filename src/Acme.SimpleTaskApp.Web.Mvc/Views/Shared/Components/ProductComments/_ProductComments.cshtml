@@ -5,7 +5,7 @@
   var productVariantId = ViewBag.ProductVariantId as int? ?? 0;
   var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
   
-  // ✅ NEW: Phân trang - Chỉ hiển thị 10 comments đầu tiên
+  //Phân trang - Chỉ hiển thị 10 comments đầu tiên
   var initialComments = Model?.Take(10).ToList() ?? new List<ProductCommentDto>();
   var hasMoreComments = Model != null && Model.Count > 10;
   var totalComments = Model?.Count ?? 0;
@@ -63,7 +63,8 @@
     </div>
   }
 
-  <!-- ✅ NEW: Comments Stats -->
+ 
+  @* Trạng thái bình luận *@
   @if (totalComments > 0)
   {
     <div class="comments-stats">
@@ -93,7 +94,7 @@
     }
   </div>
 
-  <!-- ✅ NEW: Load More Button -->
+  @* nút xem thêm *@
   @if (hasMoreComments)
   {
     <div class="load-more-container" id="loadMoreContainer">
@@ -111,7 +112,7 @@
   </div>
 </div>
 
-<!-- ✅ HIDDEN: Store all comments data for pagination -->
+@* lưu tất cả bình luận để phân trang *@
 <script type="application/json" id="allCommentsData">
   @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model ?? new List<ProductCommentDto>()))
 </script>

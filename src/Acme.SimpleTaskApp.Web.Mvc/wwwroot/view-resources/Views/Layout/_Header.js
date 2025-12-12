@@ -182,47 +182,47 @@
 </div>`;
 		}
 
-		function bindNotificationEvents() {
-			shouldUserUpdateApp();
+		//function bindNotificationEvents() {
+		//	shouldUserUpdateApp();
 
-			// Sự kiện cho nút "Đánh dấu đã đọc"
-			$(document).off('click', '#btnSetAllNotificationsAsRead').on('click', '#btnSetAllNotificationsAsRead', function (e) {
-				e.preventDefault();
-				e.stopPropagation();
+		//	// Sự kiện cho nút "Đánh dấu đã đọc"
+		//	$(document).off('click', '#btnSetAllNotificationsAsRead').on('click', '#btnSetAllNotificationsAsRead', function (e) {
+		//		e.preventDefault();
+		//		e.stopPropagation();
 
-				_appUserNotificationHelper.setAllAsRead(function () {
-					loadNotifications();
-				});
-			});
+		//		_appUserNotificationHelper.setAllAsRead(function () {
+		//			loadNotifications();
+		//		});
+		//	});
 
-			// Sự kiện cho từng thông báo
-			$(document).off('click', '.user-notification-item-clickable').on('click', '.user-notification-item-clickable', function (e) {
-				e.preventDefault();
-				e.stopPropagation();
+		//	// Sự kiện cho từng thông báo
+		//	$(document).off('click', '.user-notification-item-clickable').on('click', '.user-notification-item-clickable', function (e) {
+		//		e.preventDefault();
+		//		e.stopPropagation();
 
-				var $this = $(this);
-				var notificationId = $this.attr('data-notification-id');
-				var url = $this.attr('data-url');
+		//		var $this = $(this);
+		//		var notificationId = $this.attr('data-notification-id');
+		//		var url = $this.attr('data-url');
 
-				if (notificationId) {
-					_appUserNotificationHelper.setAsRead(notificationId, function () {
-						loadNotifications();
-					});
-				}
+		//		if (notificationId) {
+		//			_appUserNotificationHelper.setAsRead(notificationId, function () {
+		//				loadNotifications();
+		//			});
+		//		}
 
-				if (url && url !== '#') {
-					setTimeout(function () {
-						document.location.href = url;
-					}, 300);
-				}
-			});
+		//		if (url && url !== '#') {
+		//			setTimeout(function () {
+		//				document.location.href = url;
+		//			}, 300);
+		//		}
+		//	});
 
-			$('#openNotificationSettingsModalLink').click(function (e) {
-				e.preventDefault();
-				e.stopPropagation();
-				_appUserNotificationHelper.openSettingsModal();
-			});
-		}
+		//	$('#openNotificationSettingsModalLink').click(function (e) {
+		//		e.preventDefault();
+		//		e.stopPropagation();
+		//		_appUserNotificationHelper.openSettingsModal();
+		//	});
+		//}
 
 		// Helper function to escape HTML
 		function escapeHtml(unsafe) {
