@@ -199,22 +199,22 @@
 				orderable: false,
 				autoWidth: false,
 				render: function (data, type, row) {
-					var html = '<div class="btn-group btn-group-sm" role="group">';
+					var html = '<div class="d-flex justify-content-center" role="group">';
 
 					// Detail button
-					html += '<button type="button" class="btn btn-info btn-sm detail-sale" data-sale-id="' + row.id + '" title="Chi tiết">' +
+					html += '<button type="button" class="btn btn-info btn-sm detail-sale mr-2" data-sale-id="' + row.id + '" title="Chi tiết">' +
 						'<i class="fas fa-info-circle"></i></button>';
 
 					// Edit button
-					html += '<button type="button" class="btn btn-warning btn-sm edit-sale" data-sale-id="' + row.id + '" title="Chỉnh sửa">' +
+					html += '<button type="button" class="btn btn-warning btn-sm edit-sale mr-2" data-sale-id="' + row.id + '" title="Chỉnh sửa">' +
 						'<i class="fas fa-edit"></i></button>';
 
 					// Toggle Active button
 					if (row.isActive) {
-						html += '<button type="button" class="btn btn-secondary btn-sm toggle-active-sale" data-sale-id="' + row.id + '" title="Tạm dừng">' +
+						html += '<button type="button" class="btn btn-secondary btn-sm toggle-active-sale mr-2" data-sale-id="' + row.id + '" title="Tạm dừng">' +
 							'<i class="fas fa-pause"></i></button>';
 					} else {
-						html += '<button type="button" class="btn btn-success btn-sm toggle-active-sale" data-sale-id="' + row.id + '" title="Kích hoạt">' +
+						html += '<button type="button" class="btn btn-success btn-sm toggle-active-sale mr-2" data-sale-id="' + row.id + '" title="Kích hoạt">' +
 							'<i class="fas fa-play"></i></button>';
 					}
 
