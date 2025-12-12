@@ -37,7 +37,7 @@ sửa 2 file appsettingsDefault -> appsetting tại 2 project Acme.SimpleTaskApp
   "Default": "Server=localhost\\SQLEXPRESS;Database=MyProjectDb;User ID=sa;Password=your_password;MultipleActiveResultSets=true;TrustServerCertificate=true;"
 }
 
-Cài đặt dự mặc định  (Set as Startup Project)
+Cài đặt dự án mặc định  (Set as Startup Project)
 ------------------------
 Chọn dự án Acme.SimpleTaskApp.Web.Mvc chuột phải chọn Set as Startup Project
 
