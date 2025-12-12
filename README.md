@@ -37,6 +37,11 @@ sửa 2 file appsettingsDefault -> appsetting tại 2 project Acme.SimpleTaskApp
   "Default": "Server=localhost\\SQLEXPRESS;Database=MyProjectDb;User ID=sa;Password=your_password;MultipleActiveResultSets=true;TrustServerCertificate=true;"
 }
 
+Khôi phục lại thư viện
+----------
+thực hiện tổ hợp phím CTRL + ` trên bàn phím
+nhập lệnh: libman restore
+
 Cài đặt dự án mặc định  (Set as Startup Project)
 ------------------------
 Chọn dự án Acme.SimpleTaskApp.Web.Mvc chuột phải chọn Set as Startup Project
@@ -51,3 +56,5 @@ Thực hiện chạy dự án để khởi tạo database
 B2: Trên thanh công cụ chọn Tools -> Nuget Package Manager -> Package Manager Console chạy lệnh: update-database
 Lưu ý: tại cmd nhập lệnh chuyển Default project  Acme.SimpleTaskApp.EntityFrameworkCore
 -----------
+TRƯỜNG HỢP FILE SQL KHÔNG THỂ IMPORT VÀO SQL SERVER VUI LÒNG CHẠY LẠI DỰ ÁN VỚI CÁCH BÊN TRÊN VÀ DÙNG FILE "Mẫu product.xlsx" ĐỂ THÊM HÀNG LOẠT SẢN PHẨM VÀ BIẾN THỂ
+-------------------
