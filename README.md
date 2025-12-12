@@ -34,6 +34,11 @@ Yêu cầu trước khi cài đặt
 - dotnet-ef (nếu cần chạy migrations): dotnet tool install --global dotnet-ef
 - Visual studio 2022
 
+Thực Hiện UnLoad Folder
+-------------------------
+tại folder Test -> chuột phải -> Unload project
+Acme.SimpleTaskApp.Web.Host -> chuột phải -> Unload project
+
 Cài đặt appsetting
 ----------
 sửa 2 file appsettingsDefault -> appsetting tại 2 project Acme.SimpleTaskApp.Migrator và Acme.SimpleTaskApp.Web.Mvc
