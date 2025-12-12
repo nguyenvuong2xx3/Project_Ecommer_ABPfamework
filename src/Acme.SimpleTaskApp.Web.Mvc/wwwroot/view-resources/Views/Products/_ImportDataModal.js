@@ -15,7 +15,7 @@
                   </span>
               </button>
 						</div>`;
-			},	
+			},
 		};
 
 		var resultNotificationArea = {
@@ -160,7 +160,6 @@
 		};
 
 		this.save = function () {
-
 			if (!_$form.valid()) {
 				return;
 			}
@@ -174,8 +173,8 @@
 			}
 
 			formData.append('file', file);
-
 			_modalManager.setBusy(true);
+
 			$.ajax({
 				url: '/Products/ImportData',
 				type: 'POST',
@@ -183,25 +182,38 @@
 				contentType: false,
 				processData: false,
 				success: function (response) {
+					_modalManager.setBusy(false);  // Di chuyển vào đây
+
 					if (response.success) {
-						abp.notify.info(response.message);
-						abp.event.trigger();
+						abp.notify.success(
+							response.message || 'Nhập dữ liệu thành công!',
+							'Thành công'
+						);
+						abp.event.trigger('app. reloadProductList');
 						$('#ImportFileDataUploadArea').empty();
 						$('#ImportFileData').filestyle('clear');
 						$('#ResultNotificationArea').html(resultNotificationArea.generateFileHtml(response));
-					}
-					else {
-						abp.notify.error(response.message);
+					} else {
+						abp.notify.error(
+							response.message || 'Import dữ liệu thất bại!',
+							'Thất bại'
+						);
 						$('#ResultNotificationArea').html(resultNotificationArea.generateFileHtml(response));
 					}
 				},
 				error: function (xhr) {
-					var errorResponse = JSON.parse(xhr.responseText);
-					abp.notify.error(errorResponse.message);
+					_modalManager.setBusy(false);  // Di chuyển vào đây
+
+					var errorMessage = 'Có lỗi xảy ra khi import dữ liệu';
+					try {
+						var errorResponse = JSON.parse(xhr.responseText);
+						errorMessage = errorResponse.message || errorMessage;
+					} catch (e) {
+						console.error('Error parsing response:', e);
+					}
+					abp.notify.error(errorMessage, 'Lỗi');
 				}
 			});
-			_modalManager.setBusy(false);
-
 		};
 	};
 })();

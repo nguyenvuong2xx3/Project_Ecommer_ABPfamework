@@ -22,6 +22,10 @@
   $('#ImportExcelBtn').click(function () {
     _importExcelModal.open();
   });
+  //reload khi import thành công
+  abp.event.on('app.product.imported', function () {
+    _$table.reload(null, false);
+  });
 
   var _exportProductModal = new app.ModalManager({
     viewUrl: abp.appPath + 'Products/ExportModal',
@@ -151,7 +155,11 @@
       {
         targets: 0,
         data: 'name',
-        sortable: false
+        sortable: false,
+        render: function (data, type, row) {
+          // Tạo link để click chuyển trang
+          return '<a href="javascript:;" class="product-name-link" data-product-id="' + row.id + '">' + data + '</a>';
+        }
       },
       {
         targets: 1,
@@ -251,7 +259,14 @@
     }
   });
 
-  // Refresh table
+  $(document).on('click', '.product-name-link', function () {
+    var productId = $(this).data('product-id');
+
+    // Chuyển hướng đến trang biến thể với productId
+    window.location.href = abp.appPath + 'ProductVariants?productId=' + productId;
+  });
+
+  // Refresh table 
   $(document).on('click', '.buttons-refresh', function () {
     _$productsTable.ajax.reload();
   });
@@ -326,23 +341,40 @@
     deleteProduct(productId, productName);
   });
 
+  //function deleteProduct(productId, productName) {
+  //  abp.message.confirm(
+  //    abp.utils.formatString(l('Bạn có muốn xóa sản phẩm "{0}"?'), productName),
+  //    null,
+  //    (isConfirmed) => {
+  //      if (isConfirmed) {
+  //        $.ajax({
+  //          url: '/Products/Delete',
+  //          type: 'POST',
+  //          data: { id: productId }
+  //        }).done(() => {
+  //          abp.notify.info(l('Xoá thành công'));
+  //          _$productsTable.ajax.reload();
+  //        }).fail((xhr) => {
+  //          let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá sản phẩm có thể là do sản phẩm đã được người dùng thêm vào giỏ hàng';
+  //          abp.notify.error(errorMsg);
+  //        });
+  //      }
+  //    }
+  //  );
+  //}
+
   function deleteProduct(productId, productName) {
     abp.message.confirm(
       abp.utils.formatString(l('Bạn có muốn xóa sản phẩm "{0}"?'), productName),
       null,
       (isConfirmed) => {
         if (isConfirmed) {
-          $.ajax({
-            url: '/Products/Delete',
-            type: 'POST',
-            data: { id: productId }
-          }).done(() => {
-            abp.notify.info(l('Xoá thành công'));
-            _$productsTable.ajax.reload();
-          }).fail((xhr) => {
-            let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá sản phẩm có thể là do sản phẩm đã được người dùng thêm vào giỏ hàng';
-            abp.notify.error(errorMsg);
-          });
+          // Sử dụng service proxy - ABP tự xử lý error
+          _productService.deleteProduct(productId)
+            .done(() => {
+              abp.notify.info(l('Xoá thành công'));
+              _$productsTable.ajax.reload();
+            });
         }
       }
     );

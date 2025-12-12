@@ -1,6 +1,16 @@
 ﻿@using Acme.SimpleTaskApp
+@using Acme.SimpleTaskApp.Configuration
+@{
+  var storeName = await SettingManager.GetSettingValueAsync(AppNameStore.NameStore);
+  var logoUrl = await SettingManager.GetSettingValueAsync(AppNameStore.UrlLogo);
+
+  if (string.IsNullOrWhiteSpace(storeName))
+  {
+    storeName = "Chưa thiết lập";
+  }
+}
 <footer class="main-footer">
-    <strong>Copyright &copy; @DateTime.Now.Year <a href="javascript:void(0);">SimpleTaskApp</a>.</strong> All rights reserved.
+  <strong>Copyright &copy; @DateTime.Now.Year <a href="javascript:void(0);">@storeName</a>.</strong>
     <div class="float-right d-none d-sm-inline-block">
         <b>@L("Version")</b> @AppVersionHelper.Version [@AppVersionHelper.ReleaseDate.ToString("yyyyMMdd")]
     </div>

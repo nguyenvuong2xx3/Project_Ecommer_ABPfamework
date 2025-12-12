@@ -4,7 +4,7 @@
 		_$modal = $('#ProductVariantCreateModal'),
 		_$form = _$modal.find('form'),
 		_$table = $('#ProductVariantsTable');
-
+		_$productId = null;
 	var _permissions = {
 		view: abp.auth.hasPermission('Pages.ProductVariants.View'),
 		create: abp.auth.hasPermission('Pages.ProductVariants.Create'),
@@ -101,6 +101,16 @@
 		_$productvariantsTable.ajax.reload();
 	});
 
+
+	function getQueryParam(name) {
+		var urlParams = new URLSearchParams(window.location.search);
+		return urlParams.get(name);
+	}
+
+	_$productId = getQueryParam('productId');
+
+
+
 	// DataTable
 	var _$productvariantsTable = _$table.DataTable({
 		paging: true,
@@ -110,6 +120,10 @@
 			ajaxFunction: _productVariantService.getAllProductVariant,
 			inputFilter: function () {
 				var formData = $('#ProductVariantSearchForm').serializeFormToObject(true);
+
+				if (_$productId) {
+					formData.productId = _$productId;
+				}
 
 				// Đảm bảo tên parameters khớp với Input DTO
 				if (_selectedDateRange.StartTime) {
@@ -260,6 +274,24 @@
 	$(document).on('click', '.buttons-refresh', function () {
 		_$productvariantsTable.ajax.reload();
 	});
+
+
+	$(document).on('click', '#TableResetBtn', function () {
+		resetAllFilters();
+	});
+
+
+	function resetAllFilters() {
+		// 3. Xóa query string khỏi URL (không reload trang)
+		if (window.history.replaceState) {
+			var newUrl = window.location.pathname;
+			window.history.replaceState({}, document.title, newUrl);
+		}
+		_$productId = null;
+		_$productvariantsTable.ajax.reload();
+		abp.notify.info('Làm mới thành công');
+	}
+
 
 	// Tìm kiếm
 	$('.btn-search').on('click', (e) => {

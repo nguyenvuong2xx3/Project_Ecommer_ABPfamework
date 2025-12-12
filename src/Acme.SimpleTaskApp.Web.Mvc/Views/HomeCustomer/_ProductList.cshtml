@@ -10,7 +10,7 @@
     if (item != null)
     {
       <div class="product-item">
-        <div class="product-card product-click-detail" data-id="@item.Id">
+        <div class="product-card productvariant-click-detail cursor" data-id="@item.Id">
           <!-- Discount Badge -->
           @if (item.HasActiveDiscount && item.DiscountPercentage > 0)
           {
@@ -34,6 +34,9 @@
             <div class="product-name">
               @product.Name
             </div>
+
+
+
             <div class="product-tags">
               @if (!string.IsNullOrEmpty(item.Ram))
               {
@@ -57,18 +60,18 @@
                 <!-- Giá sau giảm -->
                 <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
                 <!-- Tên chương trình sale -->
-                @if (!string.IsNullOrEmpty(item.SaleName))
-                {
-                  <span class="discount-text">
-                    <i class="fas fa-gift"></i> @item.SaleName
-                  </span>
-                }
-                else
-                {
-                  <span class="discount-text">
-                    <i class="fas fa-fire"></i> Đang giảm giá
-                  </span>
-                }
+                @* @if (!string.IsNullOrEmpty(item.SaleName))
+                  {
+                    <span class="discount-text">
+                      <i class="fas fa-gift"></i> @item.SaleName
+                    </span>
+                  }
+                  else
+                  {
+                    <span class="discount-text">
+                      <i class="fas fa-fire"></i> Đang giảm giá
+                    </span>
+                  } *@
               }
               else
               {
@@ -76,7 +79,38 @@
                 <div class="current-price">@item.Price.ToString("#,##0")₫</div>
               }
             </div>
-
+            <!-- đánh giá sao -->
+            @if (item.TotalRatings > 0)
+            {
+              <div class="product-rating mb-2">
+                <div class="rating-stars">
+                  @for (int i = 1; i <= 5; i++)
+                  {
+                    if (i <= Math.Floor(item.AverageRating))
+                    {
+                      <i class="fas fa-star text-warning"></i>
+                    }
+                    else if (i <= Math.Ceiling(item.AverageRating))
+                    {
+                      <i class="fas fa-star-half-alt text-warning"></i>
+                    }
+                    else
+                    {
+                      <i class="far fa-star text-warning"></i>
+                    }
+                  }
+                </div>
+                <span class="rating-text">@item.AverageRating.ToString("0.0") (@item.TotalRatings)</span>
+              </div>
+            }
+            @* đã bán *@
+            @if (item.SoldQuantity > 0)
+            {
+              <div class="sold-info" style="margin: 0px;">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="sold-text">Đã bán: <strong>@item.SoldQuantity</strong></span>
+              </div>
+            }
             <!-- Stock Quantity -->
             <div class="stock-status">
               @if (item.StockQuantity == 0)
@@ -88,13 +122,13 @@
               }
             </div>
           </div>
-          <div class="sold-info">
+          <div class="sold-info" style="margin: 0px;">
             <i class="fas fa-shopping-bag"></i>
             <span class="sold-text">Đã bán <strong>@item.SoldQuantity</strong></span>
           </div>
-          <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
-            Xem chi tiết
-          </button>
+          @* <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
+              Xem chi tiết
+            </button> *@
         </div>
       </div>
     }
