@@ -1,0 +1,178 @@
+﻿@using Acme.SimpleTaskApp.Web.Startup
+@{
+  ViewBag.Title = "Thông báo của tôi";
+  ViewBag.CurrentPageName = PageNames.Notifications;
+}
+
+@section scripts
+{
+  <environment names="Development">
+    <script src="~/view-resources/Views/UserProfiles/NotificationTab.js" asp-append-version="true"></script>
+  </environment>
+}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+        </div>
+        <div class="card-body">
+          <div class="notification-page-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0">Lịch sử thông báo</h4>
+              <div class="d-flex align-items-center gap-2">
+                <select class="form-select" id="NotificationStateFilter" style="width: 180px">
+                  <option value="">Tất cả</option>
+                  <option value="0">Chưa đọc</option>
+                  <option value="1">Đã đọc</option>
+                </select>
+                <button id="MarkAllAsRead" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-check-double"></i> Đánh dấu tất cả đã đọc
+                </button>
+              </div>
+            </div>
+
+            <!-- Container cho danh sách thông báo -->
+            <div class="notifications-list-container">
+              <!-- Nội dung thông báo sẽ được render bằng JavaScript -->
+            </div>
+
+            <!-- Container hiển thị khi không có thông báo -->
+            <div class="empty-notifications-container" style="display: none;">
+              <div class="icon"><i class="fas fa-bell-slash"></i></div>
+              <h4>Không có thông báo nào</h4>
+              <p class="text-muted">Bạn chưa có thông báo nào trong hệ thống</p>
+            </div>
+
+            <!-- Phân trang -->
+            <div class="notification-pagination mt-4">
+              <nav aria-label="Notification pagination">
+                <ul class="pagination justify-content-center" id="NotificationPagination">
+                  <!-- Pagination sẽ được render bằng JavaScript -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+<style>
+  .notification-page-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .notification-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    background-color: #fff;
+  }
+
+    .notification-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .notification-item.unread {
+      background-color: #f0f7ff;
+      border-left: 4px solid #0d6efd;
+    }
+
+    .notification-item .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+    }
+
+      .notification-item .notification-icon.success {
+        background-color: #d1e7dd;
+        color: #198754;
+      }
+
+      .notification-item .notification-icon.info {
+        background-color: #cff4fc;
+        color: #0dcaf0;
+      }
+
+      .notification-item .notification-icon.warning {
+        background-color: #fff3cd;
+        color: #ffc107;
+      }
+
+      .notification-item .notification-icon.error {
+        background-color: #f8d7da;
+        color: #dc3545;
+      }
+
+    .notification-item .notification-content {
+      flex: 1;
+    }
+
+    .notification-item .notification-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .notification-item .notification-message {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 4px;
+    }
+
+    .notification-item .notification-time {
+      color: #999;
+      font-size: 0.8em;
+    }
+
+    .notification-item .notification-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+      .notification-item .notification-actions .btn {
+        padding: 4px 8px;
+        font-size: 0.8em;
+      }
+
+  .empty-notifications-container {
+    text-align: center;
+    padding: 80px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+
+    .empty-notifications-container .icon {
+      font-size: 60px;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+
+    .empty-notifications-container h4 {
+      font-weight: bold;
+      color: #333;
+    }
+
+  .notification-pagination .pagination .page-link {
+    color: #0d6efd;
+    border-radius: 4px;
+    margin: 0 2px;
+  }
+
+  .notification-pagination .pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+
+  .notification-pagination .pagination .page-item.disabled .page-link {
+    color: #6c757d;
+  }
+</style>

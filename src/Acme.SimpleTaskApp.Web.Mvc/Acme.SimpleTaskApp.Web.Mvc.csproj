@@ -69,7 +69,6 @@
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Notifications\" />
     <Folder Include="wwwroot\img\products\general\" />
     <Folder Include="wwwroot\img\products\variants\" />
   </ItemGroup>

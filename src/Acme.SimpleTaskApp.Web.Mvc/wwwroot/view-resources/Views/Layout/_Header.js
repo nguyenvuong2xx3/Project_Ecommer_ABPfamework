@@ -1,5 +1,10 @@
 ﻿(function ($) {
 	$(function () {
+
+		var _permissions = {
+			dashboard: abp.auth.hasPermission('Pages.Dashboard'),
+		};
+
 		// Back to my account
 		$('#UserProfileBackToMyAccountButton').click(function (e) {
 			e.preventDefault();
@@ -100,6 +105,10 @@
 
 		function renderNotificationTemplate(data) {
 			var hasUnread = data.unreadCount && data.unreadCount > 0;
+
+			// Xác định URL theo quyền
+			var viewAllUrl = _permissions.dashboard? "/Notifications": "/UserProfile";
+
 			var badgeHtml = hasUnread
 				? `<span class="position-absolute badge badge-pill badge-danger" style="top: -5px; right: -5px; font-size: 0.6rem; min-width: 18px; height: 18px; line-height: 1.2;">${data.unreadCount}</span>`
 				: '';
@@ -145,7 +154,7 @@
 
     <div class="dropdown-menu dropdown-menu-right p-0 border-0 shadow notification-dropdown" 
          style="position: absolute !important; width: 320px; max-height: 400px; overflow: hidden; top: 100%; right: 0; left: auto; z-index: 1070 !important; margin-top: 5px; transform: translateX(10px);">
-        <!-- Mũi tên trỏ vào icon -->
+
         <div class="dropdown-arrow" style="position: absolute; top: -6px; right: 12px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid white; z-index: 1071;"></div>
         <div class="dropdown-arrow-border" style="position: absolute; top: -7px; right: 11px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #dee2e6; z-index: 1070;"></div>
         
@@ -153,9 +162,9 @@
             <h6 class="mb-0 font-weight-bold text-dark" style="font-size: 0.9rem;">Thông báo</h6>
             <div>
                 ${data.unreadCount > 0 ?
-					`<button class="btn btn-sm btn-outline-primary mr-1" id="btnSetAllNotificationsAsRead" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Đánh dấu đã đọc</button>` :
-					''}
-                <a href="/App/Notifications" class="btn btn-sm btn-link text-decoration-none" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Xem tất cả</a>
+					`<button class="btn btn-sm btn-outline-primary mr-1" id="btnSetAllNotificationsAsRead" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Đánh dấu đã đọc</button>`
+					: ''}
+                <a href="${viewAllUrl}" class="btn btn-sm btn-link text-decoration-none" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Xem tất cả</a>
             </div>
         </div>
 
@@ -165,11 +174,10 @@
 
         ${data.notifications && data.notifications.length > 0 ? `
         <div class="border-top p-1 text-center bg-light">
-            <a href="/App/Notifications" class="text-primary text-decoration-none font-weight-medium" style="font-size: 0.8rem;">
+            <a href="${viewAllUrl}" class="text-primary text-decoration-none font-weight-medium" style="font-size: 0.8rem;">
                 Xem tất cả thông báo
             </a>
-        </div>
-        ` : ''}
+        </div>` : ''}
     </div>
 </div>`;
 		}

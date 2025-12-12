@@ -45,10 +45,10 @@
           <tr>
             <td class="font-weight-bold">Trạng thái:</td>
             <td>
-              <span class="badge @(Model.Sale.Status == "Đang hoạt động" ? "badge-success" : 
-                                    Model.Sale.Status == "Sắp diễn ra" ? "badge-info" : 
-                                    Model.Sale.Status == "Đã hết lượt" ? "badge-warning" : 
-                                    Model.Sale.Status == "Đã tạm dừng" ? "badge-secondary" : "badge-danger")">
+              <span class="badge @(Model.Sale.Status == "Đang hoạt động" ? "badge-success" :
+                                                        Model.Sale.Status == "Sắp diễn ra" ? "badge-info" :
+                                                        Model.Sale.Status == "Đã hết lượt" ? "badge-warning" :
+                                                        Model.Sale.Status == "Đã tạm dừng" ? "badge-secondary" : "badge-danger")">
                 @Model.Sale.Status
               </span>
               @if (Model.Sale.IsActive)

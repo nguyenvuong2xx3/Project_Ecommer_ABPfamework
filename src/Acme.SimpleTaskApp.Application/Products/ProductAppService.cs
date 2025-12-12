@@ -48,6 +48,14 @@ namespace Acme.SimpleTaskApp.Products
 		[AbpAuthorize(PermissionNames.Pages_Products_Create)]
 		public Product CreateProducts(CreateProductDto input)
 		{
+
+			// tên sản phẩm không được trùng
+			var existingProduct = _productRepository.FirstOrDefault(p => p.Name == input.Name);
+			if (existingProduct != null)
+			{
+				throw new UserFriendlyException("Tên sản phẩm đã tồn tại. Vui lòng nhập tên khác");
+			}
+
 			// Tạo mới sản phẩm
 			var product = new Product
 			{
@@ -264,6 +272,8 @@ namespace Acme.SimpleTaskApp.Products
 			{
 				throw new UserFriendlyException("Không thể xóa sản phẩm này vì đã được người dùng thêm vào giỏ hàng");
 			}
+
+
 			if (item == null)
 			{
 				throw new UserFriendlyException("Product not found");

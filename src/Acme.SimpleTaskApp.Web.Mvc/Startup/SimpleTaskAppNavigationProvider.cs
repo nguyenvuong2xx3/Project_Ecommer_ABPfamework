@@ -82,8 +82,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 					)
 				).AddItem(
 					new MenuItemDefinition(
-						PageNames.Sales,
-						L("Sales"),
+						"SalesManagement",
+						L("SalesManagement"),
 						url: "Sales",
 						icon: "fas fa-tag",
 						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Sales_View)

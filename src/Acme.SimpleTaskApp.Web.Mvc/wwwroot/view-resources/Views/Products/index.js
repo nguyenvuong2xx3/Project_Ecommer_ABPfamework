@@ -365,8 +365,8 @@
 
   function deleteProduct(productId, productName) {
     abp.message.confirm(
-      abp.utils.formatString(l('Bạn có muốn xóa sản phẩm "{0}"?'), productName),
-      null,
+      'Bạn có chắc chắn muốn xóa sản phẩm "' + productName,
+      'Xác nhận xóa',
       (isConfirmed) => {
         if (isConfirmed) {
           // Sử dụng service proxy - ABP tự xử lý error

@@ -4,7 +4,7 @@
 		_$modal = $('#ProductVariantCreateModal'),
 		_$form = _$modal.find('form'),
 		_$table = $('#ProductVariantsTable');
-		_$productId = null;
+	_$productId = null;
 	var _permissions = {
 		view: abp.auth.hasPermission('Pages.ProductVariants.View'),
 		create: abp.auth.hasPermission('Pages.ProductVariants.Create'),
@@ -330,23 +330,31 @@
 
 	function deleteProductVariant(productvariantId, productvariantName) {
 		abp.message.confirm(
-			abp.utils.formatString(
-				l('Bạn có muốn xóa biến thể sản phẩm "{0}"?'),
-				productvariantName),
-			null,
+			'Bạn có chắc chắn muốn xóa biến thể sản phẩm "' + productvariantName,
+			'Xác nhận xóa',
+			//(isConfirmed) => {
+			//	if (isConfirmed) {
+			//		$.ajax({
+			//			url: '/ProductVariants/Delete',
+			//			type: 'POST',
+			//			data: { id: productvariantId }
+			//		}).done(() => {
+			//			abp.notify.info(l('Xoá thành công'));
+			//			_$productvariantsTable.ajax.reload();
+			//		}).fail((xhr) => {
+			//			let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá biến thể sản phẩm';
+			//			abp.notify.error(errorMsg);
+			//		});
+			//	}
+			//}
 			(isConfirmed) => {
 				if (isConfirmed) {
-					$.ajax({
-						url: '/ProductVariants/Delete',
-						type: 'POST',
-						data: { id: productvariantId }
-					}).done(() => {
-						abp.notify.info(l('Xoá thành công'));
-						_$productvariantsTable.ajax.reload();
-					}).fail((xhr) => {
-						let errorMsg = xhr.responseJSON?.message || 'Có lỗi xảy ra khi xoá biến thể sản phẩm';
-						abp.notify.error(errorMsg);
-					});
+					// Sử dụng service proxy - ABP tự xử lý error
+					_productVariantService.deleteProductVariant(productvariantId)
+						.done(() => {
+							abp.notify.info(l('Xoá thành công'));
+							_$productvariantsTable.ajax.reload();
+						});
 				}
 			}
 		);

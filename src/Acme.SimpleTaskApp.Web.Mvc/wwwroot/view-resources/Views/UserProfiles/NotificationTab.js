@@ -8,9 +8,32 @@
     isLoaded: false
   };
 
+  // --- HELPER FUNCTION: Lấy container đúng cho cả 2 trường hợp ---
+  function getContainer() {
+    // Ưu tiên tìm class chung (Admin view dùng cái này)
+    var $container = $('.notification-page-container').first();
+    // Nếu không thấy, tìm theo ID của tab (User/Customer view dùng cái này)
+    if ($container.length === 0) {
+      $container = $('#notification-tab-pane');
+    }
+    return $container;
+  }
+
   $(document).ready(function () {
-    bindEvents();
+    // Kiểm tra xem có tab thông báo không (trang customer)
+    if ($('#notification-tab').length > 0) {
+      // Đây là trang customer, sử dụng sự kiện tab
+      bindEvents();
+    } else {
+      // Đây là trang admin, load ngay
+      initializeNotificationPage();
+    }
   });
+
+  function initializeNotificationPage() {
+    bindEvents();
+    loadNotifications();
+  }
 
   function loadNotifications() {
     var input = {
@@ -19,7 +42,13 @@
       maxResultCount: _state.pageSize
     };
 
-    abp.ui.setBusy($('#notification-tab-pane'));
+    // Dùng hàm getContainer để lấy đúng vùng hiển thị
+    var $container = getContainer();
+    
+    // Nếu không tìm thấy container nào thì return luôn để tránh lỗi
+    if ($container.length === 0) return;
+
+    abp.ui.setBusy($container);
 
     _notificationService.getUserNotifications(input)
       .done(function (result) {
@@ -30,27 +59,35 @@
       })
       .fail(function (error) {
         console.error('Lỗi khi tải thông báo:', error);
-        abp.notify.error('Không thể tải danh sách thông báo! ');
+        abp.notify.error('Không thể tải danh sách thông báo!');
       })
       .always(function () {
-        abp.ui.clearBusy($('#notification-tab-pane'));
+        // SỬA: Clear busy đúng container
+        abp.ui.clearBusy(getContainer());
       });
   }
 
   function renderNotifications(notifications) {
-    var $container = $('#notification-tab-pane');
+    // SỬA: Dùng hàm getContainer thay vì hardcode ID #notification-tab-pane
+    var $container = getContainer();
+    
     var $emptyContainer = $container.find('.empty-notifications-container');
     var $notificationsList = $container.find('.notifications-list-container');
+
+    // Ẩn/Hiện phân trang
+    // Lưu ý: ID #NotificationPagination nằm ngoài container list một chút ở View Admin, 
+    // nhưng selector này dùng ID toàn cục nên vẫn ổn.
+    var $pagination = $('#NotificationPagination').closest('.notification-pagination');
 
     if (!notifications || notifications.length === 0) {
       $emptyContainer.show();
       $notificationsList.hide().empty();
-      $('. notification-pagination').hide();
+      $pagination.hide();
       return;
     }
 
     $emptyContainer.hide();
-    $('.notification-pagination').show();
+    $pagination.show();
 
     var html = '';
     notifications.forEach(function (notification) {
@@ -67,13 +104,14 @@
 
     var data = notification.data || {};
     var properties = data.properties || {};
-    var message = properties.Message || properties.message || 'Thông báo mới';
+    // Fallback message an toàn hơn
+    var message = properties.Message || properties.message || notification.data.message || 'Thông báo mới';
     var notificationName = notification.notificationName || '';
 
     var iconClass = getNotificationIconClass(notification.severity, notificationName);
     var iconColorClass = getNotificationIconColorClass(notification.severity);
 
-    var creationTime = moment(notification.creationTime).format('DD/MM/YYYY HH: mm');
+    var creationTime = moment(notification.creationTime).format('DD/MM/YYYY HH:mm');
     var timeAgo = moment(notification.creationTime).fromNow();
 
     var url = properties.Url || properties.url || '';
@@ -114,7 +152,7 @@
       'App.NewOrder': 'Đơn hàng mới',
       'App.OrderStatusChanged': 'Cập nhật đơn hàng',
       'App.OrderApproved': 'Đơn hàng đã duyệt',
-      'App. OrderRejected': 'Đơn hàng bị từ chối',
+      'App.OrderRejected': 'Đơn hàng bị từ chối',
       'App.OrderCompleted': 'Đơn hàng hoàn thành',
       'App.NewProductComment': 'Bình luận mới',
       'App.CommentReply': 'Phản hồi bình luận',
@@ -125,6 +163,9 @@
   }
 
   function getNotificationIconClass(severity, notificationName) {
+    // Kiểm tra null/undefined cho notificationName
+    if (!notificationName) return 'fas fa-bell';
+    
     if (notificationName.includes('Order')) return 'fas fa-shopping-cart';
     if (notificationName.includes('Comment')) return 'fas fa-comment';
     if (notificationName.includes('Stock')) return 'fas fa-warehouse';
@@ -154,9 +195,10 @@
   function renderPagination() {
     var totalPages = Math.ceil(_state.totalCount / _state.pageSize);
     var currentPage = _state.currentPage;
+    var $paginationContainer = $('#NotificationPagination');
 
     if (totalPages <= 1) {
-      $('#NotificationPagination').html('');
+      $paginationContainer.html('');
       return;
     }
 
@@ -200,22 +242,21 @@
       '</a>' +
       '</li>';
 
-    $('#NotificationPagination').html(html);
+    $paginationContainer.html(html);
   }
 
   function markNotificationAsRead(notificationId) {
     _notificationService.setNotificationAsRead({ id: notificationId })
       .done(function (result) {
-        if (result.success) {
-          var $item = $('. notification-item[data-notification-id="' + notificationId + '"]');
-          $item.removeClass('unread');
-          $item.find('.mark-as-read-btn').remove();
-          abp.notify.success('Đã đánh dấu đã đọc');
-        }
+        // Không cần check result.success vì ABP throw error nếu fail, nhưng check cũng tốt
+        var $item = $('.notification-item[data-notification-id="' + notificationId + '"]');
+        $item.removeClass('unread');
+        $item.find('.mark-as-read-btn').remove();
+        abp.notify.success('Đã đánh dấu đã đọc');
       })
       .fail(function (error) {
         console.error('Lỗi khi đánh dấu đã đọc:', error);
-        abp.notify.error('Không thể đánh dấu đã đọc! ');
+        abp.notify.error('Không thể đánh dấu đã đọc!');
       });
   }
 
@@ -241,7 +282,7 @@
 
   function deleteNotification(notificationId) {
     abp.message.confirm(
-      'Bạn có chắc chắn muốn xóa thông báo này? ',
+      'Bạn có chắc chắn muốn xóa thông báo này?',
       'Xác nhận xóa',
       function (isConfirmed) {
         if (isConfirmed) {
@@ -252,7 +293,7 @@
             })
             .fail(function (error) {
               console.error('Lỗi khi xóa thông báo:', error);
-              abp.notify.error('Không thể xóa thông báo! ');
+              abp.notify.error('Không thể xóa thông báo!');
             });
         }
       }
@@ -260,7 +301,7 @@
   }
 
   function bindEvents() {
-    // Load notifications khi click vào tab
+    // Load notifications khi click vào tab (Chỉ dành cho trang User có tab)
     $('#notification-tab').on('click', function () {
       if (!_state.isLoaded) {
         loadNotifications();
@@ -280,7 +321,7 @@
       markAllNotificationsAsRead();
     });
 
-    // Mark as read
+    // Mark as read (dùng delegation vì element sinh ra động)
     $(document).on('click', '.mark-as-read-btn', function () {
       var notificationId = $(this).data('notification-id');
       markNotificationAsRead(notificationId);
@@ -296,6 +337,8 @@
     $(document).on('click', '#NotificationPagination .page-link', function (e) {
       e.preventDefault();
       var page = $(this).data('page');
+      // Chuyển đổi sang số để so sánh chính xác
+      page = parseInt(page);
       if (page && page !== _state.currentPage) {
         _state.currentPage = page;
         loadNotifications();

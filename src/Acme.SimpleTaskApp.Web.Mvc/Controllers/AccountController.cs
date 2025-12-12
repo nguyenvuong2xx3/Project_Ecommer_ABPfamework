@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Abp;
+﻿using Abp;
 using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Configuration;
 using Abp.Configuration.Startup;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.MultiTenancy;
@@ -22,6 +15,7 @@ using Abp.Timing;
 using Abp.UI;
 using Abp.Web.Models;
 using Abp.Zero.Configuration;
+using Acme.SimpleTaskApp.Authentication.External;
 using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.Authorization.Users;
 using Acme.SimpleTaskApp.Controllers;
@@ -30,12 +24,20 @@ using Acme.SimpleTaskApp.MultiTenancy;
 using Acme.SimpleTaskApp.Sessions;
 using Acme.SimpleTaskApp.Web.Models.Account;
 using Acme.SimpleTaskApp.Web.Views.Shared.Components.TenantChange;
-using Acme.SimpleTaskApp.Authentication.External;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Acme.SimpleTaskApp.Web.Controllers
 {
 	public class AccountController : SimpleTaskAppControllerBase
 	{
+		private readonly IRepository<User, long> _userRepository;
 		private readonly UserManager _userManager;
 		private readonly TenantManager _tenantManager;
 		private readonly IMultiTenancyConfig _multiTenancyConfig;
@@ -52,6 +54,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 
 		public AccountController(
 				UserManager userManager,
+				IRepository<User, long> userRepository,
 				IMultiTenancyConfig multiTenancyConfig,
 				TenantManager tenantManager,
 				IUnitOfWorkManager unitOfWorkManager,
@@ -64,6 +67,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 				ITenantCache tenantCache,
 				INotificationPublisher notificationPublisher)
 		{
+			_userRepository = userRepository;
 			_externalLoginInfoManagerFactory = externalLoginInfoManagerFactory;
 			_userManager = userManager;
 			_multiTenancyConfig = multiTenancyConfig;
@@ -113,8 +117,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			returnUrl = "/HomeCustomer";
 
 			// Kiểm tra role có quyền vào trang chủ quản trị không?
-
-			if (await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Dashboard))
+			if (await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Dashboard) || getRoles.Contains("Admin"))
 			{
 				returnUrl = "/Home";
 			}

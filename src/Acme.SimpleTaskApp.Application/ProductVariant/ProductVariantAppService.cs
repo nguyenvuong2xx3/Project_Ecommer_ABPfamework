@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
 using Abp.UI;
+using Acme.SimpleTaskApp.Carts;
 using Acme.SimpleTaskApp.Categories;
 using Acme.SimpleTaskApp.Products;
 using Acme.SimpleTaskApp.ProductVariants.Dtos;
@@ -22,6 +23,7 @@ namespace Acme.SimpleTaskApp.ProductVariants
 	public class ProductVariantAppService : ApplicationService, IProductVariantAppService
 	{
 		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<CartItem, int> _cartItemRepository;
 		private readonly IRepository<ProductVariant> _productVariantRepository;
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<ProductImage> _productImageRepository;
@@ -29,12 +31,14 @@ namespace Acme.SimpleTaskApp.ProductVariants
 		private readonly IUploadFileAppService _uploadFileAppService;
 
 		public ProductVariantAppService(IRepository<Product> productRepository,
+								IRepository<CartItem, int> cartItemRepository,
 								IRepository<Category> categoryRepository,
 								IRepository<ProductImage> productImageRepository,
 								IRepository<ProductVariant> productVariantRepository,
 								IUploadFileAppService uploadFileAppService,
 								IWebHostEnvironment env)
 		{
+			_cartItemRepository = cartItemRepository;
 			_productRepository = productRepository;
 			_productVariantRepository = productVariantRepository;
 			_uploadFileAppService = uploadFileAppService;
@@ -47,6 +51,16 @@ namespace Acme.SimpleTaskApp.ProductVariants
 			if (input == null)
 			{
 				throw new UserFriendlyException("Dữ liệu không được để trống");
+			}
+			// check trùng
+			var existingVariant = await _productVariantRepository.FirstOrDefaultAsync(v =>
+				v.ProductId == input.ProductId &&
+				v.Ram == input.Ram &&
+				v.Storage == input.Storage &&
+				v.Color == input.Color);
+			if (existingVariant != null)
+			{
+				throw new UserFriendlyException("Biến thể sản phẩm với cấu hình này đã tồn tại.");
 			}
 
 			await _productVariantRepository.InsertAsync(input);
@@ -152,6 +166,14 @@ namespace Acme.SimpleTaskApp.ProductVariants
 			{
 				throw new UserFriendlyException("Product not found");
 			}
+
+			// nếu thêm vào giỏ hàng thì không được xóa
+			var existingVariant = await _cartItemRepository.FirstOrDefaultAsync(x => x.ProductVariantId == id);
+			if (existingVariant != null)
+			{
+				throw new UserFriendlyException("Không thể xóa biến thể sản phẩm vì nó đang được sử dụng trong giỏ hàng.");
+			}
+
 			_productVariantRepository.Delete(item);
 
 			// Xóa ảnh liên quan
