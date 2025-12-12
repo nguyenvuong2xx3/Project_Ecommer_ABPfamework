@@ -1,6 +1,11 @@
 Tên đồ án: Xây dựng Website bán điện thoại di dộng
+---
 Họ và tên: Nguyễn Quốc Vương
+----
 Đại học Mỏ Địa - Chất - chuyên nghành: công nghệ phần mềm
+
+
+---
 Mô tả ngắn
 ----------
 Đây là một dự án e‑commerce (ABP/ASP.NET-based admin framework) chứa các module quản lý cho một hệ thống thương mại điện tử: quản lý người dùng, vai trò, danh mục, sản phẩm, biến thể sản phẩm, biển quảng cáo, khuyến mãi/giảm giá, đơn hàng, giỏ hàng, bình luận, thông báo và đánh giá. Mục tiêu của README này là giúp người khác clone, cài đặt và chạy được project trên máy local.
