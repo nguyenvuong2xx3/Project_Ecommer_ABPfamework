@@ -117,7 +117,7 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			returnUrl = "/HomeCustomer";
 
 			// Kiểm tra role có quyền vào trang chủ quản trị không?
-			if (await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Dashboard) || getRoles.Contains("Admin"))
+			if (await PermissionChecker.IsGrantedAsync(PermissionNames.Pages_Dashboard) || getRoles.Contains("Admin") || getRoles.Contains("nhanvienbanhang"))
 			{
 				returnUrl = "/Home";
 			}

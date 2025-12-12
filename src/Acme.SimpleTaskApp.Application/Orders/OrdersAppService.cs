@@ -157,7 +157,7 @@ namespace Acme.SimpleTaskApp.Orders
 					// Cập nhật final price sau khi áp dụng voucher
 					finalPrice = discountResult.FinalAmount;
 
-					// Increment voucher used count
+					//tăng số lần đã sử dụng voucher
 					if (discountResult.AppliedVoucher != null)
 					{
 						await _saleAppService.IncrementUsedCount(discountResult.AppliedVoucher.Id);

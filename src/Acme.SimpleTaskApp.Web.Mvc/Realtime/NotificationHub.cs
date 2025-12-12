@@ -1,4 +1,4 @@
-using Abp;
+﻿using Abp;
 using Abp.Dependency;
 using Abp.Notifications;
 using Abp.RealTime;
@@ -24,7 +24,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 		}
 
 		/// <summary>
-		/// G?i khi client k?t n?i
+		/// Gửi khi client kết nối
 		/// </summary>
 		public override async Task OnConnectedAsync()
 		{
@@ -39,7 +39,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 		}
 
 		/// <summary>
-		/// G?i khi client ng?t k?t n?i
+		/// gửi khi client ngắt kết nối
 		/// </summary>
 		public override async Task OnDisconnectedAsync(System.Exception exception)
 		{
@@ -50,7 +50,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 		}
 
 		/// <summary>
-		/// Client g?i tin nh?n test
+		/// Client gọi hàm này để nhận thông báo test
 		/// </summary>
 		public async Task SendTestNotification(string message)
 		{

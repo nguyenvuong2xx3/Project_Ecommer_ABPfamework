@@ -56,8 +56,8 @@ namespace Acme.SimpleTaskApp.Orders
             {
                 try
                 {
-                    if (_isProcessing)
-                        return;
+                    //if (_isProcessing)
+                    //    return;
 
                     _isProcessing = true;
                     await ProcessQueueAsync();

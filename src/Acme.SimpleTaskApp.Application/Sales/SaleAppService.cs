@@ -343,7 +343,7 @@ namespace Acme.SimpleTaskApp.Sales
 			return true;
 		}
 
-		// Tăng số lần sử dụng
+		// Tăng số lần đã sử dụng
 		public async Task IncrementUsedCount(int saleId)
 		{
 			var sale = await _saleRepository.FirstOrDefaultAsync(saleId);

@@ -54,5 +54,5 @@ namespace Acme.SimpleTaskApp.Orders
 			public string Code { get; set; }
 		}
 	}
-	
+
 }

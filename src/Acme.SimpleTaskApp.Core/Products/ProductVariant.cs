@@ -33,7 +33,6 @@ namespace Acme.SimpleTaskApp.Products
 		[NotMapped]
 		public string SaleName { get; set; }
 		
-		// ✅ NEW: Rating information
 		[NotMapped]
 		public double AverageRating { get; set; } = 0; // Trung bình số sao (0-5)
 		[NotMapped]
