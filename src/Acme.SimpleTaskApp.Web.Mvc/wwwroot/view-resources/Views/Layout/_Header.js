@@ -107,7 +107,7 @@
 			var hasUnread = data.unreadCount && data.unreadCount > 0;
 
 			// Xác định URL theo quyền
-			var viewAllUrl = _permissions.dashboard? "/Notifications": "/UserProfile";
+			var viewAllUrl = _permissions.dashboard ? "/Notifications" : "/UserProfile";
 
 			var badgeHtml = hasUnread
 				? `<span class="position-absolute badge badge-pill badge-danger" style="top: -5px; right: -5px; font-size: 0.6rem; min-width: 18px; height: 18px; line-height: 1.2;">${data.unreadCount}</span>`
@@ -279,6 +279,7 @@
 		}
 
 		function loadNotifications() {
+			$('#toast-container').remove();
 			// Kiểm tra nếu user chưa đăng nhập thì không làm gì cả
 			if (!abp.session.userId) {
 				// Hoặc điều kiện kiểm tra khác tùy vào cách bạn lưu trạng thái đăng nhập
@@ -368,17 +369,17 @@
 		});
 
 		// Chat
-		abp.event.on('app.chat.unreadMessageCountChanged', function (messageCount) {
-			$('#chatIconUnRead .unread-chat-message-count').text(messageCount);
+		//abp.event.on('app.chat.unreadMessageCountChanged', function (messageCount) {
+		//	$('#chatIconUnRead .unread-chat-message-count').text(messageCount);
 
-			if (messageCount) {
-				$('#chatIconUnRead').removeClass('d-none');
-				$('#chatIcon').addClass('d-none');
-			} else {
-				$('#chatIconUnRead').addClass('d-none');
-				$('#chatIcon').removeClass('d-none');
-			}
-		});
+		//	if (messageCount) {
+		//		$('#chatIconUnRead').removeClass('d-none');
+		//		$('#chatIcon').addClass('d-none');
+		//	} else {
+		//		$('#chatIconUnRead').addClass('d-none');
+		//		$('#chatIcon').removeClass('d-none');
+		//	}
+		//});
 
 		// User Delegation
 		var userDelegationsModal = new app.ModalManager({

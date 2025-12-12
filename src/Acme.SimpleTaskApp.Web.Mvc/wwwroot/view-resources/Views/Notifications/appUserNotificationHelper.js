@@ -121,15 +121,15 @@
 
       var show = function (userNotification) {
         // ✅ Application notification (toast)
-        abp.notifications.showUiNotifyForUserNotification(userNotification, {
-          onclick: function () {
-            // Take action when user clicks to live toastr notification
-            var url = getUrl(userNotification);
-            if (url) {
-              location.href = url;
-            }
-          },
-        });
+        //abp.notifications.showUiNotifyForUserNotification(userNotification, {
+        //  onclick: function () {
+        //    // Take action when user clicks to live toastr notification
+        //    var url = getUrl(userNotification);
+        //    if (url) {
+        //      location.href = url;
+        //    }
+        //  },
+        //});
 
         // ✅ Desktop notification (Push)
         Push.create('SimpleTaskApp', {
@@ -157,11 +157,13 @@
       };
 
       var setAsRead = function (userNotificationId, callback) {
+        debugger
         _notificationService
           .setNotificationAsRead({
             id: userNotificationId,
           })
           .done(function (result) {
+
             abp.event.trigger('app.notifications.read', userNotificationId, result.success);
             callback && callback(userNotificationId);
           });
