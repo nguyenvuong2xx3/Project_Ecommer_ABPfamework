@@ -396,5 +396,18 @@
 		<text name="NotificationSettings" value="Cài đặt thông báo" />
 		<text name="BannerManagement" value="Quản lý biển quảng cáo" />
 
+		<!-- Notification Definitions -->
+		<text name="NewOrderNotification" value="Đơn hàng mới" />
+		<text name="OrderStatusChangedNotification" value="Trạng thái đơn hàng thay đổi" />
+		<text name="OrderApprovedNotification" value="Đơn hàng được duyệt" />
+		<text name="OrderRejectedNotification" value="Đơn hàng bị từ chối" />
+		<text name="OrderCompletedNotification" value="Đơn hàng hoàn thành" />
+		<text name="LowStockNotification" value="Cảnh báo tồn kho thấp" />
+		<text name="NewProductNotification" value="Sản phẩm mới" />
+		<text name="NewProductCommentNotification" value="Bình luận sản phẩm mới" />
+		<text name="CommentReplyNotification" value="Trả lời bình luận" />
+		<text name="DailyRevenueReportNotification" value="Báo cáo doanh thu hàng ngày" />
+		<text name="LowStockAlertNotification" value="Cảnh báo sản phẩm sắp hết hàng" />
+
 	</texts>
 </localizationDictionary>

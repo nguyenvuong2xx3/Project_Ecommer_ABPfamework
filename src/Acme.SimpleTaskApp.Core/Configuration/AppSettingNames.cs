@@ -19,4 +19,20 @@
 		public const string NameStore = "App.NameStore";
 		public const string UrlLogo = "App.UrlLogo";
 	}
+
+	/// <summary>
+	/// Setting names cho Background Workers
+	/// </summary>
+	public static class AppBackgroundWorkerSettings
+	{
+		/// <summary>
+		/// Ngày chạy cuối cùng của DailyRevenueReportWorker (format: yyyy-MM-dd)
+		/// </summary>
+		public const string DailyRevenueReport_LastExecutionDate = "App.BackgroundWorker.DailyRevenueReport.LastExecutionDate";
+
+		/// <summary>
+		/// Ngày chạy cuối cùng của LowStockAlertWorker (format: yyyy-MM-dd)
+		/// </summary>
+		public const string LowStockAlert_LastExecutionDate = "App.BackgroundWorker.LowStockAlert.LastExecutionDate";
+	}
 }

@@ -224,5 +224,7 @@
     <text name="NewProductNotification">Sản phẩm mới</text>
     <text name="NewProductCommentNotification">Bình luận sản phẩm mới</text>
     <text name="CommentReplyNotification">Trả lời bình luận</text>
+    <text name="DailyRevenueReportNotification">Báo cáo doanh thu hàng ngày</text>
+    <text name="LowStockAlertNotification">Cảnh báo sản phẩm sắp hết hàng</text>
   </texts>
 </localizationDictionary>

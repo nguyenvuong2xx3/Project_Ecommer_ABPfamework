@@ -66,6 +66,20 @@ namespace Acme.SimpleTaskApp.Configuration
 								"", // Empty default - user must configure
 								scopes: SettingScopes.Application | SettingScopes.Tenant,
 								isVisibleToClients: true
+						),
+
+						// Background Worker Settings - Lưu ngày chạy cuối cùng
+						new SettingDefinition(
+								AppBackgroundWorkerSettings.DailyRevenueReport_LastExecutionDate,
+								"", // Empty default
+								scopes: SettingScopes.Application,
+								isVisibleToClients: false
+						),
+						new SettingDefinition(
+								AppBackgroundWorkerSettings.LowStockAlert_LastExecutionDate,
+								"", // Empty default
+								scopes: SettingScopes.Application,
+								isVisibleToClients: false
 						)
 			};
 		}

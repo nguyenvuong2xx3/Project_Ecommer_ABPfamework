@@ -79,11 +79,29 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// ? NEW: Notification khi có ng??i reply comment (User ? Admin)
+			// Notification khi có ng??i reply comment (User & Admin)
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.CommentReply",
 					displayName: new LocalizableString("CommentReplyNotification", "SimpleTaskApp")
+				)
+			);
+
+			// ? NEW: Notification báo cáo doanh thu hàng ngày (Admin only)
+			context.Manager.Add(
+				new NotificationDefinition(
+					"App.DailyRevenueReport",
+					displayName: new LocalizableString("DailyRevenueReportNotification", "SimpleTaskApp"),
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Tenants)
+				)
+			);
+
+			// ? NEW: Notification c?nh báo t?n kho th?p hàng ngày (Admin only)
+			context.Manager.Add(
+				new NotificationDefinition(
+					"App.LowStockAlert",
+					displayName: new LocalizableString("LowStockAlertNotification", "SimpleTaskApp"),
+					permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Tenants)
 				)
 			);
 		}

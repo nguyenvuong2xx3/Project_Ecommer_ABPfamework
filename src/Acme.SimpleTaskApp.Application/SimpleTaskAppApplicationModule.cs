@@ -3,7 +3,9 @@ using Abp.Configuration;
 using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Abp.Threading.BackgroundWorkers;
 using Acme.SimpleTaskApp.Authorization;
+using Acme.SimpleTaskApp.BackgroundWorkers;
 using Acme.SimpleTaskApp.Configuration;
 
 namespace Acme.SimpleTaskApp
@@ -28,9 +30,20 @@ namespace Acme.SimpleTaskApp
 			IocManager.RegisterAssemblyByConvention(thisAssembly);
 
 			Configuration.Modules.AbpAutoMapper().Configurators.Add(
-					// Scan the assembly for classes which inherit from AutoMapper.Profile
 					cfg => cfg.AddMaps(thisAssembly)
 			);
+		}
+
+		public override void PostInitialize()
+		{
+			// Đăng kí job workers
+			var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
+
+			// Gửi báo cáo doanh thu hàng ngày
+			workManager.Add(IocManager.Resolve<DailyRevenueReportWorker>());
+
+			// Thêm cảnh báo tồn kho thấp
+			workManager.Add(IocManager.Resolve<LowStockAlertWorker>());
 		}
 	}
 }

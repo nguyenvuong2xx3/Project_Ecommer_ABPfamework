@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Cảnh báo sản phẩm sắp hết hàng</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mail-container {
+      max-width: 650px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px 28px 24px 28px;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      width: 120px;
+      height: auto;
+    }
+
+    .title {
+      color: #dc3545;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .alert-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .alert-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .alert-count {
+      font-size: 32px;
+      font-weight: bold;
+      color: #856404;
+    }
+
+    .alert-text {
+      font-size: 14px;
+      color: #856404;
+    }
+
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+
+    .product-table th {
+      background: #f8f9fa;
+      padding: 12px 8px;
+      text-align: left;
+      font-size: 13px;
+      color: #666;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .product-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .variant-info {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .stock-critical {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .stock-low {
+      color: #fd7e14;
+      font-weight: bold;
+    }
+
+    .stock-warning {
+      color: #ffc107;
+      font-weight: bold;
+    }
+
+    .content {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .footer {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #dc3545;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+      padding: 12px 24px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .more-items {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: center;
+      border-radius: 4px;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mail-container">
+    <img class="logo" src="{{LogoUrl}}" alt="{{StoreName}} Logo" />
+    
+    <div class="title">⚠️ Cảnh báo sản phẩm sắp hết hàng</div>
+    <div class="subtitle">Kiểm tra ngày {{ReportDate}}</div>
+
+    <div class="alert-box">
+      <div class="alert-icon">📦</div>
+      <div class="alert-count">{{TotalLowStockItems}}</div>
+      <div class="alert-text">Biến thể sản phẩm có số lượng &lt; {{Threshold}}</div>
+    </div>
+
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th style="width: 5%;">#</th>
+          <th style="width: 55%;">Sản phẩm</th>
+          <th style="width: 25%;">Biến thể</th>
+          <th style="width: 15%;">Còn lại</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ProductRows}}
+      </tbody>
+    </table>
+
+    {{MoreItemsSection}}
+
+    <div class="content">
+      <p>Xin chào <b>Admin</b>,</p>
+      <p>
+        Hệ thống <b>{{StoreName}}</b> phát hiện <b>{{TotalLowStockItems}}</b> biến thể sản phẩm có số lượng tồn kho thấp (dưới {{Threshold}} sản phẩm).
+      </p>
+      <p>
+        Vui lòng kiểm tra và nhập thêm hàng để tránh tình trạng hết hàng.
+      </p>
+    </div>
+
+    <div class="text-center">
+      <a href="{{ProductsUrl}}" class="btn">Quản lý sản phẩm</a>
+    </div>
+
+    <div class="footer">
+      <p>Email này được gửi tự động từ hệ thống <b>{{StoreName}}</b></p>
+      <p>Thời gian gửi: {{SendTime}}</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Báo cáo doanh thu hàng ngày</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mail-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px 28px 24px 28px;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      width: 120px;
+      height: auto;
+    }
+
+    .title {
+      color: #1b6dc1;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      flex: 1;
+      min-width: 120px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      border-left: 4px solid #1b6dc1;
+    }
+
+    .stat-box.success {
+      border-left-color: #28a745;
+    }
+
+    .stat-box.warning {
+      border-left-color: #ffc107;
+    }
+
+    .stat-box.danger {
+      border-left-color: #dc3545;
+    }
+
+    .stat-box.primary {
+      border-left-color: #007bff;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .revenue-highlight {
+      background: linear-gradient(135deg, #1b6dc1 0%, #0d4a8a 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .revenue-value {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .revenue-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .content {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .footer {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #1b6dc1;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+      padding: 12px 24px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    td {
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mail-container">
+    <div class="title">📊 Báo cáo doanh thu hàng ngày</div>
+    <div class="subtitle">Ngày {{ReportDate}}</div>
+
+    <div class="revenue-highlight">
+      <div class="revenue-value">{{TotalRevenue}}</div>
+      <div class="revenue-label">Tổng doanh thu hôm nay</div>
+    </div>
+
+    <table>
+      <tr>
+        <td style="width: 50%; padding: 8px;">
+          <div class="stat-box primary">
+            <div class="stat-value">{{TotalOrders}}</div>
+            <div class="stat-label">Tổng đơn hàng</div>
+          </div>
+        </td>
+        <td style="width: 50%; padding: 8px;">
+          <div class="stat-box success">
+            <div class="stat-value">{{CompletedOrders}}</div>
+            <div class="stat-label">Đơn hoàn thành</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 50%; padding: 8px;">
+          <div class="stat-box warning">
+            <div class="stat-value">{{PendingOrders}}</div>
+            <div class="stat-label">Đơn chờ xử lý</div>
+          </div>
+        </td>
+        <td style="width: 50%; padding: 8px;">
+          <div class="stat-box danger">
+            <div class="stat-value">{{CancelledOrders}}</div>
+            <div class="stat-label">Đơn đã hủy</div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="content" style="margin-top: 24px;">
+      <p>Xin chào <b>Admin</b>,</p>
+      <p>
+        Đây là báo cáo doanh thu tự động của <b>{{StoreName}}</b> cho ngày <b>{{ReportDate}}</b>.
+      </p>
+      <p>
+        Để xem chi tiết hơn, vui lòng đăng nhập vào hệ thống quản trị.
+      </p>
+    </div>
+
+    <div class="text-center">
+      <a href="{{DashboardUrl}}" class="btn">Xem Dashboard</a>
+    </div>
+
+    <div class="footer">
+      <p>Email này được gửi tự động từ hệ thống <b>{{StoreName}}</b></p>
+      <p>Thời gian gửi: {{SendTime}}</p>
+    </div>
+  </div>
+</body>
+</html>
