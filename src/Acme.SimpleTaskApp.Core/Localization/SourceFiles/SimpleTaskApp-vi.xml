@@ -137,7 +137,7 @@
 		<!-- Menu Groups - NEW -->
 		<text name="ContentManagement" value="Quản lý nội dung" />
 		<text name="ProductManagement" value="Quản lý sản phẩm" />
-		<text name="SalesManagement" value="Quản lý bán hàng" />
+		<text name="SalesManagement" value="Quản lý giảm giá" />
 
 		<!-- Dashboard -->
 		<text name="DashboardOverview" value="Tổng quan Dashboard" />

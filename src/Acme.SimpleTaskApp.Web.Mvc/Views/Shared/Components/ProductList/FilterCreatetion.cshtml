@@ -27,7 +27,7 @@
 
     <div class="products-container">
 
-      <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+      <div id="productCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
         <div class="carousel-inner">
           @{
             var validProducts = Model.ProductsInfo
@@ -44,7 +44,7 @@
               var isActive = (page == 0) ? "active" : "";
 
               <div class="carousel-item @isActive">
-                <div class="products-grid">
+                <div class="products-grid product-create">
                   @foreach (var p in productsOnThisPage)
                   {
                     var product = p.Product;
@@ -155,14 +155,14 @@
 
         @if (pageCount > 1)
         {
-          <button class="carousel-control-prev product-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+          <a class="carousel-control-prev product-carousel-control" href="#productCarousel" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next product-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next product-carousel-control" href="#productCarousel" role="button" data-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+            <span class="sr-only">Next</span>
+          </a>
         }
       </div>
     </div>
@@ -170,6 +170,8 @@
 </div>
 
 <style>
+
+
   .product-rating.mb-2 .rating-stars {
     display: inline-block;
     font-size: 1em;
@@ -291,7 +293,9 @@
   }
 
   /* Products Grid */
-  .products-grid {
+  .product-create {
+    justify-content: center;
+    margin: 0px auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
