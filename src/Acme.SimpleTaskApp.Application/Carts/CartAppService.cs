@@ -21,14 +21,12 @@ public class CartAppService : ApplicationService, ICartAppService
 	private readonly IRepository<ProductVariant, int> _productVariantRepository;
 	private readonly IRepository<CartItem, int> _cartItemRepository;
 	private readonly IRepository<ProductImage> _productImageRepository;
-
-
 	public CartAppService(
 		ISaleAppService saleAppService,
 		IRepository<Cart, int> cartRepository, IRepository<CartItem, int> cartItemRepository,
 		IRepository<ProductVariant, int> productVariantRepository,
 		IRepository<ProductImage> productImageRepository,
-	IRepository<Product, int> productRepository)
+		IRepository<Product, int> productRepository)
 	{
 		_saleAppService = saleAppService;
 		_productImageRepository = productImageRepository;
@@ -36,7 +34,6 @@ public class CartAppService : ApplicationService, ICartAppService
 		_productRepository = productRepository;
 		_cartRepository = cartRepository;
 		_cartItemRepository = cartItemRepository;
-
 	}
 
 	[Authorize]
@@ -48,7 +45,37 @@ public class CartAppService : ApplicationService, ICartAppService
 			throw new Exception("Vui lòng đăng nhập để tiếp tục.");
 		}
 
+		// Kiểm tra stock khả dụng trước khi thêm vào giỏ hàng
+		// AvailableStock = StockQuantity - ReservedQuantity (số lượng đang giữ chỗ bởi VNPay)
+		var productVariant = await _productVariantRepository.FirstOrDefaultAsync(pv => pv.Id == productvariantId);
+		if (productVariant == null)
+		{
+			throw new Exception("Sản phẩm không tồn tại.");
+		}
+
 		var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == userId);
+
+		// Tính số lượng hiện có trong giỏ hàng của user (nếu có)
+		int currentQuantityInCart = 0;
+		if (cart != null)
+		{
+			var existingCartItem = await _cartItemRepository.FirstOrDefaultAsync(
+				p => p.ProductVariantId == productvariantId && p.CartId == cart.Id);
+			if (existingCartItem != null)
+			{
+				currentQuantityInCart = existingCartItem.Quantity;
+			}
+		}
+
+		// Kiểm tra stock khả dụng
+		var availableStock = productVariant.StockQuantity - productVariant.ReservedQuantity;
+		var totalQuantityNeeded = currentQuantityInCart + quantity;
+
+		if (availableStock < totalQuantityNeeded)
+		{
+			throw new Exception($"Sản phẩm chỉ còn {availableStock} sản phẩm khả dụng.");
+		}
+
 		if (cart == null)
 		{
 			cart = new Cart

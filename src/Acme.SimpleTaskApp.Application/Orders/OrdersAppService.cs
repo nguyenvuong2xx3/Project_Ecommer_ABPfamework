@@ -83,8 +83,7 @@ namespace Acme.SimpleTaskApp.Orders
 			decimal totalPrice = 0;
 			decimal finalPrice = 0;
 			var orderDetailsList = new List<OrderDetails>();
-			var currentUser = _userRepository.Get(AbpSession.UserId.Value);
-			var user = await _userRepository.GetAsync(currentUser.Id);
+			var user = await _userRepository.GetAsync(AbpSession.UserId.Value);
 
 			if (string.IsNullOrEmpty(user.TinhThanh) && string.IsNullOrEmpty(user.PhuongXa) &&
 				string.IsNullOrEmpty(input.Order.TinhThanh) && string.IsNullOrEmpty(input.Order.PhuongXa))
@@ -164,14 +163,20 @@ namespace Acme.SimpleTaskApp.Orders
 					}
 				}
 
-				// Tạo Order với giá cuối cùng (đã trừ voucher nếu có)
+				// Tao Order voi gia cuoi cung (da tru voucher neu co)
+				// Neu la VNPay (PaymentMethod = 2): Status = -1 (Cho thanh toan), KHONG tru stock
+				// Neu la COD/Bank (PaymentMethod = 0, 1): Status = 0 (Cho xac nhan), tru stock
+				var isVNPayPayment = input.Order.PaymentMethod == 2;
+				
 				Order order = new Order
 				{
-					Code = currentUser.Id + DateTime.Now.ToString("yyyyMMdd:HHmm"),
+					Code = user.Id + DateTime.Now.ToString("yyyyMMdd:HHmm"),
 					PaymentMethod = input.Order.PaymentMethod,
 					UserId = input.Order.UserId ?? user.Id,
-					Status = 0,
-					TotalPrice = finalPrice, // Sử dụng finalPrice thay vì totalPrice
+					// Neu VNPay: Status = -1 (cho thanh toan), chua tru stock
+					// Neu COD/Bank: Status = 0 (cho xac nhan), da tru stock
+					Status = isVNPayPayment ? OrderStatus.ChoThanhToan : OrderStatus.ChoXacNhan,
+					TotalPrice = finalPrice,
 					FullName = string.IsNullOrWhiteSpace(input.Order.FullName) ? user.Name : input.Order.FullName,
 					OrderDetails = orderDetailsList,
 					GioiTinh = input.Order.GioiTinh != null && input.Order.GioiTinh >= 0 ? input.Order.GioiTinh : user.GioiTinh,
@@ -184,13 +189,45 @@ namespace Acme.SimpleTaskApp.Orders
 				order.Serialize();
 				var orderId = await _ordersRepository.InsertAndGetIdAsync(order);
 
-				// Xử lý trừ stock và release locks
-				await _orderQueueService.ProcessOrderAsync(input);
+				// Xu ly stock theo phuong thuc thanh toan
+				if (!isVNPayPayment)
+				{
+					// COD/Bank Transfer: Tru stock ngay lap tuc
+					await _orderQueueService.ProcessOrderAsync(input);
+				}
+				else
+				{
+					// VNPay: Reserve stock (giu cho) thay vi tru
+					// Stock se duoc tru that su khi thanh toan thanh cong
+					// Neu thanh toan that bai, reserved se duoc hoan lai
+					foreach (var item in input.OrderDetails)
+					{
+						var variant = await _productVariantRepository.GetAsync(item.ProductVariantId.Value);
+						if (variant != null && item.Quantity.HasValue)
+						{
+							// Kiem tra stock kha dung (StockQuantity - ReservedQuantity)
+							var availableStock = variant.StockQuantity - variant.ReservedQuantity;
+							if (availableStock < item.Quantity.Value)
+							{
+								// Khong du stock kha dung
+								throw new UserFriendlyException($"San pham {variant.ProductName ?? variant.Id.ToString()} khong du so luong. Con lai: {availableStock}");
+							}
+							
+							// Tang reserved quantity (giu cho)
+							variant.ReservedQuantity += item.Quantity.Value;
+							await _productVariantRepository.UpdateAsync(variant);
+							Logger.Info($"CreateOrder VNPay: Reserved {item.Quantity.Value} cua variant {variant.Id}. Reserved hien tai: {variant.ReservedQuantity}");
+						}
+					}
+					
+					// Release locks sau khi da reserve
+					await _orderQueueService.ReleaseProductLocksAsync(input);
+				}
 
-				// Xóa cart và cartItem của user CHỈ KHI không phải VNPay
-				// VNPay (PaymentMethod = 2) sẽ giữ cart cho đến khi payment thành công
-				// Nếu payment thất bại, user có thể thử lại
-				if (input.Order.PaymentMethod != 2) // 0 = COD, 1 = Bank Transfer
+				// Xoa cart va cartItem cua user CHI KHI khong phai VNPay
+				// VNPay (PaymentMethod = 2) se giu cart cho den khi payment thanh cong
+				// Neu payment that bai, user co the thu lai
+				if (!isVNPayPayment)
 				{
 					var getCart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == AbpSession.UserId);
 					if (getCart != null)
@@ -203,12 +240,19 @@ namespace Acme.SimpleTaskApp.Orders
 
 				await CurrentUnitOfWork.SaveChangesAsync();
 
-				// Gửi email xác nhận đơn hàng
-				await _sendMailAppService.SendMailOrderAsync();
-				// thông báo đơn hàng mới
-				await _backgroundJobManager.EnqueueAsync<OrderNotificationJob, OrderNotificationJobArgs>(
-						new OrderNotificationJobArgs { Code = order.Code }
-				);
+				// Chi gui email va thong bao neu KHONG phai VNPay
+				// VNPay se gui sau khi thanh toan thanh cong
+				if (!isVNPayPayment)
+				{
+					// Gui email xac nhan don hang
+					await _sendMailAppService.SendMailOrderAsync();
+					// Thong bao don hang moi
+					await _backgroundJobManager.EnqueueAsync<OrderNotificationJob, OrderNotificationJobArgs>(
+							new OrderNotificationJobArgs { Code = order.Code }
+					);
+				}
+				// Voi VNPay: Email va thong bao se duoc gui trong ConfirmVNPayPayment
+				
 				return orderId;
 			}
 			catch (Exception)
@@ -481,19 +525,32 @@ namespace Acme.SimpleTaskApp.Orders
 				 Severity = NotificationSeverity.Warn
 			 });
 		}
-		// hủy đơn - user, 
+		// Hủy đơn - user
+		// Cho phép hủy đơn khi:
+		// - Status = 0 (Chờ xác nhận) → Hoàn lại StockQuantity
+		// - Status = -1 (Chờ thanh toán VNPay) → Hoàn lại ReservedQuantity
 		[AbpAuthorize(PermissionNames.Pages_Orders_Cancel)]
 		public async Task HuyUserOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
 			if (order == null)
 			{
-				throw new UserFriendlyException("Order not found.");
+				throw new UserFriendlyException("Không tìm thấy đơn hàng.");
 			}
+
+			// Chỉ cho phép hủy khi status = 0 (Chờ xác nhận) hoặc -1 (Chờ thanh toán VNPay)
+			if (order.Status != OrderStatus.ChoXacNhan && order.Status != OrderStatus.ChoThanhToan)
+			{
+				throw new UserFriendlyException("Không thể hủy đơn hàng ở trạng thái này.");
+			}
+
 			order.Deserialize();
-			order.Status = 5;
+			
+			var wasWaitingForPayment = order.Status == OrderStatus.ChoThanhToan;
+			order.Status = OrderStatus.HuyBoiUser; // Status = 5
 			await _ordersRepository.UpdateAsync(order);
 
+			// Hoàn lại stock cho từng sản phẩm
 			if (order.OrderDetails != null && order.OrderDetails.Any())
 			{
 				foreach (var detail in order.OrderDetails)
@@ -501,11 +558,26 @@ namespace Acme.SimpleTaskApp.Orders
 					var variant = await _productVariantRepository.GetAsync(detail.ProductVariantId.Value);
 					if (variant != null && detail.Quantity.HasValue)
 					{
-						variant.StockQuantity += detail.Quantity.Value;
+						if (wasWaitingForPayment)
+						{
+							// Đơn VNPay chờ thanh toán: Hoàn lại ReservedQuantity (chưa trừ StockQuantity)
+							variant.ReservedQuantity -= detail.Quantity.Value;
+							if (variant.ReservedQuantity < 0) variant.ReservedQuantity = 0;
+							Logger.Info($"HuyUserOrder: Đơn VNPay #{orderId} - Hoàn reserved {detail.Quantity.Value} cho variant {variant.Id}");
+						}
+						else
+						{
+							// Đơn COD/Bank chờ xác nhận: Hoàn lại StockQuantity (đã trừ khi tạo đơn)
+							variant.StockQuantity += detail.Quantity.Value;
+							Logger.Info($"HuyUserOrder: Đơn #{orderId} - Hoàn stock {detail.Quantity.Value} cho variant {variant.Id}");
+						}
 						await _productVariantRepository.UpdateAsync(variant);
 					}
 				}
 			}
+
+			await CurrentUnitOfWork.SaveChangesAsync();
+			Logger.Info($"HuyUserOrder: Đã hủy đơn hàng #{orderId} bởi user.");
 		}
 
 		/// đang giao - admin
@@ -564,7 +636,7 @@ namespace Acme.SimpleTaskApp.Orders
 					});
 		}
 
-		// hoàn hàng - user
+		// hoan hang - user
 		public async Task HoanHangOrder(int orderId)
 		{
 			var order = await _ordersRepository.GetAsync(orderId);
@@ -574,6 +646,151 @@ namespace Acme.SimpleTaskApp.Orders
 			}
 			order.Status = 2;
 			await _ordersRepository.UpdateAsync(order);
+		}
+
+		// VNPAY PAYMENT METHODS
+		
+		/// <summary>
+		/// Xac nhan thanh toan VNPay thanh cong
+		/// - Cap nhat trang thai don hang tu -1 (Cho thanh toan) sang 0 (Cho xac nhan)
+		/// - Tru stock san pham
+		/// - Xoa gio hang
+		/// - Gui email va thong bao
+		/// </summary>
+		public async Task<bool> ConfirmVNPayPayment(int orderId, string transactionId)
+		{
+			var order = await _ordersRepository.FirstOrDefaultAsync(o => o.Id == orderId);
+			if (order == null)
+			{
+				Logger.Warn($"ConfirmVNPayPayment: Khong tim thay don hang {orderId}");
+				return false;
+			}
+
+			// Kiem tra trang thai don hang phai la "Cho thanh toan" (-1)
+			if (order.Status != OrderStatus.ChoThanhToan)
+			{
+				Logger.Warn($"ConfirmVNPayPayment: Don hang {orderId} khong o trang thai cho thanh toan. Status hien tai: {order.Status}");
+				return false;
+			}
+
+			order.Deserialize();
+
+			// Tru stock cho tung san pham trong don hang
+			if (order.OrderDetails != null && order.OrderDetails.Any())
+			{
+				foreach (var detail in order.OrderDetails)
+				{
+					var variant = await _productVariantRepository.FirstOrDefaultAsync(v => v.Id == detail.ProductVariantId.Value);
+					if (variant != null && detail.Quantity.HasValue)
+					{
+						// Kiem tra con du stock khong
+						if (variant.StockQuantity < detail.Quantity.Value)
+						{
+							Logger.Error($"ConfirmVNPayPayment: San pham {variant.Id} khong du stock. Can: {detail.Quantity.Value}, Con: {variant.StockQuantity}");
+							// Van tiep tuc xu ly, nhung log lai
+						}
+						
+						// Tru stock
+						variant.StockQuantity -= detail.Quantity.Value;
+						await _productVariantRepository.UpdateAsync(variant);
+						Logger.Info($"ConfirmVNPayPayment: Da tru {detail.Quantity.Value} stock cua variant {variant.Id}");
+					}
+				}
+			}
+
+			// Cap nhat trang thai don hang sang "Cho xac nhan"
+			order.Status = OrderStatus.ChoXacNhan;
+			await _ordersRepository.UpdateAsync(order);
+
+			// Xoa gio hang cua user
+			if (order.UserId.HasValue)
+			{
+				var cart = await _cartRepository.FirstOrDefaultAsync(c => c.UserId == order.UserId.Value);
+				if (cart != null)
+				{
+					await _cartItemRepository.DeleteAsync(x => x.CartId == cart.Id);
+					await _cartRepository.DeleteAsync(cart);
+					Logger.Info($"ConfirmVNPayPayment: Da xoa gio hang cua user {order.UserId.Value}");
+				}
+			}
+
+			await CurrentUnitOfWork.SaveChangesAsync();
+
+			// Gui email xac nhan don hang
+			try
+			{
+				await _sendMailAppService.SendMailOrderAsync();
+			}
+			catch (Exception ex)
+			{
+				Logger.Error($"ConfirmVNPayPayment: Loi gui email cho don hang {orderId}", ex);
+			}
+
+			// Gui thong bao don hang moi
+			try
+			{
+				await _backgroundJobManager.EnqueueAsync<OrderNotificationJob, OrderNotificationJobArgs>(
+					new OrderNotificationJobArgs { Code = order.Code }
+				);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error($"ConfirmVNPayPayment: Loi gui thong bao cho don hang {orderId}", ex);
+			}
+
+			Logger.Info($"ConfirmVNPayPayment: Xac nhan thanh toan thanh cong cho don hang {orderId}, TransactionId: {transactionId}");
+			return true;
+		}
+
+		/// <summary>
+		/// Huy don hang khi thanh toan VNPay that bai
+		/// - Cap nhat trang thai don hang sang 6 (Thanh toan that bai)
+		/// - Hoan lai ReservedQuantity
+		/// </summary>
+		public async Task<bool> CancelVNPayPayment(int orderId, string reason)
+		{
+			var order = await _ordersRepository.FirstOrDefaultAsync(o => o.Id == orderId);
+			if (order == null)
+			{
+				Logger.Warn($"CancelVNPayPayment: Khong tim thay don hang {orderId}");
+				return false;
+			}
+
+			// Kiem tra trang thai don hang phai la "Cho thanh toan" (-1)
+			if (order.Status != OrderStatus.ChoThanhToan)
+			{
+				Logger.Warn($"CancelVNPayPayment: Don hang {orderId} khong o trang thai cho thanh toan. Status hien tai: {order.Status}");
+				return false;
+			}
+
+			order.Deserialize();
+
+			// Hoan lai ReservedQuantity cho tung san pham
+			// Stock that su (StockQuantity) khong bi anh huong vi chua tru
+			if (order.OrderDetails != null && order.OrderDetails.Any())
+			{
+				foreach (var detail in order.OrderDetails)
+				{
+					var variant = await _productVariantRepository.FirstOrDefaultAsync(v => v.Id == detail.ProductVariantId.Value);
+					if (variant != null && detail.Quantity.HasValue)
+					{
+						// Giai phong reserved
+						variant.ReservedQuantity -= detail.Quantity.Value;
+						if (variant.ReservedQuantity < 0) variant.ReservedQuantity = 0;
+						
+						await _productVariantRepository.UpdateAsync(variant);
+						Logger.Info($"CancelVNPayPayment: Variant {variant.Id} - Hoan reserved {detail.Quantity.Value}, Reserved con: {variant.ReservedQuantity}");
+					}
+				}
+			}
+
+			// Cap nhat trang thai don hang sang "Thanh toan that bai"
+			order.Status = OrderStatus.ThanhToanThatBai;
+			await _ordersRepository.UpdateAsync(order);
+			await CurrentUnitOfWork.SaveChangesAsync();
+
+			Logger.Info($"CancelVNPayPayment: Da huy don hang {orderId} do thanh toan that bai. Ly do: {reason}");
+			return true;
 		}
 	}
 }

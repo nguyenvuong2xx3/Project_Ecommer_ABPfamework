@@ -44,47 +44,55 @@
   }
 
   function bindEvents() {
+    // Xử lý sự kiện thay đổi danh mục
     $('input[name="category"]').on('change', function () {
       updateCategoryFilter();
       updateActiveFilters();
       performSearch();
     });
 
+    // Xử lý sự kiện áp dụng bộ lọc giá tùy chỉnh
     $('.apply-price-btn').on('click', function () {
       updateCustomPriceFilter();
       updateActiveFilters();
       performSearch();
     });
 
+    // Xử lý sự kiện chọn mức giá có sẵn
     $('input[name="price"]').on('change', function () {
       updatePricePresetFilter();
       updateActiveFilters();
       performSearch();
     });
 
+    // Xử lý sự kiện thay đổi bộ lọc khác (giảm giá, còn hàng)
     $('input[name="discount"], input[name="instock"]').on('change', function () {
       updateOtherFilters();
       updateActiveFilters();
       performSearch();
     });
 
+    // Xử lý sự kiện click nút sắp xếp
+    // Lấy cả data-sort và data-direction từ nút được click
     $('.sort-btn[data-sort]').on('click', function () {
-      updateSort($(this).data('sort'));
+      const $btn = $(this);
+      const sortBy = $btn.data('sort');
+      const direction = $btn.data('direction'); // Lấy hướng sắp xếp (asc/desc)
+      
+      updateSort(sortBy, direction);
       performSearch();
     });
 
-    $('.dropdown-item[data-direction]').on('click', function () {
-      updateSortDirection($(this).data('direction'));
-      performSearch();
-    });
-
+    // Xử lý sự kiện click nút xem thêm
     $('#btn-see-more').on('click', handleLoadMore);
 
+    // Xử lý sự kiện click vào sản phẩm để xem chi tiết
     $(document).on('click', '.product-click-detail', function () {
       const id = $(this).data('id');
       window.location.href = '/HomeCustomer/DetailProductCustomer?id=' + id;
     });
 
+    // Xử lý sự kiện xóa tất cả bộ lọc
     $('.clear-all-filters').on('click', clearAllFilters);
   }
 
@@ -180,6 +188,7 @@
     }
   }
 
+  // Cập nhật bộ lọc danh mục
   function updateCategoryFilter() {
     filterState.categoryIds = [];
     $('input[name="category"]:checked').each(function () {
@@ -188,17 +197,20 @@
     resetPagination();
   }
 
+  // Cập nhật bộ lọc giá tùy chỉnh (nhập tay)
   function updateCustomPriceFilter() {
     const min = parseInt($('.price-min').val()) || null;
     const max = parseInt($('.price-max').val()) || null;
     if (min !== null || max !== null) {
       filterState.minPrice = min;
       filterState.maxPrice = max;
+      // Bỏ chọn các mức giá có sẵn khi nhập giá tùy chỉnh
       $('input[name="price"]').prop('checked', false);
       resetPagination();
     }
   }
 
+  // Cập nhật bộ lọc mức giá có sẵn
   function updatePricePresetFilter() {
     const val = $('input[name="price"]:checked').val();
     if (val) {
@@ -209,29 +221,64 @@
     }
   }
 
+  // Cập nhật bộ lọc khác (giảm giá, còn hàng)
   function updateOtherFilters() {
     filterState.hasDiscount = $('input[name="discount"]').is(':checked');
     filterState.inStock = $('input[name="instock"]').is(':checked');
     resetPagination();
   }
 
-  function updateSort(sortBy) {
+  /**
+   * Cập nhật trạng thái sắp xếp
+   * @param {string} sortBy - Loại sắp xếp: 'price', 'newest', 'bestseller'
+   * @param {string} direction - Hướng sắp xếp: 'asc' (thấp đến cao), 'desc' (cao đến thấp)
+   */
+  function updateSort(sortBy, direction) {
+    // Reset tất cả các loại sắp xếp về false
     filterState.sortingByPrice = false;
     filterState.sortingByName = false;
     filterState.sortingCreation = false;
-    if (sortBy === 'price') filterState.sortingByPrice = true;
-    if (sortBy === 'newest') filterState.sortingCreation = true;
+    
+    // Bật loại sắp xếp tương ứng
+    if (sortBy === 'price') {
+      filterState.sortingByPrice = true;
+      // Cập nhật hướng sắp xếp giá: ASC = thấp đến cao, DESC = cao đến thấp
+      filterState.sortDirection = (direction === 'desc') ? 'DESC' : 'ASC';
+    }
+    if (sortBy === 'newest') {
+      filterState.sortingCreation = true;
+      // Mới nhất = sắp xếp giảm dần theo ngày tạo
+      filterState.sortDirection = 'DESC';
+    }
+    if (sortBy === 'bestseller') {
+      // Bán chạy = sắp xếp theo số lượng bán (nếu có)
+      // Tạm thời dùng sortingByName hoặc thêm field mới nếu cần
+      filterState.sortingByName = true;
+      filterState.sortDirection = 'DESC';
+    }
 
+    // Bỏ class active của tất cả nút sắp xếp
     $('.sort-btn').removeClass('active');
-    $(`.sort-btn[data-sort="${sortBy}"]`).addClass('active');
+    
+    // Thêm class active cho nút được click
+    // Nếu là sắp xếp theo giá, cần xác định đúng nút dựa trên cả sort và direction
+    if (sortBy === 'price' && direction) {
+      $(`.sort-btn[data-sort="price"][data-direction="${direction}"]`).addClass('active');
+    } else {
+      $(`.sort-btn[data-sort="${sortBy}"]`).addClass('active');
+    }
+    
+    // Reset phân trang về trang đầu
     resetPagination();
   }
 
+  // Cập nhật hướng sắp xếp (không còn dùng riêng nữa, đã gộp vào updateSort)
   function updateSortDirection(direction) {
     filterState.sortDirection = direction === 'asc' ? 'ASC' : 'DESC';
     resetPagination();
   }
 
+  // Reset phân trang về trang đầu
   function resetPagination() {
     filterState.skipCount = 0;
   }

@@ -97,9 +97,7 @@ namespace Acme.SimpleTaskApp.Orders
 
         private async Task<bool> LockAndVerifyStockAsync(CreateOrderInput orderInput)
         {
-            var semaphores = orderInput.OrderDetails
-                .Select(od => GetOrCreateLock(od.ProductVariantId.Value))
-                .ToList();
+            var semaphores = orderInput.OrderDetails.Select(od => GetOrCreateLock(od.ProductVariantId.Value)).ToList();
 
             try
             {
@@ -107,14 +105,21 @@ namespace Acme.SimpleTaskApp.Orders
                 var tasks = semaphores.Select(s => s.WaitAsync(TimeSpan.FromSeconds(10)));
                 await Task.WhenAll(tasks);
 
-                // Kiểm tra tồn kho
+                // Kiểm tra tồn kho khả dụng (AvailableStock = StockQuantity - ReservedQuantity)
+                // ReservedQuantity là số lượng đang được giữ chỗ bởi các đơn VNPay chưa thanh toán
                 foreach (var orderDetail in orderInput.OrderDetails)
                 {
-                    var productVariant = await _productVariantRepository.GetAll()
-                        .Where(pv => pv.Id == orderDetail.ProductVariantId)
-                        .FirstOrDefaultAsync();
+                    var productVariant = await _productVariantRepository.FirstOrDefaultAsync(pv => pv.Id == orderDetail.ProductVariantId);
 
-                    if (productVariant == null || productVariant.StockQuantity < orderDetail.Quantity)
+                    if (productVariant == null)
+                    {
+                        await ReleaseProductLocksAsync(orderInput);
+                        return false;
+                    }
+
+                    // Tính stock khả dụng = Stock thật - Stock đang giữ chỗ
+                    var availableStock = productVariant.StockQuantity - productVariant.ReservedQuantity;
+                    if (availableStock < orderDetail.Quantity)
                     {
                         await ReleaseProductLocksAsync(orderInput);
                         return false;

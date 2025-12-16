@@ -125,10 +125,18 @@
 			quantity: quantity
 		}).done(function () {
 			input.val(quantity);
-			const price = parseFloat($('#productvariant-price-' + productvariantId).text());
-			const newTotal = price * quantity;
-			$('#productvariant-total-' + productvariantId).text(newTotal.toLocaleString('vi-VN') + ' VND');
-			$(`#quantity-${productvariantId}`).val(quantity)
+			// Lấy giá từ data-price attribute (số nguyên)
+			var $priceElement = $('#productvariant-price-' + productvariantId);
+			var price = parseFloat($priceElement.data('price')) || 0;
+			var newTotal = price * quantity;
+			
+			// Cập nhật thành tiền với format VN
+			$('#productvariant-total-' + productvariantId).text(newTotal.toLocaleString('vi-VN') + '₫');
+			$(`#quantity-${productvariantId}`).val(quantity);
+			
+			// Cập nhật tổng giỏ hàng
+			updateCartTotal();
+			
 			abp.notify.info('Cập nhật thành công!');
 		}).fail(function (error) {
 			abp.notify.error('Cập nhật thất bại!');
@@ -136,6 +144,23 @@
 		}).always(function () {
 			abp.ui.clearBusy();
 		});
+	}
+
+	// Hàm cập nhật tổng tiền giỏ hàng
+	function updateCartTotal() {
+		var total = 0;
+		$('.cart-item').each(function () {
+			var $item = $(this);
+			var $priceElement = $item.find('.price-current');
+			var price = parseFloat($priceElement.data('price')) || 0;
+			var quantity = parseInt($item.find('.qty-input').val()) || 1;
+			total += price * quantity;
+		});
+		
+		// Cập nhật hiển thị tổng tiền
+		$('.total-cart').text(total.toLocaleString('vi-VN') + '₫');
+		$('.final-amount').text(total.toLocaleString('vi-VN') + '₫');
+		$('#totalAmountValue').val(total);
 	}
 
 	
@@ -345,12 +370,12 @@
 		// Update UI với discount data
 		if (data.discountAmount > 0) {
 			// Hiển thị số tiền giảm
-			$('. discount-amount').text('-' + formatCurrency(data.discountAmount));
+			$('.discount-amount').text('-' + formatCurrency(data.discountAmount));
 			$('.discount-row').show();
 		}
 
 		// Update tổng tiền cuối cùng
-		$('. final-amount').text(formatCurrency(data.finalAmount));
+		$('.final-amount').text(formatCurrency(data.finalAmount));
 	}
 
 	// Helper function format tiền VNĐ
@@ -373,11 +398,11 @@
 				? Number($plusButton.data('category-id'))
 				: null;
 
-			var quantity = Number($card.find('input[type="text"].form-control').val());
+			var quantity = Number($card.find('.qty-input').val()) || 1;
 
-			// Lấy giá sản phẩm: bỏ dấu chấm, phẩy trước khi convert
-			var priceText = $card.find('.text-primary.mb-0').first().text().replace(/[^\d]/g, '');
-			var price = Number(priceText); // ⇦ dạng số → backend nhận decimal OK
+			// Lấy giá từ data-price attribute
+			var $priceElement = $card.find('.price-current');
+			var price = parseFloat($priceElement.data('price')) || 0;
 
 			cartItems.push({
 				productVariantId,
@@ -438,11 +463,9 @@
 		var total = 0;
 		$('.cart-item').each(function () {
 			var $card = $(this);
-			var quantityInput = $card.find('input[type="text"].form-control');
-			var quantity = parseInt(quantityInput.val()) || 1;
-			var $priceElement = $card.find('.text-primary.mb-0').first();
-			var priceText = $priceElement.text().replace(/[^\d]/g, '');
-			var price = parseFloat(priceText) || 0;
+			var quantity = parseInt($card.find('.qty-input').val()) || 1;
+			var $priceElement = $card.find('.price-current');
+			var price = parseFloat($priceElement.data('price')) || 0;
 			total += price * quantity;
 		});
 		return total;
@@ -545,16 +568,15 @@
 
 		$('.cart-item').each(function () {
 			const $card = $(this);
-			const variantElement = $card.find('.btl-click-plus')
+			const variantElement = $card.find('.btl-click-plus');
 			const productVariantId = variantElement.data('productvariant-id');
 
 			let input = $(`#quantity-${productVariantId}`);
-			let quantity = parseInt(input.val());
+			let quantity = parseInt(input.val()) || 1;
 
-			// Get price (đã bao gồm automatic discount nếu có)
-			const $priceElement = $card.find('.text-primary');
-			const priceText = $priceElement.text().replace(/[^\d]/g, '');
-			const price = parseFloat(priceText) || 0;
+			// Lấy giá từ data-price attribute
+			const $priceElement = $card.find('.price-current');
+			const price = parseFloat($priceElement.data('price')) || 0;
 
 			const total = price * quantity;
 

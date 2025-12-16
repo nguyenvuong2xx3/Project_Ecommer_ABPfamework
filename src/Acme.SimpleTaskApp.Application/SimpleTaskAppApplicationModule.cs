@@ -7,6 +7,7 @@ using Abp.Threading.BackgroundWorkers;
 using Acme.SimpleTaskApp.Authorization;
 using Acme.SimpleTaskApp.BackgroundWorkers;
 using Acme.SimpleTaskApp.Configuration;
+using Acme.SimpleTaskApp.Orders;
 
 namespace Acme.SimpleTaskApp
 {
@@ -44,6 +45,10 @@ namespace Acme.SimpleTaskApp
 
 			// Thêm cảnh báo tồn kho thấp
 			workManager.Add(IocManager.Resolve<LowStockAlertWorker>());
+
+			// Tự động hủy đơn hàng VNPay quá hạn thanh toán (chạy mỗi 5 phút)
+			// Đơn hàng VNPay chờ thanh toán quá 15 phút sẽ bị hủy và hoàn lại ReservedQuantity
+			workManager.Add(IocManager.Resolve<ExpiredVNPayOrdersCleanupWorker>());
 		}
 	}
 }

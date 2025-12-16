@@ -13,5 +13,11 @@ namespace Acme.SimpleTaskApp.Orders
 	{
 		Task<int> CreateOrder(CreateOrderInput input);
 		Task<Order> GetOrder(int orderId);
+		
+		// Cac method cho VNPay payment
+		// Xac nhan thanh toan thanh cong - tru stock, cap nhat trang thai
+		Task<bool> ConfirmVNPayPayment(int orderId, string transactionId);
+		// Huy don hang khi thanh toan that bai
+		Task<bool> CancelVNPayPayment(int orderId, string reason);
 	}
 }
