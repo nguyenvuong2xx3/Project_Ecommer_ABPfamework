@@ -135,9 +135,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 				await ExecuteLowStockAlertAsync();
 
 				// Thành công - lưu vào database
-				await _settingManager.ChangeSettingForApplicationAsync(
-					AppBackgroundWorkerSettings.LowStockAlert_LastExecutionDate,
-					reportDate.ToString("yyyy-MM-dd"));
+				await _settingManager.ChangeSettingForApplicationAsync(AppBackgroundWorkerSettings.LowStockAlert_LastExecutionDate,reportDate.ToString("yyyy-MM-dd"));
 
 				// Reset retry state
 				_currentRetryCount = 0;
@@ -181,9 +179,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 
 			// Lấy thông tin sản phẩm
 			var productIds = lowStockVariants.Select(v => v.ProductId).Distinct().ToList();
-			var products = await _productRepository.GetAll()
-				.Where(p => productIds.Contains(p.Id))
-				.ToDictionaryAsync(p => p.Id, p => p.Name);
+			var products = await _productRepository.GetAll().Where(p => productIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Name);
 
 			// Tạo danh sách sản phẩm sắp hết hàng
 			var lowStockItems = new List<LowStockItem>();
@@ -205,12 +201,12 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 			}
 
 			// Sắp xếp theo số lượng tồn kho tăng dần
-			lowStockItems = lowStockItems.OrderBy(x => x.StockQuantity).ToList();
+			lowStockItems = lowStockItems.OrderBy(x => x.StockQuantity).ToList();/**/
 
 			// Lấy tất cả admin users
 			var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
 
-			if (adminUsers.Count == 0)
+			if (adminUsers.Count == 0)/**/
 			{
 				Logger.Warn("No admin users found to send low stock alert.");
 				return;
@@ -349,7 +345,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 					new SendEmailToAdminsJobArgs
 					{
 						AdminEmails = adminEmails,
-						Subject = $"[{storeName}] ⚠️ Cảnh báo: {lowStockItems.Count} sản phẩm sắp hết hàng. Chi tiết đã được gửi đến email của bạn",
+						Subject = $"[{storeName}] Cảnh báo: {lowStockItems.Count} sản phẩm sắp hết hàng.",
 						Body = htmlBody
 					});
 

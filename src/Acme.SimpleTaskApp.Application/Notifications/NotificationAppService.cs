@@ -145,9 +145,7 @@ namespace Acme.SimpleTaskApp.Notifications
 			return new GetNotificationsOutput(total, unreadCount, notifications);
 		}
 
-		/// <summary>
 		/// Đánh dấu notification là đã đọc
-		/// </summary>
 		public async Task<SetNotificationAsReadOutput> SetNotificationAsRead(EntityDto<Guid> input)
 		{
 			var user = AbpSession.ToUserIdentifier();
@@ -178,9 +176,7 @@ namespace Acme.SimpleTaskApp.Notifications
 			return new SetNotificationAsReadOutput(true);
 		}
 
-		/// <summary>
 		/// Đánh dấu tất cả notifications là đã đọc
-		/// </summary>
 		public async Task SetAllNotificationsAsRead()
 		{
 			var user = AbpSession.ToUserIdentifier();
@@ -189,9 +185,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				UserNotificationState.Read);
 		}
 
-		/// <summary>
 		/// Xóa notification
-		/// </summary>
 		public async Task DeleteNotification(EntityDto<Guid> input)
 		{
 			var user = AbpSession.ToUserIdentifier();

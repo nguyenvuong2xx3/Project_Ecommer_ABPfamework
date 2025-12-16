@@ -138,14 +138,6 @@ namespace Acme.SimpleTaskApp.Web.Startup
 						icon: "fas fa-box-open",
 						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Orders_View)
 					)
-				).AddItem(
-					new MenuItemDefinition(
-						"Carts",
-						L("Carts"),
-						url: "Carts",
-						icon: "fas fa-shopping-cart",
-						permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Carts_View)
-					)
 				)
 			);
 

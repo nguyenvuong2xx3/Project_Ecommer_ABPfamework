@@ -78,11 +78,11 @@
 		// Notifications
 		var _appUserNotificationHelper = new app.UserNotificationHelper();
 		var _cacheService = abp.services.app.caching;
-		var _notificationService = abp.services.app.notifi;
+		var _notificationService = abp.services.app.notification;
 
 		function shouldUserUpdateApp() {
 			_notificationService
-				.shouldUserUpdateApp().done(result => {
+				.setAllNotificationsAsRead().done(result => {
 					if (result) {
 						abp.message.confirm(
 							null,
@@ -121,65 +121,65 @@
 
 					notificationsHtml += `
         <div class="notification-item p-2 border-bottom" ${cursorStyle}>
-            <div class="d-flex align-items-start ${clickableClass}" 
-                 data-url="${notification.url || '#'}" 
-                 data-notification-id="${notification.userNotificationId || notification.id}">
-                <div class="flex-shrink-0 mt-1">
-                    <i class="material-symbols-outlined text-primary" style="font-size: 1rem;">notifications</i>
-                </div>
-                <div class="flex-grow-1 ml-2" style="font-size: 0.875rem;">
-                    <p class="mb-1 text-break" style="font-size: 0.875rem; line-height: 1.3;">${escapeHtml(notification.text || 'Không có nội dung')}</p>
-                    <small class="text-muted" style="font-size: 0.75rem;">${escapeHtml(notification.timeAgo || 'Vừa xong')}</small>
-                </div>
-                ${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge badge-primary rounded-circle" style="width: 6px; height: 6px;"></span></div>' : ''}
-            </div>
-        </div>`;
+									<div class="d-flex align-items-start ${clickableClass}" 
+											 data-url="${notification.url || '#'}" 
+											 data-notification-id="${notification.userNotificationId || notification.id}">
+											<div class="flex-shrink-0 mt-1">
+													<i class="material-symbols-outlined text-primary" style="font-size: 1rem;">notifications</i>
+											</div>
+											<div class="flex-grow-1 ml-2" style="font-size: 0.875rem;">
+													<p class="mb-1 text-break" style="font-size: 0.875rem; line-height: 1.3;">${escapeHtml(notification.text || 'Không có nội dung')}</p>
+													<small class="text-muted" style="font-size: 0.75rem;">${escapeHtml(notification.timeAgo || 'Vừa xong')}</small>
+											</div>
+											${notification.isUnread ? '<div class="flex-shrink-0"><span class="badge badge-primary rounded-circle" style="width: 6px; height: 6px;"></span></div>' : ''}
+									</div>
+							</div>`;
 				});
 			} else {
 				notificationsHtml = `
-    <div class="text-center p-3 text-muted">
-        <i class="material-symbols-outlined mb-2" style="font-size: 2rem;">notifications_off</i>
-        <p class="mb-0" style="font-size: 0.875rem;">Không có thông báo</p>
-    </div>`;
+					<div class="text-center p-3 text-muted">
+							<i class="material-symbols-outlined mb-2" style="font-size: 2rem;">notifications_off</i>
+							<p class="mb-0" style="font-size: 0.875rem;">Không có thông báo</p>
+					</div>`;
 			}
 
 			return `
-<div class="dropdown position-relative">
-    <button class="btn btn-light border-0 position-relative" type="button" 
-            data-toggle="dropdown" aria-expanded="false"
-            style="background: transparent !important;">
-        <span class="material-symbols-outlined" style="font-size: 1.5rem;">notifications</span>
-        ${badgeHtml}
-    </button>
+			<div class="dropdown position-relative">
+					<button class="btn btn-light border-0 position-relative" type="button" 
+									data-toggle="dropdown" aria-expanded="false"
+									style="background: transparent !important;">
+							<span class="material-symbols-outlined" style="font-size: 1.5rem;">notifications</span>
+							${badgeHtml}
+					</button>
 
-    <div class="dropdown-menu dropdown-menu-right p-0 border-0 shadow notification-dropdown" 
-         style="position: absolute !important; width: 320px; max-height: 400px; overflow: hidden; top: 100%; right: 0; left: auto; z-index: 1070 !important; margin-top: 5px; transform: translateX(10px);">
+					<div class="dropdown-menu dropdown-menu-right p-0 border-0 shadow notification-dropdown" 
+							 style="position: absolute !important; width: 320px; max-height: 400px; overflow: hidden; top: 100%; right: 0; left: auto; z-index: 1070 !important; margin-top: 5px; transform: translateX(10px);">
 
-        <div class="dropdown-arrow" style="position: absolute; top: -6px; right: 12px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid white; z-index: 1071;"></div>
-        <div class="dropdown-arrow-border" style="position: absolute; top: -7px; right: 11px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #dee2e6; z-index: 1070;"></div>
+							<div class="dropdown-arrow" style="position: absolute; top: -6px; right: 12px; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid white; z-index: 1071;"></div>
+							<div class="dropdown-arrow-border" style="position: absolute; top: -7px; right: 11px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #dee2e6; z-index: 1070;"></div>
         
-        <div class="d-flex justify-content-between align-items-center p-2 border-bottom bg-light">
-            <h6 class="mb-0 font-weight-bold text-dark" style="font-size: 0.9rem;">Thông báo</h6>
-            <div>
-                ${data.unreadCount > 0 ?
+							<div class="d-flex justify-content-between align-items-center p-2 border-bottom bg-light">
+									<h6 class="mb-0 font-weight-bold text-dark" style="font-size: 0.9rem;">Thông báo</h6>
+									<div>
+											${data.unreadCount > 0 ?
 					`<button class="btn btn-sm btn-outline-primary mr-1" id="btnSetAllNotificationsAsRead" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Đánh dấu đã đọc</button>`
 					: ''}
-                <a href="${viewAllUrl}" class="btn btn-sm btn-link text-decoration-none" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Xem tất cả</a>
-            </div>
-        </div>
+											<a href="${viewAllUrl}" class="btn btn-sm btn-link text-decoration-none" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Xem tất cả</a>
+									</div>
+							</div>
 
-        <div class="notification-list" style="max-height: 280px; overflow-y: auto;">
-            ${notificationsHtml}
-        </div>
+							<div class="notification-list" style="max-height: 280px; overflow-y: auto;">
+									${notificationsHtml}
+							</div>
 
-        ${data.notifications && data.notifications.length > 0 ? `
-        <div class="border-top p-1 text-center bg-light">
-            <a href="${viewAllUrl}" class="text-primary text-decoration-none font-weight-medium" style="font-size: 0.8rem;">
-                Xem tất cả thông báo
-            </a>
-        </div>` : ''}
-    </div>
-</div>`;
+							${data.notifications && data.notifications.length > 0 ? `
+							<div class="border-top p-1 text-center bg-light">
+									<a href="${viewAllUrl}" class="text-primary text-decoration-none font-weight-medium" style="font-size: 0.8rem;">
+											Xem tất cả thông báo
+									</a>
+							</div>` : ''}
+					</div>
+			</div>`;
 		}
 
 		//function bindNotificationEvents() {
@@ -314,13 +314,14 @@
 			var notification = item.notification;
 			var data = notification.data || {};
 			var properties = data.properties || {};
-
+			console.log('Notification properties:', data);
 			return {
 				userNotificationId: item.id, // ID của user notification
 				text: properties.Message || 'Không có nội dung', // Lấy từ properties.Message
 				timeAgo: formatTimeAgo(notification.creationTime), // Định dạng thời gian
 				isUnread: item.state === 0, // state = 0 là chưa đọc
-				url: generateNotificationUrl(properties) // Tạo URL dựa trên loại thông báo
+				// Ưu tiên lấy Url từ response, nếu không có thì generate
+				url: properties.Url ? properties.Url :  generateNotificationUrl(properties)
 			};
 		}
 
@@ -349,7 +350,7 @@
 			var code = properties.Code;
 
 			if (type === 'NewOrder' && code) {
-				return '/App/Orders?code=' + encodeURIComponent(code);
+				return 'Orders';
 			}
 
 			return null; // Không có URL
@@ -368,58 +369,11 @@
 			loadNotifications();
 		});
 
-		// Chat
-		//abp.event.on('app.chat.unreadMessageCountChanged', function (messageCount) {
-		//	$('#chatIconUnRead .unread-chat-message-count').text(messageCount);
-
-		//	if (messageCount) {
-		//		$('#chatIconUnRead').removeClass('d-none');
-		//		$('#chatIcon').addClass('d-none');
-		//	} else {
-		//		$('#chatIconUnRead').addClass('d-none');
-		//		$('#chatIcon').removeClass('d-none');
-		//	}
-		//});
-
 		// User Delegation
 		var userDelegationsModal = new app.ModalManager({
 			viewUrl: abp.appPath + 'App/Profile/UserDelegationsModal',
 			scriptUrl: abp.appPath + 'view-resources/App/Profile/_UserDelegationsModal.js',
 			modalClass: 'UserDelegationsModal',
-		});
-
-		$('#ManageUserDelegations').click(function (e) {
-			e.preventDefault();
-			userDelegationsModal.open();
-		});
-
-		$('#ActiveUserDelegationsCombobox').click(function () {
-			var $activeUserDelegationsCombobox = $(this);
-			var userDelegationId = parseInt($activeUserDelegationsCombobox.val());
-			if (userDelegationId <= 0 || !userDelegationId) {
-				return;
-			}
-
-			var username = $activeUserDelegationsCombobox.children('option:selected').attr('data-username');
-
-			abp.message.confirm(
-				app.localize('SwitchToDelegatedUserWarningMessage', username),
-				app.localize('AreYouSure'),
-				function (isConfirmed) {
-					if (isConfirmed) {
-						$activeUserDelegationsCombobox.attr('data-value', userDelegationId);
-						abp.ajax({
-							url: abp.appPath + 'Account/DelegatedImpersonate',
-							data: JSON.stringify({
-								userDelegationId: userDelegationId,
-							}),
-						});
-					} else {
-						$activeUserDelegationsCombobox.val($activeUserDelegationsCombobox.attr('data-value'));
-						return false;
-					}
-				}
-			);
 		});
 
 		// Init

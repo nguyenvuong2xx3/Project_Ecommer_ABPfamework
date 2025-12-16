@@ -157,7 +157,6 @@
       };
 
       var setAsRead = function (userNotificationId, callback) {
-        debugger
         _notificationService
           .setNotificationAsRead({
             id: userNotificationId,

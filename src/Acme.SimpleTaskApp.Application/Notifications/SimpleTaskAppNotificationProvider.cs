@@ -1,18 +1,16 @@
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Localization;
 using Abp.Notifications;
 using Acme.SimpleTaskApp.Authorization;
 
 namespace Acme.SimpleTaskApp.Notifications
 {
-	/// <summary>
-	/// ??nh ngh?a c�c lo?i notifications trong h? th?ng
-	/// </summary>
+	/// Định nghĩa các loại notifications trong hệ thống
 	public class SimpleTaskAppNotificationProvider : NotificationProvider
 	{
 		public override void SetNotifications(INotificationDefinitionContext context)
 		{
-			// Notification cho ??n h�ng m?i
+			// Notification cho đơn hàng mới
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.NewOrder",
@@ -21,7 +19,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho thay ??i tr?ng th�i ??n h�ng
+			// Notification cho thay đổi trạng thái đơn hàng
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.OrderStatusChanged",
@@ -29,7 +27,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho ??n h�ng ???c duy?t
+			// Notification cho đơn hàng được duyệt
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.OrderApproved",
@@ -37,7 +35,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho ??n h�ng b? t? ch?i
+			// Notification cho đơn hàng bị từ chối
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.OrderRejected",
@@ -45,7 +43,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho ??n h�ng ho�n th�nh
+			// Notification cho đơn hàng hoàn thành
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.OrderCompleted",
@@ -53,7 +51,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho t?n kho th?p
+			// Notification cho tồn kho thấp
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.LowStock",
@@ -62,7 +60,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho s?n ph?m m?i
+			// Notification cho sản phẩm mới
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.NewProduct",
@@ -70,7 +68,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification cho b�nh lu?n s?n ph?m m?i (Admin only)
+			// Notification cho bình luận sản phẩm mới (Admin only)
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.NewProductComment",
@@ -79,7 +77,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// Notification khi c� ng??i reply comment (User & Admin)
+			// Notification khi có người reply comment (User & Admin)
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.CommentReply",
@@ -87,7 +85,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// ? NEW: Notification b�o c�o doanh thu h�ng ng�y (Admin only)
+			// Notification báo cáo doanh thu hàng ngày (Admin only)
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.DailyRevenueReport",
@@ -96,7 +94,7 @@ namespace Acme.SimpleTaskApp.Notifications
 				)
 			);
 
-			// ? NEW: Notification c?nh b�o t?n kho th?p h�ng ng�y (Admin only)
+			// Notification cảnh báo tồn kho thấp hàng ngày (Admin only)
 			context.Manager.Add(
 				new NotificationDefinition(
 					"App.LowStockAlert",

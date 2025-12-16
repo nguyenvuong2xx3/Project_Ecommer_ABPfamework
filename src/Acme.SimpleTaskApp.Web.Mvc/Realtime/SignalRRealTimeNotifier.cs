@@ -12,9 +12,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 	{
 		private readonly IHubContext<NotificationHub> _hubContext;
 
-		/// <summary>
 		/// Chỉ sử dụng khi notification được gửi với mục tiêu cụ thể
-		/// </summary>
 		public bool UseOnlyIfRequestedAsTarget => false;
 
 		public SignalRRealTimeNotifier(IHubContext<NotificationHub> hubContext)
@@ -22,9 +20,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 			_hubContext = hubContext;
 		}
 
-		/// <summary>
 		/// Gửi notification đến nhiều user online
-		/// </summary>
 		public async Task SendNotificationsAsync(UserNotification[] userNotifications)
 		{
 			foreach (var userNotification in userNotifications)
@@ -33,9 +29,7 @@ namespace Acme.SimpleTaskApp.Web.Realtime
 			}
 		}
 
-		/// <summary>
 		/// Gửi notification đến một user cụ thể
-		/// </summary>
 		private async Task SendNotificationAsync(UserNotification userNotification)
 		{
 			var notificationData = new

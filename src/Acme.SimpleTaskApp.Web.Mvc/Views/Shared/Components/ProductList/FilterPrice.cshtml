@@ -105,14 +105,6 @@
                   <span class="rating-text">@item.AverageRating.ToString("0.0") (@item.TotalRatings)</span>
                 </div>
               }
-              @* đã bán *@
-              @if (item.SoldQuantity > 0)
-              {
-                <div class="sold-info" style="margin: 0px;">
-                  <i class="fas fa-shopping-cart"></i>
-                  <span class="sold-text">Đã bán: <strong>@item.SoldQuantity</strong></span>
-                </div>
-              }
               <!-- Stock Quantity -->
               <div class="stock-status">
                 @if (item.StockQuantity == 0)
