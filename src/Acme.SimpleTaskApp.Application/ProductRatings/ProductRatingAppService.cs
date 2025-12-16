@@ -344,7 +344,7 @@ namespace Acme.SimpleTaskApp.ProductRatings
 
 				if (order.OrderDetails != null && order.OrderDetails.Any())
 				{
-					
+
 					var hasPurchased = order.OrderDetails.Any(od => od.ProductVariantId.HasValue && od.ProductVariantId.Value == productVariantId);
 
 					if (hasPurchased)

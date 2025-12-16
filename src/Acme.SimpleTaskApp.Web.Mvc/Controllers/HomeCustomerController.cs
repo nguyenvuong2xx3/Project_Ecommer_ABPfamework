@@ -92,10 +92,8 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			{
 				var product = await _homeCustomerAppService.GetProductById(id);
 				
-				// Load comments for product
 				var comments = await _productCommentAppService.GetProductVariantCommentsTree(id);
 
-				// ✅ NEW: Load ratings for product
 				var ratingsResult = await _productRatingAppService.GetAllRatings(new GetProductRatingsInput
 				{
 					ProductVariantId = id,
@@ -103,16 +101,14 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 					IsApproved = true
 				});
 
-				// ✅ NEW: Load rating statistics
-				var ratingStatistics = await _productRatingAppService.GetProductRatingStatistics(product.Id);
+				var ratingStatistics = await _productRatingAppService.GetProductRatingStatistics(id);
 
-				// ✅ NEW: Check if user can rate (only if logged in)
 				bool canRate = false;
 				ProductRatingDto userRating = null;
 				
 				if (AbpSession.UserId.HasValue)
 				{
-					canRate = await _productRatingAppService.CanUserRateProduct(product.Id);
+					canRate = await _productRatingAppService.CanUserRateProduct(id);
 					userRating = ratingsResult.Items.FirstOrDefault(r => r.UserId == AbpSession.UserId.Value);
 				}
 
