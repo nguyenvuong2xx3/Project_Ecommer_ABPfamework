@@ -27,10 +27,10 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 	private readonly IRepository<ProductImage> _productImageRepository;
 	private readonly IRepository<ProductRating> _productRatingRepository;
 	private readonly ISaleAppService _saleAppService;
-	private readonly IRepository<Order> _order;
+	private readonly IRepository<Order> _orderRepository;
 
 	public HomeCustomerAppService(
-		IRepository<Order> order,
+		IRepository<Order> orderRepository,
 		IRepository<Product> productRepository,
 		IRepository<ProductVariant> productVariantRepository,
 		IRepository<Category> categoryRepository,
@@ -38,7 +38,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		IRepository<ProductRating> productRatingRepository,
 		ISaleAppService saleAppService)
 	{
-		_order = order;
+		_orderRepository = orderRepository;
 		_productRepository = productRepository;
 		_productVariantRepository = productVariantRepository;
 		_categoryRepository = categoryRepository;
@@ -120,7 +120,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		}
 		else
 		{
-			// Default: sort by creation date descending
+			//mặc định xếp theo thời gian mới nhất
 			prodQuery = prodQuery.OrderByDescending(p => p.CreationTime);
 		}
 
@@ -137,10 +137,10 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 			.Where(i => variantIds.Contains(i.ProductVariantId.Value))
 			.ToListAsync();
 		// số lượng sản phẩm đã bán
-		var countSold = await _order.GetAllAsync();
-		countSold = countSold.Where(x => x.Status == 2);
+		var countSold = await _orderRepository.GetAllAsync();
+		countSold = countSold.Where(x => x.Status == 3);
 
-		// ✅ NEW: Load rating statistics for all products
+		// lấy đánh giá
 		var ratings = await _productRatingRepository.GetAll()
 			.Where(r => productIds.Contains(r.ProductVariantId) && r.IsApproved)
 			.GroupBy(r => r.ProductVariantId)
@@ -153,7 +153,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 			.ToListAsync();
 		var ratingDict = ratings.ToDictionary(r => r.ProductId);
 
-		// Attach variants and images to products
+		//lấy ảnh
 		foreach (var p in prodQuery)
 		{
 			// Attach variants
@@ -185,8 +185,7 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 						}
 					}
 				};
-
-				// ✅ NEW: Add rating statistics
+				// đánh giá %
 				if (ratingDict.TryGetValue(p.Id, out var ratingInfo))
 				{
 					v.AverageRating = System.Math.Round(ratingInfo.AverageRating, 1);
@@ -222,50 +221,6 @@ public class HomeCustomerAppService : IHomeCustomerAppService
 		var result = new PagedResultDto<Product>(totalCount, prodQuery.ToList());
 		return result;
 	}
-	public async Task<PagedResultDto<object>> GetAllProductHomeCustomers1(SearchHomeCustomerDto input)
-	{
-		var getallProduct = _productRepository.GetAll().ToList();
-		var getallVariant = _productVariantRepository.GetAll().ToList();
-		var getImgage = _productImageRepository.GetAll().ToList();
-
-		//var productItems = (from product in _productRepository.GetAll()
-		//										join productVariant in _productVariantRepository.GetAll() on product.Id equals productVariant.ProductId
-		//										join productImage in _productImageRepository.GetAll() on productVariant.Id equals productImage.ProductVariantId
-		//										where productImage.First() == true
-		//								 // Lấy ảnh đầu tiên cho mỗi ProductVariant
-		//								);.ToList();
-		// lấy sản phẩm + biến thể + ảnh đầu tiên
-		var productItems = (from product in _productRepository.GetAll()
-												join productVariant in _productVariantRepository.GetAll() on product.Id equals productVariant.ProductId
-												select new
-												{
-													ProductId = product.Id,
-													ProductName = product.Name,
-													ProductDescription = product.Description,
-													VariantId = productVariant.Id,
-													productVariant.Color,
-													productVariant.Price,
-													productVariant.StockQuantity,
-													ImageUrl = (_productImageRepository.GetAll()
-																	.Where(pi => pi.ProductVariantId == productVariant.Id)
-																	.OrderBy(pi => pi.SortOrder)
-																	.Select(pi => pi.ImageUrl)
-																	.FirstOrDefault())
-												}).ToList();
-		// lấy ảnh biến thể 
-		foreach (var variant in getallVariant)
-		{
-			variant.ImageUrls = getImgage
-				.Where(x => x.ProductVariantId == variant.Id)
-				.Select(ig => ig.ImageUrl)
-				.ToList();
-		}
-		// tổng sản phẩm
-		var totalCount = getallVariant.Count();
-		var result = new PagedResultDto<object>(totalCount, productItems);
-		return result;
-	}
-
 	public async Task<Product> GetProductById(int id)
 	{
 		if (id <= 0)
