@@ -3,9 +3,7 @@
   app.UserNotificationHelper = (function () {
     return function () {
 
-      /* ✅ 1. ĐĂNG KÝ FORMATTER CHO TẤT CẢ LOẠI THÔNG BÁO ********/
-      
-      // ✅ Order notifications
+      //Order notifications
       abp.notifications.messageFormatters['App.NewOrder'] = function (userNotification) {
         return userNotification.notification.data.properties['Message'] || 
                'Có đơn hàng mới';
@@ -31,7 +29,7 @@
                'Đơn hàng đã hoàn thành';
       };
 
-      // ✅ Comment notifications
+      //Comment notifications
       abp.notifications.messageFormatters['App.NewProductComment'] = function (userNotification) {
         return userNotification.notification.data.properties['Message'] || 
                'Có bình luận mới về sản phẩm';
@@ -42,7 +40,6 @@
                'Có người trả lời bình luận của bạn';
       };
 
-      // ✅ Other notifications
       abp.notifications.messageFormatters['App.LowStock'] = function (userNotification) {
         return userNotification.notification.data.properties['Message'] || 
                'Sản phẩm sắp hết hàng';
@@ -53,7 +50,7 @@
                'Có sản phẩm mới';
       };
 
-      // ✅ Legacy support
+      // Legacy support
       abp.notifications.messageFormatters['Đơn hàng mới'] = function (userNotification) {
         return userNotification.notification.data.properties['Message'] || 
                'Có đơn hàng mới';
@@ -69,7 +66,7 @@
           case 'App.NewUserRegistered':
             return '/AppAreaName/users?filterText=' + data.emailAddress;
 
-          // ✅ Order notifications
+          // Order notifications
           case 'App.NewOrder':
           case 'App.OrderStatusChanged':
           case 'App.OrderApproved':
@@ -78,7 +75,7 @@
             // Sử dụng URL từ backend hoặc fallback
             return data['Url'] || '/App/Orders/Detail?code=' + data['Code'];
 
-          // ✅ Comment notifications
+          //Comment notifications
           case 'App.NewProductComment':
           case 'App.CommentReply':
             // Sử dụng URL từ backend
@@ -92,7 +89,7 @@
             );
         }
         
-        // ✅ Fallback: Nếu có URL trong data thì dùng
+        //Fallback: Nếu có URL trong data thì dùng
         return data['Url'] || '';
       }
 
@@ -100,7 +97,6 @@
       var format = function (userNotification, truncateText) {
         var formatted = {
           userNotificationId: userNotification.id,
-          // ✅ Dòng này sẽ gọi formatter đã đăng ký ở trên
           text: abp.notifications.getFormattedMessageFromUserNotification(userNotification),
           time: moment(userNotification.notification.creationTime).format('YYYY-MM-DD HH:mm:ss'),
           icon: app.notification.getUiIconBySeverity(userNotification.notification.severity),
@@ -113,14 +109,14 @@
         };
 
         if (truncateText || truncateText === undefined) {
-          formatted.text = abp.utils.truncateStringWithPostfix(formatted.text, 100); // ✅ Tăng từ 50 lên 100 ký tự
+          formatted.text = abp.utils.truncateStringWithPostfix(formatted.text, 100); //Tăng từ 50 lên 100 ký tự
         }
 
         return formatted;
       };
 
       var show = function (userNotification) {
-        // ✅ Application notification (toast)
+        //Application notification (toast)
         //abp.notifications.showUiNotifyForUserNotification(userNotification, {
         //  onclick: function () {
         //    // Take action when user clicks to live toastr notification
@@ -131,7 +127,7 @@
         //  },
         //});
 
-        // ✅ Desktop notification (Push)
+        //Desktop notification (Push)
         Push.create('SimpleTaskApp', {
           body: format(userNotification).text,
           icon: abp.appPath + 'Common/Images/app-logo-small.svg',
@@ -140,7 +136,7 @@
             window.focus();
             this.close();
             
-            // ✅ Navigate to URL when clicking desktop notification
+            //Navigate to URL when clicking desktop notification
             var url = getUrl(userNotification);
             if (url) {
               location.href = url;
