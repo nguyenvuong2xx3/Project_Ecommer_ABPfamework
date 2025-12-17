@@ -20,6 +20,9 @@
 <div class="main-container mt-3">
   <div class="products-header">
     <h3>Tất cả sản phẩm</h3>
+    <div class="products-count">
+      <span>Hiển thị @Model.ProductsInfo.Count / @Model.TotalCount sản phẩm</span>
+    </div>
   </div>
   <div class="products-grid">
     @foreach (var product in Model.ProductsInfo)
@@ -77,19 +80,6 @@
                   <div class="original-price">@item.Price.ToString("#,##0")₫</div>
                   <!-- Giá sau giảm -->
                   <div class="current-price">@item.DiscountedPrice.ToString("#,##0")₫</div>
-                  <!-- Tên chương trình sale -->
-                  @* @if (!string.IsNullOrEmpty(item.SaleName))
-                  {
-                    <span class="discount-text">
-                      <i class="fas fa-gift"></i> @item.SaleName
-                    </span>
-                  }
-                  else
-                  {
-                    <span class="discount-text">
-                      <i class="fas fa-fire"></i> Đang giảm giá
-                    </span>
-                  } *@
                 }
                 else
                 {
@@ -136,14 +126,77 @@
               <i class="fas fa-shopping-bag"></i>
               <span class="sold-text">Đã bán <strong>@item.SoldQuantity</strong></span>
             </div>
-            @* <button class="detail-btn productvariant-click-detail" data-id="@item.Id">
-              Xem chi tiết
-            </button> *@
           </div>
         </div>
       }
     }
   </div>
+
+  @* Pagination *@
+  @if (Model.TotalPages > 1)
+  {
+    <div class="pagination-container">
+      <nav aria-label="Product pagination">
+        <ul class="pagination">
+          @* Nút Previous *@
+          <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", "HomeCustomer", new { SkipCount = (Model.CurrentPage - 2) * Model.PageSize })" aria-label="Previous">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          </li>
+
+          @* First page *@
+          @if (Model.CurrentPage > 3)
+          {
+            <li class="page-item">
+              <a class="page-link" href="@Url.Action("Index", "HomeCustomer", new { SkipCount = 0 })">1</a>
+            </li>
+            @if (Model.CurrentPage > 4)
+            {
+              <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+          }
+
+          @* Page numbers *@
+          @{
+            int startPage = Math.Max(1, Model.CurrentPage - 2);
+            int endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+          }
+
+          @for (int i = startPage; i <= endPage; i++)
+          {
+            var skipCount = (i - 1) * Model.PageSize;
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+              <a class="page-link" href="@Url.Action("Index", "HomeCustomer", new { SkipCount = skipCount })">@i</a>
+            </li>
+          }
+
+          @* Last page *@
+          @if (Model.CurrentPage < Model.TotalPages - 2)
+          {
+            @if (Model.CurrentPage < Model.TotalPages - 3)
+            {
+              <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+            <li class="page-item">
+              <a class="page-link" href="@Url.Action("Index", "HomeCustomer", new { SkipCount = (Model.TotalPages - 1) * Model.PageSize })">@Model.TotalPages</a>
+            </li>
+          }
+
+          @* Nút Next *@
+          <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="@Url.Action("Index", "HomeCustomer", new { SkipCount = Model.CurrentPage * Model.PageSize })" aria-label="Next">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="pagination-info">
+        <span>Trang @Model.CurrentPage / @Model.TotalPages</span>
+      </div>
+    </div>
+  }
 </div>
 
 @await Component.InvokeAsync("ProductList", new { viewName = "FilterCreatetion" })
@@ -237,7 +290,8 @@
 
   .main-container {
     width: 1200px;
-    height: 980px;
+    min-height: 980px;
+    height: auto;
     background-color: white;
     margin: 0 auto;
     padding: 20px;
@@ -249,6 +303,9 @@
     padding-bottom: 25px;
     border-bottom: 1px solid #eee;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
     .products-header h3 {
@@ -259,12 +316,16 @@
       text-transform: uppercase;
     }
 
+  .products-count {
+    font-size: 14px;
+    color: #666;
+  }
+
   .products-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    height: calc(100% - 80px);
-    overflow-y: auto;
+    min-height: 400px;
   }
 
   .product-item {
@@ -386,4 +447,120 @@
     .products-grid::-webkit-scrollbar-thumb:hover {
       background: #a8a8a8;
     }
+
+  /* Pagination Styles */
+  .pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+  }
+
+  .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+  }
+
+  .page-item {
+    display: inline-block;
+  }
+
+  .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #444;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+    .page-link:hover {
+      background-color: #f0f0f0;
+      border-color: #ccc;
+      color: #333;
+    }
+
+  .page-item.active .page-link {
+    background: linear-gradient(135deg, #288ad6 0%, #1e6cb5 100%);
+    border-color: #288ad6;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(40, 138, 214, 0.3);
+  }
+
+    .page-item.active .page-link:hover {
+      background: linear-gradient(135deg, #1e6cb5 0%, #165a99 100%);
+    }
+
+  .page-item.disabled .page-link {
+    background-color: #f9f9f9;
+    border-color: #eee;
+    color: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .page-link i {
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  /* Responsive */
+  @@media (max-width: 1200px) {
+    .main-container {
+      width: 100%;
+      padding: 15px;
+    }
+
+    .products-grid {
+      justify-content: center;
+    }
+  }
+
+  @@media (max-width: 768px) {
+    .products-header {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .product-item {
+      width: calc(50% - 5px);
+      height: auto;
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .page-link {
+      min-width: 36px;
+      height: 36px;
+      font-size: 13px;
+    }
+  }
+
+  @@media (max-width: 480px) {
+    .product-item {
+      width: 100%;
+    }
+  }
 </style>

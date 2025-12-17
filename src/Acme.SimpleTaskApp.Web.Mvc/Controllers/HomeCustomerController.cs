@@ -78,11 +78,22 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 			
 			public async Task<ActionResult> Index(SearchHomeCustomerDto input)
 			{
+				// Set default page size
+				if (input.MaxResultCount <= 0)
+					input.MaxResultCount = 12;
+				
+				// Calculate skip count from page number
+				int currentPage = (input.SkipCount / input.MaxResultCount) + 1;
+				if (currentPage < 1) currentPage = 1;
+
 				var output = await _homeCustomerAppService.GetAllProductHomeCustomers(input);
 
 				var model = new HomeCustomerViewModel()
 				{
 					ProductsInfo = output.Items.ToList(),
+					TotalCount = output.TotalCount,
+					CurrentPage = currentPage,
+					PageSize = input.MaxResultCount
 				};
 
 				return View(model);

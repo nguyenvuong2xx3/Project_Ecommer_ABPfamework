@@ -17,4 +17,5 @@ public class SearchHomeCustomerDto : PagedResultRequestDto
 	public bool SortingByName { get; set; }
 	public bool SortingCreation { get; set; }
 	public string SortDirection { get; set; } // "ASC" , "DESC"
+	public int MaxResultCount { get; set; } = 12;
 }

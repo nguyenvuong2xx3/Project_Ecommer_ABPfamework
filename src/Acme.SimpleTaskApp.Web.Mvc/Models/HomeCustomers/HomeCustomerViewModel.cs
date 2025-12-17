@@ -19,5 +19,12 @@ namespace Acme.SimpleTaskApp.Web.Models.HomeCustomers
 
 		public string CategoryName { get; set; }
 
+		// Pagination properties
+		public int TotalCount { get; set; }
+		public int CurrentPage { get; set; } = 1;
+		public int PageSize { get; set; } = 12;
+		public int TotalPages => (TotalCount + PageSize - 1) / PageSize;
+		public bool HasPreviousPage => CurrentPage > 1;
+		public bool HasNextPage => CurrentPage < TotalPages;
 	}
 }
