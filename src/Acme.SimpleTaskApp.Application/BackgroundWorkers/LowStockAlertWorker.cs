@@ -45,8 +45,8 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 		// Ngưỡng cảnh báo tồn kho thấp
 		public const int LowStockThreshold = 3;
 
-		// Cài thời gian target: 22h (10 PM)
-		private const int TargetHour = 11;
+		// Cài thời gian target: 22:05 (10.05 PM)
+		private const int TargetHour = 22;
 		private const int TargetMinute = 05;
 
 		// Kiểm tra mỗi phút
