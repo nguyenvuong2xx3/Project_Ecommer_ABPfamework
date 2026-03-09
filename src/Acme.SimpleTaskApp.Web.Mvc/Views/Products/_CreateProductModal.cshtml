@@ -8,6 +8,24 @@
 @await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thêm mới sản phẩm"))
 <form name="CreateProductForm" role="form" class="form-horizontal">
   <div class="modal-body">
+    <!-- Product Type Selection -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Loại sản phẩm <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <div class="btn-group w-100" role="group">
+          <input type="radio" class="btn-check" name="ProductType" id="productTypePhone" value="Phone" checked>
+          <label class="btn btn-outline-primary" for="productTypePhone">
+            <i class="fas fa-mobile-alt me-1"></i> Điện thoại
+          </label>
+
+          <input type="radio" class="btn-check" name="ProductType" id="productTypeAccessory" value="Accessory">
+          <label class="btn btn-outline-primary" for="productTypeAccessory">
+            <i class="fas fa-headphones me-1"></i> Phụ kiện
+          </label>
+        </div>
+      </div>
+    </div>
+
     <!-- Product Name -->
     <div class="row mb-3">
       <label class="col-md-3 col-form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
@@ -38,42 +56,85 @@
       </div>
     </div>
 
-    <!-- Technical Specifications -->
-    <div class="row mb-3">
-      <div class="col-12">
-        <h6 class="fw-bold border-bottom pb-2">Thông số kỹ thuật</h6>
+    <!-- Phone Technical Specifications -->
+    <div id="phoneSpecifications" class="phone-specs">
+      <div class="row mb-3">
+        <div class="col-12">
+          <h6 class="fw-bold border-bottom pb-2">Thông số kỹ thuật điện thoại</h6>
+        </div>
+      </div>
+
+      <!-- Screen -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Màn hình</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control phone-field" name="Screen" placeholder="Ví dụ: 6.1 inch, Super Retina XDR" />
+        </div>
+      </div>
+
+      <!-- Processor -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Bộ xử lý</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control phone-field" name="Processor" placeholder="Ví dụ: Apple A17 Pro" />
+        </div>
+      </div>
+
+      <!-- Camera System -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Hệ thống Camera</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control phone-field" name="CameraSystem" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
+        </div>
+      </div>
+
+      <!-- Battery -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Pin</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control phone-field" name="Battery" placeholder="Ví dụ: Xem video 23 giờ" />
+        </div>
       </div>
     </div>
 
-    <!-- Screen -->
-    <div class="row mb-3">
-      <label class="col-md-3 col-form-label">Màn hình</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" name="Screen" placeholder="Ví dụ: 6.1 inch, Super Retina XDR" />
+    <!-- Accessory Specifications -->
+    <div id="accessorySpecifications" class="accessory-specs" style="display: none;">
+      <div class="row mb-3">
+        <div class="col-12">
+          <h6 class="fw-bold border-bottom pb-2">Thông số kỹ thuật phụ kiện</h6>
+        </div>
       </div>
-    </div>
 
-    <!-- Processor -->
-    <div class="row mb-3">
-      <label class="col-md-3 col-form-label">Bộ xử lý</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" name="Processor" placeholder="Ví dụ: Apple A17 Pro" />
+      <!-- Warranty -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Bảo hành</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control accessory-field" name="Warranty" placeholder="Ví dụ: 12 tháng" />
+        </div>
       </div>
-    </div>
 
-    <!-- Camera System -->
-    <div class="row mb-3">
-      <label class="col-md-3 col-form-label">Hệ thống Camera</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" name="CameraSystem" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
+      <!-- Compatibility -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Tương thích</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control accessory-field" name="Compatibility" placeholder="Ví dụ: iPhone 13/14/15, Samsung Galaxy S21+" />
+        </div>
       </div>
-    </div>
 
-    <!-- Battery -->
-    <div class="row mb-3">
-      <label class="col-md-3 col-form-label">Pin</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" name="Battery" placeholder="Ví dụ: Xem video 23 giờ" />
+      <!-- Material -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Chất liệu</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control accessory-field" name="Material" placeholder="Ví dụ: Silicon, Nhựa cứng, Kim loại" />
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div class="row mb-3">
+        <label class="col-md-3 col-form-label">Cổng kết nối</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control accessory-field" name="Connector" placeholder="Ví dụ: USB-C, Lightning, 3.5mm" />
+        </div>
       </div>
     </div>
 
@@ -158,4 +219,44 @@
     .remove-img-btn:hover {
       background: #c82333;
     }
+
+  .btn-check:checked + .btn-outline-primary {
+    background-color: #0d6efd;
+    color: white;
+  }
+
+  .phone-specs, .accessory-specs {
+    transition: all 0.3s ease;
+  }
 </style>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const productTypeRadios = document.querySelectorAll('input[name="ProductType"]');
+    const phoneSpecifications = document.getElementById('phoneSpecifications');
+    const accessorySpecifications = document.getElementById('accessorySpecifications');
+
+    productTypeRadios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        if (this.value === 'Phone') {
+          phoneSpecifications.style.display = 'block';
+          accessorySpecifications.style.display = 'none';
+
+          // Clear accessory fields
+          document.querySelectorAll('.accessory-field').forEach(field => {
+            field.value = '';
+          });
+        } else {
+          phoneSpecifications.style.display = 'none';
+          accessorySpecifications.style.display = 'block';
+
+          // Clear phone fields
+          document.querySelectorAll('.phone-field').forEach(field => {
+            field.value = '';
+          });
+        }
+      });
+    });
+  });
+</script>

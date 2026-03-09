@@ -166,9 +166,10 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 
 		private async Task ExecuteLowStockAlertAsync()
 		{
-			// Lấy tất cả biến thể sản phẩm có số lượng tồn kho < threshold
+			// Lấy tất cả biến thể sản phẩm có số lượng tồn kho khả dụng < threshold
+			// AvailableStock = StockQuantity - ReservedQuantity (đã trừ số lượng đang giữ cho VNPay)
 			var lowStockVariants = await _productVariantRepository.GetAll()
-				.Where(v => v.StockQuantity < LowStockThreshold)
+				.Where(v => (v.StockQuantity - v.ReservedQuantity) < LowStockThreshold)
 				.ToListAsync();
 
 			if (!lowStockVariants.Any())
@@ -190,23 +191,27 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 					? products[variant.ProductId] 
 					: "Unknown Product";
 
+				var availableStock = variant.StockQuantity - variant.ReservedQuantity;
+
 				lowStockItems.Add(new LowStockItem
 				{
 					ProductId = variant.ProductId,
 					ProductName = productName,
 					VariantId = variant.Id,
 					VariantInfo = $"{variant.Ram} - {variant.Storage} - {variant.Color}",
-					StockQuantity = variant.StockQuantity
+					StockQuantity = variant.StockQuantity,
+					ReservedQuantity = variant.ReservedQuantity,
+					AvailableStock = availableStock
 				});
 			}
 
-			// Sắp xếp theo số lượng tồn kho tăng dần
-			lowStockItems = lowStockItems.OrderBy(x => x.StockQuantity).ToList();/**/
+			// Sắp xếp theo số lượng khả dụng tăng dần
+			lowStockItems = lowStockItems.OrderBy(x => x.AvailableStock).ToList();
 
 			// Lấy tất cả admin users
 			var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
 
-			if (adminUsers.Count == 0)/**/
+			if (adminUsers.Count == 0)
 			{
 				Logger.Warn("No admin users found to send low stock alert.");
 				return;
@@ -232,7 +237,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 			// Tạo message chi tiết (giới hạn 5 sản phẩm đầu tiên)
 			var topItems = lowStockItems.Take(5).ToList();
 			var itemsMessage = string.Join("\n", topItems.Select(x => 
-				$"• {x.ProductName} ({x.VariantInfo}): còn {x.StockQuantity} sản phẩm"));
+				$"• {x.ProductName} ({x.VariantInfo}): còn {x.AvailableStock} sản phẩm khả dụng"));
 
 			var remainingCount = lowStockItems.Count - 5;
 			if (remainingCount > 0)
@@ -241,7 +246,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 			}
 
 			notificationData["ItemsDetail"] = itemsMessage;
-			notificationData["Message"] = $"⚠️ Cảnh báo tồn kho thấp: {lowStockItems.Count} biến thể sản phẩm có số lượng < {LowStockThreshold}. Chi tiết đã được gửi đến email của bạn";
+			notificationData["Message"] = $"⚠️ Cảnh báo tồn kho thấp: {lowStockItems.Count} biến thể sản phẩm có số lượng khả dụng < {LowStockThreshold}. Chi tiết đã được gửi đến email của bạn";
 
 			// Lưu danh sách chi tiết (dạng JSON string)
 			notificationData["LowStockItems"] = System.Text.Json.JsonSerializer.Serialize(
@@ -251,7 +256,9 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 					x.ProductName,
 					x.VariantId,
 					x.VariantInfo,
-					x.StockQuantity
+					x.StockQuantity,
+					x.ReservedQuantity,
+					x.AvailableStock
 				})
 			);
 
@@ -295,9 +302,14 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 
 				foreach (var item in displayItems)
 				{
-					var stockClass = item.StockQuantity == 0 ? "stock-critical" 
-						: item.StockQuantity == 1 ? "stock-low" 
+					var stockClass = item.AvailableStock == 0 ? "stock-critical" 
+						: item.AvailableStock == 1 ? "stock-low" 
 						: "stock-warning";
+
+					// Hiển thị cả tổng kho và số đang giữ nếu có reserved
+					var stockInfo = item.ReservedQuantity > 0 
+						? $"{item.AvailableStock} (Tổng: {item.StockQuantity}, Đang giữ: {item.ReservedQuantity})"
+						: item.AvailableStock.ToString();
 
 					productRowsHtml.AppendLine($@"
 						<tr>
@@ -308,7 +320,7 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 							<td>
 								<div class=""variant-info"">{item.VariantInfo}</div>
 							</td>
-							<td class=""{stockClass}"">{item.StockQuantity}</td>
+							<td class=""{stockClass}"">{stockInfo}</td>
 						</tr>");
 				}
 
@@ -365,6 +377,8 @@ namespace Acme.SimpleTaskApp.BackgroundWorkers
 			public int VariantId { get; set; }
 			public string VariantInfo { get; set; }
 			public int StockQuantity { get; set; }
+			public int ReservedQuantity { get; set; }
+			public int AvailableStock { get; set; }
 		}
 	}
 }

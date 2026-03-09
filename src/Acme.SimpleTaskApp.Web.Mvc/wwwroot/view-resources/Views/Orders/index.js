@@ -78,8 +78,8 @@
 				render: function (data) {
 					if (data == 0) {
 						return '<span style="display:inline-block;padding:2px 8px;border-radius:5px;background-color:#4CAF50;color:white;">Thanh toán tiền mặt</span>';
-					} else if (data == 1) {
-						return '<span style="display:inline-block;padding:2px 8px;border-radius:5px;background-color:#2196F3;color:white;">Chuyển khoản</span>';
+					} else if (data == 2) {
+						return '<span style="display:inline-block;padding:2px 8px;border-radius:5px;background-color:#2196F3;color:white;">Thanh toán VNPay</span>';
 					} else {
 						return '<span style="display:inline-block;padding:2px 8px;border-radius:5px;background-color:#9E9E9E;color:white;">Không xác định</span>';
 					}

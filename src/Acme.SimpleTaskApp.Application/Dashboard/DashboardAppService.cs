@@ -87,24 +87,24 @@ namespace Acme.SimpleTaskApp.Dashboard
 					s.EndDate >= now)
 				.CountAsync();
 
-			// Count low stock products
+			// Count low stock products - Tính stock khả dụng = StockQuantity - ReservedQuantity
 			var lowStockProducts = await _productvariantRepository.GetAll()
-				.Where(v => v.StockQuantity < 10)
+				.Where(v => (v.StockQuantity - v.ReservedQuantity) < 3)
 				.CountAsync();
 
 			return new DashboardStatsDto
 			{
-				TotalRevenue = totalRevenue,
-				TotalOrders = orders.Count,
-				TotalProducts = totalProducts,
-				TotalCustomers = totalCustomers,
-				RevenueGrowth = revenueGrowth,
-				OrdersGrowth = ordersGrowth,
-				PendingOrders = pendingOrders,
-				CompletedOrders = completedOrders,
-				AverageOrderValue = averageOrderValue,
-				ActiveVouchers = activeVouchers,
-				LowStockProducts = lowStockProducts
+				TotalRevenue = totalRevenue, // tổng doanh thu
+				TotalOrders = orders.Count, // tổng số đơn hàng
+				TotalProducts = totalProducts, // tổng số sản phẩm
+				TotalCustomers = totalCustomers, // tổng số khách hàng
+				RevenueGrowth = revenueGrowth, // tăng trưởng doanh thu
+				OrdersGrowth = ordersGrowth, // tăng trưởng đơn hàng
+				PendingOrders = pendingOrders, // đơn hàng chờ xử lý
+				CompletedOrders = completedOrders, // đơn hàng hoàn thành
+				AverageOrderValue = averageOrderValue, // giá trị trung bình đơn hàng
+				ActiveVouchers = activeVouchers, // voucher đang hoạt động
+				LowStockProducts = lowStockProducts // sản phẩm tồn kho thấp
 			};
 		}
 
@@ -288,8 +288,10 @@ namespace Acme.SimpleTaskApp.Dashboard
 
 		public async Task<PagedResultDto<LowStockProductDto>> GetLowStockProducts(PagedAndSortedResultRequestDto input)
 		{
+			// Sử dụng biểu thức SQL-translatable thay vì NotMapped property
+			// AvailableStock = StockQuantity - ReservedQuantity
 			var productVariants = await _productvariantRepository.GetAll()
-				.Where(v => v.StockQuantity < 3)
+				.Where(v => (v.StockQuantity - v.ReservedQuantity) < 3)
 				.ToListAsync();
 
 			var result = new List<LowStockProductDto>();
@@ -312,6 +314,8 @@ namespace Acme.SimpleTaskApp.Dashboard
 					Ram = variant.Ram,
 					Color = variant.Color,
 					StockQuantity = variant.StockQuantity,
+					ReservedQuantity = variant.ReservedQuantity,
+					AvailableStock = variant.StockQuantity - variant.ReservedQuantity,
 				});
 			}
 
@@ -334,5 +338,7 @@ namespace Acme.SimpleTaskApp.Dashboard
 		public string Ram { get; set; }
 		public string Color { get; set; }
 		public int StockQuantity { get; set; }
+		public int ReservedQuantity { get; set; }
+		public int AvailableStock { get; set; }
 	}
 }

@@ -80,10 +80,35 @@
           },
           {
             targets: 5,
+            data: 'availableStock',
+            sortable: false,
+            render: function (data, type, row) {
+              var badgeClass = 'bg-success';
+              if (data <= 0) {
+                badgeClass = 'bg-danger';
+              } else if (data < 3) {
+                badgeClass = 'bg-warning text-dark';
+              }
+              return `<span class="badge ${badgeClass}">${data}</span>`;
+            }
+          },
+          {
+            targets: 6,
+            data: 'reservedQuantity',
+            sortable: false,
+            render: function (data, type, row) {
+              if (data > 0) {
+                return `<span class="badge bg-info">${data}</span>`;
+              }
+              return `<span class="text-muted">0</span>`;
+            }
+          },
+          {
+            targets: 7,
             data: 'stockQuantity',
             sortable: false,
             render: function (data, type, row) {
-              return `<span class="badge ${data > 0 ? 'bg-success' : 'bg-danger'}">${data}</span>`;
+              return `<span class="badge bg-secondary">${data}</span>`;
             }
           },
         ],

@@ -1,0 +1,161 @@
+﻿@using Acme.SimpleTaskApp.Web.Models.Common.Modals
+@using Acme.SimpleTaskApp.Web.Models.Products
+@model ProductViewModel
+@{
+  Layout = null;
+}
+
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thêm mới sản phẩm"))
+<form name="CreateProductForm" role="form" class="form-horizontal">
+  <div class="modal-body">
+    <!-- Product Name -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Name" required minlength="5" maxlength="256" placeholder="Ví dụ: iPhone 15 Pro" />
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+      <div class="col-md-9">
+        <select name="CategoryId" class="form-select" required>
+          <option value="">-- Chọn danh mục --</option>
+          @foreach (var category in Model.Categories)
+          {
+            <option value="@category.Id">@category.Name</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label fw-bold">Mô tả chung</label>
+      <div class="col-md-9">
+        <textarea class="form-control" name="Description" rows="3" maxlength="500" placeholder="Mô tả các tính năng chung, thiết kế của sản phẩm..."></textarea>
+      </div>
+    </div>
+
+    <!-- Technical Specifications -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <h6 class="fw-bold border-bottom pb-2">Thông số kỹ thuật</h6>
+      </div>
+    </div>
+
+    <!-- Screen -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label">Màn hình</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Screen" placeholder="Ví dụ: 6.1 inch, Super Retina XDR" />
+      </div>
+    </div>
+
+    <!-- Processor -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label">Bộ xử lý</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Processor" placeholder="Ví dụ: Apple A17 Pro" />
+      </div>
+    </div>
+
+    <!-- Camera System -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label">Hệ thống Camera</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="CameraSystem" placeholder="Ví dụ: 3 camera (48MP, 12MP, 12MP)" />
+      </div>
+    </div>
+
+    <!-- Battery -->
+    <div class="row mb-3">
+      <label class="col-md-3 col-form-label">Pin</label>
+      <div class="col-md-9">
+        <input type="text" class="form-control" name="Battery" placeholder="Ví dụ: Xem video 23 giờ" />
+      </div>
+    </div>
+
+    <!-- Product Images -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <h6 class="fw-bold border-bottom pb-2">Hình ảnh sản phẩm</h6>
+        <div class="image-uploader border rounded p-3 text-center">
+          <input type="file" id="ImageFiles" name="ImageFiles" multiple accept="image/*" class="d-none">
+          <div class="uploader-content">
+            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+            <p class="mb-1">Kéo và thả ảnh vào đây, hoặc nhấn để chọn ảnh</p>
+            <small class="text-muted">Hỗ trợ nhiều ảnh, định dạng: JPG, PNG, GIF</small>
+          </div>
+        </div>
+        <div id="imagePreviewContainer" class="mt-3 d-flex flex-wrap gap-2">
+          <!-- Image previews will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message Container -->
+    <div class="row">
+      <div class="col-12">
+        <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+  @await Html.PartialAsync("~/Views/Shared/Modals/_ModalFooterWithSaveAndCancel.cshtml")
+</form>
+
+<style>
+  .image-uploader {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+    .image-uploader:hover {
+      background-color: #f8f9fa;
+    }
+
+  .img-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+  }
+
+  .img-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .remove-img-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+    .remove-img-btn:hover {
+      background: #c82333;
+    }
+</style>

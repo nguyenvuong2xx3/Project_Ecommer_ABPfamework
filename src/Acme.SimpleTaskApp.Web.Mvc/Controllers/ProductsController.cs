@@ -73,6 +73,27 @@ namespace Acme.SimpleTaskApp.Web.Controllers
 		}
 
 		[AbpMvcAuthorize(PermissionNames.Pages_Products_Create)]
+		public async Task<IActionResult> CreateProduct(CreateProductDto model)
+		{
+			try
+			{
+				if (!ModelState.IsValid)
+				{
+					return Json(new { success = false, error = new { message = "Dữ liệu không hợp lệ" } });
+				}
+
+				var product = _productAppService.CreateProducts(model);
+				_productAppService.CreateGeneralProductImages(product.Id, model.ProductImages, model.Name);
+
+				return Json(new { success = true });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, error = new { message = ex.Message } });
+			}
+		}
+
+		[AbpMvcAuthorize(PermissionNames.Pages_Products_Create)]
 		public async Task<IActionResult> Create(CreateProductDto model)
 		{
 			if (ModelState.IsValid)

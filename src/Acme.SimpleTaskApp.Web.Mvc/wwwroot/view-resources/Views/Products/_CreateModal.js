@@ -1,5 +1,4 @@
 ﻿(function ($) {
-	// Product Create Modal (ABP ModalManager compatible)
 	app.modals.ProductCreateModal = function () {
 		var _modalManager;
 		var _$form = null;
@@ -13,6 +12,9 @@
 			_modalManager = modalManager;
 			var $modal = _modalManager.getModal();
 			_$form = $modal.find('form[name=CreateProductForm]');
+
+			// Setup product type toggle
+			setupProductTypeToggle($modal);
 
 			// jQuery Validate config
 			if ($.fn.validate) {
@@ -47,6 +49,18 @@
 						Battery: {
 							maxlength: 1000
 						},
+						Warranty: {
+							maxlength: 500
+						},
+						Compatibility: {
+							maxlength: 1000
+						},
+						Material: {
+							maxlength: 500
+						},
+						Connector: {
+							maxlength: 500
+						},
 						Description: {
 							maxlength: 500
 						}
@@ -72,6 +86,18 @@
 						},
 						Battery: {
 							maxlength: 'Thông tin pin quá dài'
+						},
+						Warranty: {
+							maxlength: 'Thông tin bảo hành quá dài'
+						},
+						Compatibility: {
+							maxlength: 'Thông tin tương thích quá dài'
+						},
+						Material: {
+							maxlength: 'Thông tin chất liệu quá dài'
+						},
+						Connector: {
+							maxlength: 'Thông tin cổng kết nối quá dài'
 						},
 						Description: {
 							maxlength: 'Mô tả không được vượt quá 500 ký tự'
@@ -106,6 +132,35 @@
 				_$form.find('input[name=Name]').first().trigger('focus');
 			}, 250);
 		};
+
+		//LOGIC TOGGLE GIỮA ĐIỆN THOẠI VÀ PHỤ KIỆN
+		function setupProductTypeToggle($modal) {
+			const $phoneRadio = $modal.find('#productTypePhone');
+			const $accessoryRadio = $modal.find('#productTypeAccessory');
+			const $phoneSpecs = $modal.find('#phoneSpecifications');
+			const $accessorySpecs = $modal.find('#accessorySpecifications');
+
+			// Xử lý khi chọn loại sản phẩm
+			$modal.on('change', 'input[name="ProductType"]', function() {
+				const selectedType = $(this).val();
+				
+				if (selectedType === 'Phone') {
+					// Hiển thị thông số điện thoại, ẩn thông số phụ kiện
+					$phoneSpecs.slideDown(300);
+					$accessorySpecs.slideUp(300);
+					
+					// Clear giá trị các trường phụ kiện
+					$accessorySpecs.find('.accessory-field').val('');
+				} else if (selectedType === 'Accessory') {
+					// Hiển thị thông số phụ kiện, ẩn thông số điện thoại
+					$accessorySpecs.slideDown(300);
+					$phoneSpecs.slideUp(300);
+					
+					// Clear giá trị các trường điện thoại
+					$phoneSpecs.find('.phone-field').val('');
+				}
+			});
+		}
 
 		// --- LOGIC XỬ LÝ UPLOAD HÌNH ẢNH CHUNG ---
 		function setupGeneralImageUploader($modal) {

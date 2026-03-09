@@ -127,8 +127,8 @@ namespace Acme.SimpleTaskApp.Web.Startup
 			// ===== QUẢN LÝ BÁN HÀNG =====
 			menu.AddItem(
 				new MenuItemDefinition(
-					"SalesManagement",
-					L("SalesManagement"),
+					"OrderManagement",
+					L("OrderManagement"),
 					icon: "fas fa-shopping-cart"
 				).AddItem(
 					new MenuItemDefinition(

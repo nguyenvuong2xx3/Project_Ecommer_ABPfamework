@@ -408,6 +408,7 @@
 		<text name="CommentReplyNotification" value="Trả lời bình luận" />
 		<text name="DailyRevenueReportNotification" value="Báo cáo doanh thu hàng ngày" />
 		<text name="LowStockAlertNotification" value="Cảnh báo sản phẩm sắp hết hàng" />
+		
 
 	</texts>
 </localizationDictionary>

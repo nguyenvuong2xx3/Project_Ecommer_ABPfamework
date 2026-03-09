@@ -135,7 +135,7 @@
 		}
 	}
 
-	// CẢI TIẾN: Xử lý bình luận mới nhận qua SignalR
+	// Xử lý bình luận mới nhận qua SignalR
 	function handleNewCommentReceived(comment) {
 		if ($(`[data-comment-id="${comment.id}"]`).length > 0) {
 			return;
@@ -174,6 +174,11 @@
 		} else {
 			console.log('[Bình luận] Bình luận của chính bạn đã được nhận qua SignalR - bỏ qua thông báo');
 		}
+
+
+
+
+
 	}
 
 	// Xử lý comment được cập nhật qua SignalR

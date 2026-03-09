@@ -2,7 +2,7 @@
 @using Acme.SimpleTaskApp.Web.Models.UserProfiles
 @model UserProfileViewModel
 <!-- Modal Content -->
-@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Thông tin giao hàng"))
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Sản phẩm sắp hết hàng"))
 <div class="modal-content">
   <div class="modal-body">
     <div class="card-body">
@@ -15,7 +15,9 @@
               <th>@L("Ram")</th>
               <th>@L("Storage")</th>
               <th>@L("Color")</th>
-              <th>@L("StockQuantity")</th>
+              <th>Khả dụng</th>
+              <th>Đang giữ</th>
+              <th>Tổng kho</th>
             </tr>
           </thead>
           <tbody></tbody>
