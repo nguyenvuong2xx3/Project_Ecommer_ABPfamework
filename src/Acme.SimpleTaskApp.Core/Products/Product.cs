@@ -21,13 +21,6 @@ namespace Acme.SimpleTaskApp.Products
 		public string CameraSystem { get; set; } // Ví dụ: "Hệ thống 3 camera: 48MP Chính,..."
 		public string Battery { get; set; }     // Ví dụ: "Xem video lên đến 23 giờ"
 
-		// Thông số cho phụ kiện
-		public string ProductType { get; set; } // "Phone", "Accessory"
-		public string Warranty { get; set; }    // Ví dụ: "12 tháng", "24 tháng" ...
-		public string Compatibility { get; set; } // Ví dụ: "iPhone 13/14/15", "Samsung Galaxy S21+" ...
-		public string Material { get; set; }    // Ví dụ: "Silicon", "Nhựa cứng", "Kim loại"
-		public string Connector { get; set; }   // Ví dụ: "USB-C", "Lightning", "3.5mm"
-
 		[NotMapped] public List<IFormFile> Images { get; set; } // cho BE nhận file từ FE
 		[NotMapped] public string ImageUrl { get; set; } // cho BE trả về
 		[NotMapped] public List<string> ImageUrls { get; set; } // cho BE trả về

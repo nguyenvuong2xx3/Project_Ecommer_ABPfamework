@@ -62,19 +62,12 @@ namespace Acme.SimpleTaskApp.Products
 				Name = input.Name,
 				Description = input.Description,
 				CategoryId = input.CategoryId ?? 0,
-				ProductType = input.ProductType ?? "Phone", // Mặc định là Phone
 				
 				// Thông số cho điện thoại
 				Screen = input.Screen,
 				Processor = input.Processor,
 				CameraSystem = input.CameraSystem,
 				Battery = input.Battery,
-				
-				// Thông số cho phụ kiện
-				Warranty = input.Warranty,
-				Compatibility = input.Compatibility,
-				Material = input.Material,
-				Connector = input.Connector,
 				
 				StockQuantity = input.ProductVariants?.Sum(v => v.StockQuantity) ?? 0,
 			};
@@ -225,20 +218,12 @@ namespace Acme.SimpleTaskApp.Products
 			product.Name = input.Name;
 			product.Description = input.Description;
 			product.CategoryId = input.CategoryId ?? product.CategoryId;
-			product.ProductType = input.ProductType ?? product.ProductType;
-			
 			// Thông số cho điện thoại
 			product.Screen = input.Screen;
 			product.Processor = input.Processor;
 			product.CameraSystem = input.CameraSystem;
 			product.Battery = input.Battery;
 			
-			// Thông số cho phụ kiện
-			product.Warranty = input.Warranty;
-			product.Compatibility = input.Compatibility;
-			product.Material = input.Material;
-			product.Connector = input.Connector;
-
 			_productRepository.Update(product);
 			CurrentUnitOfWork.SaveChanges();
 			if (input.DeletedImageUrls != null && input.DeletedImageUrls.Any())

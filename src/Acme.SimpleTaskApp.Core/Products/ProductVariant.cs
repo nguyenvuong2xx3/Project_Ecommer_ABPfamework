@@ -23,11 +23,6 @@ namespace Acme.SimpleTaskApp.Products
 		// Stock khả dụng = StockQuantity - ReservedQuantity
 		public int ReservedQuantity { get; set; } = 0;
 
-		public string Size { get; set; }
-
-		public string SacNhanh { get; set; }
-		public string Connectivity { get; set; }
-
 		public string SKU { get; set; }
 		[NotMapped] public List<IFormFile> ImageFiles { get; set; }
 		[NotMapped] public List<string> DeletedImageUrls { get; set; }
