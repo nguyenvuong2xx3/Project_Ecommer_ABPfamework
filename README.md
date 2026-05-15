@@ -55,6 +55,8 @@ thực hiện tổ hợp phím CTRL + ` trên bàn phím
 cài thư viện: dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 di chuyển vào MVC -> nhập lệnh: libman restore
 
+cài đặt extentions: Bunder & Minifier sau đó chọn prj MVC chọn update Bunder & Minifier
+
 Cài đặt dự án mặc định  (Set as Startup Project)
 ------------------------
 Chọn dự án Acme.SimpleTaskApp.Web.Mvc chuột phải chọn Set as Startup Project
