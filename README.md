@@ -52,7 +52,8 @@ sửa 2 file appsettingsDefault -> appsetting tại 2 project Acme.SimpleTaskApp
 Khôi phục lại thư viện
 ----------
 thực hiện tổ hợp phím CTRL + ` trên bàn phím
-nhập lệnh: libman restore
+cài thư viện: dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+di chuyển vào MVC -> nhập lệnh: libman restore
 
 Cài đặt dự án mặc định  (Set as Startup Project)
 ------------------------
