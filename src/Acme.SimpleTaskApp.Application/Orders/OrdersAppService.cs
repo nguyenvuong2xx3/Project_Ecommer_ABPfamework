@@ -184,6 +184,7 @@ namespace Acme.SimpleTaskApp.Orders
 					PhuongXa = string.IsNullOrWhiteSpace(input.Order.PhuongXa) ? user.PhuongXa : input.Order.PhuongXa,
 					DiaChiChiTiet = string.IsNullOrWhiteSpace(input.Order.DiaChiChiTiet) ? user.DiaChiChiTiet : input.Order.DiaChiChiTiet,
 					PhoneNumber = string.IsNullOrWhiteSpace(input.Order.PhoneNumber) ? user.PhoneNumber : input.Order.PhoneNumber,
+                    EmailAddress = string.IsNullOrWhiteSpace(input.Order.EmailAddress) ? user.EmailAddress : input.Order.EmailAddress,
 				};
 
 				order.Serialize();

@@ -11,6 +11,7 @@ namespace Acme.SimpleTaskApp.Users.Dto
 		public string? Name { get; set; }
 		public string? Surname { get; set; }
 		public string? PhoneNumber { get; set; }
+		public string? EmailAddress { get; set; }
 		public string? TinhThanh { get; set; }
 		public string? PhuongXa { get; set; }
 		public string? DiaChiChiTiet { get; set; }

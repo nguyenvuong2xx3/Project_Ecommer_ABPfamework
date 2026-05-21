@@ -27,6 +27,7 @@
 
 				// Số điện thoại
 				$('#PhoneNumber').text(result.userInfo.phoneNumber || "Không có số điện thoại");
+				$('#MailAddress').text(result.userInfo.emailAddress || "Không có số điện thoại");
 
 				// Địa chỉ: ghép chi tiết, phường/xã, tỉnh/thành có dấu phẩy và cách
 				const diaChi = `${result.address.diaChiChiTiet}, ${result.address.phuongXa.name}, ${result.address.tinhThanh.name}`;

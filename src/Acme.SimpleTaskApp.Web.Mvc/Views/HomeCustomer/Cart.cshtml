@@ -1,1018 +1,1027 @@
 ﻿@model Acme.SimpleTaskApp.Web.Models.Carts.CartViewModel
 
 @{
-  ViewData["Title"] = "Giỏ hàng";
-  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+    ViewData["Title"] = "Giỏ hàng";
+    Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 
 @section scripts
 {
-  <script src="~/Common/Scripts/vnpay-helper.js" asp-append-version="true"></script>
-  <environment names="Development">
-    <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
-  </environment>
-  
-  @* Show payment error notification if exists *@
-  @if (TempData["PaymentError"] != null)
-  {
-    <script>
-      $(function() {
-        abp.notify.error('@TempData["PaymentError"]' + 
-          @if (TempData["PaymentMessage"] != null) { <text> + '\n' + '@TempData["PaymentMessage"]'</text> });
-      });
-    </script>
-  }
+    <script src="~/Common/Scripts/vnpay-helper.js" asp-append-version="true"></script>
+    <environment names="Development">
+        <script src="~/view-resources/Views/Carts/index.js" asp-append-version="true"></script>
+    </environment>
+
+    @* Show payment error notification if exists *@
+    @if (TempData["PaymentError"] != null)
+    {
+        <script>
+            $(function() {
+              abp.notify.error('@TempData["PaymentError"]' +
+                @if (TempData["PaymentMessage"] != null)
+                {
+                    <text> + '\n' + '@TempData["PaymentMessage"]'</text>
+                }
+        );
+            });
+        </script>
+    }
 }
 
 @{
-  decimal total = 0;
+    decimal total = 0;
 }
 
 <div class="cart-page">
-  <div class="container py-4">
-    
-    @* Breadcrumb *@
-    <nav aria-label="breadcrumb" class="mb-4">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Trang chủ</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
-      </ol>
-    </nav>
+    <div class="container py-4">
 
-    @* Hiển thị thông báo lỗi thanh toán nếu có *@
-    @if (TempData["PaymentError"] != null)
-    {
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        <strong>@TempData["PaymentError"]</strong>
-        @if (TempData["PaymentMessage"] != null)
+        @* Breadcrumb *@
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+            </ol>
+        </nav>
+
+        @* Hiển thị thông báo lỗi thanh toán nếu có *@
+        @if (TempData["PaymentError"] != null)
         {
-          <br />
-          <span>@TempData["PaymentMessage"]</span>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>@TempData["PaymentError"]</strong>
+                @if (TempData["PaymentMessage"] != null)
+                {
+                    <br />
+                    <span>@TempData["PaymentMessage"]</span>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         }
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    }
 
-    @* Trường hợp chưa đăng nhập *@
-    @if (Model == null)
-    {
-      <div class="empty-cart-container">
-        <div class="empty-cart-icon">
-          <i class="fas fa-shopping-cart"></i>
-        </div>
-        <h3>@ViewBag.Message</h3>
-        <p class="text-muted">Vui lòng đăng nhập để xem giỏ hàng của bạn</p>
-        <a href="/Account/Login" class="btn btn-primary btn-lg">
-          <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay
-        </a>
-      </div>
-    }
-    else if (Model.CartItems == null || !Model.CartItems.Any())
-    {
-      @* Trường hợp giỏ hàng rỗng *@
-      <div class="empty-cart-container">
-        <div class="empty-cart-icon">
-          <i class="fas fa-shopping-basket"></i>
-        </div>
-        <h3>Giỏ hàng của bạn đang trống</h3>
-        <p class="text-muted">Hãy khám phá và thêm sản phẩm yêu thích vào giỏ hàng nhé!</p>
-        <a href="/" class="btn btn-primary btn-lg">
-          <i class="fas fa-shopping-bag me-2"></i>Tiếp tục mua sắm
-        </a>
-      </div>
-    }
-    else
-    {
-      @* Header giỏ hàng *@
-      <div class="cart-header mb-4">
-        <h2 class="cart-title">
-          <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của bạn
-          <span class="cart-count">(@Model.CartItems.Count sản phẩm)</span>
-        </h2>
-      </div>
-
-      @* Trường hợp có sản phẩm *@
-      <div class="row g-4">
-        <div class="col-lg-8">
-          @* Danh sách sản phẩm *@
-          <div class="cart-items-container">
-            @foreach (var product in Model.CartItems)
-            {
-              <div class="cart-item" data-product-id="@product.IdProductVariant">
-                <div class="cart-item-image">
-                  <img src="@product.ImageUrl" alt="@product.Name" loading="lazy">
-                  @if (product.HasActiveDiscount)
-                  {
-                    <span class="discount-badge">-@product.DiscountPercentage%</span>
-                  }
+        @* Trường hợp chưa đăng nhập *@
+        @if (Model == null)
+        {
+            <div class="empty-cart-container">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
-                
-                <div class="cart-item-details">
-                  <h5 class="cart-item-name">@product.Name</h5>
-                  <div class="cart-item-variant">
-                    <span class="variant-label">Màu sắc:</span>
-                    <span class="variant-value">@product.Color</span>
-                  </div>
-                  
-                  @* Giá sản phẩm *@
-                  <div class="cart-item-price">
-                    @if (product.HasActiveDiscount)
-                    {
-                      <span class="price-original">@product.Price.ToString("N0")₫</span>
-                      <span class="price-current" id="productvariant-price-@product.IdProductVariant" data-price="@product.DiscountedPrice">@product.DiscountedPrice.ToString("N0")₫</span>
-                      total += product.DiscountedPrice * product.Quantity;
-                    }
-                    else
-                    {
-                      <span class="price-current" id="productvariant-price-@product.IdProductVariant" data-price="@product.Price">@product.Price.ToString("N0")₫</span>
-                      total += product.Price * product.Quantity;
-                    }
-                  </div>
+                <h3>@ViewBag.Message</h3>
+                <p class="text-muted">Vui lòng đăng nhập để xem giỏ hàng của bạn</p>
+                <a href="/Account/Login" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay
+                </a>
+            </div>
+        }
+        else if (Model.CartItems == null || !Model.CartItems.Any())
+        {
+            @* Trường hợp giỏ hàng rỗng *@
+            <div class="empty-cart-container">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-basket"></i>
                 </div>
-                
-                <div class="cart-item-actions">
-                  @* Điều chỉnh số lượng *@
-                  <div class="quantity-control">
-                    <button class="qty-btn qty-minus btl-click-minus"
-                            data-productvariant-id="@product.IdProductVariant" 
-                            data-productvariant-cartid="@product.IdCart">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                    <input type="text" class="qty-input" 
-                           value="@product.Quantity" 
-                           id="quantity-@product.IdProductVariant" 
-                           readonly>
-                    <button class="qty-btn qty-plus btl-click-plus"
-                            data-productvariant-id="@product.IdProductVariant" 
-                            data-productvariant-cartid="@product.IdCart"
-                            data-product-id="@product.ProductId" 
-                            data-category-id="@product.CategoryId">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                  </div>
-                  
-                  @* Thành tiền *@
-                  <div class="cart-item-total">
-                    <span class="total-label">Thành tiền:</span>
-                    @{
-                      var itemTotal = product.HasActiveDiscount ? product.DiscountedPrice * product.Quantity : product.Price * product.Quantity;
-                    }
-                    <span class="total-value" id="productvariant-total-@product.IdProductVariant">@itemTotal.ToString("N0")₫</span>
-                  </div>
-                  
-                  @* Nút xóa *@
-                  <button class="btn-remove btl-click-delete"
-                          data-productvariant-id="@product.IdProductVariant" 
-                          data-productvariant-cartid="@product.IdCart"
-                          title="Xóa sản phẩm">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-
-          @* Tiếp tục mua sắm *@
-          <div class="continue-shopping">
-            <a href="/" class="btn btn-outline-primary">
-              <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
-            </a>
-          </div>
-        </div>
-
-        @* Sidebar - Thông tin đơn hàng *@
-        <div class="col-lg-4">
-          <div class="order-summary-container">
-            
-            @* Thông tin người nhận *@
-            <div class="summary-card recipient-info">
-              <div class="summary-card-header">
-                <i class="fas fa-map-marker-alt"></i>
-                <h5>Thông tin nhận hàng</h5>
-              </div>
-              <div class="summary-card-body">
-                @if (Model.User.Name == null || Model.User.Surname == null || Model.User.TinhThanh == null || Model.User.PhuongXa == null)
-                {
-                  <div class="info-warning">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Vui lòng cập nhật đầy đủ thông tin nhận hàng để tiếp tục đặt hàng.</p>
-                  </div>
-                }
-                else
-                {
-                  <div class="recipient-details">
-                    <div class="detail-row">
-                      <i class="fas fa-user"></i>
-                      <span id="FullName">@($"{Model.User.Surname} {Model.User.Name}")</span>
-                    </div>
-                    <div class="detail-row">
-                      <i class="fas fa-phone"></i>
-                      <span id="PhoneNumber">@Model.User.PhoneNumber</span>
-                    </div>
-                    <div class="detail-row">
-                      <i class="fas fa-home"></i>
-                      <span id="DiaChi">@($"{Model.User.DiaChiChiTiet}, {Model.PhuongXa}, {Model.TinhThanh}")</span>
-                    </div>
-                  </div>
-                }
-                <button class="btn btn-change-address" id="OrderInfoButton">
-                  <i class="fas fa-edit me-2"></i>Thay đổi địa chỉ
-                </button>
-              </div>
+                <h3>Giỏ hàng của bạn đang trống</h3>
+                <p class="text-muted">Hãy khám phá và thêm sản phẩm yêu thích vào giỏ hàng nhé!</p>
+                <a href="/" class="btn btn-primary btn-lg">
+                    <i class="fas fa-shopping-bag me-2"></i>Tiếp tục mua sắm
+                </a>
+            </div>
+        }
+        else
+        {
+            @* Header giỏ hàng *@
+            <div class="cart-header mb-4">
+                <h2 class="cart-title">
+                    <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của bạn
+                    <span class="cart-count">(@Model.CartItems.Count sản phẩm)</span>
+                </h2>
             </div>
 
-            @* Mã giảm giá *@
-            <div class="summary-card voucher-section">
-              <div class="summary-card-header">
-                <i class="fas fa-ticket-alt"></i>
-                <h5>Mã giảm giá</h5>
-              </div>
-              <div class="summary-card-body">
-                <div class="voucher-input-group">
-                  <input type="text" id="voucherCodeInput" class="voucher-input" placeholder="Nhập mã voucher...">
-                  <button class="btn btn-apply-voucher" id="applyVoucherBtn">
-                    Áp dụng
-                  </button>
-                </div>
-                <div id="VoucherMessage" class="voucher-message" style="display: none;"></div>
-              </div>
-            </div>
+            @* Trường hợp có sản phẩm *@
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    @* Danh sách sản phẩm *@
+                    <div class="cart-items-container">
+                        @foreach (var product in Model.CartItems)
+                        {
+                            <div class="cart-item" data-product-id="@product.IdProductVariant">
+                                <div class="cart-item-image">
+                                    <img src="@product.ImageUrl" alt="@product.Name" loading="lazy">
+                                    @if (product.HasActiveDiscount)
+                                    {
+                                        <span class="discount-badge">-@product.DiscountPercentage%</span>
+                                    }
+                                </div>
 
-            @* Tổng đơn hàng *@
-            <div class="summary-card order-total-card">
-              <div class="summary-card-header">
-                <i class="fas fa-receipt"></i>
-                <h5>Tổng đơn hàng</h5>
-              </div>
-              <div class="summary-card-body">
-                <div class="order-row">
-                  <span>Tạm tính (@Model.CartItems.Count sản phẩm)</span>
-                  <span class="total-cart">@total.ToString("N0")₫</span>
-                </div>
-                <div class="order-row">
-                  <span>Phí vận chuyển</span>
-                  <span class="text-success">Miễn phí</span>
-                </div>
-                <div class="order-row discount-row">
-                  <span>Giảm giá voucher</span>
-                  <span class="text-danger discount-amount">-0₫</span>
-                </div>
-                <div class="order-total-row">
-                  <span>Tổng cộng</span>
-                  <span class="final-amount">@total.ToString("N0")₫</span>
-                </div>
-                
-                <input type="hidden" id="totalAmountValue" value="@total" />
-              </div>
-            </div>
+                                <div class="cart-item-details">
+                                    <h5 class="cart-item-name">@product.Name</h5>
+                                    <div class="cart-item-variant">
+                                        <span class="variant-label">Màu sắc:</span>
+                                        <span class="variant-value">@product.Color</span>
+                                    </div>
 
-            @* Phương thức thanh toán *@
-            <div class="summary-card payment-methods-card">
-              <div class="summary-card-header">
-                <i class="fas fa-credit-card"></i>
-                <h5>Phương thức thanh toán</h5>
-              </div>
-              <div class="summary-card-body">
-                <div class="payment-options">
-                  @* COD *@
-                  <label class="payment-option">
-                    <input type="radio" name="PaymentMethod" value="0" checked>
-                    <div class="payment-option-content">
-                      <div class="payment-icon cod">
-                        <i class="fas fa-money-bill-wave"></i>
-                      </div>
-                      <div class="payment-info">
-                        <span class="payment-name">Thanh toán khi nhận hàng</span>
-                        <span class="payment-desc">Thanh toán bằng tiền mặt</span>
-                      </div>
-                      <div class="payment-check">
-                        <i class="fas fa-check-circle"></i>
-                      </div>
+                                    @* Giá sản phẩm *@
+                                    <div class="cart-item-price">
+                                        @if (product.HasActiveDiscount)
+                                        {
+                                            <span class="price-original">@product.Price.ToString("N0")₫</span>
+                                            <span class="price-current" id="productvariant-price-@product.IdProductVariant" data-price="@product.DiscountedPrice">@product.DiscountedPrice.ToString("N0")₫</span>
+                                            total += product.DiscountedPrice * product.Quantity;
+                                        }
+                                        else
+                                        {
+                                            <span class="price-current" id="productvariant-price-@product.IdProductVariant" data-price="@product.Price">@product.Price.ToString("N0")₫</span>
+                                            total += product.Price * product.Quantity;
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="cart-item-actions">
+                                    @* Điều chỉnh số lượng *@
+                                    <div class="quantity-control">
+                                        <button class="qty-btn qty-minus btl-click-minus"
+                                                data-productvariant-id="@product.IdProductVariant"
+                                                data-productvariant-cartid="@product.IdCart">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="text" class="qty-input"
+                                               value="@product.Quantity"
+                                               id="quantity-@product.IdProductVariant"
+                                               readonly>
+                                        <button class="qty-btn qty-plus btl-click-plus"
+                                                data-productvariant-id="@product.IdProductVariant"
+                                                data-productvariant-cartid="@product.IdCart"
+                                                data-product-id="@product.ProductId"
+                                                data-category-id="@product.CategoryId">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+
+                                    @* Thành tiền *@
+                                    <div class="cart-item-total">
+                                        <span class="total-label">Thành tiền:</span>
+                                        @{
+                                            var itemTotal = product.HasActiveDiscount ? product.DiscountedPrice * product.Quantity : product.Price * product.Quantity;
+                                        }
+                                        <span class="total-value" id="productvariant-total-@product.IdProductVariant">@itemTotal.ToString("N0")₫</span>
+                                    </div>
+
+                                    @* Nút xóa *@
+                                    <button class="btn-remove btl-click-delete"
+                                            data-productvariant-id="@product.IdProductVariant"
+                                            data-productvariant-cartid="@product.IdCart"
+                                            title="Xóa sản phẩm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
                     </div>
-                  </label>
 
-                  @* VNPay *@
-                  <label class="payment-option">
-                    <input type="radio" name="PaymentMethod" value="2">
-                    <div class="payment-option-content">
-                      <div class="payment-icon vnpay">
-                        <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay">
-                      </div>
-                      <div class="payment-info">
-                        <span class="payment-name">VNPay</span>
-                        <span class="payment-desc">Thanh toán qua cổng VNPay</span>
-                      </div>
-                      <div class="payment-check">
-                        <i class="fas fa-check-circle"></i>
-                      </div>
+                    @* Tiếp tục mua sắm *@
+                    <div class="continue-shopping">
+                        <a href="/" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+                        </a>
                     </div>
-                  </label>
                 </div>
-              </div>
-            </div>
 
-            @* Nút đặt hàng *@
-            <button id="SubmitOrderButton" class="btn btn-checkout">
-              <i class="fas fa-lock me-2"></i>
-              <span>Đặt hàng ngay</span>
-            </button>
+                @* Sidebar - Thông tin đơn hàng *@
+                <div class="col-lg-4">
+                    <div class="order-summary-container">
 
-            @* Cam kết *@
-            <div class="checkout-guarantees">
-              <div class="guarantee-item">
-                <i class="fas fa-shield-alt"></i>
-                <span>Thanh toán an toàn</span>
-              </div>
-              <div class="guarantee-item">
-                <i class="fas fa-undo"></i>
-                <span>Đổi trả trong 7 ngày</span>
-              </div>
-              <div class="guarantee-item">
-                <i class="fas fa-truck"></i>
-                <span>Giao hàng toàn quốc</span>
-              </div>
+                        @* Thông tin người nhận *@
+                        <div class="summary-card recipient-info">
+                            <div class="summary-card-header">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <h5>Thông tin nhận hàng</h5>
+                            </div>
+                            <div class="summary-card-body">
+                                @if (Model.User.Name == null || Model.User.Surname == null || Model.User.TinhThanh == null || Model.User.PhuongXa == null)
+                                {
+                                    <div class="info-warning">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <p>Vui lòng cập nhật đầy đủ thông tin nhận hàng để tiếp tục đặt hàng.</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="recipient-details">
+                                        <div class="detail-row">
+                                            <i class="fas fa-user"></i>
+                                            <span id="FullName">@($"{Model.User.Surname} {Model.User.Name}")</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-phone"></i>
+                                            <span id="PhoneNumber">@Model.User.PhoneNumber</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-phone"></i>
+                                            <span id="EmailAddress">@Model.User.EmailAddress</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-home"></i>
+                                            <span id="DiaChi">@($"{Model.User.DiaChiChiTiet}, {Model.PhuongXa}, {Model.TinhThanh}")</span>
+                                        </div>
+                                    </div>
+                                }
+                                <button class="btn btn-change-address" id="OrderInfoButton">
+                                    <i class="fas fa-edit me-2"></i>Thay đổi địa chỉ
+                                </button>
+                            </div>
+                        </div>
+
+                        @* Mã giảm giá *@
+                        <div class="summary-card voucher-section">
+                            <div class="summary-card-header">
+                                <i class="fas fa-ticket-alt"></i>
+                                <h5>Mã giảm giá</h5>
+                            </div>
+                            <div class="summary-card-body">
+                                <div class="voucher-input-group">
+                                    <input type="text" id="voucherCodeInput" class="voucher-input" placeholder="Nhập mã voucher...">
+                                    <button class="btn btn-apply-voucher" id="applyVoucherBtn">
+                                        Áp dụng
+                                    </button>
+                                </div>
+                                <div id="VoucherMessage" class="voucher-message" style="display: none;"></div>
+                            </div>
+                        </div>
+
+                        @* Tổng đơn hàng *@
+                        <div class="summary-card order-total-card">
+                            <div class="summary-card-header">
+                                <i class="fas fa-receipt"></i>
+                                <h5>Tổng đơn hàng</h5>
+                            </div>
+                            <div class="summary-card-body">
+                                <div class="order-row">
+                                    <span>Tạm tính (@Model.CartItems.Count sản phẩm)</span>
+                                    <span class="total-cart">@total.ToString("N0")₫</span>
+                                </div>
+                                <div class="order-row">
+                                    <span>Phí vận chuyển</span>
+                                    <span class="text-success">Miễn phí</span>
+                                </div>
+                                <div class="order-row discount-row">
+                                    <span>Giảm giá voucher</span>
+                                    <span class="text-danger discount-amount">-0₫</span>
+                                </div>
+                                <div class="order-total-row">
+                                    <span>Tổng cộng</span>
+                                    <span class="final-amount">@total.ToString("N0")₫</span>
+                                </div>
+
+                                <input type="hidden" id="totalAmountValue" value="@total" />
+                            </div>
+                        </div>
+
+                        @* Phương thức thanh toán *@
+                        <div class="summary-card payment-methods-card">
+                            <div class="summary-card-header">
+                                <i class="fas fa-credit-card"></i>
+                                <h5>Phương thức thanh toán</h5>
+                            </div>
+                            <div class="summary-card-body">
+                                <div class="payment-options">
+                                    @* COD *@
+                                    <label class="payment-option">
+                                        <input type="radio" name="PaymentMethod" value="0" checked>
+                                        <div class="payment-option-content">
+                                            <div class="payment-icon cod">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                            </div>
+                                            <div class="payment-info">
+                                                <span class="payment-name">Thanh toán khi nhận hàng</span>
+                                                <span class="payment-desc">Thanh toán bằng tiền mặt</span>
+                                            </div>
+                                            <div class="payment-check">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    @* VNPay *@
+                                    <label class="payment-option">
+                                        <input type="radio" name="PaymentMethod" value="2">
+                                        <div class="payment-option-content">
+                                            <div class="payment-icon vnpay">
+                                                <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay">
+                                            </div>
+                                            <div class="payment-info">
+                                                <span class="payment-name">VNPay</span>
+                                                <span class="payment-desc">Thanh toán qua cổng VNPay</span>
+                                            </div>
+                                            <div class="payment-check">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Nút đặt hàng *@
+                        <button id="SubmitOrderButton" class="btn btn-checkout">
+                            <i class="fas fa-lock me-2"></i>
+                            <span>Đặt hàng ngay</span>
+                        </button>
+
+                        @* Cam kết *@
+                        <div class="checkout-guarantees">
+                            <div class="guarantee-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Thanh toán an toàn</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-undo"></i>
+                                <span>Đổi trả trong 7 ngày</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-truck"></i>
+                                <span>Giao hàng toàn quốc</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    }
-  </div>
+        }
+    </div>
 </div>
 
 <style>
-  /* ========== CART PAGE STYLES ========== */
-  .cart-page {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-    min-height: 100vh;
-    padding-top: 20px;
-    padding-bottom: 40px;
-  }
-
-  /* Breadcrumb */
-  .breadcrumb {
-    background: transparent;
-    padding: 0;
-    margin-bottom: 0;
-  }
-
-  .breadcrumb-item a {
-    color: #6c757d;
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-
-  .breadcrumb-item a:hover {
-    color: #007bff;
-  }
-
-  .breadcrumb-item.active {
-    color: #333;
-    font-weight: 500;
-  }
-
-  /* Cart Header */
-  .cart-header {
-    background: white;
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-
-  .cart-title {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
-    display: flex;
-    align-items: center;
-  }
-
-  .cart-title i {
-    color: #007bff;
-  }
-
-  .cart-count {
-    font-size: 1rem;
-    font-weight: 400;
-    color: #6c757d;
-    margin-left: 8px;
-  }
-
-  /* Empty Cart */
-  .empty-cart-container {
-    background: white;
-    border-radius: 16px;
-    padding: 60px 40px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  }
-
-  .empty-cart-icon {
-    width: 120px;
-    height: 120px;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 30px;
-  }
-
-  .empty-cart-icon i {
-    font-size: 50px;
-    color: white;
-  }
-
-  .empty-cart-container h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-  }
-
-  .empty-cart-container p {
-    margin-bottom: 25px;
-  }
-
-  /* Cart Items Container */
-  .cart-items-container {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    overflow: hidden;
-  }
-
-  /* Cart Item */
-  .cart-item {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s;
-    gap: 20px;
-  }
-
-  .cart-item:last-child {
-    border-bottom: none;
-  }
-
-  .cart-item:hover {
-    background-color: #fafbfc;
-  }
-
-  /* Cart Item Image */
-  .cart-item-image {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    flex-shrink: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f8f9fa;
-  }
-
-  .cart-item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .discount-badge {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  /* Cart Item Details */
-  .cart-item-details {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .cart-item-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .cart-item-variant {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 10px;
-  }
-
-  .variant-label {
-    color: #999;
-  }
-
-  .variant-value {
-    color: #333;
-    font-weight: 500;
-  }
-
-  .cart-item-price {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .price-original {
-    color: #999;
-    text-decoration: line-through;
-    font-size: 0.9rem;
-  }
-
-  .price-current {
-    color: #ee4d2d;
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  /* Cart Item Actions */
-  .cart-item-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px;
-    min-width: 180px;
-  }
-
-  /* Quantity Control */
-  .quantity-control {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .qty-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: #f8f9fa;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .qty-btn:hover {
-    background: #007bff;
-    color: white;
-  }
-
-  .qty-input {
-    width: 50px;
-    height: 36px;
-    border: none;
-    text-align: center;
-    font-weight: 600;
-    font-size: 1rem;
-    background: white;
-  }
-
-  /* Cart Item Total */
-  .cart-item-total {
-    text-align: right;
-  }
-
-  .total-label {
-    display: block;
-    font-size: 0.8rem;
-    color: #999;
-    margin-bottom: 3px;
-  }
-
-  .total-value {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #007bff;
-  }
-
-  /* Remove Button */
-  .btn-remove {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: #fff0f0;
-    color: #dc3545;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .btn-remove:hover {
-    background: #dc3545;
-    color: white;
-    transform: scale(1.1);
-  }
-
-  /* Continue Shopping */
-  .continue-shopping {
-    margin-top: 20px;
-  }
-
-  .continue-shopping .btn {
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-weight: 500;
-  }
-
-  /* ========== ORDER SUMMARY SIDEBAR ========== */
-  .order-summary-container {
-    position: sticky;
-    top: 100px;
-  }
-
-  .summary-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-
-  .summary-card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #eee;
-  }
-
-  .summary-card-header i {
-    color: #007bff;
-    font-size: 1.1rem;
-  }
-
-  .summary-card-header h5 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .summary-card-body {
-    padding: 20px;
-  }
-
-  /* Recipient Info */
-  .recipient-details {
-    margin-bottom: 15px;
-  }
-
-  .detail-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
-    font-size: 0.9rem;
-  }
-
-  .detail-row:last-child {
-    margin-bottom: 0;
-  }
-
-  .detail-row i {
-    color: #007bff;
-    width: 16px;
-    margin-top: 3px;
-  }
-
-  .detail-row span {
-    color: #333;
-    line-height: 1.5;
-  }
-
-  .info-warning {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
-    background: #fff3cd;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-
-  .info-warning i {
-    color: #856404;
-    margin-top: 2px;
-  }
-
-  .info-warning p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #856404;
-  }
-
-  .btn-change-address {
-    width: 100%;
-    padding: 10px;
-    border: 1px dashed #007bff;
-    background: transparent;
-    color: #007bff;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s;
-  }
-
-  .btn-change-address:hover {
-    background: #007bff;
-    color: white;
-    border-style: solid;
-  }
-
-  /* Voucher Section */
-  .voucher-input-group {
-    display: flex;
-    gap: 10px;
-  }
-
-  .voucher-input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    transition: border-color 0.3s;
-  }
-
-  .voucher-input:focus {
-    outline: none;
-    border-color: #007bff;
-  }
-
-  .btn-apply-voucher {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    white-space: nowrap;
-  }
-
-  .btn-apply-voucher:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,123,255,0.4);
-  }
-
-  .voucher-message {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-  }
-
-  .voucher-message.alert-success {
-    background: #d4edda;
-    color: #155724;
-  }
-
-  .voucher-message.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-  }
-
-  /* Order Total */
-  .order-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px dashed #eee;
-    font-size: 0.95rem;
-  }
-
-  .order-row:last-of-type {
-    border-bottom: none;
-  }
-
-  .order-total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    margin-top: 10px;
-    border-top: 2px solid #eee;
-  }
-
-  .order-total-row span:first-child {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .final-amount {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #ee4d2d;
-  }
-
-  /* Payment Methods */
-  .payment-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .payment-option {
-    cursor: pointer;
-  }
-
-  .payment-option input {
-    display: none;
-  }
-
-  .payment-option-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    transition: all 0.3s;
-  }
-
-  .payment-option input:checked + .payment-option-content {
-    border-color: #007bff;
-    background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
-  }
-
-  .payment-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .payment-icon.cod {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    font-size: 1.2rem;
-  }
-
-  .payment-icon.vnpay {
-    background: white;
-    padding: 5px;
-  }
-
-  .payment-icon.vnpay img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .payment-info {
-    flex: 1;
-  }
-
-  .payment-name {
-    display: block;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 3px;
-  }
-
-  .payment-desc {
-    display: block;
-    font-size: 0.8rem;
-    color: #999;
-  }
-
-  .payment-check {
-    color: #ccc;
-    font-size: 1.3rem;
-    transition: all 0.3s;
-  }
-
-  .payment-option input:checked + .payment-option-content .payment-check {
-    color: #007bff;
-  }
-
-  /* Checkout Button */
-  .btn-checkout {
-    width: 100%;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #ee4d2d 0%, #ff6b6b 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .btn-checkout:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(238,77,45,0.4);
-  }
-
-  .btn-checkout:active {
-    transform: translateY(-1px);
-  }
-
-  /* Checkout Guarantees */
-  .checkout-guarantees {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .guarantee-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
-    color: #6c757d;
-  }
-
-  .guarantee-item i {
-    color: #28a745;
-  }
-
-  /* ========== RESPONSIVE ========== */
-  @@media (max-width: 991px) {
-    .order-summary-container {
-      position: static;
+    /* ========== CART PAGE STYLES ========== */
+    .cart-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        min-height: 100vh;
+        padding-top: 20px;
+        padding-bottom: 40px;
     }
-  }
 
-  @@media (max-width: 768px) {
+    /* Breadcrumb */
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 0;
+    }
+
+    .breadcrumb-item a {
+        color: #6c757d;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: #007bff;
+        }
+
+    .breadcrumb-item.active {
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Cart Header */
+    .cart-header {
+        background: white;
+        padding: 20px 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .cart-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+
+        .cart-title i {
+            color: #007bff;
+        }
+
+    .cart-count {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #6c757d;
+        margin-left: 8px;
+    }
+
+    /* Empty Cart */
+    .empty-cart-container {
+        background: white;
+        border-radius: 16px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .empty-cart-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+    }
+
+        .empty-cart-icon i {
+            font-size: 50px;
+            color: white;
+        }
+
+    .empty-cart-container h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .empty-cart-container p {
+        margin-bottom: 25px;
+    }
+
+    /* Cart Items Container */
+    .cart-items-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    /* Cart Item */
     .cart-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+        gap: 20px;
     }
 
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item:hover {
+            background-color: #fafbfc;
+        }
+
+    /* Cart Item Image */
     .cart-item-image {
-      width: 80px;
-      height: 80px;
+        position: relative;
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f8f9fa;
     }
 
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .discount-badge {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    /* Cart Item Details */
+    .cart-item-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .cart-item-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cart-item-variant {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .variant-label {
+        color: #999;
+    }
+
+    .variant-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .cart-item-price {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .price-original {
+        color: #999;
+        text-decoration: line-through;
+        font-size: 0.9rem;
+    }
+
+    .price-current {
+        color: #ee4d2d;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    /* Cart Item Actions */
     .cart-item-actions {
-      width: 100%;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 15px;
+        min-width: 180px;
     }
 
+    /* Quantity Control */
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .qty-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #f8f9fa;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .qty-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+
+    .qty-input {
+        width: 50px;
+        height: 36px;
+        border: none;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1rem;
+        background: white;
+    }
+
+    /* Cart Item Total */
     .cart-item-total {
-      text-align: left;
+        text-align: right;
     }
 
+    .total-label {
+        display: block;
+        font-size: 0.8rem;
+        color: #999;
+        margin-bottom: 3px;
+    }
+
+    .total-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #007bff;
+    }
+
+    /* Remove Button */
+    .btn-remove {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: #fff0f0;
+        color: #dc3545;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-remove:hover {
+            background: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    /* Continue Shopping */
+    .continue-shopping {
+        margin-top: 20px;
+    }
+
+        .continue-shopping .btn {
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+        }
+
+    /* ========== ORDER SUMMARY SIDEBAR ========== */
+    .order-summary-container {
+        position: sticky;
+        top: 100px;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .summary-card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #eee;
+    }
+
+        .summary-card-header i {
+            color: #007bff;
+            font-size: 1.1rem;
+        }
+
+        .summary-card-header h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .summary-card-body {
+        padding: 20px;
+    }
+
+    /* Recipient Info */
+    .recipient-details {
+        margin-bottom: 15px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+    }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-row i {
+            color: #007bff;
+            width: 16px;
+            margin-top: 3px;
+        }
+
+        .detail-row span {
+            color: #333;
+            line-height: 1.5;
+        }
+
+    .info-warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+        background: #fff3cd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+        .info-warning i {
+            color: #856404;
+            margin-top: 2px;
+        }
+
+        .info-warning p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+
+    .btn-change-address {
+        width: 100%;
+        padding: 10px;
+        border: 1px dashed #007bff;
+        background: transparent;
+        color: #007bff;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+        .btn-change-address:hover {
+            background: #007bff;
+            color: white;
+            border-style: solid;
+        }
+
+    /* Voucher Section */
+    .voucher-input-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .voucher-input {
+        flex: 1;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s;
+    }
+
+        .voucher-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+    .btn-apply-voucher {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+
+        .btn-apply-voucher:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+        }
+
+    .voucher-message {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+        .voucher-message.alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .voucher-message.alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+    /* Order Total */
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px dashed #eee;
+        font-size: 0.95rem;
+    }
+
+        .order-row:last-of-type {
+            border-bottom: none;
+        }
+
+    .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        margin-top: 10px;
+        border-top: 2px solid #eee;
+    }
+
+        .order-total-row span:first-child {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .final-amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #ee4d2d;
+    }
+
+    /* Payment Methods */
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .payment-option {
+        cursor: pointer;
+    }
+
+        .payment-option input {
+            display: none;
+        }
+
+    .payment-option-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .payment-option input:checked + .payment-option-content {
+        border-color: #007bff;
+        background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
+    }
+
+    .payment-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .payment-icon.cod {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .payment-icon.vnpay {
+            background: white;
+            padding: 5px;
+        }
+
+            .payment-icon.vnpay img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+    .payment-info {
+        flex: 1;
+    }
+
+    .payment-name {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+    }
+
+    .payment-desc {
+        display: block;
+        font-size: 0.8rem;
+        color: #999;
+    }
+
+    .payment-check {
+        color: #ccc;
+        font-size: 1.3rem;
+        transition: all 0.3s;
+    }
+
+    .payment-option input:checked + .payment-option-content .payment-check {
+        color: #007bff;
+    }
+
+    /* Checkout Button */
+    .btn-checkout {
+        width: 100%;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #ee4d2d 0%, #ff6b6b 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(238,77,45,0.4);
+        }
+
+        .btn-checkout:active {
+            transform: translateY(-1px);
+        }
+
+    /* Checkout Guarantees */
     .checkout-guarantees {
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
     }
-  }
 
-  /* Alert Animation */
-  .alert {
-    animation: slideDown 0.5s ease-out;
-  }
+    .guarantee-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
 
-  @@keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
+        .guarantee-item i {
+            color: #28a745;
+        }
+
+    /* ========== RESPONSIVE ========== */
+    @@media (max-width: 991px) {
+        .order-summary-container {
+            position: static;
+        }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+
+    @@media (max-width: 768px) {
+        .cart-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+        }
+
+        .cart-item-actions {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-total {
+            text-align: left;
+        }
+
+        .checkout-guarantees {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
     }
-  }
+
+    /* Alert Animation */
+    .alert {
+        animation: slideDown 0.5s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>

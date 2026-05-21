@@ -1,538 +1,542 @@
 ﻿@using Acme.SimpleTaskApp.Web.Models.UserProfiles
 @model UserProfileViewModel
 @{
-  ViewData["Title"] = "Index";
-  Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/Layout/Customer/_LayoutCustomer.cshtml";
 }
 
 @section scripts
 {
-  <environment names="Development">
-    @* <script src="~/view-resources/Views/UserProfiles/Index.js" asp-append-version="true"></script> *@
-    <script src="~/view-resources/Views/UserProfiles/ProfileTab.js" asp-append-version="true"></script>
-    <script src="~/view-resources/Views/UserProfiles/OrderHistory.js" asp-append-version="true"></script>
-    <script src="~/view-resources/Views/UserProfiles/NotificationTab.js" asp-append-version="true"></script>
-  </environment>
+    <environment names="Development">
+        @* <script src="~/view-resources/Views/UserProfiles/Index.js" asp-append-version="true"></script> *@
+        <script src="~/view-resources/Views/UserProfiles/ProfileTab.js" asp-append-version="true"></script>
+        <script src="~/view-resources/Views/UserProfiles/OrderHistory.js" asp-append-version="true"></script>
+        <script src="~/view-resources/Views/UserProfiles/NotificationTab.js" asp-append-version="true"></script>
+    </environment>
 }
 
 <div class="container">
-  <div class="row  pt-3">
-    <div class="col-md-3">
-      <div class="account-sidebar">
-        <h4>@Model.User.FullName</h4>
-        <ul class="nav flex-column" id="accountTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="orders-tab" data-toggle="tab" href="#orders-tab-pane" role="tab" aria-controls="orders-tab-pane" aria-selected="true">
-              <i class="fas fa-box"></i>
-              Đơn hàng đã mua
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="info-tab" data-toggle="tab" href="#info-tab-pane" role="tab" aria-controls="info-tab-pane" aria-selected="false">
-              <i class="fas fa-map-marker-alt"></i>
-              Thông tin và số địa chỉ
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="notification-tab" data-toggle="tab" href="#notification-tab-pane" role="tab" aria-controls="notification-tab-pane" aria-selected="false">
-              <i class="fas fa-bell"></i>
-              Lịch sử thông báo
-            </a>
-          </li>
-        </ul>
-        <hr />
-        <button class="btn logout-btn">Đăng Xuất</button>
-      </div>
+    <div class="row  pt-3">
+        <div class="col-md-3">
+            <div class="account-sidebar">
+                <h4>@Model.User.FullName</h4>
+                <ul class="nav flex-column" id="accountTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="orders-tab" data-toggle="tab" href="#orders-tab-pane" role="tab" aria-controls="orders-tab-pane" aria-selected="true">
+                            <i class="fas fa-box"></i>
+                            Đơn hàng đã mua
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="info-tab" data-toggle="tab" href="#info-tab-pane" role="tab" aria-controls="info-tab-pane" aria-selected="false">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Thông tin và số địa chỉ
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="notification-tab" data-toggle="tab" href="#notification-tab-pane" role="tab" aria-controls="notification-tab-pane" aria-selected="false">
+                            <i class="fas fa-bell"></i>
+                            Lịch sử thông báo
+                        </a>
+                    </li>
+                </ul>
+                <hr />
+                <button class="btn logout-btn">Đăng Xuất</button>
+            </div>
+        </div>
+
+        <!-- Cột bên phải (Nội dung các Tab) -->
+        <div class="col-md-9">
+            <div class="tab-content" id="accountTabContent">
+
+                <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
+                <div class="tab-pane fade show active" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Đơn hàng đã mua</h4>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="StartEndRange" class="form-label mb-0">Thời gian đặt hàng</label>
+                                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="Chọn khoảng thời gian đặt hàng.." name="Thời gian đặt hàng" style="width: 200px" />
+
+                                <label for="PaymentMethod" class="form-label mb-0">Hình thức thanh toán</label>
+                                <select class="form-select" id="PaymentMethod" name="PaymentMethod" style="width: 200px">
+                                    <option value="">Tất cả</option>
+                                    <option value="0">Thanh toán khi nhận hàng</option>
+                                    <option value="1">Chuyển khoản ngân hàng</option>
+                                    <option value="2">Ví điện tử</option>
+                                    <option value="3">Thẻ tín dụng</option>
+                                </select>
+
+                                <button id="ResetFilters" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-refresh"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-pills mb-4 order-status-filters">
+                        <li class="nav-item"><a href="#" class="nav-link active" data-status="all">Tất cả</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="-1">Chờ thanh toán</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="0">Chờ xác nhận</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="1">Đang xử lý</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="2">Đang giao hàng</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="3">Thành công</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-status="4,5,6">Đã hủy/Thất bại</a></li>
+                    </ul>
+
+                    <!-- Container cho danh sách đơn hàng -->
+                    <div class="orders-list-container">
+                        <!-- Nội dung đơn hàng sẽ được render bằng JavaScript -->
+                    </div>
+
+                    <!-- Container hiển thị khi không có đơn hàng -->
+                    <div class="empty-orders-container">
+                        <div class="icon"><i class="fas fa-shopping-bag"></i></div>
+                        <h4>Rất tiếc, không tìm thấy đơn hàng nào phù hợp</h4>
+                        <p class="text-muted">Vẫn còn rất nhiều sản phẩm đang chờ anh</p>
+                        <div>
+                            <a href="#" class="btn btn-outline-primary">Điện thoại</a>
+                            <a href="#" class="btn btn-outline-primary">Laptop</a>
+                        </div>
+                        <div class="mt-4">
+                            <a href="/"><i class="fas fa-chevron-left"></i> Về trang chủ</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Nội dung cho Tab "Lịch sử thông báo" -->
+                <div class="tab-pane fade" id="notification-tab-pane" role="tabpanel" aria-labelledby="notification-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Lịch sử thông báo</h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <select class="form-select" id="NotificationStateFilter" style="width: 180px">
+                                <option value="">Tất cả</option>
+                                <option value="0">Chưa đọc</option>
+                                <option value="1">Đã đọc</option>
+                            </select>
+                            <button id="MarkAllAsRead" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check-double"></i> Đánh dấu tất cả đã đọc
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Container cho danh sách thông báo -->
+                    <div class="notifications-list-container">
+                        <!-- Nội dung thông báo sẽ được render bằng JavaScript -->
+                    </div>
+
+                    <!-- Container hiển thị khi không có thông báo -->
+                    <div class="empty-notifications-container" style="display: none;">
+                        <div class="icon"><i class="fas fa-bell-slash"></i></div>
+                        <h4>Không có thông báo nào</h4>
+                        <p class="text-muted">Bạn chưa có thông báo nào trong hệ thống</p>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <div class="notification-pagination mt-4">
+                        <nav aria-label="Notification pagination">
+                            <ul class="pagination justify-content-center" id="NotificationPagination">
+                                <!-- Pagination sẽ được render bằng JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- 3. Nội dung cho Tab "Thông tin và số địa chỉ" -->
+                <div class="tab-pane fade" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab">
+                    <h3 class="mb-4 fw-bold">Thông tin tài khoản</h3>
+
+                    <!-- Form cập nhật thông tin cá nhân -->
+                    <div class="info-card">
+                        <h5 class="info-card-header">Thông tin cá nhân</h5>
+                        <form id="updateProfileForm" name="updateProfileForm">
+                            <input type="hidden" id="UserId" name="UserId" value="@Model.User.Id" />
+
+                            <!-- Giới tính -->
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="GioiTinh" id="genderMale" value="1" @(Model.User.GioiTinh == 1 ? "checked" : "")>
+                                    <label class="form-check-label" for="genderMale">Anh</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="GioiTinh" id="genderFemale" value="0" @(Model.User.GioiTinh == 0 ? "checked" : "")>
+                                    <label class="form-check-label" for="genderFemale">Chị</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="GioiTinh" id="genderOther" value="2" @(Model.User.GioiTinh == 2 ? "checked" : "")>
+                                    <label class="form-check-label" for="genderOther">Khác</label>
+                                </div>
+                            </div>
+
+                            <!-- Họ tên & SĐT -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="FullName" class="form-label">Họ & Tên: </label>
+                                    <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.User.FullName">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="PhoneNumber" class="form-label">Số điện thoại:</label>
+                                    <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" value="@Model.User.PhoneNumber">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="EmailAddress" class="form-label">EmailAddress:</label>
+                                    <input type="text" class="form-control" id="EmailAddress" name="EmailAddress" value="@Model.User.EmailAddress">
+                                </div>
+                            </div>
+
+                            <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
+
+                            <!-- Tỉnh/Thành & Phường/Xã -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="TinhThanh" class="form-label">Tỉnh/Thành phố:</label>
+                                    <select class="form-select" id="TinhThanh" name="TinhThanh">
+                                        <option value="">Chọn Tỉnh/Thành phố</option>
+                                        @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
+                                        {
+                                            <option value="@Model.User.TinhThanh" selected>@Model.TenTinhThanh</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="PhuongXa" class="form-label">Phường/Xã:</label>
+                                    <select class="form-select" id="PhuongXa" name="PhuongXa">
+                                        <option value="">Chọn Phường/Xã</option>
+                                        @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
+                                        {
+                                            <option value="@Model.User.PhuongXa" selected>@Model.TenPhuongXa</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Địa chỉ chi tiết -->
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="DiaChiChiTiet" class="form-label">Địa chỉ chi tiết:</label>
+                                    <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
+                                </div>
+                            </div>
+
+                            <!-- Địa chỉ mặc định -->
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
+                                <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="text-end">
+                                <button type="button" id="cancelProfileEdit" class="btn btn-secondary" style="color: white">Hủy</button>
+                                <button type="button" id="saveProfile" class="btn btn-primary" style="color: white">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Cột bên phải (Nội dung các Tab) -->
-    <div class="col-md-9">
-      <div class="tab-content" id="accountTabContent">
-
-        <!-- 1. Nội dung cho Tab "Đơn hàng đã mua" -->
-        <div class="tab-pane fade show active" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Đơn hàng đã mua</h4>
-            <div>
-              <div class="d-flex align-items-center gap-2">
-                <label for="StartEndRange" class="form-label mb-0">Thời gian đặt hàng</label>
-                <input id="StartEndRange" autocomplete="off" type="text" class="form-control date-range-picker" placeholder="Chọn khoảng thời gian đặt hàng.." name="Thời gian đặt hàng" style="width: 200px" />
-
-                <label for="PaymentMethod" class="form-label mb-0">Hình thức thanh toán</label>
-                <select class="form-select" id="PaymentMethod" name="PaymentMethod" style="width: 200px">
-                  <option value="">Tất cả</option>
-                  <option value="0">Thanh toán khi nhận hàng</option>
-                  <option value="1">Chuyển khoản ngân hàng</option>
-                  <option value="2">Ví điện tử</option>
-                  <option value="3">Thẻ tín dụng</option>
-                </select>
-
-                <button id="ResetFilters" class="btn btn-outline-secondary btn-sm">
-                  <i class="fas fa-refresh"></i> Reset
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <ul class="nav nav-pills mb-4 order-status-filters">
-            <li class="nav-item"><a href="#" class="nav-link active" data-status="all">Tất cả</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="-1">Chờ thanh toán</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="0">Chờ xác nhận</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="1">Đang xử lý</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="2">Đang giao hàng</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="3">Thành công</a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-status="4,5,6">Đã hủy/Thất bại</a></li>
-          </ul>
-
-          <!-- Container cho danh sách đơn hàng -->
-          <div class="orders-list-container">
-            <!-- Nội dung đơn hàng sẽ được render bằng JavaScript -->
-          </div>
-
-          <!-- Container hiển thị khi không có đơn hàng -->
-          <div class="empty-orders-container">
-            <div class="icon"><i class="fas fa-shopping-bag"></i></div>
-            <h4>Rất tiếc, không tìm thấy đơn hàng nào phù hợp</h4>
-            <p class="text-muted">Vẫn còn rất nhiều sản phẩm đang chờ anh</p>
-            <div>
-              <a href="#" class="btn btn-outline-primary">Điện thoại</a>
-              <a href="#" class="btn btn-outline-primary">Laptop</a>
-            </div>
-            <div class="mt-4">
-              <a href="/"><i class="fas fa-chevron-left"></i> Về trang chủ</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Nội dung cho Tab "Lịch sử thông báo" -->
-        <div class="tab-pane fade" id="notification-tab-pane" role="tabpanel" aria-labelledby="notification-tab">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Lịch sử thông báo</h4>
-            <div class="d-flex align-items-center gap-2">
-              <select class="form-select" id="NotificationStateFilter" style="width: 180px">
-                <option value="">Tất cả</option>
-                <option value="0">Chưa đọc</option>
-                <option value="1">Đã đọc</option>
-              </select>
-              <button id="MarkAllAsRead" class="btn btn-outline-primary btn-sm">
-                <i class="fas fa-check-double"></i> Đánh dấu tất cả đã đọc
-              </button>
-            </div>
-          </div>
-
-          <!-- Container cho danh sách thông báo -->
-          <div class="notifications-list-container">
-            <!-- Nội dung thông báo sẽ được render bằng JavaScript -->
-          </div>
-
-          <!-- Container hiển thị khi không có thông báo -->
-          <div class="empty-notifications-container" style="display: none;">
-            <div class="icon"><i class="fas fa-bell-slash"></i></div>
-            <h4>Không có thông báo nào</h4>
-            <p class="text-muted">Bạn chưa có thông báo nào trong hệ thống</p>
-          </div>
-
-          <!-- Phân trang -->
-          <div class="notification-pagination mt-4">
-            <nav aria-label="Notification pagination">
-              <ul class="pagination justify-content-center" id="NotificationPagination">
-                <!-- Pagination sẽ được render bằng JavaScript -->
-              </ul>
-            </nav>
-          </div>
-        </div>
-
-        <!-- 3. Nội dung cho Tab "Thông tin và số địa chỉ" -->
-        <div class="tab-pane fade" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab">
-          <h3 class="mb-4 fw-bold">Thông tin tài khoản</h3>
-
-          <!-- Form cập nhật thông tin cá nhân -->
-          <div class="info-card">
-            <h5 class="info-card-header">Thông tin cá nhân</h5>
-            <form id="updateProfileForm" name="updateProfileForm">
-              <input type="hidden" id="UserId" name="UserId" value="@Model.User.Id" />
-
-              <!-- Giới tính -->
-              <div class="mb-3">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderMale" value="1" @(Model.User.GioiTinh == 1 ? "checked" : "")>
-                  <label class="form-check-label" for="genderMale">Anh</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderFemale" value="0" @(Model.User.GioiTinh == 0 ? "checked" : "")>
-                  <label class="form-check-label" for="genderFemale">Chị</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="GioiTinh" id="genderOther" value="2" @(Model.User.GioiTinh == 2 ? "checked" : "")>
-                  <label class="form-check-label" for="genderOther">Khác</label>
-                </div>
-              </div>
-
-              <!-- Họ tên & SĐT -->
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="FullName" class="form-label">Họ & Tên: </label>
-                  <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.User.FullName">
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="PhoneNumber" class="form-label">Số điện thoại:</label>
-                  <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" value="@Model.User.PhoneNumber">
-                </div>
-              </div>
-
-              <h5 class="info-card-header">Địa chỉ nhận hàng</h5>
-
-              <!-- Tỉnh/Thành & Phường/Xã -->
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="TinhThanh" class="form-label">Tỉnh/Thành phố:</label>
-                  <select class="form-select" id="TinhThanh" name="TinhThanh">
-                    <option value="">Chọn Tỉnh/Thành phố</option>
-                    @if (!string.IsNullOrEmpty(Model.User.TinhThanh))
-                    {
-                      <option value="@Model.User.TinhThanh" selected>@Model.TenTinhThanh</option>
-                    }
-                  </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="PhuongXa" class="form-label">Phường/Xã:</label>
-                  <select class="form-select" id="PhuongXa" name="PhuongXa">
-                    <option value="">Chọn Phường/Xã</option>
-                    @if (!string.IsNullOrEmpty(Model.User.PhuongXa))
-                    {
-                      <option value="@Model.User.PhuongXa" selected>@Model.TenPhuongXa</option>
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <!-- Địa chỉ chi tiết -->
-              <div class="row">
-                <div class="col-12 mb-3">
-                  <label for="DiaChiChiTiet" class="form-label">Địa chỉ chi tiết:</label>
-                  <input type="text" class="form-control" id="DiaChiChiTiet" name="DiaChiChiTiet" placeholder="Số Nhà, Tên Đường*" value="@Model.User.DiaChiChiTiet">
-                </div>
-              </div>
-
-              <!-- Địa chỉ mặc định -->
-              <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="IsDiaChiMacDinh" name="IsDiaChiMacDinh" @(Model.User.IsDiaChiMacDinh == 1 ? "checked" : "")>
-                <label class="form-check-label" for="IsDiaChiMacDinh">Đặt làm địa chỉ mặc định</label>
-              </div>
-
-              <!-- Buttons -->
-              <div class="text-end">
-                <button type="button" id="cancelProfileEdit" class="btn btn-secondary" style="color: white">Hủy</button>
-                <button type="button" id="saveProfile" class="btn btn-primary" style="color: white">Lưu</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <style>
 
-  /* CSS cho đơn hàng dạng vắn tắt */
-  .order-card {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease;
-    margin-bottom: 12px;
-  }
-
-    .order-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    /* CSS cho đơn hàng dạng vắn tắt */
+    .order-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        transition: box-shadow 0.2s ease;
+        margin-bottom: 12px;
     }
 
-    .order-card .card-body {
-      padding: 12px 16px;
+        .order-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .order-card .card-body {
+            padding: 12px 16px;
+        }
+
+    .badge {
+        font-size: 0.7em;
+        padding: 3px 6px;
+        border-radius: 4px;
     }
 
-  .badge {
-    font-size: 0.7em;
-    padding: 3px 6px;
-    border-radius: 4px;
-  }
-
-  .order-detail-content {
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    padding: 12px;
-    font-size: 0.9em;
-  }
-
-  .order-detail-item {
-    background-color: white;
-    border-radius: 4px;
-    margin-bottom: 6px;
-    font-size: 0.9em;
-  }
-
-  .btn-sm {
-    padding: 2px 8px;
-    font-size: 0.8em;
-  }
-
-  /* Ẩn container mặc định */
-  .orders-list-container {
-    display: none;
-  }
-
-  .empty-orders-container {
-    display: none;
-  }
-
-  /* Layout cho bộ lọc */
-  .gap-2 {
-    gap: 0.5rem;
-  }
-  /* ----- CSS chung cho cả 2 tab ----- */
-  .account-sidebar .nav-link {
-    color: #333;
-    padding: 12px 15px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-    cursor: pointer; /* Thêm con trỏ để cho biết có thể click */
-  }
-
-    /* Class 'active' của Bootstrap tab sẽ tự động xử lý việc highlight */
-    .account-sidebar .nav-link.active,
-    .account-sidebar .nav-link:hover {
-      background-color: #f0f0f0;
-      color: #0d6efd;
+    .order-detail-content {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 0.9em;
     }
 
-    .account-sidebar .nav-link i {
-      margin-right: 10px;
-      width: 20px;
-      text-align: center;
+    .order-detail-item {
+        background-color: white;
+        border-radius: 4px;
+        margin-bottom: 6px;
+        font-size: 0.9em;
     }
 
-  .logout-btn {
-    width: 100%;
-    border: 1px solid #ddd;
-    font-weight: bold;
-    color: #dc3545;
-    background-color: white;
-  }
-
-  /* ----- CSS cho Tab Đơn hàng ----- */
-  .order-status-filters .nav-link {
-    color: #333;
-    border: 1px solid #dee2e6;
-    border-radius: 20px;
-    margin-right: 10px;
-    padding: 5px 15px;
-    font-size: 0.9rem;
-  }
-
-    .order-status-filters .nav-link.active {
-      background-color: white;
-      color: #0d6efd;
-      border-color: #0d6efd;
-      font-weight: bold;
-    }
-
-  .empty-orders-container {
-    text-align: center;
-    padding: 80px 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-  }
-
-    .empty-orders-container .icon {
-      font-size: 60px;
-      color: #0d6efd;
-      margin-bottom: 20px;
-    }
-
-    .empty-orders-container h4 {
-      font-weight: bold;
-    }
-
-  /* ----- CSS cho Tab Thông tin ----- */
-  .info-card {
-    background-color: #fff;
-    padding: 24px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    margin-bottom: 24px;
-  }
-
-  .info-card-header {
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .update-btn {
-    background-color: #f57224;
-    border-color: #f57224;
-    color: white;
-    font-weight: bold;
-  }
-
-  .cancel-save-links a {
-    margin-left: 15px;
-    font-weight: bold;
-  }
-
-  .form-select {
-    color: #f57224;
-  }
-
-  #saveProfile {
-    color: #198754; /* Màu xanh cho nút Lưu */
-  }
-
-  #cancelProfileEdit {
-    color: #6c757d; /* Màu xám cho nút Hủy */
-  }
-
-  /* ----- CSS cho Tab Thông báo ----- */
-  .notification-item {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
-    transition: all 0.2s ease;
-    background-color: #fff;
-  }
-
-    .notification-item:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .notification-item.unread {
-      background-color: #f0f7ff;
-      border-left: 4px solid #0d6efd;
-    }
-
-    .notification-item .notification-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-    }
-
-      .notification-item .notification-icon.success {
-        background-color: #d1e7dd;
-        color: #198754;
-      }
-
-      .notification-item .notification-icon.info {
-        background-color: #cff4fc;
-        color: #0dcaf0;
-      }
-
-      .notification-item .notification-icon.warning {
-        background-color: #fff3cd;
-        color: #ffc107;
-      }
-
-      .notification-item .notification-icon.error {
-        background-color: #f8d7da;
-        color: #dc3545;
-      }
-
-    .notification-item .notification-content {
-      flex: 1;
-    }
-
-    .notification-item .notification-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #333;
-    }
-
-    .notification-item .notification-message {
-      color: #666;
-      font-size: 0.9em;
-      margin-bottom: 4px;
-    }
-
-    .notification-item .notification-time {
-      color: #999;
-      font-size: 0.8em;
-    }
-
-    .notification-item .notification-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-      .notification-item .notification-actions .btn {
-        padding: 4px 8px;
+    .btn-sm {
+        padding: 2px 8px;
         font-size: 0.8em;
-      }
-
-  .empty-notifications-container {
-    text-align: center;
-    padding: 80px 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-  }
-
-    .empty-notifications-container .icon {
-      font-size: 60px;
-      color: #6c757d;
-      margin-bottom: 20px;
     }
 
-    .empty-notifications-container h4 {
-      font-weight: bold;
-      color: #333;
+    /* Ẩn container mặc định */
+    .orders-list-container {
+        display: none;
     }
 
-  .notification-pagination .pagination .page-link {
-    color: #0d6efd;
-    border-radius: 4px;
-    margin: 0 2px;
-  }
+    .empty-orders-container {
+        display: none;
+    }
 
-  .notification-pagination .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: #fff;
-  }
+    /* Layout cho bộ lọc */
+    .gap-2 {
+        gap: 0.5rem;
+    }
+    /* ----- CSS chung cho cả 2 tab ----- */
+    .account-sidebar .nav-link {
+        color: #333;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        cursor: pointer; /* Thêm con trỏ để cho biết có thể click */
+    }
 
-  .notification-pagination .pagination .page-item.disabled .page-link {
-    color: #6c757d;
-  }
+        /* Class 'active' của Bootstrap tab sẽ tự động xử lý việc highlight */
+        .account-sidebar .nav-link.active,
+        .account-sidebar .nav-link:hover {
+            background-color: #f0f0f0;
+            color: #0d6efd;
+        }
 
-  #updateProfileForm .text-danger.small {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.8rem;
-  }
+        .account-sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
 
-  #updateProfileForm .is-invalid {
-    border-color: #dc3545 !important;
-  }
+    .logout-btn {
+        width: 100%;
+        border: 1px solid #ddd;
+        font-weight: bold;
+        color: #dc3545;
+        background-color: white;
+    }
 
-  #updateProfileForm .col-md-6,
-  #updateProfileForm .col-12 {
-    position: relative;
-  }
+    /* ----- CSS cho Tab Đơn hàng ----- */
+    .order-status-filters .nav-link {
+        color: #333;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        margin-right: 10px;
+        padding: 5px 15px;
+        font-size: 0.9rem;
+    }
 
-  /* Giữ chiều cao cố định cho các cột khi có error */
-  #updateProfileForm .mb-3 {
-    min-height: auto;
-  }
+        .order-status-filters .nav-link.active {
+            background-color: white;
+            color: #0d6efd;
+            border-color: #0d6efd;
+            font-weight: bold;
+        }
 
-  /* Gender error style */
-  #updateProfileForm .gender-error {
-    display: block;
-    margin-top: 4px;
-  }
+    .empty-orders-container {
+        text-align: center;
+        padding: 80px 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+        .empty-orders-container .icon {
+            font-size: 60px;
+            color: #0d6efd;
+            margin-bottom: 20px;
+        }
+
+        .empty-orders-container h4 {
+            font-weight: bold;
+        }
+
+    /* ----- CSS cho Tab Thông tin ----- */
+    .info-card {
+        background-color: #fff;
+        padding: 24px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        margin-bottom: 24px;
+    }
+
+    .info-card-header {
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .update-btn {
+        background-color: #f57224;
+        border-color: #f57224;
+        color: white;
+        font-weight: bold;
+    }
+
+    .cancel-save-links a {
+        margin-left: 15px;
+        font-weight: bold;
+    }
+
+    .form-select {
+        color: #f57224;
+    }
+
+    #saveProfile {
+        color: #198754; /* Màu xanh cho nút Lưu */
+    }
+
+    #cancelProfileEdit {
+        color: #6c757d; /* Màu xám cho nút Hủy */
+    }
+
+    /* ----- CSS cho Tab Thông báo ----- */
+    .notification-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+        background-color: #fff;
+    }
+
+        .notification-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .notification-item.unread {
+            background-color: #f0f7ff;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .notification-item .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+            .notification-item .notification-icon.success {
+                background-color: #d1e7dd;
+                color: #198754;
+            }
+
+            .notification-item .notification-icon.info {
+                background-color: #cff4fc;
+                color: #0dcaf0;
+            }
+
+            .notification-item .notification-icon.warning {
+                background-color: #fff3cd;
+                color: #ffc107;
+            }
+
+            .notification-item .notification-icon.error {
+                background-color: #f8d7da;
+                color: #dc3545;
+            }
+
+        .notification-item .notification-content {
+            flex: 1;
+        }
+
+        .notification-item .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .notification-item .notification-message {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+
+        .notification-item .notification-time {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        .notification-item .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+            .notification-item .notification-actions .btn {
+                padding: 4px 8px;
+                font-size: 0.8em;
+            }
+
+    .empty-notifications-container {
+        text-align: center;
+        padding: 80px 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+        .empty-notifications-container .icon {
+            font-size: 60px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .empty-notifications-container h4 {
+            font-weight: bold;
+            color: #333;
+        }
+
+    .notification-pagination .pagination .page-link {
+        color: #0d6efd;
+        border-radius: 4px;
+        margin: 0 2px;
+    }
+
+    .notification-pagination .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+    }
+
+    .notification-pagination .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+    }
+
+    #updateProfileForm .text-danger.small {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.8rem;
+    }
+
+    #updateProfileForm .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    #updateProfileForm .col-md-6,
+    #updateProfileForm .col-12 {
+        position: relative;
+    }
+
+    /* Giữ chiều cao cố định cho các cột khi có error */
+    #updateProfileForm .mb-3 {
+        min-height: auto;
+    }
+
+    /* Gender error style */
+    #updateProfileForm .gender-error {
+        display: block;
+        margin-top: 4px;
+    }
 
 </style>

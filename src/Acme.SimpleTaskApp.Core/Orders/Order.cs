@@ -43,6 +43,7 @@ namespace Acme.SimpleTaskApp.Orders
 		// 6: Thanh toán thất bại (VNPay)
 		public int? Status { get; set; }
 		public string? PhoneNumber { get; set; } = string.Empty;
+		public string? EmailAddress { get; set; } = string.Empty;
 		public string? TinhThanh { get; set; }
 		public string? PhuongXa { get; set; }
 		public string? DiaChiChiTiet { get; set; }

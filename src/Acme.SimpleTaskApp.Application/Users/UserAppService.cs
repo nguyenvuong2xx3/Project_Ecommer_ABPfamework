@@ -104,6 +104,7 @@ namespace Acme.SimpleTaskApp.Users
 			user.DiaChiChiTiet = input.DiaChiChiTiet;
 			user.IsDiaChiMacDinh = input.IsDiaChiMacDinh;
 			user.GioiTinh = input.GioiTinh;
+			user.EmailAddress = input.EmailAddress;
 			await _userManager.UpdateAsync(user);
 		}
 
